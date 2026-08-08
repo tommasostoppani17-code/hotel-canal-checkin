@@ -12,10 +12,10 @@
     :root {
       --canal-petroleum: #124453;
       --canal-petroleum-hover: #0A2D37;
-      --canal-blue: var(--canal-petroleum);
       --text-main: #1D1D1F;
       --text-muted: #515154;
       --radius-ios: 14px;
+      --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     body {
@@ -72,14 +72,14 @@
       -webkit-backdrop-filter: blur(40px) saturate(220%);
       border: 1.2px solid rgba(255, 255, 255, 0.7);
       border-radius: 30px;
-      padding: 44px 32px;
+      padding: 40px 0 32px;
       box-sizing: border-box;
       box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.02),
         0 20px 50px rgba(10, 45, 55, 0.18),
         inset 0 1px 1px rgba(255, 255, 255, 0.9),
         inset 0 -1px 2px rgba(0, 0, 0, 0.02);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
     }
 
     .lang-selector {
@@ -91,7 +91,7 @@
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.02em;
-      z-index: 2;
+      z-index: 10;
     }
 
     .lang-btn {
@@ -114,10 +114,50 @@
       border-bottom-color: var(--canal-petroleum);
     }
 
+    .step-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 4px 0 8px;
+      padding: 0 32px;
+    }
+
+    .step-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(18, 68, 83, 0.18);
+      transition: transform 0.35s var(--ios-ease), background 0.35s var(--ios-ease);
+    }
+
+    .step-dots span.active {
+      background: var(--canal-petroleum);
+      transform: scale(1.25);
+    }
+
+    .step-dots.hidden {
+      display: none;
+    }
+
+    .slider-track {
+      display: flex;
+      width: 300%;
+      transform: translate3d(0, 0, 0);
+      transition: transform 0.55s var(--ios-ease);
+      will-change: transform;
+    }
+
+    .slide-step {
+      width: 33.333%;
+      padding: 0 32px;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
     .header {
       text-align: center;
-      margin-bottom: 32px;
-      padding-top: 8px;
+      margin-bottom: 24px;
+      padding-top: 10px;
     }
 
     .header .hotel-title {
@@ -137,16 +177,16 @@
       text-transform: uppercase;
       letter-spacing: 0.25em;
       color: #5C7A82;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       display: block;
     }
 
     .header h1 {
       font-family: "Cinzel", Georgia, serif;
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 600;
       letter-spacing: 0.01em;
-      margin: 0 0 12px 0;
+      margin: 0 0 10px 0;
       color: var(--canal-petroleum);
       line-height: 1.3;
     }
@@ -157,11 +197,11 @@
       margin: 0;
       line-height: 1.5;
       font-weight: 500;
-      padding: 0 4px;
+      padding: 0 2px;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .form-group label {
@@ -211,7 +251,6 @@
       box-shadow: 0 0 0 3.5px rgba(215, 0, 21, 0.12);
     }
 
-    /* Rimuove lo sfondo giallo/azzurro dell'autofill su Chrome e Safari */
     .apple-input:-webkit-autofill,
     .apple-input:-webkit-autofill:hover,
     .apple-input:-webkit-autofill:focus {
@@ -220,20 +259,11 @@
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
     }
 
-    .apple-input.is-invalid:-webkit-autofill,
-    .apple-input.is-invalid:-webkit-autofill:hover,
-    .apple-input.is-invalid:-webkit-autofill:focus {
-      -webkit-text-fill-color: #000000 !important;
-      box-shadow:
-        inset 0 0 0 1000px #fff5f5,
-        0 0 0 3.5px rgba(215, 0, 21, 0.12) !important;
-    }
-
     .privacy-box {
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      margin: 24px 0;
+      margin: 18px 0 20px;
       cursor: pointer;
     }
 
@@ -302,7 +332,7 @@
       border-radius: var(--radius-ios);
       font-size: 13.5px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: all 0.3s var(--ios-ease);
       box-shadow: 0 4px 12px rgba(18, 68, 83, 0.2);
     }
 
@@ -314,7 +344,6 @@
 
     .btn-canal:active:not(:disabled) {
       transform: translateY(1px);
-      box-shadow: 0 2px 6px rgba(18, 68, 83, 0.2);
     }
 
     .btn-canal:disabled {
@@ -323,12 +352,82 @@
       transform: none;
     }
 
+    .btn-ghost {
+      width: 100%;
+      margin-top: 10px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      color: var(--canal-petroleum);
+      font-family: "Montserrat", sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0.75;
+    }
+
+    .welcome-gift {
+      background: rgba(18, 68, 83, 0.04);
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 14px;
+      padding: 18px 16px;
+      margin: 4px 0 18px;
+      animation: giftIn 0.55s var(--ios-ease) both;
+    }
+
+    @keyframes giftIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .welcome-gift .rest-brand {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      letter-spacing: 0.03em;
+      margin: 0 0 2px;
+    }
+
+    .welcome-gift .rest-sub {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #5C7A82;
+      margin: 0 0 12px;
+    }
+
+    .welcome-gift h4 {
+      font-family: "Cinzel", Georgia, serif;
+      margin: 0 0 6px;
+      color: var(--canal-petroleum);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .welcome-gift p {
+      font-size: 11.5px;
+      margin: 0 0 14px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .welcome-gift .form-group {
+      margin-bottom: 0;
+    }
+
+    .welcome-gift .apple-input {
+      background: #FFFFFF;
+    }
+
     .error {
       display: none;
-      margin-bottom: 12px;
+      margin: 0 32px 12px;
       padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       color: #8B1A1A;
       font-size: 13px;
       line-height: 1.35;
@@ -337,6 +436,7 @@
 
     .error.visible {
       display: block;
+      animation: giftIn 0.35s var(--ios-ease);
     }
 
     .success-check {
@@ -347,6 +447,7 @@
       background: var(--canal-petroleum);
       box-shadow: 0 4px 12px rgba(18, 68, 83, 0.25);
       position: relative;
+      animation: popIn 0.5s var(--ios-ease);
     }
 
     .success-check::after {
@@ -361,6 +462,11 @@
       transform: rotate(45deg);
     }
 
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     .receipt-badge {
       background: rgba(18, 68, 83, 0.06);
       border: 1px dashed #124453;
@@ -369,6 +475,7 @@
       width: 100%;
       box-sizing: border-box;
       text-align: center;
+      animation: giftIn 0.55s 0.1s var(--ios-ease) both;
     }
 
     .receipt-badge .eyebrow {
@@ -393,51 +500,13 @@
       font-size: 11px;
       color: #7F8C8D;
     }
-
-    .welcome-gift {
-      background: rgba(18, 68, 83, 0.04);
-      border: 1px solid rgba(18, 68, 83, 0.12);
-      border-radius: 14px;
-      padding: 16px;
-      margin: 4px 0 8px;
-    }
-
-    .welcome-gift h4 {
-      font-family: "Cinzel", Georgia, serif;
-      margin: 0 0 6px 0;
-      color: var(--canal-petroleum);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-
-    .welcome-gift p {
-      font-size: 11.5px;
-      margin: 0 0 12px 0;
-      color: var(--text-muted);
-      line-height: 1.45;
-      font-weight: 500;
-    }
-
-    .welcome-gift .form-group {
-      margin-bottom: 0;
-    }
-
-    .welcome-gift .form-group label {
-      color: #5C7A82;
-      font-size: 9.5px;
-    }
-
-    .welcome-gift .apple-input {
-      background: #FFFFFF;
-    }
   </style>
 </head>
 <body>
   <div class="background-overlay" aria-hidden="true"></div>
 
   <div class="apple-card" id="card">
-    <div class="lang-selector" role="group" aria-label="Language">
+    <div class="lang-selector" role="group" aria-label="Language" id="langBar">
       <button type="button" class="lang-btn" data-lang="en">EN</button>
       <button type="button" class="lang-btn" data-lang="it">IT</button>
       <button type="button" class="lang-btn" data-lang="fr">FR</button>
@@ -445,54 +514,93 @@
       <button type="button" class="lang-btn" data-lang="es">ES</button>
     </div>
 
-    <div class="header">
-      <span class="hotel-title">Hotel Canal</span>
-      <span class="hotel-subtitle">Venice Experience</span>
-      <h1 id="lbl-title">Registrazione rapida</h1>
-      <p id="lbl-subtitle">Inserisci i dati per attivare i servizi digitali dedicati alla tua stanza.</p>
+    <div class="step-dots" id="stepDots" aria-hidden="true">
+      <span class="active"></span><span></span><span></span>
     </div>
 
     <div class="error" id="error" role="alert"></div>
 
-    <form id="leadForm" novalidate>
-      <div class="form-group">
-        <label id="lbl-phone" for="phone">Numero di Telefono *</label>
-        <input type="tel" id="phone" name="phone" class="apple-input" required autocomplete="tel" inputmode="tel" placeholder="+39 333 1234567">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-email" for="email">Email *</label>
-        <input type="email" id="email" name="email" class="apple-input" required autocomplete="email" inputmode="email" placeholder="name@email.com">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-name" for="fullname">Nome (Opzionale)</label>
-        <input type="text" id="fullname" name="fullname" class="apple-input" autocomplete="name" placeholder="Mario Rossi">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-room" for="room">Numero di Stanza (Opzionale)</label>
-        <input type="text" id="room" name="room" class="apple-input" placeholder="104">
-      </div>
-
-      <div class="welcome-gift">
-        <h4 id="lbl-rest-title">Sconto 10% — Trattoria alla Terrazza</h4>
-        <p id="lbl-rest-desc">Vuoi un coupon per il nostro ristorante tipico veneziano con vista sul canale? Chiedi il nome al receptionist che ti sta facendo il check-in.</p>
-        <div class="form-group">
-          <label id="lbl-staff" for="receptionist">Nome del Receptionist (Opzionale)</label>
-          <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" placeholder="MARIA / TOMMASO / JOHN">
+    <div class="slider-track" id="sliderTrack">
+      <!-- STEP 1 -->
+      <section class="slide-step" id="step1">
+        <div class="header">
+          <span class="hotel-title">Hotel Canal</span>
+          <span class="hotel-subtitle">Venice Experience</span>
+          <h1 id="lbl-title">Registrazione rapida</h1>
+          <p id="lbl-subtitle">Inserisci i dati per attivare i servizi digitali dedicati alla tua stanza.</p>
         </div>
-      </div>
 
-      <label class="privacy-box" id="privacyBox">
-        <input type="checkbox" id="privacy" name="privacy" required>
-        <span id="lbl-privacy" class="privacy-text">
-          Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.
-        </span>
-      </label>
+        <div class="form-group">
+          <label id="lbl-phone" for="phone">Numero di Telefono *</label>
+          <input type="tel" id="phone" name="phone" class="apple-input" required autocomplete="tel" inputmode="tel" placeholder="+39 333 1234567">
+        </div>
 
-      <button type="submit" class="btn-canal" id="submitBtn">Conferma registrazione</button>
-    </form>
+        <div class="form-group">
+          <label id="lbl-email" for="email">Email *</label>
+          <input type="email" id="email" name="email" class="apple-input" required autocomplete="email" inputmode="email" placeholder="name@email.com">
+        </div>
+
+        <div class="form-group">
+          <label id="lbl-name" for="fullname">Nome (Opzionale)</label>
+          <input type="text" id="fullname" name="fullname" class="apple-input" autocomplete="name" placeholder="Mario Rossi">
+        </div>
+
+        <div class="form-group">
+          <label id="lbl-room" for="room">Numero di Stanza (Opzionale)</label>
+          <input type="text" id="room" name="room" class="apple-input" placeholder="104">
+        </div>
+
+        <label class="privacy-box" id="privacyBox">
+          <input type="checkbox" id="privacy" name="privacy" required>
+          <span id="lbl-privacy" class="privacy-text">
+            Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.
+          </span>
+        </label>
+
+        <button type="button" class="btn-canal" id="btnNext">Continua</button>
+      </section>
+
+      <!-- STEP 2 -->
+      <section class="slide-step" id="step2">
+        <div class="header" style="margin-bottom: 18px;">
+          <span class="hotel-title">Hotel Canal</span>
+          <span class="hotel-subtitle">Venice Experience</span>
+        </div>
+
+        <div class="welcome-gift">
+          <p class="rest-brand">Trattoria alla Terrazza</p>
+          <p class="rest-sub" id="lbl-rest-sub">Ristorante tipico veneziano</p>
+          <h4 id="lbl-rest-title">Sconto 10% di benvenuto</h4>
+          <p id="lbl-rest-desc">
+            Vuoi un coupon per il nostro ristorante con vista sul canale?
+            Chiedi il nome al receptionist che ti sta facendo il check-in.
+          </p>
+          <div class="form-group">
+            <label id="lbl-staff" for="receptionist">Nome del Receptionist (Opzionale)</label>
+            <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" placeholder="MARIA / TOMMASO / JOHN">
+          </div>
+        </div>
+
+        <button type="button" class="btn-canal" id="btnSubmit">Conferma registrazione</button>
+        <button type="button" class="btn-ghost" id="btnBack">Indietro</button>
+      </section>
+
+      <!-- STEP 3 SUCCESS -->
+      <section class="slide-step" id="step3">
+        <div class="header" style="margin-bottom: 0; padding: 18px 0 4px;">
+          <div class="success-check" aria-hidden="true"></div>
+          <h1 id="lbl-succ-title">Registrato!</h1>
+          <p id="lbl-succ-sub" style="margin-bottom: 20px;">
+            I servizi digitali della stanza sono ora attivi sul tuo dispositivo.
+          </p>
+          <div class="receipt-badge" id="receiptBadge">
+            <span class="eyebrow" id="lbl-badge">Mostra alla Reception</span>
+            <strong class="code" id="verificationCode">HC-0000</strong>
+            <span class="time" id="lbl-verified-time"></span>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script>
@@ -504,11 +612,13 @@
         email: 'Email *',
         name: 'Nome (Opzionale)',
         room: 'Numero di Stanza (Opzionale)',
-        restTitle: 'Sconto 10% — Trattoria alla Terrazza',
-        restDesc: 'Vuoi un coupon per il nostro ristorante tipico veneziano con vista sul canale? Chiedi il nome al receptionist che ti sta facendo il check-in.',
+        nextBtn: 'Continua',
+        restSub: 'Ristorante tipico veneziano',
+        restTitle: 'Sconto 10% di benvenuto',
+        restDesc: 'Vuoi un coupon per il nostro ristorante con vista sul canale? Chiedi il nome al receptionist che ti sta facendo il check-in.',
         staff: 'Nome del Receptionist (Opzionale)',
-        privacy: 'Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.',
         button: 'Conferma registrazione',
+        back: 'Indietro',
         loading: 'Elaborazione…',
         successTitle: 'Registrato!',
         successSub: 'I servizi digitali della stanza sono ora attivi sul tuo dispositivo.',
@@ -520,6 +630,7 @@
         emailRequired: 'L\'email è obbligatoria.',
         emailInvalid: 'Inserisci un\'email valida.',
         privacyRequired: 'Per continuare accetta il trattamento dei dati.',
+        privacy: 'Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.',
         submitError: 'Errore durante l\'invio. Riprova.',
         networkError: 'Errore di connessione.',
         alreadyRegisteredTitle: 'Sei già registrato',
@@ -528,7 +639,7 @@
         networkErrorSub: 'Problema di rete o troppi dispositivi collegati. Riprova tra poco.',
         retry: 'Riprova',
         reportTitle: 'Report inviato',
-        reportSent: (count, to) => `Report inviato (${count} contatti) a ${to}.`,
+        reportSent: (c, to) => `Report inviato (${c} contatti) a ${to}.`,
         reportEmpty: 'Nessun nuovo contatto da inviare.',
       },
       en: {
@@ -538,11 +649,13 @@
         email: 'Email *',
         name: 'Name (Optional)',
         room: 'Room Number (Optional)',
-        restTitle: '10% Off — Trattoria alla Terrazza',
-        restDesc: 'Want a coupon for our typical Venetian restaurant overlooking the canal? Ask the receptionist checking you in for their name.',
+        nextBtn: 'Continue',
+        restSub: 'Typical Venetian restaurant',
+        restTitle: '10% Welcome Discount',
+        restDesc: 'Want a coupon for our canal-view restaurant? Ask the receptionist checking you in for their name.',
         staff: 'Receptionist Name (Optional)',
-        privacy: 'I accept data processing for communications related to my stay.',
         button: 'Confirm Registration',
+        back: 'Back',
         loading: 'Processing…',
         successTitle: 'Registered!',
         successSub: 'Digital room services are now active on your device.',
@@ -554,6 +667,7 @@
         emailRequired: 'Email is required.',
         emailInvalid: 'Enter a valid email.',
         privacyRequired: 'Please accept data processing to continue.',
+        privacy: 'I accept data processing for communications related to my stay.',
         submitError: 'Could not submit. Please try again.',
         networkError: 'Connection error.',
         alreadyRegisteredTitle: 'Already registered',
@@ -562,7 +676,7 @@
         networkErrorSub: 'Network issue or too many devices connected. Please try again shortly.',
         retry: 'Try again',
         reportTitle: 'Report sent',
-        reportSent: (count, to) => `Report sent (${count} contacts) to ${to}.`,
+        reportSent: (c, to) => `Report sent (${c} contacts) to ${to}.`,
         reportEmpty: 'No new contacts to send.',
       },
       fr: {
@@ -572,22 +686,25 @@
         email: 'E-mail *',
         name: 'Nom (optionnel)',
         room: 'Numéro de chambre (optionnel)',
-        restTitle: 'Réduction 10% — Trattoria alla Terrazza',
-        restDesc: 'Vous voulez un coupon pour notre restaurant vénitien avec vue sur le canal ? Demandez le nom du réceptionniste qui vous enregistre.',
+        nextBtn: 'Continuer',
+        restSub: 'Restaurant typique vénitien',
+        restTitle: 'Réduction de bienvenue 10%',
+        restDesc: 'Vous voulez un coupon pour notre restaurant avec vue sur le canal ? Demandez le nom du réceptionniste.',
         staff: 'Nom du réceptionniste (optionnel)',
-        privacy: 'J\'accepte le traitement des données pour les communications liées à mon séjour.',
         button: 'Confirmer l\'inscription',
+        back: 'Retour',
         loading: 'Traitement…',
         successTitle: 'Enregistré !',
         successSub: 'Les services numériques sont actifs sur votre appareil.',
-        successSubCoupon: 'Vérifiez votre e-mail : nous avons envoyé votre coupon 10% pour Trattoria alla Terrazza.',
+        successSubCoupon: 'Vérifiez votre e-mail : coupon 10% Trattoria alla Terrazza envoyé.',
         badgeTxt: 'Montrer à la réception',
         verifiedTxt: 'Vérifié à',
         phoneRequired: 'Le numéro de téléphone est obligatoire.',
-        phoneInvalid: 'Entrez un numéro valide (chiffres uniquement, + ou 00 optionnel).',
+        phoneInvalid: 'Entrez un numéro valide.',
         emailRequired: 'L\'e-mail est obligatoire.',
         emailInvalid: 'Entrez une adresse e-mail valide.',
         privacyRequired: 'Veuillez accepter le traitement des données.',
+        privacy: 'J\'accepte le traitement des données pour les communications liées à mon séjour.',
         submitError: 'Erreur d\'envoi. Réessayez.',
         networkError: 'Erreur de connexion.',
         alreadyRegisteredTitle: 'Déjà enregistré',
@@ -596,7 +713,7 @@
         networkErrorSub: 'Problème réseau ou trop d\'appareils connectés. Réessayez bientôt.',
         retry: 'Réessayer',
         reportTitle: 'Rapport envoyé',
-        reportSent: (count, to) => `Rapport envoyé (${count} contacts) à ${to}.`,
+        reportSent: (c, to) => `Rapport envoyé (${c} contacts) à ${to}.`,
         reportEmpty: 'Aucun nouveau contact à envoyer.',
       },
       de: {
@@ -606,31 +723,34 @@
         email: 'E-Mail *',
         name: 'Name (optional)',
         room: 'Zimmernummer (optional)',
-        restTitle: '10% Rabatt — Trattoria alla Terrazza',
-        restDesc: 'Möchten Sie einen Gutschein für unser venezianisches Restaurant mit Kanalblick? Fragen Sie den Empfangsmitarbeiter nach dem Namen.',
+        nextBtn: 'Weiter',
+        restSub: 'Typisch venezianisches Restaurant',
+        restTitle: '10% Willkommensrabatt',
+        restDesc: 'Möchten Sie einen Gutschein für unser Restaurant mit Kanalblick? Fragen Sie den Empfang nach dem Namen.',
         staff: 'Name Empfang (optional)',
-        privacy: 'Ich akzeptiere die Datenverarbeitung für Mitteilungen zu meinem Aufenthalt.',
         button: 'Registrierung bestätigen',
+        back: 'Zurück',
         loading: 'Wird verarbeitet…',
         successTitle: 'Registriert!',
-        successSub: 'Die digitalen Zimmerdienste sind jetzt auf Ihrem Gerät aktiv.',
-        successSubCoupon: 'Prüfen Sie Ihre E-Mail: wir haben Ihren 10%-Gutschein für Trattoria alla Terrazza gesendet.',
+        successSub: 'Die digitalen Zimmerdienste sind jetzt aktiv.',
+        successSubCoupon: 'Prüfen Sie Ihre E-Mail: 10%-Gutschein für Trattoria alla Terrazza gesendet.',
         badgeTxt: 'An der Rezeption vorzeigen',
         verifiedTxt: 'Verifiziert um',
         phoneRequired: 'Telefonnummer ist erforderlich.',
-        phoneInvalid: 'Gültige Telefonnummer eingeben (nur Ziffern, optional + oder 00).',
+        phoneInvalid: 'Gültige Telefonnummer eingeben.',
         emailRequired: 'E-Mail ist erforderlich.',
         emailInvalid: 'Gültige E-Mail eingeben.',
         privacyRequired: 'Bitte akzeptieren Sie die Datenverarbeitung.',
-        submitError: 'Senden fehlgeschlagen. Bitte erneut versuchen.',
+        privacy: 'Ich akzeptiere die Datenverarbeitung für Mitteilungen zu meinem Aufenthalt.',
+        submitError: 'Senden fehlgeschlagen.',
         networkError: 'Verbindungsfehler.',
         alreadyRegisteredTitle: 'Bereits registriert',
-        alreadyRegisteredSub: 'Ihr Gerät ist mit unseren digitalen Diensten verbunden. Genießen Sie Ihren Aufenthalt in Venedig.',
+        alreadyRegisteredSub: 'Ihr Gerät ist mit unseren digitalen Diensten verbunden. Genießen Sie Venedig.',
         networkErrorTitle: 'Verbindungsfehler',
-        networkErrorSub: 'Netzwerkproblem oder zu viele verbundene Geräte. Bitte versuchen Sie es später erneut.',
+        networkErrorSub: 'Netzwerkproblem oder zu viele Geräte. Bitte später erneut versuchen.',
         retry: 'Erneut versuchen',
         reportTitle: 'Bericht gesendet',
-        reportSent: (count, to) => `Bericht gesendet (${count} Kontakte) an ${to}.`,
+        reportSent: (c, to) => `Bericht gesendet (${c} Kontakte) an ${to}.`,
         reportEmpty: 'Keine neuen Kontakte zum Senden.',
       },
       es: {
@@ -640,31 +760,34 @@
         email: 'Correo electrónico *',
         name: 'Nombre (opcional)',
         room: 'Número de habitación (opcional)',
-        restTitle: 'Descuento 10% — Trattoria alla Terrazza',
-        restDesc: '¿Quiere un cupón para nuestro restaurante típico veneciano con vista al canal? Pregunte el nombre al recepcionista del check-in.',
+        nextBtn: 'Continuar',
+        restSub: 'Restaurante típico veneciano',
+        restTitle: 'Descuento de bienvenida 10%',
+        restDesc: '¿Quiere un cupón para nuestro restaurante con vista al canal? Pregunte el nombre al recepcionista.',
         staff: 'Nombre del recepcionista (opcional)',
-        privacy: 'Acepto el tratamiento de datos para comunicaciones relativas a mi estancia.',
         button: 'Confirmar registro',
+        back: 'Atrás',
         loading: 'Procesando…',
         successTitle: '¡Registrado!',
         successSub: 'Los servicios digitales ya están activos en su dispositivo.',
-        successSubCoupon: 'Revise su correo: le enviamos el cupón 10% para Trattoria alla Terrazza.',
+        successSubCoupon: 'Revise su correo: cupón 10% Trattoria alla Terrazza enviado.',
         badgeTxt: 'Mostrar en recepción',
         verifiedTxt: 'Verificado a las',
         phoneRequired: 'El número de teléfono es obligatorio.',
-        phoneInvalid: 'Introduzca un número válido (solo dígitos, opcional + o 00).',
+        phoneInvalid: 'Introduzca un número válido.',
         emailRequired: 'El correo electrónico es obligatorio.',
         emailInvalid: 'Introduzca un correo válido.',
         privacyRequired: 'Acepte el tratamiento de datos para continuar.',
+        privacy: 'Acepto el tratamiento de datos para comunicaciones relativas a mi estancia.',
         submitError: 'Error al enviar. Inténtelo de nuevo.',
         networkError: 'Error de conexión.',
         alreadyRegisteredTitle: 'Ya registrado',
-        alreadyRegisteredSub: 'Su dispositivo está conectado a nuestros servicios digitales. Disfrute su estancia en Venecia.',
+        alreadyRegisteredSub: 'Su dispositivo está conectado a nuestros servicios digitales. Disfrute Venecia.',
         networkErrorTitle: 'Error de conexión',
-        networkErrorSub: 'Problema de red o demasiados dispositivos conectados. Inténtelo de nuevo en breve.',
+        networkErrorSub: 'Problema de red o demasiados dispositivos. Inténtelo de nuevo en breve.',
         retry: 'Reintentar',
         reportTitle: 'Informe enviado',
-        reportSent: (count, to) => `Informe enviado (${count} contactos) a ${to}.`,
+        reportSent: (c, to) => `Informe enviado (${c} contactos) a ${to}.`,
         reportEmpty: 'No hay contactos nuevos para enviar.',
       },
     };
@@ -674,7 +797,23 @@
     const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const REPORT_TOKEN = 'grandcanalhotel';
 
+    const card = document.getElementById('card');
+    const track = document.getElementById('sliderTrack');
+    const dots = document.getElementById('stepDots');
+    const errorEl = document.getElementById('error');
+    const phoneEl = document.getElementById('phone');
+    const emailEl = document.getElementById('email');
+    const nameEl = document.getElementById('fullname');
+    const roomEl = document.getElementById('room');
+    const staffEl = document.getElementById('receptionist');
+    const privacyEl = document.getElementById('privacy');
+    const privacyBox = document.getElementById('privacyBox');
+    const btnNext = document.getElementById('btnNext');
+    const btnBack = document.getElementById('btnBack');
+    const btnSubmit = document.getElementById('btnSubmit');
+
     let currentLang = 'en';
+    let currentStep = 1;
     let formMode = true;
 
     function t() {
@@ -686,6 +825,76 @@
       return translations[nav] ? nav : 'en';
     }
 
+    function setStep(step) {
+      currentStep = step;
+      track.style.transform = `translate3d(-${(step - 1) * (100 / 3)}%, 0, 0)`;
+      if (dots) {
+        dots.classList.toggle('hidden', step === 3 && !formMode);
+        [...dots.children].forEach((el, i) => {
+          el.classList.toggle('active', i === step - 1);
+        });
+      }
+      if (step === 2) {
+        const gift = document.querySelector('.welcome-gift');
+        if (gift) {
+          gift.style.animation = 'none';
+          // reflow
+          void gift.offsetWidth;
+          gift.style.animation = '';
+        }
+        staffEl.focus();
+      }
+    }
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.classList.add('visible');
+    }
+
+    function clearError() {
+      errorEl.textContent = '';
+      errorEl.classList.remove('visible');
+      phoneEl.classList.remove('is-invalid');
+      emailEl.classList.remove('is-invalid');
+      privacyBox.classList.remove('is-invalid', 'shake');
+    }
+
+    function applyFormLabels() {
+      const dict = t();
+      document.getElementById('lbl-title').textContent = dict.title;
+      document.getElementById('lbl-subtitle').textContent = dict.subtitle;
+      document.getElementById('lbl-phone').textContent = dict.phone;
+      document.getElementById('lbl-email').textContent = dict.email;
+      document.getElementById('lbl-name').textContent = dict.name;
+      document.getElementById('lbl-room').textContent = dict.room;
+      document.getElementById('lbl-privacy').textContent = dict.privacy;
+      document.getElementById('lbl-rest-sub').textContent = dict.restSub;
+      document.getElementById('lbl-rest-title').textContent = dict.restTitle;
+      document.getElementById('lbl-rest-desc').textContent = dict.restDesc;
+      document.getElementById('lbl-staff').textContent = dict.staff;
+      btnNext.textContent = dict.nextBtn;
+      btnBack.textContent = dict.back;
+      if (!btnSubmit.disabled) btnSubmit.textContent = dict.button;
+    }
+
+    function setLanguage(lang) {
+      if (!translations[lang]) lang = 'en';
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.querySelectorAll('.lang-btn').forEach((el) => {
+        el.classList.toggle('active', el.dataset.lang === lang);
+      });
+
+      if (!formMode) return;
+      applyFormLabels();
+
+      if (currentStep === 3) {
+        const dict = t();
+        document.getElementById('lbl-succ-title').textContent = dict.successTitle;
+        document.getElementById('lbl-badge').textContent = dict.badgeTxt;
+      }
+    }
+
     function langBarHtml() {
       return ['en', 'it', 'fr', 'de', 'es']
         .map(
@@ -695,9 +904,14 @@
         .join('');
     }
 
-    function bindLangButtons() {
-      document.querySelectorAll('.lang-btn').forEach((el) => {
-        el.addEventListener('click', () => setLanguage(el.dataset.lang));
+    function bindLangButtons(root = document) {
+      root.querySelectorAll('.lang-btn').forEach((el) => {
+        el.addEventListener('click', () => {
+          setLanguage(el.dataset.lang);
+          if (!formMode && localStorage.getItem(STORAGE_KEY) === 'true') {
+            showAlreadyRegisteredScreen();
+          }
+        });
       });
     }
 
@@ -706,13 +920,13 @@
       const dict = t();
       card.innerHTML = `
         <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
-        <div class="header" style="margin-bottom:0;padding:24px 0 8px;">
+        <div style="padding: 28px 32px 12px; text-align: center;">
           <div class="success-check" aria-hidden="true"></div>
-          <h1>${dict.alreadyRegisteredTitle}</h1>
-          <p>${dict.alreadyRegisteredSub}</p>
+          <h1 style="font-family:Cinzel,Georgia,serif;font-size:21px;color:#124453;margin:0 0 12px;">${dict.alreadyRegisteredTitle}</h1>
+          <p style="font-size:12.5px;color:#515154;line-height:1.5;margin:0;font-weight:500;">${dict.alreadyRegisteredSub}</p>
         </div>
       `;
-      bindLangButtons();
+      bindLangButtons(card);
     }
 
     function showNetworkErrorScreen() {
@@ -720,242 +934,225 @@
       const dict = t();
       card.innerHTML = `
         <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
-        <div class="header" style="margin-bottom:0;padding:24px 0 8px;">
-          <h1 style="color:#C62828;">${dict.networkErrorTitle}</h1>
-          <p style="margin-bottom:20px;">${dict.networkErrorSub}</p>
+        <div style="padding: 28px 32px 12px; text-align: center;">
+          <h1 style="font-family:Cinzel,Georgia,serif;font-size:20px;color:#C62828;margin:0 0 12px;">${dict.networkErrorTitle}</h1>
+          <p style="font-size:12.5px;color:#515154;line-height:1.5;margin:0 0 20px;font-weight:500;">${dict.networkErrorSub}</p>
           <button type="button" class="btn-canal" id="retryBtn">${dict.retry}</button>
         </div>
       `;
-      bindLangButtons();
-      document.getElementById('retryBtn')?.addEventListener('click', () => {
-        window.location.reload();
-      });
+      bindLangButtons(card);
+      document.getElementById('retryBtn')?.addEventListener('click', () => window.location.reload());
     }
 
-    function setLanguage(lang) {
-      if (!translations[lang]) lang = 'en';
-      currentLang = lang;
-      document.documentElement.lang = lang;
+    function cleanPhone(value) {
+      return String(value || '').replace(/[\s\-\(\)\.]/g, '');
+    }
 
-      if (!formMode) {
-        if (localStorage.getItem(STORAGE_KEY) === 'true') {
-          showAlreadyRegisteredScreen();
+    function isReportTrigger(phone, name, room) {
+      return [phone, name, room].every(
+        (v) => String(v || '').trim().toLowerCase() === REPORT_TOKEN,
+      );
+    }
+
+    function formatCheckCode(id) {
+      if (id != null && Number.isFinite(Number(id))) {
+        return 'HC-' + String(Number(id)).padStart(4, '0');
+      }
+      return 'HC-' + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    function showSuccessStep({ id, verifiedAt, couponSent, already = false }) {
+      const dict = t();
+      const checkCode = formatCheckCode(id);
+      const now = new Date(verifiedAt || Date.now()).toLocaleTimeString(
+        currentLang === 'en' ? 'en-GB' : currentLang,
+        { hour: '2-digit', minute: '2-digit' },
+      );
+
+      document.getElementById('lbl-succ-title').textContent = already
+        ? dict.alreadyRegisteredTitle
+        : dict.successTitle;
+      document.getElementById('lbl-succ-sub').textContent = already
+        ? dict.alreadyRegisteredSub
+        : couponSent
+          ? dict.successSubCoupon
+          : dict.successSub;
+
+      const badge = document.getElementById('receiptBadge');
+      if (already) {
+        badge.style.display = 'none';
+      } else {
+        badge.style.display = '';
+        document.getElementById('lbl-badge').textContent = dict.badgeTxt;
+        document.getElementById('verificationCode').textContent = checkCode;
+        document.getElementById('lbl-verified-time').textContent =
+          `${dict.verifiedTxt} ${now}`;
+      }
+
+      if (dots) dots.classList.add('hidden');
+      setStep(3);
+    }
+
+    function validateStep1() {
+      clearError();
+      const dict = t();
+      const phoneRaw = phoneEl.value.trim();
+      const emailRaw = emailEl.value.trim();
+      const cleaned = cleanPhone(phoneRaw);
+      const emailNormalized = emailRaw.toLowerCase();
+      const magic = isReportTrigger(
+        phoneRaw,
+        nameEl.value.trim(),
+        roomEl.value.trim(),
+      );
+
+      if (!privacyEl.checked) {
+        showError(dict.privacyRequired);
+        privacyBox.classList.add('is-invalid', 'shake');
+        return false;
+      }
+
+      if (!magic) {
+        if (!cleaned) {
+          showError(dict.phoneRequired);
+          phoneEl.classList.add('is-invalid');
+          phoneEl.focus();
+          return false;
         }
+        if (!PHONE_REGEX.test(cleaned)) {
+          showError(dict.phoneInvalid);
+          phoneEl.classList.add('is-invalid');
+          phoneEl.focus();
+          return false;
+        }
+        if (!emailNormalized) {
+          showError(dict.emailRequired);
+          emailEl.classList.add('is-invalid');
+          emailEl.focus();
+          return false;
+        }
+        if (!EMAIL_REGEX.test(emailNormalized)) {
+          showError(dict.emailInvalid);
+          emailEl.classList.add('is-invalid');
+          emailEl.focus();
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    btnNext.addEventListener('click', () => {
+      if (!validateStep1()) return;
+      if (
+        isReportTrigger(
+          phoneEl.value.trim(),
+          nameEl.value.trim(),
+          roomEl.value.trim(),
+        )
+      ) {
+        submitFinal();
+        return;
+      }
+      setStep(2);
+    });
+
+    btnBack.addEventListener('click', () => {
+      clearError();
+      setStep(1);
+      phoneEl.focus();
+    });
+
+    btnSubmit.addEventListener('click', () => submitFinal());
+
+    async function submitFinal() {
+      if (!validateStep1()) {
+        setStep(1);
         return;
       }
 
-      document.querySelectorAll('.lang-btn').forEach((el) => {
-        el.classList.toggle('active', el.dataset.lang === lang);
-      });
-
       const dict = t();
-      const titleEl = document.getElementById('lbl-title');
-      if (!titleEl) return;
+      const phoneRaw = phoneEl.value.trim();
+      const emailRaw = emailEl.value.trim();
+      const guestNameRaw = nameEl.value.trim();
+      const roomRaw = roomEl.value.trim();
+      const staffRaw = staffEl.value.trim();
+      const cleaned = cleanPhone(phoneRaw);
+      const emailNormalized = emailRaw.toLowerCase();
+      const magic = isReportTrigger(phoneRaw, guestNameRaw, roomRaw);
 
-      titleEl.textContent = dict.title;
-      document.getElementById('lbl-subtitle').textContent = dict.subtitle;
-      document.getElementById('lbl-phone').textContent = dict.phone;
-      document.getElementById('lbl-email').textContent = dict.email;
-      document.getElementById('lbl-name').textContent = dict.name;
-      document.getElementById('lbl-room').textContent = dict.room;
-      document.getElementById('lbl-rest-title').textContent = dict.restTitle;
-      document.getElementById('lbl-rest-desc').textContent = dict.restDesc;
-      document.getElementById('lbl-staff').textContent = dict.staff;
-      document.getElementById('lbl-privacy').textContent = dict.privacy;
-      const submitBtn = document.getElementById('submitBtn');
-      if (submitBtn && !submitBtn.disabled) submitBtn.textContent = dict.button;
-    }
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = dict.loading;
+      btnNext.disabled = true;
 
-    const card = document.getElementById('card');
-    currentLang = detectLanguage();
+      const payload = {
+        phone: magic ? phoneRaw.trim() : cleaned,
+        email: emailNormalized,
+        guestName: guestNameRaw ? guestNameRaw.toUpperCase() : null,
+        roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
+        receptionist: staffRaw ? staffRaw.toUpperCase() : null,
+        privacy: true,
+        language: currentLang,
+      };
 
-    if (localStorage.getItem(STORAGE_KEY) === 'true') {
-      showAlreadyRegisteredScreen();
-    } else {
-      const form = document.getElementById('leadForm');
-      const errorEl = document.getElementById('error');
-      const btn = document.getElementById('submitBtn');
-      const phoneEl = document.getElementById('phone');
-      const emailEl = document.getElementById('email');
-      const nameEl = document.getElementById('fullname');
-      const roomEl = document.getElementById('room');
-      const staffEl = document.getElementById('receptionist');
-      const privacyEl = document.getElementById('privacy');
-      const privacyBox = document.getElementById('privacyBox');
+      try {
+        const response = await fetch('/api/checkins', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const body = await response.json().catch(() => ({}));
 
-      bindLangButtons();
-      setLanguage(currentLang);
-
-      function showError(message) {
-        errorEl.textContent = message;
-        errorEl.classList.add('visible');
-      }
-
-      function clearError() {
-        errorEl.textContent = '';
-        errorEl.classList.remove('visible');
-        phoneEl.classList.remove('is-invalid');
-        emailEl.classList.remove('is-invalid');
-        privacyBox.classList.remove('is-invalid', 'shake');
-      }
-
-      function cleanPhone(value) {
-        return String(value || '').replace(/[\s\-\(\)\.]/g, '');
-      }
-
-      function isReportTrigger(phone, name, room) {
-        return [phone, name, room].every(
-          (v) => String(v || '').trim().toLowerCase() === REPORT_TOKEN,
-        );
-      }
-
-      function formatCheckCode(id) {
-        if (id != null && Number.isFinite(Number(id))) {
-          return 'HC-' + String(Number(id)).padStart(4, '0');
-        }
-        return 'HC-' + Math.floor(1000 + Math.random() * 9000);
-      }
-
-      function showSuccessReceipt({ id, verifiedAt, couponSent }) {
-        formMode = false;
-        const dict = t();
-        const checkCode = formatCheckCode(id);
-        const now = new Date(verifiedAt || Date.now()).toLocaleTimeString(
-          currentLang === 'en' ? 'en-GB' : currentLang,
-          { hour: '2-digit', minute: '2-digit' },
-        );
-        const sub = couponSent ? dict.successSubCoupon : dict.successSub;
-
-        card.innerHTML = `
-          <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
-          <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
-            <div class="success-check" aria-hidden="true"></div>
-            <h1>${dict.successTitle}</h1>
-            <p style="margin-bottom:20px;">${sub}</p>
-            <div class="receipt-badge">
-              <span class="eyebrow">${dict.badgeTxt}</span>
-              <strong class="code">${checkCode}</strong>
-              <span class="time">${dict.verifiedTxt} ${now}</span>
-            </div>
-          </div>
-        `;
-        bindLangButtons();
-      }
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        clearError();
-
-        const dict = t();
-        const phoneRaw = phoneEl.value.trim();
-        const emailRaw = emailEl.value.trim();
-        const guestNameRaw = nameEl.value.trim();
-        const roomRaw = roomEl.value.trim();
-        const staffRaw = staffEl.value.trim();
-        const privacy = privacyEl.checked;
-        const cleaned = cleanPhone(phoneRaw);
-        const emailNormalized = emailRaw.toLowerCase();
-        const magic = isReportTrigger(phoneRaw, guestNameRaw, roomRaw);
-
-        if (!privacy) {
-          showError(dict.privacyRequired);
-          privacyBox.classList.add('is-invalid', 'shake');
-          return;
-        }
-
-        if (!magic) {
-          if (!cleaned) {
-            showError(dict.phoneRequired);
-            phoneEl.classList.add('is-invalid');
-            phoneEl.focus();
-            return;
-          }
-          if (!PHONE_REGEX.test(cleaned)) {
-            showError(dict.phoneInvalid);
-            phoneEl.classList.add('is-invalid');
-            phoneEl.focus();
-            return;
-          }
-          if (!emailNormalized) {
-            showError(dict.emailRequired);
-            emailEl.classList.add('is-invalid');
-            emailEl.focus();
-            return;
-          }
-          if (!EMAIL_REGEX.test(emailNormalized)) {
-            showError(dict.emailInvalid);
-            emailEl.classList.add('is-invalid');
-            emailEl.focus();
-            return;
-          }
-        }
-
-        btn.disabled = true;
-        btn.textContent = dict.loading;
-
-        const payload = {
-          phone: magic ? phoneRaw.trim() : cleaned,
-          email: emailNormalized,
-          guestName: guestNameRaw ? guestNameRaw.toUpperCase() : null,
-          roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
-          receptionist: staffRaw ? staffRaw.toUpperCase() : null,
-          privacy: true,
-          language: currentLang,
-        };
-
-        try {
-          const response = await fetch('/api/checkins', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-
-          const body = await response.json().catch(() => ({}));
-
-          if (!response.ok) {
-            if (response.status >= 500) {
-              showNetworkErrorScreen();
-              return;
-            }
-            throw new Error(body.error || dict.submitError);
-          }
-
-          if (body.reportTriggered) {
-            const detail = body.sent
-              ? dict.reportSent(body.count, body.to || 'email')
-              : dict.reportEmpty;
-            formMode = false;
-            card.innerHTML = `
-              <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
-              <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
-                <div class="success-check" aria-hidden="true"></div>
-                <h1>${dict.reportTitle}</h1>
-                <p>${detail}</p>
-              </div>
-            `;
-            bindLangButtons();
-            return;
-          }
-
-          localStorage.setItem(STORAGE_KEY, 'true');
-          showSuccessReceipt({
-            id: body.id,
-            verifiedAt: body.createdAt,
-            couponSent: Boolean(body.couponSent),
-          });
-        } catch (err) {
-          if (
-            err instanceof TypeError ||
-            /failed to fetch|network|load failed/i.test(String(err.message || ''))
-          ) {
+        if (!response.ok) {
+          if (response.status >= 500) {
             showNetworkErrorScreen();
             return;
           }
-          showError(err.message || dict.networkError);
-          btn.disabled = false;
-          btn.textContent = dict.button;
+          throw new Error(body.error || dict.submitError);
         }
-      });
+
+        if (body.reportTriggered) {
+          formMode = false;
+          document.getElementById('lbl-succ-title').textContent = dict.reportTitle;
+          document.getElementById('lbl-succ-sub').textContent = body.sent
+            ? dict.reportSent(body.count, body.to || 'email')
+            : dict.reportEmpty;
+          document.getElementById('receiptBadge').style.display = 'none';
+          if (dots) dots.classList.add('hidden');
+          setStep(3);
+          return;
+        }
+
+        localStorage.setItem(STORAGE_KEY, 'true');
+        showSuccessStep({
+          id: body.id,
+          verifiedAt: body.createdAt,
+          couponSent: Boolean(body.couponSent),
+        });
+      } catch (err) {
+        if (
+          err instanceof TypeError ||
+          /failed to fetch|network|load failed/i.test(String(err.message || ''))
+        ) {
+          showNetworkErrorScreen();
+          return;
+        }
+        showError(err.message || dict.networkError);
+        setStep(1);
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = dict.button;
+        btnNext.disabled = false;
+      }
+    }
+
+    // Init
+    currentLang = detectLanguage();
+    if (localStorage.getItem(STORAGE_KEY) === 'true') {
+      showAlreadyRegisteredScreen();
+    } else {
+      bindLangButtons();
+      setLanguage(currentLang);
+      setStep(1);
     }
   </script>
 </body>
