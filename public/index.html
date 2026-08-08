@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Hotel Canal — Fast Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="/venice-bg.jpg">
+  <style>
+    :root {
+      --canal-petroleum: #124453;
+      --canal-petroleum-hover: #0A2D37;
+      --canal-blue: var(--canal-petroleum);
+      --text-main: #1D1D1F;
+      --text-muted: #515154;
+      --radius-ios: 14px;
+    }
+
+    body {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      box-sizing: border-box;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+      overflow-x: hidden;
+      background-color: #0a2d37;
+    }
+
+    .background-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .background-overlay::before {
+      content: "";
+      position: absolute;
+      inset: -20px;
+      background-image: url('/venice-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px) brightness(0.82) saturate(1.08);
+      transform: scale(1.06);
+    }
+
+    .background-overlay::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        rgba(18, 68, 83, 0.25),
+        rgba(10, 45, 55, 0.35)
+      );
+    }
+
+    .apple-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 390px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(40px) saturate(220%);
+      -webkit-backdrop-filter: blur(40px) saturate(220%);
+      border: 1.2px solid rgba(255, 255, 255, 0.7);
+      border-radius: 30px;
+      padding: 44px 32px;
+      box-sizing: border-box;
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.02),
+        0 20px 50px rgba(10, 45, 55, 0.18),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.02);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .lang-selector {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      display: flex;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      z-index: 2;
+    }
+
+    .lang-btn {
+      appearance: none;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: var(--text-muted);
+      cursor: pointer;
+      opacity: 0.55;
+      transition: color 0.2s, opacity 0.2s;
+      border-bottom: 1.5px solid transparent;
+    }
+
+    .lang-btn.active {
+      color: var(--canal-petroleum);
+      opacity: 1;
+      border-bottom-color: var(--canal-petroleum);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-top: 8px;
+    }
+
+    .header .hotel-title {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--canal-petroleum);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .header .hotel-subtitle {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: #5C7A82;
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .header h1 {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin: 0 0 12px 0;
+      color: var(--canal-petroleum);
+      line-height: 1.3;
+    }
+
+    .header p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.5;
+      font-weight: 500;
+      padding: 0 4px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--canal-petroleum);
+      margin-bottom: 8px;
+      padding-left: 2px;
+    }
+
+    .apple-input {
+      width: 100%;
+      height: 46px;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 500;
+      background: rgba(245, 248, 250, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: var(--radius-ios);
+      padding: 0 16px;
+      font-size: 16px;
+      color: #000000;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .apple-input::placeholder {
+      color: #929296;
+      font-weight: 400;
+    }
+
+    .apple-input:focus {
+      outline: none;
+      border-color: var(--canal-petroleum);
+      background: #FFFFFF;
+      box-shadow:
+        0 0 0 3.5px rgba(18, 68, 83, 0.12),
+        inset 0 1px 1.5px rgba(0, 0, 0, 0.02);
+    }
+
+    .apple-input.is-invalid {
+      border-color: #d70015;
+      background: #fff5f5;
+      box-shadow: 0 0 0 3.5px rgba(215, 0, 21, 0.12);
+    }
+
+    /* Rimuove lo sfondo giallo/azzurro dell'autofill su Chrome e Safari */
+    .apple-input:-webkit-autofill,
+    .apple-input:-webkit-autofill:hover,
+    .apple-input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #000000 !important;
+      transition: background-color 5000s ease-in-out 0s;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    .apple-input.is-invalid:-webkit-autofill,
+    .apple-input.is-invalid:-webkit-autofill:hover,
+    .apple-input.is-invalid:-webkit-autofill:focus {
+      -webkit-text-fill-color: #000000 !important;
+      box-shadow:
+        inset 0 0 0 1000px #fff5f5,
+        0 0 0 3.5px rgba(215, 0, 21, 0.12) !important;
+    }
+
+    .privacy-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 24px 0;
+      cursor: pointer;
+    }
+
+    .privacy-box input {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      border-radius: 5px;
+      background: #FFFFFF;
+      margin: 2px 0 0 0;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .privacy-box input:checked {
+      background: var(--canal-petroleum);
+      border-color: var(--canal-petroleum);
+    }
+
+    .privacy-box input:checked::after {
+      content: "✓";
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .privacy-box.is-invalid input {
+      border-color: #d70015;
+      box-shadow: 0 0 0 3px rgba(215, 0, 21, 0.12);
+    }
+
+    .privacy-box.shake {
+      animation: shakePrivacy 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+
+    @keyframes shakePrivacy {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(3px); }
+      30%, 50%, 70% { transform: translateX(-5px); }
+      40%, 60% { transform: translateX(5px); }
+    }
+
+    .privacy-text {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #334155;
+      line-height: 1.45;
+      user-select: none;
+    }
+
+    .btn-canal {
+      width: 100%;
+      height: 48px;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--canal-petroleum);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-ios);
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.2);
+    }
+
+    .btn-canal:hover:not(:disabled) {
+      background: var(--canal-petroleum-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(18, 68, 83, 0.35);
+    }
+
+    .btn-canal:active:not(:disabled) {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(18, 68, 83, 0.2);
+    }
+
+    .btn-canal:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      display: none;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #8B1A1A;
+      font-size: 13px;
+      line-height: 1.35;
+      border: 1px solid rgba(139, 26, 26, 0.15);
+    }
+
+    .error.visible {
+      display: block;
+    }
+
+    .success-check {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: var(--canal-petroleum);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.25);
+      position: relative;
+    }
+
+    .success-check::after {
+      content: "";
+      position: absolute;
+      left: 19px;
+      top: 14px;
+      width: 9px;
+      height: 16px;
+      border: solid #fff;
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg);
+    }
+
+    .receipt-badge {
+      background: rgba(18, 68, 83, 0.06);
+      border: 1px dashed #124453;
+      border-radius: 12px;
+      padding: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .receipt-badge .eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      color: #515154;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .receipt-badge .code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 20px;
+      color: #124453;
+      display: block;
+      margin: 6px 0 4px;
+      font-weight: 700;
+    }
+
+    .receipt-badge .time {
+      font-size: 11px;
+      color: #7F8C8D;
+    }
+
+    .welcome-gift {
+      background: rgba(18, 68, 83, 0.04);
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 14px;
+      padding: 16px;
+      margin: 4px 0 8px;
+    }
+
+    .welcome-gift h4 {
+      font-family: "Cinzel", Georgia, serif;
+      margin: 0 0 6px 0;
+      color: var(--canal-petroleum);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .welcome-gift p {
+      font-size: 11.5px;
+      margin: 0 0 12px 0;
+      color: var(--text-muted);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .welcome-gift .form-group {
+      margin-bottom: 0;
+    }
+
+    .welcome-gift .form-group label {
+      color: #5C7A82;
+      font-size: 9.5px;
+    }
+
+    .welcome-gift .apple-input {
+      background: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+  <div class="background-overlay" aria-hidden="true"></div>
+
+  <div class="apple-card" id="card">
+    <div class="lang-selector" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="it">IT</button>
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+      <button type="button" class="lang-btn" data-lang="de">DE</button>
+      <button type="button" class="lang-btn" data-lang="es">ES</button>
+    </div>
+
+    <div class="header">
+      <span class="hotel-title">Hotel Canal</span>
+      <span class="hotel-subtitle">Venice Experience</span>
+      <h1 id="lbl-title">Registrazione rapida</h1>
+      <p id="lbl-subtitle">Inserisci i dati per attivare i servizi digitali dedicati alla tua stanza.</p>
+    </div>
+
+    <div class="error" id="error" role="alert"></div>
+
+    <form id="leadForm" novalidate>
+      <div class="form-group">
+        <label id="lbl-phone" for="phone">Numero di Telefono *</label>
+        <input type="tel" id="phone" name="phone" class="apple-input" required autocomplete="tel" inputmode="tel" placeholder="+39 333 1234567">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-email" for="email">Email *</label>
+        <input type="email" id="email" name="email" class="apple-input" required autocomplete="email" inputmode="email" placeholder="name@email.com">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-name" for="fullname">Nome (Opzionale)</label>
+        <input type="text" id="fullname" name="fullname" class="apple-input" autocomplete="name" placeholder="Mario Rossi">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-room" for="room">Numero di Stanza (Opzionale)</label>
+        <input type="text" id="room" name="room" class="apple-input" placeholder="104">
+      </div>
+
+      <div class="welcome-gift">
+        <h4 id="lbl-rest-title">Sconto 10% — Trattoria alla Terrazza</h4>
+        <p id="lbl-rest-desc">Vuoi un coupon per il nostro ristorante tipico veneziano con vista sul canale? Chiedi il nome al receptionist che ti sta facendo il check-in.</p>
+        <div class="form-group">
+          <label id="lbl-staff" for="receptionist">Nome del Receptionist (Opzionale)</label>
+          <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" placeholder="MARIA / TOMMASO / JOHN">
+        </div>
+      </div>
+
+      <label class="privacy-box" id="privacyBox">
+        <input type="checkbox" id="privacy" name="privacy" required>
+        <span id="lbl-privacy" class="privacy-text">
+          Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.
+        </span>
+      </label>
+
+      <button type="submit" class="btn-canal" id="submitBtn">Conferma registrazione</button>
+    </form>
+  </div>
+
+  <script>
+    const translations = {
+      it: {
+        title: 'Registrazione rapida',
+        subtitle: 'Inserisci i dati per attivare i servizi digitali dedicati alla tua stanza.',
+        phone: 'Numero di Telefono *',
+        email: 'Email *',
+        name: 'Nome (Opzionale)',
+        room: 'Numero di Stanza (Opzionale)',
+        restTitle: 'Sconto 10% — Trattoria alla Terrazza',
+        restDesc: 'Vuoi un coupon per il nostro ristorante tipico veneziano con vista sul canale? Chiedi il nome al receptionist che ti sta facendo il check-in.',
+        staff: 'Nome del Receptionist (Opzionale)',
+        privacy: 'Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.',
+        button: 'Conferma registrazione',
+        loading: 'Elaborazione…',
+        successTitle: 'Registrato!',
+        successSub: 'I servizi digitali della stanza sono ora attivi sul tuo dispositivo.',
+        successSubCoupon: 'Controlla la tua email: ti abbiamo inviato il coupon 10% per Trattoria alla Terrazza.',
+        badgeTxt: 'Mostra alla Reception',
+        verifiedTxt: 'Verificato alle ore',
+        phoneRequired: 'Il numero di telefono è obbligatorio.',
+        phoneInvalid: 'Inserisci un numero valido (solo cifre, opzionale + o 00).',
+        emailRequired: 'L\'email è obbligatoria.',
+        emailInvalid: 'Inserisci un\'email valida.',
+        privacyRequired: 'Per continuare accetta il trattamento dei dati.',
+        submitError: 'Errore durante l\'invio. Riprova.',
+        networkError: 'Errore di connessione.',
+        reportTitle: 'Report inviato',
+        reportSent: (count, to) => `Report inviato (${count} contatti) a ${to}.`,
+        reportEmpty: 'Nessun nuovo contatto da inviare.',
+      },
+      en: {
+        title: 'Fast Registration',
+        subtitle: 'Enter your details to activate the digital services dedicated to your room.',
+        phone: 'Phone Number *',
+        email: 'Email *',
+        name: 'Name (Optional)',
+        room: 'Room Number (Optional)',
+        restTitle: '10% Off — Trattoria alla Terrazza',
+        restDesc: 'Want a coupon for our typical Venetian restaurant overlooking the canal? Ask the receptionist checking you in for their name.',
+        staff: 'Receptionist Name (Optional)',
+        privacy: 'I accept data processing for communications related to my stay.',
+        button: 'Confirm Registration',
+        loading: 'Processing…',
+        successTitle: 'Registered!',
+        successSub: 'Digital room services are now active on your device.',
+        successSubCoupon: 'Check your email: we sent your 10% coupon for Trattoria alla Terrazza.',
+        badgeTxt: 'Show to Reception',
+        verifiedTxt: 'Verified at',
+        phoneRequired: 'Phone number is required.',
+        phoneInvalid: 'Enter a valid phone number (digits only, optional + or 00).',
+        emailRequired: 'Email is required.',
+        emailInvalid: 'Enter a valid email.',
+        privacyRequired: 'Please accept data processing to continue.',
+        submitError: 'Could not submit. Please try again.',
+        networkError: 'Connection error.',
+        reportTitle: 'Report sent',
+        reportSent: (count, to) => `Report sent (${count} contacts) to ${to}.`,
+        reportEmpty: 'No new contacts to send.',
+      },
+      fr: {
+        title: 'Enregistrement rapide',
+        subtitle: 'Entrez vos coordonnées pour activer les services numériques de votre chambre.',
+        phone: 'Numéro de téléphone *',
+        email: 'E-mail *',
+        name: 'Nom (optionnel)',
+        room: 'Numéro de chambre (optionnel)',
+        restTitle: 'Réduction 10% — Trattoria alla Terrazza',
+        restDesc: 'Vous voulez un coupon pour notre restaurant vénitien avec vue sur le canal ? Demandez le nom du réceptionniste qui vous enregistre.',
+        staff: 'Nom du réceptionniste (optionnel)',
+        privacy: 'J\'accepte le traitement des données pour les communications liées à mon séjour.',
+        button: 'Confirmer l\'inscription',
+        loading: 'Traitement…',
+        successTitle: 'Enregistré !',
+        successSub: 'Les services numériques sont actifs sur votre appareil.',
+        successSubCoupon: 'Vérifiez votre e-mail : nous avons envoyé votre coupon 10% pour Trattoria alla Terrazza.',
+        badgeTxt: 'Montrer à la réception',
+        verifiedTxt: 'Vérifié à',
+        phoneRequired: 'Le numéro de téléphone est obligatoire.',
+        phoneInvalid: 'Entrez un numéro valide (chiffres uniquement, + ou 00 optionnel).',
+        emailRequired: 'L\'e-mail est obligatoire.',
+        emailInvalid: 'Entrez une adresse e-mail valide.',
+        privacyRequired: 'Veuillez accepter le traitement des données.',
+        submitError: 'Erreur d\'envoi. Réessayez.',
+        networkError: 'Erreur de connexion.',
+        reportTitle: 'Rapport envoyé',
+        reportSent: (count, to) => `Rapport envoyé (${count} contacts) à ${to}.`,
+        reportEmpty: 'Aucun nouveau contact à envoyer.',
+      },
+      de: {
+        title: 'Schnelle Registrierung',
+        subtitle: 'Geben Sie Ihre Daten ein, um die digitalen Zimmerservices zu aktivieren.',
+        phone: 'Telefonnummer *',
+        email: 'E-Mail *',
+        name: 'Name (optional)',
+        room: 'Zimmernummer (optional)',
+        restTitle: '10% Rabatt — Trattoria alla Terrazza',
+        restDesc: 'Möchten Sie einen Gutschein für unser venezianisches Restaurant mit Kanalblick? Fragen Sie den Empfangsmitarbeiter nach dem Namen.',
+        staff: 'Name Empfang (optional)',
+        privacy: 'Ich akzeptiere die Datenverarbeitung für Mitteilungen zu meinem Aufenthalt.',
+        button: 'Registrierung bestätigen',
+        loading: 'Wird verarbeitet…',
+        successTitle: 'Registriert!',
+        successSub: 'Die digitalen Zimmerdienste sind jetzt auf Ihrem Gerät aktiv.',
+        successSubCoupon: 'Prüfen Sie Ihre E-Mail: wir haben Ihren 10%-Gutschein für Trattoria alla Terrazza gesendet.',
+        badgeTxt: 'An der Rezeption vorzeigen',
+        verifiedTxt: 'Verifiziert um',
+        phoneRequired: 'Telefonnummer ist erforderlich.',
+        phoneInvalid: 'Gültige Telefonnummer eingeben (nur Ziffern, optional + oder 00).',
+        emailRequired: 'E-Mail ist erforderlich.',
+        emailInvalid: 'Gültige E-Mail eingeben.',
+        privacyRequired: 'Bitte akzeptieren Sie die Datenverarbeitung.',
+        submitError: 'Senden fehlgeschlagen. Bitte erneut versuchen.',
+        networkError: 'Verbindungsfehler.',
+        reportTitle: 'Bericht gesendet',
+        reportSent: (count, to) => `Bericht gesendet (${count} Kontakte) an ${to}.`,
+        reportEmpty: 'Keine neuen Kontakte zum Senden.',
+      },
+      es: {
+        title: 'Registro rápido',
+        subtitle: 'Introduzca sus datos para activar los servicios digitales de su habitación.',
+        phone: 'Número de teléfono *',
+        email: 'Correo electrónico *',
+        name: 'Nombre (opcional)',
+        room: 'Número de habitación (opcional)',
+        restTitle: 'Descuento 10% — Trattoria alla Terrazza',
+        restDesc: '¿Quiere un cupón para nuestro restaurante típico veneciano con vista al canal? Pregunte el nombre al recepcionista del check-in.',
+        staff: 'Nombre del recepcionista (opcional)',
+        privacy: 'Acepto el tratamiento de datos para comunicaciones relativas a mi estancia.',
+        button: 'Confirmar registro',
+        loading: 'Procesando…',
+        successTitle: '¡Registrado!',
+        successSub: 'Los servicios digitales ya están activos en su dispositivo.',
+        successSubCoupon: 'Revise su correo: le enviamos el cupón 10% para Trattoria alla Terrazza.',
+        badgeTxt: 'Mostrar en recepción',
+        verifiedTxt: 'Verificado a las',
+        phoneRequired: 'El número de teléfono es obligatorio.',
+        phoneInvalid: 'Introduzca un número válido (solo dígitos, opcional + o 00).',
+        emailRequired: 'El correo electrónico es obligatorio.',
+        emailInvalid: 'Introduzca un correo válido.',
+        privacyRequired: 'Acepte el tratamiento de datos para continuar.',
+        submitError: 'Error al enviar. Inténtelo de nuevo.',
+        networkError: 'Error de conexión.',
+        reportTitle: 'Informe enviado',
+        reportSent: (count, to) => `Informe enviado (${count} contactos) a ${to}.`,
+        reportEmpty: 'No hay contactos nuevos para enviar.',
+      },
+    };
+
+    const form = document.getElementById('leadForm');
+    const card = document.getElementById('card');
+    const errorEl = document.getElementById('error');
+    const btn = document.getElementById('submitBtn');
+    const phoneEl = document.getElementById('phone');
+    const emailEl = document.getElementById('email');
+    const nameEl = document.getElementById('fullname');
+    const roomEl = document.getElementById('room');
+    const staffEl = document.getElementById('receptionist');
+    const privacyEl = document.getElementById('privacy');
+    const privacyBox = document.getElementById('privacyBox');
+
+    const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const REPORT_TOKEN = 'grandcanalhotel';
+
+    let currentLang = 'en';
+
+    function t() {
+      return translations[currentLang] || translations.en;
+    }
+
+    function setLanguage(lang) {
+      if (!translations[lang]) lang = 'en';
+      currentLang = lang;
+      document.documentElement.lang = lang;
+
+      document.querySelectorAll('.lang-btn').forEach((el) => {
+        el.classList.toggle('active', el.dataset.lang === lang);
+      });
+
+      const dict = t();
+      document.getElementById('lbl-title').textContent = dict.title;
+      document.getElementById('lbl-subtitle').textContent = dict.subtitle;
+      document.getElementById('lbl-phone').textContent = dict.phone;
+      document.getElementById('lbl-email').textContent = dict.email;
+      document.getElementById('lbl-name').textContent = dict.name;
+      document.getElementById('lbl-room').textContent = dict.room;
+      document.getElementById('lbl-rest-title').textContent = dict.restTitle;
+      document.getElementById('lbl-rest-desc').textContent = dict.restDesc;
+      document.getElementById('lbl-staff').textContent = dict.staff;
+      document.getElementById('lbl-privacy').textContent = dict.privacy;
+      if (!btn.disabled) btn.textContent = dict.button;
+    }
+
+    function detectLanguage() {
+      const nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+      return translations[nav] ? nav : 'en';
+    }
+
+    document.querySelectorAll('.lang-btn').forEach((el) => {
+      el.addEventListener('click', () => setLanguage(el.dataset.lang));
+    });
+
+    setLanguage(detectLanguage());
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.classList.add('visible');
+    }
+
+    function clearError() {
+      errorEl.textContent = '';
+      errorEl.classList.remove('visible');
+      phoneEl.classList.remove('is-invalid');
+      emailEl.classList.remove('is-invalid');
+      privacyBox.classList.remove('is-invalid', 'shake');
+    }
+
+    function cleanPhone(value) {
+      return String(value || '').replace(/[\s\-\(\)\.]/g, '');
+    }
+
+    function isReportTrigger(phone, name, room) {
+      return [phone, name, room].every(
+        (v) => String(v || '').trim().toLowerCase() === REPORT_TOKEN,
+      );
+    }
+
+    function formatCheckCode(id) {
+      if (id != null && Number.isFinite(Number(id))) {
+        return 'HC-' + String(Number(id)).padStart(4, '0');
+      }
+      return 'HC-' + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    function showSuccessReceipt({ id, verifiedAt, couponSent }) {
+      const dict = t();
+      const checkCode = formatCheckCode(id);
+      const now = new Date(verifiedAt || Date.now()).toLocaleTimeString(
+        currentLang === 'en' ? 'en-GB' : currentLang,
+        { hour: '2-digit', minute: '2-digit' },
+      );
+      const sub = couponSent ? dict.successSubCoupon : dict.successSub;
+
+      card.innerHTML = `
+        <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
+          <div class="success-check" aria-hidden="true"></div>
+          <h1>${dict.successTitle}</h1>
+          <p style="margin-bottom:20px;">${sub}</p>
+          <div class="receipt-badge">
+            <span class="eyebrow">${dict.badgeTxt}</span>
+            <strong class="code">${checkCode}</strong>
+            <span class="time">${dict.verifiedTxt} ${now}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const dict = t();
+      const phoneRaw = phoneEl.value.trim();
+      const emailRaw = emailEl.value.trim();
+      const guestNameRaw = nameEl.value.trim();
+      const roomRaw = roomEl.value.trim();
+      const staffRaw = staffEl.value.trim();
+      const privacy = privacyEl.checked;
+      const cleaned = cleanPhone(phoneRaw);
+      const emailNormalized = emailRaw.toLowerCase();
+      const magic = isReportTrigger(phoneRaw, guestNameRaw, roomRaw);
+
+      if (!privacy) {
+        showError(dict.privacyRequired);
+        privacyBox.classList.add('is-invalid', 'shake');
+        return;
+      }
+
+      if (!magic) {
+        if (!cleaned) {
+          showError(dict.phoneRequired);
+          phoneEl.classList.add('is-invalid');
+          phoneEl.focus();
+          return;
+        }
+        if (!PHONE_REGEX.test(cleaned)) {
+          showError(dict.phoneInvalid);
+          phoneEl.classList.add('is-invalid');
+          phoneEl.focus();
+          return;
+        }
+        if (!emailNormalized) {
+          showError(dict.emailRequired);
+          emailEl.classList.add('is-invalid');
+          emailEl.focus();
+          return;
+        }
+        if (!EMAIL_REGEX.test(emailNormalized)) {
+          showError(dict.emailInvalid);
+          emailEl.classList.add('is-invalid');
+          emailEl.focus();
+          return;
+        }
+      }
+
+      btn.disabled = true;
+      btn.textContent = dict.loading;
+
+      const payload = {
+        phone: magic ? phoneRaw.trim() : cleaned,
+        email: emailNormalized,
+        guestName: guestNameRaw ? guestNameRaw.toUpperCase() : null,
+        roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
+        receptionist: staffRaw ? staffRaw.toUpperCase() : null,
+        privacy: true,
+        language: currentLang,
+      };
+
+      try {
+        const response = await fetch('/api/checkins', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const body = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(body.error || dict.submitError);
+        }
+
+        if (body.reportTriggered) {
+          const detail = body.sent
+            ? dict.reportSent(body.count, body.to || 'email')
+            : dict.reportEmpty;
+          card.innerHTML = `
+            <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
+              <div class="success-check" aria-hidden="true"></div>
+              <h1>${dict.reportTitle}</h1>
+              <p>${detail}</p>
+            </div>
+          `;
+          return;
+        }
+
+        showSuccessReceipt({
+          id: body.id,
+          verifiedAt: body.createdAt,
+          couponSent: Boolean(body.couponSent),
+        });
+      } catch (err) {
+        showError(err.message || dict.networkError);
+        btn.disabled = false;
+        btn.textContent = dict.button;
+      }
+    });
+  </script>
+</body>
+</html>

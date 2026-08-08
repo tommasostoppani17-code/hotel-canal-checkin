@@ -1,0 +1,248 @@
+import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
+import {
+  buildCsv,
+  buildReportEmail,
+  buildMonthlyStaffEmail,
+  formatRomeDate,
+} from './report.js';
+import {
+  getUnreportedCheckins,
+  markReported,
+  getMonthlyStaffStats,
+} from './db.js';
+
+function env(name, fallback = '') {
+  return process.env[name] ?? fallback;
+}
+
+function resendConfigured() {
+  return Boolean(env('RESEND_API_KEY').trim());
+}
+
+function smtpConfigured() {
+  return Boolean(env('SMTP_HOST') && env('SMTP_USER') && env('SMTP_PASS'));
+}
+
+function getResendClient() {
+  if (!resendConfigured()) return null;
+  return new Resend(env('RESEND_API_KEY').trim());
+}
+
+export function createTransporter() {
+  if (!smtpConfigured()) return null;
+
+  return nodemailer.createTransport({
+    host: env('SMTP_HOST'),
+    port: Number(env('SMTP_PORT', '587')),
+    secure: env('SMTP_SECURE', 'false') === 'true',
+    auth: {
+      user: env('SMTP_USER'),
+      pass: env('SMTP_PASS'),
+    },
+  });
+}
+
+async function sendViaResend({ to, subject, text, html, filename, csv }) {
+  const resend = getResendClient();
+  if (!resend) {
+    throw new Error('RESEND_API_KEY non configurata');
+  }
+
+  const from = env(
+    'SMTP_FROM',
+    'Hotel Canal Check-in <onboarding@resend.dev>',
+  );
+
+  const { data, error } = await resend.emails.send({
+    from,
+    to: [to],
+    subject,
+    text,
+    html,
+    attachments: [
+      {
+        filename,
+        content: Buffer.from(csv, 'utf8'),
+      },
+    ],
+  });
+
+  if (error) {
+    throw new Error(
+      `Resend API error: ${error.message || JSON.stringify(error)}`.slice(
+        0,
+        300,
+      ),
+    );
+  }
+
+  return data;
+}
+
+async function sendViaSmtp({ to, subject, text, html, filename, csv }) {
+  const transporter = createTransporter();
+  if (!transporter) {
+    throw new Error(
+      'Email non configurata: imposta RESEND_API_KEY oppure SMTP_HOST/USER/PASS',
+    );
+  }
+
+  await transporter.sendMail({
+    from: env('SMTP_FROM', env('SMTP_USER')),
+    to,
+    subject,
+    text,
+    html,
+    attachments: [
+      {
+        filename,
+        content: csv,
+        contentType: 'text/csv; charset=utf-8',
+      },
+    ],
+  });
+}
+
+async function sendReportMail(payload) {
+  if (resendConfigured()) {
+    return sendViaResend(payload);
+  }
+  return sendViaSmtp(payload);
+}
+
+function assertEmailReady(reportEmail) {
+  if (!reportEmail) {
+    throw new Error('REPORT_EMAIL non configurata');
+  }
+  if (!resendConfigured() && !smtpConfigured()) {
+    throw new Error(
+      'Email non configurata: imposta RESEND_API_KEY oppure SMTP_HOST/USER/PASS',
+    );
+  }
+}
+
+export async function runDailyReport({ force = false } = {}) {
+  const hotelName = env('HOTEL_NAME', 'Hotel Canal');
+  const reportEmail = env('REPORT_EMAIL');
+  const rows = getUnreportedCheckins();
+
+  if (!rows.length) {
+    return {
+      sent: false,
+      reason: 'no_new_checkins',
+      count: 0,
+    };
+  }
+
+  assertEmailReady(reportEmail);
+
+  const dateLabel = formatRomeDate();
+  const csv = buildCsv(rows);
+  const { subject, text, html } = buildReportEmail({
+    hotelName,
+    count: rows.length,
+    dateLabel,
+    rows,
+  });
+
+  const filename = `contatti_hotel_canal_${new Date()
+    .toISOString()
+    .slice(0, 10)}.csv`;
+
+  const provider = resendConfigured() ? 'resend' : 'smtp';
+  await sendReportMail({
+    to: reportEmail,
+    subject,
+    text,
+    html,
+    filename,
+    csv,
+  });
+
+  const ids = rows.map((row) => row.id);
+  markReported(ids);
+
+  return {
+    sent: true,
+    count: rows.length,
+    to: reportEmail,
+    provider,
+    force,
+  };
+}
+
+/** True if `date` is the last calendar day of its month in Europe/Rome. */
+export function isLastDayOfMonthRome(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+
+  const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+  const y = Number(map.year);
+  const m = Number(map.month);
+  const d = Number(map.day);
+  const lastDay = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return d === lastDay;
+}
+
+export async function runMonthlyStaffReport({ force = false } = {}) {
+  if (!force && !isLastDayOfMonthRome()) {
+    return { sent: false, reason: 'not_month_end' };
+  }
+
+  const hotelName = env('HOTEL_NAME', 'Hotel Canal');
+  const reportEmail = env('REPORT_EMAIL');
+  assertEmailReady(reportEmail);
+
+  const { totals, ranking } = getMonthlyStaffStats();
+  const totaleMese = Number(totals?.totale_mese || 0);
+
+  if (!totaleMese) {
+    return { sent: false, reason: 'no_month_data', count: 0 };
+  }
+
+  const now = new Date();
+  const monthLabel = new Intl.DateTimeFormat('it-IT', {
+    timeZone: 'Europe/Rome',
+    month: 'long',
+  })
+    .format(now)
+    .toUpperCase();
+  const year = new Intl.DateTimeFormat('en', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+  }).format(now);
+
+  const { subject, text, html, csv } = buildMonthlyStaffEmail({
+    hotelName,
+    monthLabel,
+    year,
+    totals,
+    ranking,
+  });
+
+  const filename = `performance_staff_${monthLabel.toLowerCase()}_${year}.csv`;
+  const provider = resendConfigured() ? 'resend' : 'smtp';
+
+  await sendReportMail({
+    to: reportEmail,
+    subject,
+    text,
+    html,
+    filename,
+    csv,
+  });
+
+  return {
+    sent: true,
+    count: totaleMese,
+    staff: ranking.length,
+    to: reportEmail,
+    provider,
+    force,
+  };
+}

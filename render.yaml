@@ -1,0 +1,31 @@
+# Hotel Canal Check-in — Blueprint Render (free)
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: hotel-canal-checkin
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: HOTEL_NAME
+        value: Hotel Canal
+      - key: CRON_TZ
+        value: Europe/Rome
+      - key: DATABASE_PATH
+        value: ./data/checkins.db
+      - key: PUBLIC_URL
+        sync: false
+      - key: REPORT_EMAIL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: CRON_SECRET
+        sync: false

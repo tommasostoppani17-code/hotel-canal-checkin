@@ -1,0 +1,24 @@
+{
+  "name": "hotel-canal-checkin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "QR check-in Hotel Canal — raccolta numeri per Payel",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "qr": "node scripts/generate-qr.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.10.1",
+    "qrcode": "^1.5.4",
+    "resend": "^6.18.1"
+  }
+}

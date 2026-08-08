@@ -1,0 +1,9 @@
+node_modules/
+data/
+.env
+*.db
+public/qr.png
+public/qr.svg
+public/cartello-reception.html
+data/email-preview.html
+.DS_Store
