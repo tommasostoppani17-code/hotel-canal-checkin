@@ -16,7 +16,7 @@ export const WELCOME_I18N = {
     roomFallback: 'DA ASSEGNARE',
     greeting: (name) => `Gentile ${name},`,
     welcome:
-      'Benvenuto a Venezia. Siamo felici di ospitarla all&rsquo;Hotel Canal. Orari, accesso, percorso a piedi al ristorante partner e il pass di benvenuto sono qui sotto.',
+      'Benvenuto a Venezia. L&rsquo;acqua, la luce e il silenzio di Santa Croce vi aspettano all&rsquo;Hotel Canal. Qui sotto trovate tutto per sentirvi subito a casa: orari, Wi&#8209;Fi, codici porta, il percorso a piedi alla Terrazza e il vostro pass di benvenuto.',
     roomLabel: 'STANZA ASSEGNATA',
     roomPrefix: 'CAMERA',
     hoursTitle: 'Orari della struttura',
@@ -81,7 +81,7 @@ export const WELCOME_I18N = {
     roomFallback: 'TO ASSIGN',
     greeting: (name) => `Dear ${name},`,
     welcome:
-      'Welcome to Venice. We are delighted to host you at Hotel Canal. Hours, access, the walking route to our partner restaurant and your welcome pass are below.',
+      'Welcome to Venice. The water, the light and the quiet of Santa Croce await you at Hotel Canal. Below you&rsquo;ll find everything to feel at home: hours, Wi&#8209;Fi, door codes, the walk to the Terrazza and your welcome pass.',
     roomLabel: 'ASSIGNED ROOM',
     roomPrefix: 'ROOM',
     hoursTitle: 'Hotel hours',

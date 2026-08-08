@@ -150,12 +150,15 @@ function buildWelcomeHtml({
   const BOX = '#E9EEF0';
   const IVORY = '#F8F6F1';
   const BRASS = '#B79A63';
+  const INK = '#2C3539';
+  const MUTED = '#5A5044';
+  const LINE = '#E8E0D0';
   const SERIF = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
   // Prosa: Garamond rinascimentale in corsivo leggero (leggibile a 16px)
   const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
   const SANS = "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-  const bodyStyle = `font-family:${BODY};font-style:italic;font-size:16.5px;line-height:1.7;font-weight:400`;
-  const labelStyle = `font-family:${SANS};font-size:11.5px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#8A949C !important`;
+  const bodyStyle = `font-family:${BODY};font-style:italic;font-size:17px;line-height:1.75;font-weight:400`;
+  const labelStyle = `font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${BRASS} !important`;
 
   const name = escapeHtml(guestName || lp.guestFallback);
   const room = escapeHtml(roomNumber || lp.roomFallback);
@@ -186,21 +189,22 @@ function buildWelcomeHtml({
   };
 
   const sectionTitle = (label, iconSrc, iconAlt) => `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 14px;border-bottom:1px solid rgba(22,78,91,0.14);">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:8px 0 16px;">
                 <tr>
-                  <td width="34" valign="middle" style="padding:0 8px 10px 0;line-height:0;font-size:0;">
-                    ${iconCell(iconSrc, iconAlt || label, 28)}
+                  <td width="36" valign="middle" style="padding:0 10px 0 0;line-height:0;font-size:0;">
+                    ${iconCell(iconSrc, iconAlt || label, 30)}
                   </td>
-                  <td valign="middle" style="padding:0 0 10px 0;">
-                    <div class="brand-title" style="font-family:${SERIF};font-size:16.5px;font-weight:700;color:${C} !important;letter-spacing:0.1em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                  <td valign="middle" style="padding:0;">
+                    <div class="brand-title" style="font-family:${SERIF};font-size:17px;font-weight:700;color:${C} !important;letter-spacing:0.12em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                    <div style="height:2px;line-height:2px;font-size:1px;background-color:${BRASS};width:42px;margin-top:8px;border-radius:2px;">&nbsp;</div>
                   </td>
                 </tr>
               </table>`;
 
   const postcard = (src, alt, bottom = 20) => `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;border-radius:20px;overflow:hidden;border:1px solid #E2E6E8;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;border-radius:22px;overflow:hidden;border:1px solid ${LINE};">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
+                  <td style="padding:0;line-height:0;font-size:0;background-color:${IVORY};">
                     <img src="${src}" width="436" alt="${alt}" style="display:block;width:100%;max-width:436px;height:auto;border:0;">
                   </td>
                 </tr>
@@ -208,9 +212,9 @@ function buildWelcomeHtml({
 
   const photoCell = (src, alt, pad) => `
                     <td width="50%" valign="top" style="${pad}">
-                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:14px;overflow:hidden;border:1px solid #E2E6E8;">
+                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:16px;overflow:hidden;border:1px solid ${LINE};">
                         <tr>
-                          <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
+                          <td style="padding:0;line-height:0;font-size:0;background-color:${IVORY};">
                             <img src="${src}" width="210" alt="${alt}" style="display:block;width:100%;max-width:210px;height:auto;border:0;">
                           </td>
                         </tr>
@@ -253,20 +257,20 @@ function buildWelcomeHtml({
   const stepRows = routeSteps
     .map(
       (step, i) => `
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === routeSteps.length - 1 ? '0' : '1px solid #E8E4DC'};">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === routeSteps.length - 1 ? '0' : `1px solid ${LINE}`};">
           <tr>
-            <td width="48" valign="top" style="padding:12px 8px 12px 0;">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(22,78,91,0.12);background-color:${IVORY};">
+            <td width="52" valign="top" style="padding:14px 10px 14px 0;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width:44px;height:44px;border-radius:14px;border:1px solid ${LINE};background-color:#FFFFFF;">
                 <tr>
-                  <td align="center" valign="middle" style="width:40px;height:40px;padding:2px;line-height:0;font-size:0;">
-                    ${iconCell(step.icon, step.alt, 36)}
+                  <td align="center" valign="middle" style="width:44px;height:44px;padding:2px;line-height:0;font-size:0;">
+                    ${iconCell(step.icon, step.alt, 38)}
                   </td>
                 </tr>
               </table>
             </td>
             <td valign="middle" style="padding:14px 0;">
-              <div class="brand-title" style="font-family:${SERIF};font-size:16px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 4px;">${step.title}</div>
-              <div style="font-family:${BODY};font-style:italic;font-size:15.5px;line-height:1.45;color:#5C6670 !important;font-weight:400;">${step.line}</div>
+              <div class="brand-title" style="font-family:${SERIF};font-size:16.5px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 4px;">${step.title}</div>
+              <div style="font-family:${BODY};font-style:italic;font-size:15.5px;line-height:1.5;color:${MUTED} !important;font-weight:400;">${step.line}</div>
             </td>
           </tr>
         </table>`,
@@ -313,12 +317,12 @@ function buildWelcomeHtml({
         color: #1D1D1F !important;
       }
       .brand-title { color: ${C} !important; }
-      .route-card, .room-badge, .access-card { background-color: ${BOX} !important; }
+      .route-card, .room-badge, .access-card { background-color: ${IVORY} !important; }
       .brass { color: ${BRASS} !important; }
     }
   </style>
 </head>
-<body class="email-bg" style="margin:0;padding:0;background-color:${IVORY} !important;color:#1D1D1F !important;">
+<body class="email-bg" style="margin:0;padding:0;background-color:${IVORY} !important;color:${INK} !important;">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${IVORY};">
     ${preheader}
   </div>
@@ -326,90 +330,87 @@ function buildWelcomeHtml({
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${IVORY};">${escapeHtml(String(claimUrl || qrSrc || Date.now()).slice(-24))}</div>
   <table role="presentation" class="email-bg" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${IVORY} !important;margin:0;padding:0;font-family:${SANS};">
     <tr>
-      <td align="center" style="padding:28px 12px;background-color:${IVORY} !important;">
-        <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;border-radius:28px;overflow:hidden;border:1px solid #E2E6E8;">
+      <td align="center" style="padding:20px 10px 36px;background-color:${IVORY} !important;">
+        <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;border-radius:28px;overflow:hidden;border:1px solid ${LINE};">
+          <!-- Hero full-bleed: prima impressione calda, zero padding -->
           <tr>
-            <td class="email-content" style="padding:24px 24px 44px;background-color:#FFFFFF !important;">
-              <!-- TOP: foto + brand + saluto + stanza (layout screenshot) -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;border-radius:20px;overflow:hidden;">
+            <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
+              <img src="${hero}" width="500" alt="Hotel Canal - Venezia" style="display:block;width:100%;max-width:500px;height:auto;border:0;">
+            </td>
+          </tr>
+          <tr>
+            <td class="email-content" style="padding:28px 24px 44px;background-color:#FFFFFF !important;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};border-radius:20px;">
-                    <img src="${hero}" width="452" alt="Hotel Canal - Venezia" style="display:block;width:100%;max-width:452px;height:auto;border:0;border-radius:20px;">
+                  <td align="center" style="padding:0 0 22px 0;border-bottom:1px solid ${LINE};">
+                    ${stickers.mask ? `<div style="margin:0 0 14px;line-height:0;font-size:0;">${stickerImg(stickers.mask, 56)}</div>` : ''}
+                    <div style="font-family:${SERIF};font-size:32px;font-weight:700;letter-spacing:0.16em;color:${C} !important;text-transform:uppercase;line-height:1.1;mso-line-height-rule:exactly;">HOTEL CANAL</div>
+                    <div style="height:2px;line-height:2px;font-size:1px;background-color:${BRASS};width:56px;margin:14px auto 12px;border-radius:2px;">&nbsp;</div>
+                    <div class="brass" style="font-family:${SANS};font-size:10.5px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;color:${BRASS} !important;">SANTA CROCE 553 · VENEZIA</div>
                   </td>
                 </tr>
               </table>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;">
-                <tr>
-                  <td align="center" style="padding:4px 0 20px 0;border-bottom:1px solid #E8E4DC;">
-                    ${stickers.mask ? `<div style="margin:0 0 12px;line-height:0;font-size:0;">${stickerImg(stickers.mask, 52)}</div>` : ''}
-                    <div style="font-family:${SERIF};font-size:30px;font-weight:700;letter-spacing:0.14em;color:${C} !important;text-transform:uppercase;line-height:1.15;mso-line-height-rule:exactly;">HOTEL CANAL</div>
-                    <div class="brass" style="font-family:${SANS};font-size:10.5px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:${BRASS} !important;margin-top:10px;">SANTA CROCE 553 · VENEZIA</div>
-                  </td>
-                </tr>
-              </table>
-
-              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:22px;font-weight:500;color:${C} !important;margin:0 0 12px;letter-spacing:0.01em;text-align:left;">${lp.greeting(name)}</p>
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:24px;font-weight:500;color:${C} !important;margin:0 0 14px;letter-spacing:0.01em;text-align:left;">${lp.greeting(name)}</p>
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 30px;text-align:left;">
                 ${lp.welcome}
               </p>
 
-              <table role="presentation" class="room-badge" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;background-color:${BOX} !important;border-radius:18px;">
+              <table role="presentation" class="room-badge" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 38px;background-color:${IVORY} !important;border-radius:22px;border:1px solid ${LINE};">
                 <tr>
-                  <td align="center" style="padding:24px 18px;">
-                    ${iconCell(icons.door, 'Camera', 42)}
-                    <div style="height:6px;line-height:6px;font-size:1px;">&nbsp;</div>
-                    <span style="font-family:${SANS};font-size:11.5px;font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.18em;display:block;margin-bottom:10px;">${lp.roomLabel}</span>
-                    <strong class="brand-title" style="font-family:${SERIF};font-size:34px;color:${C} !important;font-weight:700;letter-spacing:0.08em;line-height:1;text-transform:uppercase;">${lp.roomPrefix} ${room}</strong>
+                  <td align="center" style="padding:26px 18px;">
+                    ${iconCell(icons.door, 'Camera', 44)}
+                    <div style="height:8px;line-height:8px;font-size:1px;">&nbsp;</div>
+                    <span style="font-family:${SANS};font-size:11px;font-weight:700;text-transform:uppercase;color:${BRASS} !important;letter-spacing:0.2em;display:block;margin-bottom:10px;">${lp.roomLabel}</span>
+                    <strong class="brand-title" style="font-family:${SERIF};font-size:36px;color:${C} !important;font-weight:700;letter-spacing:0.1em;line-height:1;text-transform:uppercase;">${lp.roomPrefix} ${room}</strong>
                   </td>
                 </tr>
               </table>
 
               ${sectionTitle(lp.hoursTitle, icons.calendar, 'Orari')}
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 36px;">
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 36px;">
                 <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.checkInLabel}</strong> ${lp.checkInValue}<br>
                 <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.checkOutLabel}</strong> ${lp.checkOutValue}
               </p>
 
               ${sectionTitle(lp.wifiTitle, icons.bricola, 'Wi-Fi')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 16px;text-align:center;">
                 ${lp.wifiDesc}
               </p>
-              <!-- Credenziali Wi-Fi: card pass -->
-              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:22px;">
+              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;background-color:${IVORY} !important;border:1.5px solid ${C};border-radius:22px;">
                 <tr>
-                  <td align="center" style="padding:26px 22px 24px;">
+                  <td align="center" style="padding:28px 22px 26px;">
                     <div style="${labelStyle};margin:0 0 8px;">${lp.networkLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:26px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 18px;">${wifiSsidSafe}</div>
-                    <div style="height:1px;line-height:1px;font-size:1px;background-color:#E8E4DC;margin:0 auto 18px;max-width:220px;">&nbsp;</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:28px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 18px;">${wifiSsidSafe}</div>
+                    <div style="height:1px;line-height:1px;font-size:1px;background-color:${LINE};margin:0 auto 18px;max-width:200px;">&nbsp;</div>
                     <div style="${labelStyle};margin:0 0 8px;">${lp.passwordLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:26px;font-weight:700;color:${C} !important;letter-spacing:0.12em;line-height:1.2;">${wifiPasswordSafe}</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:28px;font-weight:700;color:${C} !important;letter-spacing:0.12em;line-height:1.2;">${wifiPasswordSafe}</div>
                   </td>
                 </tr>
               </table>
 
               ${sectionTitle(lp.doorsTitle, icons.door, 'Porte')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 16px;text-align:center;">
                 ${lp.doorsDesc}
               </p>
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;">
                 <tr>
                   <td width="50%" valign="top" style="padding:0 6px 0 0;">
-                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:18px;">
+                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${IVORY} !important;border:1px solid ${LINE};border-radius:20px;">
                       <tr>
-                        <td align="center" style="padding:20px 12px;">
+                        <td align="center" style="padding:22px 12px;">
                           <div style="${labelStyle};margin:0 0 10px;">Walter</div>
-                          <div class="brand-title" style="font-family:${SERIF};font-size:28px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1;">${doorWalterSafe}</div>
+                          <div class="brand-title" style="font-family:${SERIF};font-size:30px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1;">${doorWalterSafe}</div>
                         </td>
                       </tr>
                     </table>
                   </td>
                   <td width="50%" valign="top" style="padding:0 0 0 6px;">
-                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:18px;">
+                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${IVORY} !important;border:1px solid ${LINE};border-radius:20px;">
                       <tr>
-                        <td align="center" style="padding:20px 12px;">
+                        <td align="center" style="padding:22px 12px;">
                           <div style="${labelStyle};margin:0 0 10px;">Airone</div>
-                          <div class="brand-title" style="font-family:${SERIF};font-size:28px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1;">${doorAironeSafe}</div>
+                          <div class="brand-title" style="font-family:${SERIF};font-size:30px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1;">${doorAironeSafe}</div>
                         </td>
                       </tr>
                     </table>
@@ -418,20 +419,20 @@ function buildWelcomeHtml({
               </table>
 
               ${sectionTitle(lp.routeTitle, icons.path, 'Percorso')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 16px;text-align:center;">
                 ${lp.routeDesc}
               </p>
 
               ${postcard(gallery, 'Trattoria alla Terrazza', 16)}
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;border-top:1px solid #E8E4DC;">
+              <table role="presentation" class="route-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;background-color:${IVORY} !important;border:1px solid ${LINE};border-radius:22px;">
                 <tr>
-                  <td style="padding:0;">
+                  <td style="padding:8px 16px;">
                     ${stepRows}
                   </td>
                 </tr>
               </table>
-              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 44px;">
+              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:16px;border-radius:16px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 44px;border-bottom:3px solid ${BRASS};">
                 ${lp.mapsBtn}
               </a>
 
@@ -439,43 +440,44 @@ function buildWelcomeHtml({
                 includeCoupon
                   ? `
               ${sectionTitle(lp.privilegeTitle, icons.key, 'Sconto')}
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 22px;">
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 22px;">
                 ${lp.privilegeBefore}<strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.privilegeBold1}</strong>${lp.privilegeMid}
                 <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.privilegeBold2}</strong>${lp.privilegeAfter}
               </p>
 
               <!-- VOUCHER SCONTO -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:${IVORY};">
                 <tr>
                   <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
                     <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
                   </td>
                 </tr>
                 <tr>
-                  <td class="voucher-body" align="center" style="padding:30px 24px 28px;background-color:#FFFFFF !important;">
-                    <div class="brand-title" style="font-family:${SERIF};font-size:24px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;text-transform:uppercase;">${lp.voucherTitle}</div>
-                    <div style="font-family:${SANS};font-size:11.5px;color:#8E8E93 !important;font-weight:600;margin-top:8px;text-transform:uppercase;letter-spacing:0.1em;">${lp.voucherSub}</div>
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:24px auto 20px;">
+                  <td class="voucher-body" align="center" style="padding:32px 22px 30px;background-color:${IVORY} !important;">
+                    <div class="brand-title" style="font-family:${SERIF};font-size:25px;font-weight:700;color:${C} !important;letter-spacing:0.06em;line-height:1.2;text-transform:uppercase;">${lp.voucherTitle}</div>
+                    <div style="height:2px;line-height:2px;font-size:1px;background-color:${BRASS};width:48px;margin:12px auto 10px;border-radius:2px;">&nbsp;</div>
+                    <div style="font-family:${SANS};font-size:11px;color:${BRASS} !important;font-weight:700;margin-top:0;text-transform:uppercase;letter-spacing:0.12em;">${lp.voucherSub}</div>
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:26px auto 18px;">
                       <tr>
-                        <td align="center" style="background:#FFFFFF;padding:12px;border-radius:16px;border:1px solid #E5E5EA;">
-                          <img src="${escapeHtml(qrSrc)}" width="148" height="148" alt="Voucher QR Code" style="display:block;width:148px;height:148px;margin:0 auto;border:0;">
+                        <td align="center" style="background:#FFFFFF;padding:14px;border-radius:18px;border:1px solid ${LINE};">
+                          <img src="${escapeHtml(qrSrc)}" width="156" height="156" alt="Voucher QR Code" style="display:block;width:156px;height:156px;margin:0 auto;border:0;">
                         </td>
                       </tr>
                     </table>
                     <table role="presentation" class="meta-row" width="100%" cellspacing="0" cellpadding="0" border="0" align="center" style="width:100%;max-width:100%;margin:0 auto;">
                       <tr>
                         <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
-                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:#FFFFFF;border:1px solid ${LINE};padding:11px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
                             ${lp.metaCamera}: ${room}
                           </div>
                         </td>
                         <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
-                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:#FFFFFF;border:1px solid ${LINE};padding:11px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
                             ${lp.metaCheckin}: ${staff}
                           </div>
                         </td>
                         <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
-                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:#FFFFFF;border:1px solid ${LINE};padding:11px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
                             ${lp.metaPax}: ${guests}
                           </div>
                         </td>
@@ -487,18 +489,18 @@ function buildWelcomeHtml({
               `
                   : `
               ${sectionTitle(lp.claimTitle, icons.key, 'Sconto')}
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 18px;text-align:center;">
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 18px;text-align:center;">
                 ${lp.claimDesc}
               </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:22px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:24px;overflow:hidden;margin:0 0 28px;background-color:${IVORY};">
                 <tr>
                   <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
                     <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
                   </td>
                 </tr>
                 <tr>
-                  <td align="center" style="padding:26px 22px 28px;background-color:#FFFFFF !important;">
-                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px 18px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;">
+                  <td align="center" style="padding:26px 22px 28px;background-color:${IVORY} !important;">
+                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:16px 18px;border-radius:16px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;border-bottom:3px solid ${BRASS};">
                       ${lp.claimBtn}
                     </a>
                   </td>
@@ -508,32 +510,32 @@ function buildWelcomeHtml({
               }
 
               ${sectionTitle(lp.tastesTitle, icons.cloche, 'Cucina')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+              <p class="text-muted" style="${bodyStyle};color:${MUTED} !important;margin:0 0 16px;text-align:center;">
                 ${lp.tastesDesc}
               </p>
               ${photoGrid(thumbs.slice(0, 4), 8)}
               ${postcard(dish, 'Cucina della Trattoria alla Terrazza', 8)}
 
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:28px auto 0;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:32px auto 0;">
                 <tr>
                   ${['palazzo', 'mooring', 'basilica', 'campanile']
                     .map((k) =>
                       stickers[k]
-                        ? `<td align="center" style="padding:0 4px;">${stickerImg(stickers[k], 40)}</td>`
+                        ? `<td align="center" style="padding:0 5px;">${stickerImg(stickers[k], 44)}</td>`
                         : '',
                     )
                     .join('')}
                 </tr>
               </table>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0 0;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0 0;">
                 <tr>
-                  <td align="center" style="text-align:center;padding:0;">
-                    ${stickers.lion ? `<div style="margin:0 0 14px;line-height:0;font-size:0;">${stickerImg(stickers.lion, 52)}</div>` : ''}
-                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.55;text-align:center;">
+                  <td align="center" style="text-align:center;padding:22px 12px 0;border-top:1px solid ${LINE};">
+                    ${stickers.lion ? `<div style="margin:0 0 16px;line-height:0;font-size:0;">${stickerImg(stickers.lion, 56)}</div>` : ''}
+                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.55;text-align:center;">
                       ${lp.wishes}
                     </div>
-                    <div class="brass" style="font-family:${SANS};font-size:11.5px;font-weight:600;color:${BRASS} !important;text-transform:uppercase;letter-spacing:0.14em;margin-top:12px;text-align:center;">
+                    <div class="brass" style="font-family:${SANS};font-size:11.5px;font-weight:600;color:${BRASS} !important;text-transform:uppercase;letter-spacing:0.16em;margin-top:14px;text-align:center;">
                       ${lp.signatureLine1}<br>${lp.signatureLine2}
                     </div>
                   </td>
@@ -727,8 +729,8 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Foto/icone/sticker via URL pubblico (HTML leggero <102KB → niente "Testo troncato" Gmail).
-  // Solo il QR resta CID inline (piccolo + unico per ospite). Serve PUBLIC_URL raggiungibile (es. Render).
+  // Foto/icone/sticker/QR via URL pubblico su PUBLIC_URL (HTML ~35KB, 0 allegati → niente "Testo troncato" Gmail).
+  // Mai base64/CID pesanti: Gmail taglia sopra ~102KB di payload.
   const requiredRemote = [
     ['email', 'hero-venice.jpg'],
     ['email', 'postcard-tavolo.jpg'],
