@@ -105,7 +105,7 @@ function buildWelcomeHtml({
   ]
     .map(
       (html, i) =>
-        `<div style="margin:0 0 ${i === 3 ? '0' : '12px'} 0;font-size:13px;line-height:1.55;color:#334155;font-weight:500;">${html}</div>`,
+        `<div style="margin:0 0 ${i === 3 ? '0' : '12px'} 0;border-left:2px solid #124453;padding-left:12px;font-size:13.5px;line-height:1.65;color:#334155;font-weight:400;">${html}</div>`,
     )
     .join('');
 
@@ -117,103 +117,104 @@ function buildWelcomeHtml({
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Benvenuto — Hotel Canal Venezia</title>
 </head>
-<body style="margin:0;padding:0;background-color:#ECEFF4;color:#1D1D1F;">
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#ECEFF4;">
+<body style="margin:0;padding:0;background-color:#F5F5F7;color:#1D1D1F;">
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#F5F5F7;">
     ${preheader}
   </div>
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#ECEFF4;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F5F5F7;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
     <tr>
-      <td align="center" style="padding:40px 12px;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF;border-radius:24px;overflow:hidden;border:1px solid rgba(0,0,0,0.04);">
+      <td align="center" style="padding:28px 12px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:520px;background-color:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid rgba(0,0,0,0.04);">
 
-          <!-- Hero Venezia (immagine reale, no overlay absolute — Gmail-safe) -->
+          <!-- HERO panoramico Venezia / Hotel (cinematografico) -->
           <tr>
-            <td style="padding:0;line-height:0;font-size:0;background-color:#124453;">
-              <img src="${hero}" width="500" alt="Canal Grande, Venezia" style="display:block;width:100%;max-width:500px;height:auto;border:0;outline:none;">
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="background-color:#124453;padding:18px 24px 22px;">
-              <div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;letter-spacing:0.06em;color:#FFFFFF;text-transform:uppercase;">Hotel Canal</div>
-              <div style="font-family:Georgia,serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#A0C2CB;margin-top:4px;">Santa Croce 553 · Venezia</div>
+            <td style="padding:16px 16px 0;line-height:0;font-size:0;">
+              <img src="${hero}" width="488" height="169" alt="Hotel Canal — Venezia" style="display:block;width:100%;max-width:488px;height:auto;border:0;outline:none;border-radius:14px;">
             </td>
           </tr>
 
+          <!-- Brand editoriale sotto la foto -->
           <tr>
-            <td style="padding:36px 24px 40px;">
-              <p style="font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700;color:#124453;margin:0 0 14px;">Gentile ${name},</p>
-              <p style="font-size:13.5px;line-height:1.6;color:#48484A;margin:0 0 24px;font-weight:500;">
+            <td align="center" style="padding:22px 24px 28px;border-bottom:1px solid #E5E5EA;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:700;letter-spacing:0.08em;color:#124453;text-transform:uppercase;margin:0 0 4px;">Hotel Canal</div>
+              <div style="font-family:Georgia,serif;font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#64748B;">Santa Croce 553 · Venezia</div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:36px 28px 44px;">
+              <p style="font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700;color:#124453;margin:0 0 16px;letter-spacing:0.02em;">Gentile ${name},</p>
+              <p style="font-size:14px;line-height:1.65;color:#334155;margin:0 0 28px;font-weight:400;">
                 Benvenuto a Venezia. Siamo felici di ospitarla all&rsquo;Hotel Canal.
-                I servizi digitali della sua stanza sono attivi: orari, percorso al ristorante partner e voucher di benvenuto sono qui sotto.
+                I servizi digitali della stanza sono attivi: orari, percorso a piedi al ristorante partner e il pass di benvenuto sono qui sotto.
               </p>
 
-              <!-- Scheda stanza -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;">
                 <tr>
-                  <td align="center" style="background-color:#F4F7F9;border-radius:14px;border:1px solid rgba(18,68,83,0.06);padding:16px;">
-                    <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;letter-spacing:0.06em;display:block;margin-bottom:4px;">Stanza assegnata</span>
-                    <strong style="font-size:21px;color:#124453;font-weight:700;letter-spacing:-0.01em;">CAMERA ${room}</strong>
+                  <td align="center" style="background-color:#F8FAFC;border-radius:14px;border:1px solid #E2E8F0;padding:18px;">
+                    <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;letter-spacing:0.08em;display:block;margin-bottom:4px;">Stanza assegnata</span>
+                    <strong style="font-family:Georgia,serif;font-size:20px;color:#124453;font-weight:700;letter-spacing:0.02em;">CAMERA ${room}</strong>
                   </td>
                 </tr>
               </table>
 
               <p style="font-family:Georgia,serif;font-size:13.5px;font-weight:700;color:#124453;border-bottom:1px solid rgba(18,68,83,0.12);padding-bottom:6px;margin:0 0 12px;letter-spacing:0.04em;">Orari della struttura</p>
-              <p style="font-size:13.5px;line-height:1.6;color:#48484A;margin:0 0 28px;font-weight:500;">
+              <p style="font-size:14px;line-height:1.65;color:#48484A;margin:0 0 36px;font-weight:400;">
                 <strong>Check-in:</strong> dalle ore 14:00<br>
                 <strong>Check-out:</strong> entro le ore 10:30
               </p>
 
               <p style="font-family:Georgia,serif;font-size:13.5px;font-weight:700;color:#124453;border-bottom:1px solid rgba(18,68,83,0.12);padding-bottom:6px;margin:0 0 12px;letter-spacing:0.04em;">Come raggiungere la Trattoria alla Terrazza</p>
-              <p style="font-size:13.5px;line-height:1.5;color:#48484A;margin:0 0 14px;font-weight:500;">
+              <p style="font-size:14px;line-height:1.6;color:#48484A;margin:0 0 18px;font-weight:400;">
                 Parta dall&rsquo;ingresso dell&rsquo;<strong>Hotel Canal (Santa Croce 553)</strong> e segua questi passi:
               </p>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 16px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;">
                 <tr>
-                  <td style="background-color:#FFFDF9;border:1px solid #E6DFD3;border-radius:14px;padding:16px 18px;">
+                  <td style="background-color:#FAFBFC;border:1px solid #EAEFF2;border-radius:16px;padding:20px 22px;">
                     ${steps}
                   </td>
                 </tr>
               </table>
 
-              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:#124453;color:#FFFFFF !important;text-decoration:none;padding:14px;border-radius:12px;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 32px;">
+              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:#124453;color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:12px;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;margin:0 0 44px;">
                 Apri il navigatore (Google Maps)
               </a>
 
               <p style="font-family:Georgia,serif;font-size:13.5px;font-weight:700;color:#124453;border-bottom:1px solid rgba(18,68,83,0.12);padding-bottom:6px;margin:0 0 12px;letter-spacing:0.04em;">Privilegio di benvenuto</p>
-              <p style="font-size:13.5px;line-height:1.5;color:#48484A;margin:0 0 16px;font-weight:500;">
+              <p style="font-size:14px;line-height:1.65;color:#48484A;margin:0 0 22px;font-weight:400;">
                 Presentando questo pass al cameriere <strong>prima di ordinare</strong>, ricever&agrave; uno
                 <strong>sconto del 10%</strong> sul totale, valido per tutti i componenti della stanza.
               </p>
 
-              <!-- Cartolina ristorante + voucher -->
+              <!-- Pass stile Wallet: foto Trattoria fusa + QR -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #124453;border-radius:20px;overflow:hidden;margin:0 0 8px;">
                 <tr>
                   <td style="padding:0;line-height:0;font-size:0;background-color:#124453;">
-                    <img src="${resto}" width="500" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:500px;height:auto;border:0;outline:none;">
+                    <img src="${resto}" width="520" height="170" alt="Trattoria alla Terrazza — terrazza sul canale" style="display:block;width:100%;max-width:520px;height:auto;border:0;outline:none;">
                   </td>
                 </tr>
                 <tr>
-                  <td align="center" style="padding:24px 20px;background-color:#FFFFFF;">
-                    <div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#124453;letter-spacing:0.04em;">VOUCHER SCONTO 10%</div>
-                    <div style="font-size:11px;color:#8E8E93;font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:0.02em;">Trattoria alla Terrazza — Convenzione ospiti</div>
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:18px auto;">
+                  <td align="center" style="padding:28px 22px;background-color:#FFFFFF;">
+                    <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:#124453;letter-spacing:0.04em;">VOUCHER SCONTO 10%</div>
+                    <div style="font-size:11px;color:#8E8E93;font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;">Trattoria alla Terrazza — Convenzione ospiti</div>
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:22px auto;">
                       <tr>
-                        <td align="center" style="background:#FFFFFF;padding:10px;border-radius:14px;border:1px solid #E5E5EA;">
+                        <td align="center" style="background:#FFFFFF;padding:10px;border-radius:12px;border:1px solid #E5E5EA;">
                           <img src="${qrSrc}" width="140" height="140" alt="Voucher QR Code" style="display:block;width:140px;height:140px;margin:0 auto;border:0;outline:none;">
                         </td>
                       </tr>
                     </table>
-                    <div style="font-size:10px;font-weight:700;color:#124453;text-transform:uppercase;letter-spacing:0.06em;background:rgba(18,68,83,0.05);padding:6px 12px;border-radius:6px;display:inline-block;line-height:1.5;">
+                    <div style="font-size:10px;font-weight:600;color:#124453;text-transform:uppercase;letter-spacing:0.06em;background:rgba(18,68,83,0.04);padding:8px 16px;border-radius:6px;display:inline-block;line-height:1.5;">
                       Camera: ${room} · Check-in: ${staff} · Pax: ${guests}
                     </div>
                   </td>
                 </tr>
               </table>
 
-              <p style="font-size:13px;font-weight:700;text-align:center;margin:36px 0 0;color:#124453;font-family:Georgia,serif;letter-spacing:0.02em;">
+              <p style="font-size:13.5px;font-weight:500;text-align:center;margin:44px 0 0;color:#124453;font-family:Georgia,serif;letter-spacing:0.02em;line-height:1.5;">
                 Le auguriamo un soggiorno indimenticabile.<br>
-                <span style="display:block;font-size:10px;color:#8E8E93;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:8px;">
+                <span style="display:block;font-size:9.5px;color:#8E8E93;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:8px;">
                   La Direzione — Hotel Canal Venezia
                 </span>
               </p>
@@ -370,15 +371,18 @@ export async function sendWelcomeEmail({
   const restoCid = 'restaurant_photo';
   const mapsUrl = mapsDirectionsUrl();
 
-  const heroBuf = readEmailAsset('venice-bg.jpg');
-  // Foto reale terrazza sul canale (croppata); fallback ingresso gondola
+  const heroBuf =
+    readEmailAsset('email', 'hero-venice.jpg') ||
+    readEmailAsset('venice-bg.jpg');
+  // Copertina voucher: terrazza/tavolo sul canale
   const restoBuf =
     readEmailAsset('restaurant', 'terrazza.jpg') ||
+    readEmailAsset('restaurant', '11-tavolo-canale.jpg') ||
     readEmailAsset('restaurant', '01-terrazza-canale.jpg') ||
     readEmailAsset('restaurant', 'ingresso.jpg');
   const heroSrc = heroBuf
     ? `cid:${heroCid}`
-    : `${publicBaseUrl()}/venice-bg.jpg`;
+    : `${publicBaseUrl()}/email/hero-venice.jpg`;
   const restaurantSrc = restoBuf
     ? `cid:${restoCid}`
     : `${publicBaseUrl()}/restaurant/terrazza.jpg`;
