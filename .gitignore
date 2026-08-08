@@ -4,6 +4,7 @@ data/
 *.db
 public/qr.png
 public/qr.svg
+public/qr-wifi.png
 public/cartello-reception.html
 data/email-preview.html
 .DS_Store

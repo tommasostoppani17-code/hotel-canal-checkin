@@ -522,6 +522,11 @@
         privacyRequired: 'Per continuare accetta il trattamento dei dati.',
         submitError: 'Errore durante l\'invio. Riprova.',
         networkError: 'Errore di connessione.',
+        alreadyRegisteredTitle: 'Sei già registrato',
+        alreadyRegisteredSub: 'Il tuo dispositivo è collegato ai servizi digitali. Buon soggiorno a Venezia.',
+        networkErrorTitle: 'Errore di connessione',
+        networkErrorSub: 'Problema di rete o troppi dispositivi collegati. Riprova tra poco.',
+        retry: 'Riprova',
         reportTitle: 'Report inviato',
         reportSent: (count, to) => `Report inviato (${count} contatti) a ${to}.`,
         reportEmpty: 'Nessun nuovo contatto da inviare.',
@@ -551,6 +556,11 @@
         privacyRequired: 'Please accept data processing to continue.',
         submitError: 'Could not submit. Please try again.',
         networkError: 'Connection error.',
+        alreadyRegisteredTitle: 'Already registered',
+        alreadyRegisteredSub: 'Your device is connected to our digital services. Enjoy your stay in Venice.',
+        networkErrorTitle: 'Connection error',
+        networkErrorSub: 'Network issue or too many devices connected. Please try again shortly.',
+        retry: 'Try again',
         reportTitle: 'Report sent',
         reportSent: (count, to) => `Report sent (${count} contacts) to ${to}.`,
         reportEmpty: 'No new contacts to send.',
@@ -580,6 +590,11 @@
         privacyRequired: 'Veuillez accepter le traitement des données.',
         submitError: 'Erreur d\'envoi. Réessayez.',
         networkError: 'Erreur de connexion.',
+        alreadyRegisteredTitle: 'Déjà enregistré',
+        alreadyRegisteredSub: 'Votre appareil est connecté à nos services numériques. Bon séjour à Venise.',
+        networkErrorTitle: 'Erreur de connexion',
+        networkErrorSub: 'Problème réseau ou trop d\'appareils connectés. Réessayez bientôt.',
+        retry: 'Réessayer',
         reportTitle: 'Rapport envoyé',
         reportSent: (count, to) => `Rapport envoyé (${count} contacts) à ${to}.`,
         reportEmpty: 'Aucun nouveau contact à envoyer.',
@@ -609,6 +624,11 @@
         privacyRequired: 'Bitte akzeptieren Sie die Datenverarbeitung.',
         submitError: 'Senden fehlgeschlagen. Bitte erneut versuchen.',
         networkError: 'Verbindungsfehler.',
+        alreadyRegisteredTitle: 'Bereits registriert',
+        alreadyRegisteredSub: 'Ihr Gerät ist mit unseren digitalen Diensten verbunden. Genießen Sie Ihren Aufenthalt in Venedig.',
+        networkErrorTitle: 'Verbindungsfehler',
+        networkErrorSub: 'Netzwerkproblem oder zu viele verbundene Geräte. Bitte versuchen Sie es später erneut.',
+        retry: 'Erneut versuchen',
         reportTitle: 'Bericht gesendet',
         reportSent: (count, to) => `Bericht gesendet (${count} Kontakte) an ${to}.`,
         reportEmpty: 'Keine neuen Kontakte zum Senden.',
@@ -638,32 +658,78 @@
         privacyRequired: 'Acepte el tratamiento de datos para continuar.',
         submitError: 'Error al enviar. Inténtelo de nuevo.',
         networkError: 'Error de conexión.',
+        alreadyRegisteredTitle: 'Ya registrado',
+        alreadyRegisteredSub: 'Su dispositivo está conectado a nuestros servicios digitales. Disfrute su estancia en Venecia.',
+        networkErrorTitle: 'Error de conexión',
+        networkErrorSub: 'Problema de red o demasiados dispositivos conectados. Inténtelo de nuevo en breve.',
+        retry: 'Reintentar',
         reportTitle: 'Informe enviado',
         reportSent: (count, to) => `Informe enviado (${count} contactos) a ${to}.`,
         reportEmpty: 'No hay contactos nuevos para enviar.',
       },
     };
 
-    const form = document.getElementById('leadForm');
-    const card = document.getElementById('card');
-    const errorEl = document.getElementById('error');
-    const btn = document.getElementById('submitBtn');
-    const phoneEl = document.getElementById('phone');
-    const emailEl = document.getElementById('email');
-    const nameEl = document.getElementById('fullname');
-    const roomEl = document.getElementById('room');
-    const staffEl = document.getElementById('receptionist');
-    const privacyEl = document.getElementById('privacy');
-    const privacyBox = document.getElementById('privacyBox');
-
+    const STORAGE_KEY = 'hotel_canal_registered';
     const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
     const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const REPORT_TOKEN = 'grandcanalhotel';
 
     let currentLang = 'en';
+    let formMode = true;
 
     function t() {
       return translations[currentLang] || translations.en;
+    }
+
+    function detectLanguage() {
+      const nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+      return translations[nav] ? nav : 'en';
+    }
+
+    function langBarHtml() {
+      return ['en', 'it', 'fr', 'de', 'es']
+        .map(
+          (lang) =>
+            `<button type="button" class="lang-btn${lang === currentLang ? ' active' : ''}" data-lang="${lang}">${lang.toUpperCase()}</button>`,
+        )
+        .join('');
+    }
+
+    function bindLangButtons() {
+      document.querySelectorAll('.lang-btn').forEach((el) => {
+        el.addEventListener('click', () => setLanguage(el.dataset.lang));
+      });
+    }
+
+    function showAlreadyRegisteredScreen() {
+      formMode = false;
+      const dict = t();
+      card.innerHTML = `
+        <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
+        <div class="header" style="margin-bottom:0;padding:24px 0 8px;">
+          <div class="success-check" aria-hidden="true"></div>
+          <h1>${dict.alreadyRegisteredTitle}</h1>
+          <p>${dict.alreadyRegisteredSub}</p>
+        </div>
+      `;
+      bindLangButtons();
+    }
+
+    function showNetworkErrorScreen() {
+      formMode = false;
+      const dict = t();
+      card.innerHTML = `
+        <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
+        <div class="header" style="margin-bottom:0;padding:24px 0 8px;">
+          <h1 style="color:#C62828;">${dict.networkErrorTitle}</h1>
+          <p style="margin-bottom:20px;">${dict.networkErrorSub}</p>
+          <button type="button" class="btn-canal" id="retryBtn">${dict.retry}</button>
+        </div>
+      `;
+      bindLangButtons();
+      document.getElementById('retryBtn')?.addEventListener('click', () => {
+        window.location.reload();
+      });
     }
 
     function setLanguage(lang) {
@@ -671,12 +737,22 @@
       currentLang = lang;
       document.documentElement.lang = lang;
 
+      if (!formMode) {
+        if (localStorage.getItem(STORAGE_KEY) === 'true') {
+          showAlreadyRegisteredScreen();
+        }
+        return;
+      }
+
       document.querySelectorAll('.lang-btn').forEach((el) => {
         el.classList.toggle('active', el.dataset.lang === lang);
       });
 
       const dict = t();
-      document.getElementById('lbl-title').textContent = dict.title;
+      const titleEl = document.getElementById('lbl-title');
+      if (!titleEl) return;
+
+      titleEl.textContent = dict.title;
       document.getElementById('lbl-subtitle').textContent = dict.subtitle;
       document.getElementById('lbl-phone').textContent = dict.phone;
       document.getElementById('lbl-email').textContent = dict.email;
@@ -686,172 +762,201 @@
       document.getElementById('lbl-rest-desc').textContent = dict.restDesc;
       document.getElementById('lbl-staff').textContent = dict.staff;
       document.getElementById('lbl-privacy').textContent = dict.privacy;
-      if (!btn.disabled) btn.textContent = dict.button;
+      const submitBtn = document.getElementById('submitBtn');
+      if (submitBtn && !submitBtn.disabled) submitBtn.textContent = dict.button;
     }
 
-    function detectLanguage() {
-      const nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
-      return translations[nav] ? nav : 'en';
-    }
+    const card = document.getElementById('card');
+    currentLang = detectLanguage();
 
-    document.querySelectorAll('.lang-btn').forEach((el) => {
-      el.addEventListener('click', () => setLanguage(el.dataset.lang));
-    });
+    if (localStorage.getItem(STORAGE_KEY) === 'true') {
+      showAlreadyRegisteredScreen();
+    } else {
+      const form = document.getElementById('leadForm');
+      const errorEl = document.getElementById('error');
+      const btn = document.getElementById('submitBtn');
+      const phoneEl = document.getElementById('phone');
+      const emailEl = document.getElementById('email');
+      const nameEl = document.getElementById('fullname');
+      const roomEl = document.getElementById('room');
+      const staffEl = document.getElementById('receptionist');
+      const privacyEl = document.getElementById('privacy');
+      const privacyBox = document.getElementById('privacyBox');
 
-    setLanguage(detectLanguage());
+      bindLangButtons();
+      setLanguage(currentLang);
 
-    function showError(message) {
-      errorEl.textContent = message;
-      errorEl.classList.add('visible');
-    }
-
-    function clearError() {
-      errorEl.textContent = '';
-      errorEl.classList.remove('visible');
-      phoneEl.classList.remove('is-invalid');
-      emailEl.classList.remove('is-invalid');
-      privacyBox.classList.remove('is-invalid', 'shake');
-    }
-
-    function cleanPhone(value) {
-      return String(value || '').replace(/[\s\-\(\)\.]/g, '');
-    }
-
-    function isReportTrigger(phone, name, room) {
-      return [phone, name, room].every(
-        (v) => String(v || '').trim().toLowerCase() === REPORT_TOKEN,
-      );
-    }
-
-    function formatCheckCode(id) {
-      if (id != null && Number.isFinite(Number(id))) {
-        return 'HC-' + String(Number(id)).padStart(4, '0');
-      }
-      return 'HC-' + Math.floor(1000 + Math.random() * 9000);
-    }
-
-    function showSuccessReceipt({ id, verifiedAt, couponSent }) {
-      const dict = t();
-      const checkCode = formatCheckCode(id);
-      const now = new Date(verifiedAt || Date.now()).toLocaleTimeString(
-        currentLang === 'en' ? 'en-GB' : currentLang,
-        { hour: '2-digit', minute: '2-digit' },
-      );
-      const sub = couponSent ? dict.successSubCoupon : dict.successSub;
-
-      card.innerHTML = `
-        <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
-          <div class="success-check" aria-hidden="true"></div>
-          <h1>${dict.successTitle}</h1>
-          <p style="margin-bottom:20px;">${sub}</p>
-          <div class="receipt-badge">
-            <span class="eyebrow">${dict.badgeTxt}</span>
-            <strong class="code">${checkCode}</strong>
-            <span class="time">${dict.verifiedTxt} ${now}</span>
-          </div>
-        </div>
-      `;
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      clearError();
-
-      const dict = t();
-      const phoneRaw = phoneEl.value.trim();
-      const emailRaw = emailEl.value.trim();
-      const guestNameRaw = nameEl.value.trim();
-      const roomRaw = roomEl.value.trim();
-      const staffRaw = staffEl.value.trim();
-      const privacy = privacyEl.checked;
-      const cleaned = cleanPhone(phoneRaw);
-      const emailNormalized = emailRaw.toLowerCase();
-      const magic = isReportTrigger(phoneRaw, guestNameRaw, roomRaw);
-
-      if (!privacy) {
-        showError(dict.privacyRequired);
-        privacyBox.classList.add('is-invalid', 'shake');
-        return;
+      function showError(message) {
+        errorEl.textContent = message;
+        errorEl.classList.add('visible');
       }
 
-      if (!magic) {
-        if (!cleaned) {
-          showError(dict.phoneRequired);
-          phoneEl.classList.add('is-invalid');
-          phoneEl.focus();
-          return;
-        }
-        if (!PHONE_REGEX.test(cleaned)) {
-          showError(dict.phoneInvalid);
-          phoneEl.classList.add('is-invalid');
-          phoneEl.focus();
-          return;
-        }
-        if (!emailNormalized) {
-          showError(dict.emailRequired);
-          emailEl.classList.add('is-invalid');
-          emailEl.focus();
-          return;
-        }
-        if (!EMAIL_REGEX.test(emailNormalized)) {
-          showError(dict.emailInvalid);
-          emailEl.classList.add('is-invalid');
-          emailEl.focus();
-          return;
-        }
+      function clearError() {
+        errorEl.textContent = '';
+        errorEl.classList.remove('visible');
+        phoneEl.classList.remove('is-invalid');
+        emailEl.classList.remove('is-invalid');
+        privacyBox.classList.remove('is-invalid', 'shake');
       }
 
-      btn.disabled = true;
-      btn.textContent = dict.loading;
+      function cleanPhone(value) {
+        return String(value || '').replace(/[\s\-\(\)\.]/g, '');
+      }
 
-      const payload = {
-        phone: magic ? phoneRaw.trim() : cleaned,
-        email: emailNormalized,
-        guestName: guestNameRaw ? guestNameRaw.toUpperCase() : null,
-        roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
-        receptionist: staffRaw ? staffRaw.toUpperCase() : null,
-        privacy: true,
-        language: currentLang,
-      };
+      function isReportTrigger(phone, name, room) {
+        return [phone, name, room].every(
+          (v) => String(v || '').trim().toLowerCase() === REPORT_TOKEN,
+        );
+      }
 
-      try {
-        const response = await fetch('/api/checkins', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        const body = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-          throw new Error(body.error || dict.submitError);
+      function formatCheckCode(id) {
+        if (id != null && Number.isFinite(Number(id))) {
+          return 'HC-' + String(Number(id)).padStart(4, '0');
         }
+        return 'HC-' + Math.floor(1000 + Math.random() * 9000);
+      }
 
-        if (body.reportTriggered) {
-          const detail = body.sent
-            ? dict.reportSent(body.count, body.to || 'email')
-            : dict.reportEmpty;
-          card.innerHTML = `
-            <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
-              <div class="success-check" aria-hidden="true"></div>
-              <h1>${dict.reportTitle}</h1>
-              <p>${detail}</p>
+      function showSuccessReceipt({ id, verifiedAt, couponSent }) {
+        formMode = false;
+        const dict = t();
+        const checkCode = formatCheckCode(id);
+        const now = new Date(verifiedAt || Date.now()).toLocaleTimeString(
+          currentLang === 'en' ? 'en-GB' : currentLang,
+          { hour: '2-digit', minute: '2-digit' },
+        );
+        const sub = couponSent ? dict.successSubCoupon : dict.successSub;
+
+        card.innerHTML = `
+          <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
+          <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
+            <div class="success-check" aria-hidden="true"></div>
+            <h1>${dict.successTitle}</h1>
+            <p style="margin-bottom:20px;">${sub}</p>
+            <div class="receipt-badge">
+              <span class="eyebrow">${dict.badgeTxt}</span>
+              <strong class="code">${checkCode}</strong>
+              <span class="time">${dict.verifiedTxt} ${now}</span>
             </div>
-          `;
+          </div>
+        `;
+        bindLangButtons();
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearError();
+
+        const dict = t();
+        const phoneRaw = phoneEl.value.trim();
+        const emailRaw = emailEl.value.trim();
+        const guestNameRaw = nameEl.value.trim();
+        const roomRaw = roomEl.value.trim();
+        const staffRaw = staffEl.value.trim();
+        const privacy = privacyEl.checked;
+        const cleaned = cleanPhone(phoneRaw);
+        const emailNormalized = emailRaw.toLowerCase();
+        const magic = isReportTrigger(phoneRaw, guestNameRaw, roomRaw);
+
+        if (!privacy) {
+          showError(dict.privacyRequired);
+          privacyBox.classList.add('is-invalid', 'shake');
           return;
         }
 
-        showSuccessReceipt({
-          id: body.id,
-          verifiedAt: body.createdAt,
-          couponSent: Boolean(body.couponSent),
-        });
-      } catch (err) {
-        showError(err.message || dict.networkError);
-        btn.disabled = false;
-        btn.textContent = dict.button;
-      }
-    });
+        if (!magic) {
+          if (!cleaned) {
+            showError(dict.phoneRequired);
+            phoneEl.classList.add('is-invalid');
+            phoneEl.focus();
+            return;
+          }
+          if (!PHONE_REGEX.test(cleaned)) {
+            showError(dict.phoneInvalid);
+            phoneEl.classList.add('is-invalid');
+            phoneEl.focus();
+            return;
+          }
+          if (!emailNormalized) {
+            showError(dict.emailRequired);
+            emailEl.classList.add('is-invalid');
+            emailEl.focus();
+            return;
+          }
+          if (!EMAIL_REGEX.test(emailNormalized)) {
+            showError(dict.emailInvalid);
+            emailEl.classList.add('is-invalid');
+            emailEl.focus();
+            return;
+          }
+        }
+
+        btn.disabled = true;
+        btn.textContent = dict.loading;
+
+        const payload = {
+          phone: magic ? phoneRaw.trim() : cleaned,
+          email: emailNormalized,
+          guestName: guestNameRaw ? guestNameRaw.toUpperCase() : null,
+          roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
+          receptionist: staffRaw ? staffRaw.toUpperCase() : null,
+          privacy: true,
+          language: currentLang,
+        };
+
+        try {
+          const response = await fetch('/api/checkins', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const body = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            if (response.status >= 500) {
+              showNetworkErrorScreen();
+              return;
+            }
+            throw new Error(body.error || dict.submitError);
+          }
+
+          if (body.reportTriggered) {
+            const detail = body.sent
+              ? dict.reportSent(body.count, body.to || 'email')
+              : dict.reportEmpty;
+            formMode = false;
+            card.innerHTML = `
+              <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
+              <div class="header" style="margin-bottom:0;padding:12px 0 4px;">
+                <div class="success-check" aria-hidden="true"></div>
+                <h1>${dict.reportTitle}</h1>
+                <p>${detail}</p>
+              </div>
+            `;
+            bindLangButtons();
+            return;
+          }
+
+          localStorage.setItem(STORAGE_KEY, 'true');
+          showSuccessReceipt({
+            id: body.id,
+            verifiedAt: body.createdAt,
+            couponSent: Boolean(body.couponSent),
+          });
+        } catch (err) {
+          if (
+            err instanceof TypeError ||
+            /failed to fetch|network|load failed/i.test(String(err.message || ''))
+          ) {
+            showNetworkErrorScreen();
+            return;
+          }
+          showError(err.message || dict.networkError);
+          btn.disabled = false;
+          btn.textContent = dict.button;
+        }
+      });
+    }
   </script>
 </body>
 </html>

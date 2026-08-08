@@ -84,13 +84,18 @@ REPORT_EMAIL=tommasostoppani17@gmail.com
 ## QR + cartello reception
 
 ```bash
+# In .env: PUBLIC_URL, WIFI_SSID, WIFI_PASSWORD, WIFI_TYPE=WPA
 npm run qr
 ```
 
 Genera:
-- `public/qr.png` / `public/qr.svg` — ottanio `#124453`
-- `public/cartello-reception.html` — cartello A6 stampabile
+- `public/qr.png` / `public/qr.svg` — QR app (ottanio `#124453`)
+- `public/qr-wifi.png` — QR Wi‑Fi nativo iOS/Android (`WIFI:S:…;T:WPA;P:…;;`)
+- `public/cartello-reception.html` — cartello A5 con **due QR** (Wi‑Fi + Check-in)
 
+Apri il cartello → **Stampa / Salva PDF**.
+
+Il form ricorda il dispositivo con `localStorage` (niente doppie registrazioni nello stesso soggiorno).
 ## Test report senza aspettare mezzanotte
 
 **Dal form:** `grandcanalhotel` in telefono + nome + stanza, privacy, invia.
