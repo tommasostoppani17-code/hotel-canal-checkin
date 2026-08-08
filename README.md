@@ -45,6 +45,17 @@ Apri `public/cartello-reception.html` → **Stampa / Salva PDF** (formato A6) pe
 
 **Limiti free:** dopo ~15 min di inattività il servizio va in sleep (primo scan lento). SQLite sul piano free è effimero (si può resettare a ogni redeploy). Ok per demo; per produzione hotel preferisci disco persistente o PC reception sempre acceso.
 
+### Link pubblico immediato (mentre configuri Render)
+
+Con il server locale acceso (`npm start`):
+
+```bash
+cloudflared tunnel --url http://localhost:3000
+```
+
+Copia l’URL `https://….trycloudflare.com`, mettilo in `PUBLIC_URL`, poi `npm run qr`.  
+Attenzione: l’URL del quick tunnel **cambia** a ogni riavvio — per il cartello definitivo usa l’URL stabile di Render.
+
 ## Variabili `.env`
 
 | Variabile | Uso |
