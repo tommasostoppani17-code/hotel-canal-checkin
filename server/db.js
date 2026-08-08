@@ -43,6 +43,7 @@ export function initDb(databasePath) {
 
   ensureColumn('email', 'email TEXT');
   ensureColumn('receptionist', 'receptionist TEXT');
+  ensureColumn('guests_count', 'guests_count INTEGER');
   ensureColumn('coupon_token', 'coupon_token TEXT');
   ensureColumn('coupon_sent_at', 'coupon_sent_at TEXT');
 
@@ -65,14 +66,15 @@ export function insertCheckin({
   guestName,
   roomNumber,
   receptionist,
+  guestsCount,
   couponToken,
 }) {
   const stmt = db.prepare(`
     INSERT INTO checkins (
-      phone, email, guest_name, room_number, receptionist, coupon_token, privacy_accepted_at
+      phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, privacy_accepted_at
     )
     VALUES (
-      @phone, @email, @guestName, @roomNumber, @receptionist, @couponToken, datetime('now')
+      @phone, @email, @guestName, @roomNumber, @receptionist, @guestsCount, @couponToken, datetime('now')
     )
   `);
 
@@ -82,6 +84,7 @@ export function insertCheckin({
     guestName: guestName || null,
     roomNumber: roomNumber || null,
     receptionist: receptionist || null,
+    guestsCount: guestsCount ?? null,
     couponToken: couponToken || null,
   });
 
@@ -100,7 +103,7 @@ export function getCheckinByCouponToken(token) {
   return db
     .prepare(
       `
-      SELECT id, phone, email, guest_name, room_number, receptionist, coupon_token, created_at
+      SELECT id, phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, created_at
       FROM checkins
       WHERE coupon_token = ?
       LIMIT 1

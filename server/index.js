@@ -13,8 +13,7 @@ import {
 } from './db.js';
 import { runDailyReport, runMonthlyStaffReport } from './mail.js';
 import {
-  sendRestaurantCoupon,
-  buildCouponQrPng,
+  sendWelcomeEmail,
   buildCouponRedeemPage,
 } from './coupon.js';
 
@@ -39,6 +38,15 @@ app.use(express.static(path.join(rootDir, 'public')));
 const REPORT_TRIGGER_TOKEN = 'grandcanalhotel';
 const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Nome receptionist a testo libero (maiuscolo, spazi normalizzati). */
+function normalizeReceptionist(raw) {
+  const key = String(raw || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toUpperCase();
+  return key || null;
+}
 
 function cleanPhone(phone) {
   return String(phone || '').replace(/[\s\-\(\)\.]/g, '');
@@ -66,12 +74,14 @@ function isValidEmail(email) {
   return EMAIL_REGEX.test(email);
 }
 
-function isManualReportTrigger({ phone, guestName, roomNumber }) {
-  return (
-    normalizeField(phone) === REPORT_TRIGGER_TOKEN &&
-    normalizeField(guestName) === REPORT_TRIGGER_TOKEN &&
-    normalizeField(roomNumber) === REPORT_TRIGGER_TOKEN
-  );
+function isManualReportTrigger({ phone, guestName, roomNumber, firstName, lastName }) {
+  const fields = [phone, roomNumber];
+  if (firstName || lastName) {
+    fields.push(firstName, lastName);
+  } else {
+    fields.push(guestName);
+  }
+  return fields.every((v) => normalizeField(v) === REPORT_TRIGGER_TOKEN);
 }
 
 function isAuthorizedCron(req) {
@@ -120,6 +130,7 @@ app.get('/coupon/:token', (req, res) => {
       receptionist: row.receptionist,
       roomNumber: row.room_number,
       guestName: row.guest_name,
+      guestsCount: row.guests_count,
     }),
   );
 });
@@ -128,8 +139,17 @@ async function handleCheckin(req, res) {
   try {
     const phoneRaw = String(req.body?.phone || '').trim();
     const emailRaw = String(req.body?.email || '').trim();
+    const firstNameRaw = String(
+      req.body?.firstName || req.body?.firstname || '',
+    ).trim();
+    const lastNameRaw = String(
+      req.body?.lastName || req.body?.lastname || '',
+    ).trim();
     const guestNameRaw = String(
-      req.body?.guestName || req.body?.fullname || '',
+      req.body?.guestName ||
+        req.body?.fullname ||
+        [firstNameRaw, lastNameRaw].filter(Boolean).join(' ') ||
+        '',
     ).trim();
     const roomNumberRaw = String(
       req.body?.roomNumber || req.body?.room || '',
@@ -137,6 +157,8 @@ async function handleCheckin(req, res) {
     const receptionistRaw = String(
       req.body?.receptionist || req.body?.staff || '',
     ).trim();
+    const guestsRaw =
+      req.body?.guestsCount ?? req.body?.guests_count ?? req.body?.guests ?? '';
     const privacy =
       req.body?.privacy === true ||
       req.body?.privacy === 'true' ||
@@ -150,6 +172,8 @@ async function handleCheckin(req, res) {
       isManualReportTrigger({
         phone: phoneRaw,
         guestName: guestNameRaw,
+        firstName: firstNameRaw,
+        lastName: lastNameRaw,
         roomNumber: roomNumberRaw,
       })
     ) {
@@ -185,12 +209,26 @@ async function handleCheckin(req, res) {
       return res.status(400).json({ error: 'Email non valida' });
     }
 
-    const guestName = toUpperOrNull(guestNameRaw);
-    const roomNumber = toUpperOrNull(roomNumberRaw);
-    const receptionist = toUpperOrNull(receptionistRaw);
+    const firstName = toUpperOrNull(firstNameRaw);
+    const lastName = toUpperOrNull(lastNameRaw);
+    if (!firstName) {
+      return res.status(400).json({ error: 'Nome obbligatorio' });
+    }
+    if (!lastName) {
+      return res.status(400).json({ error: 'Cognome obbligatorio' });
+    }
 
-    const wantsCoupon = Boolean(receptionist);
-    const couponToken = wantsCoupon ? createCouponToken() : null;
+    const guestName = `${firstName} ${lastName}`;
+    const roomNumber = toUpperOrNull(roomNumberRaw);
+
+    const receptionist = normalizeReceptionist(receptionistRaw);
+
+    let guestsCount = Number.parseInt(String(guestsRaw).trim(), 10);
+    if (!Number.isFinite(guestsCount) || guestsCount < 1) guestsCount = 2;
+    if (guestsCount > 20) guestsCount = 20;
+
+    // Ogni ospite riceve subito QR coupon + welcome concierge
+    const couponToken = createCouponToken();
 
     const id = insertCheckin({
       phone,
@@ -198,24 +236,27 @@ async function handleCheckin(req, res) {
       guestName,
       roomNumber,
       receptionist,
+      guestsCount,
       couponToken,
     });
 
-    let couponSent = false;
-    if (wantsCoupon && couponToken) {
-      try {
-        await sendRestaurantCoupon({
-          to: email,
-          receptionist,
-          guestName,
-          token: couponToken,
-        });
-        markCouponSent(id);
-        couponSent = true;
-        console.log(`[coupon] Inviato a ${email} — staff ${receptionist}`);
-      } catch (mailErr) {
-        console.error('[coupon] Errore invio:', mailErr.message || mailErr);
-      }
+    let welcomeSent = false;
+    try {
+      await sendWelcomeEmail({
+        to: email,
+        guestName,
+        roomNumber,
+        receptionist,
+        guestsCount,
+        token: couponToken,
+      });
+      markCouponSent(id);
+      welcomeSent = true;
+      console.log(
+        `[welcome] Concierge email → ${email} · room ${roomNumber || '—'} · staff ${receptionist || 'RECEPTION'} · guests ${guestsCount}`,
+      );
+    } catch (mailErr) {
+      console.error('[welcome] Errore invio:', mailErr.message || mailErr);
     }
 
     return res.status(201).json({
@@ -223,8 +264,10 @@ async function handleCheckin(req, res) {
       id,
       checkCode: `HC-${String(id).padStart(4, '0')}`,
       createdAt: new Date().toISOString(),
-      couponSent,
+      welcomeSent,
+      couponSent: welcomeSent,
       receptionist: receptionist || null,
+      guestsCount,
     });
   } catch (err) {
     console.error('Errore check-in:', err);
