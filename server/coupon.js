@@ -371,7 +371,11 @@ export async function sendWelcomeEmail({
   const mapsUrl = mapsDirectionsUrl();
 
   const heroBuf = readEmailAsset('venice-bg.jpg');
-  const restoBuf = readEmailAsset('restaurant', 'terrazza.jpg');
+  // Foto reale terrazza sul canale (croppata); fallback ingresso gondola
+  const restoBuf =
+    readEmailAsset('restaurant', 'terrazza.jpg') ||
+    readEmailAsset('restaurant', '01-terrazza-canale.jpg') ||
+    readEmailAsset('restaurant', 'ingresso.jpg');
   const heroSrc = heroBuf
     ? `cid:${heroCid}`
     : `${publicBaseUrl()}/venice-bg.jpg`;
