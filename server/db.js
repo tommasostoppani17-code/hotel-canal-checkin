@@ -133,10 +133,23 @@ export function getUnreportedCheckins() {
   return db
     .prepare(
       `
-      SELECT id, phone, email, guest_name, room_number, receptionist, created_at
+      SELECT
+        id,
+        phone,
+        email,
+        guest_name,
+        room_number,
+        receptionist,
+        guests_count,
+        coupon_token,
+        coupon_sent_at,
+        created_at
       FROM checkins
       WHERE reported_at IS NULL
-      ORDER BY created_at ASC
+      ORDER BY
+        CASE WHEN room_number IS NULL OR TRIM(room_number) = '' THEN 1 ELSE 0 END,
+        room_number ASC,
+        created_at ASC
     `,
     )
     .all();

@@ -143,18 +143,30 @@ function closingFooter(hotelName, note) {
               </table>`;
 }
 
+/** Coupon Trattoria: receptionist valorizzato (non placeholder RECEPTION). */
+export function hasRestaurantCoupon(row) {
+  const staff = String(row?.receptionist || '').trim();
+  if (!staff) return false;
+  if (staff.toUpperCase() === 'RECEPTION') return false;
+  return true;
+}
+
 export function buildCsv(rows) {
-  const header = 'Data/Ora,Telefono,Email,Nome,Stanza,Receptionist';
-  const lines = rows.map((row) =>
-    [
-      csvEscape(row.created_at),
+  const header =
+    'Numero Stanza,Nome Capogruppo,Numero Telefono,Email,Receptionist Assistente,Numero Ospiti (Pax),Coupon Ristorante Riscatto,Data/Ora';
+  const lines = rows.map((row) => {
+    const coupon = hasRestaurantCoupon(row) ? 'SI' : 'NO';
+    return [
+      csvEscape(row.room_number || '—'),
+      csvEscape(row.guest_name || '—'),
       csvEscape(row.phone),
-      csvEscape(row.email),
-      csvEscape(row.guest_name),
-      csvEscape(row.room_number),
+      csvEscape(row.email || '—'),
       csvEscape(row.receptionist || 'RECEPTION'),
-    ].join(','),
-  );
+      csvEscape(row.guests_count ?? '2'),
+      csvEscape(coupon),
+      csvEscape(row.created_at),
+    ].join(',');
+  });
   return `\uFEFF${[header, ...lines].join('\n')}\n`;
 }
 
@@ -167,12 +179,12 @@ export function formatRomeDate(date = new Date()) {
   }).format(date);
 }
 
-function buildTableRows(rows) {
+function buildDailyTableRows(rows) {
   if (!rows.length) {
     return `
       <tr>
-        <td colspan="4" style="padding:18px 12px;border-bottom:1px solid #E8E4DC;color:#8A949C;text-align:center;font-family:${BODY};font-style:italic;font-size:15px;">
-          Nessun contatto in questa giornata
+        <td colspan="5" style="padding:18px 8px;border-bottom:1px solid #E5E5EA;color:#8A949C;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;">
+          Nessuna registrazione in questa giornata
         </td>
       </tr>
     `;
@@ -182,22 +194,28 @@ function buildTableRows(rows) {
     .map((row) => {
       const room = cleanCell(row.room_number);
       const name = cleanCell(row.guest_name);
+      const email = cleanCell(row.email);
       const phone = cleanCell(row.phone);
-      const staff = cleanCell(row.receptionist) || 'RECEPTION';
+      const staff = cleanCell(row.receptionist) || '—';
+      const coupon = hasRestaurantCoupon(row);
 
       return `
         <tr>
-          <td style="padding:14px 10px;border-bottom:1px solid #E8E4DC;font-family:${SERIF};font-weight:700;font-size:15px;color:${C};">
+          <td style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,0.05);font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:13px;color:#124453 !important;">
             ${escapeHtml(room || '—')}
           </td>
-          <td style="padding:14px 10px;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:13px;color:#1D1D1F;text-transform:uppercase;font-weight:600;letter-spacing:0.02em;">
-            ${escapeHtml(name || 'NON SPECIFICATO')}
+          <td style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,0.05);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#1D1D1F !important;line-height:1.35;">
+            <div style="font-weight:700;text-transform:uppercase;letter-spacing:0.02em;">${escapeHtml(name || 'NON SPECIFICATO')}</div>
+            <div style="color:#64748B !important;font-size:11px;margin-top:2px;">${escapeHtml(email || '—')}</div>
           </td>
-          <td style="padding:14px 10px;border-bottom:1px solid #E8E4DC;font-family:${MONO};font-size:12.5px;font-weight:600;color:#1D1D1F;">
+          <td style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,0.05);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:600;color:#1D1D1F !important;">
             ${escapeHtml(phone)}
           </td>
-          <td style="padding:14px 10px;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:10.5px;color:#7A8690;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">
+          <td align="center" style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,0.05);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:10.5px;color:#64748B !important;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">
             ${escapeHtml(staff)}
+          </td>
+          <td align="center" style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,0.05);font-size:14px;line-height:1;">
+            ${coupon ? '&#10003;' : '&#10007;'}
           </td>
         </tr>
       `;
@@ -205,116 +223,149 @@ function buildTableRows(rows) {
     .join('');
 }
 
+/**
+ * Report notturno Payel: corpo total-white leggero (niente immagini/CID),
+ * KPI + tabella + numeri WhatsApp; CSV Excel in allegato.
+ */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
-  const subject = `Hotel Canal · Report Payel · ${dateLabel} · ${count}`;
+  const subject = `REPORT RECEPTION — ${count} Nuove Anagrafiche Camere · ${dateLabel}`;
+  const couponCount = rows.filter(hasRestaurantCoupon).length;
 
   const listaSoloNumeri = rows
     .map((row) => row.phone)
     .filter(Boolean)
     .join(', ');
 
-  const bloccoDatiAI = JSON.stringify(
-    rows.map((row) => ({
-      telefono: row.phone,
-      email: row.email || 'NON SPECIFICATO',
-      ospite: row.guest_name || 'NON SPECIFICATO',
-      stanza: row.room_number || '—',
-      receptionist: row.receptionist || 'RECEPTION',
-      data: row.created_at,
-    })),
-    null,
-    2,
-  );
-
   const text = [
     `Ciao Payel,`,
     ``,
-    `Report automatico ${hotelName}. Nuovi contatti: ${count}.`,
-    `Data: ${dateLabel}`,
+    `Resoconto Fast Check-in ${hotelName} — ${dateLabel}.`,
+    `Camere registrate: ${count}`,
+    `Coupon ristorante: ${couponCount}`,
     ``,
-    `Numeri: ${listaSoloNumeri || '—'}`,
+    `Copia rapida WhatsApp:`,
+    listaSoloNumeri || '—',
     ``,
-    `Il file CSV è allegato.`,
+    `Archivio master .CSV allegato (Excel).`,
     ``,
-    `La Direzione — ${hotelName}`,
+    `Generato automaticamente — ${hotelName}`,
   ].join('\n');
 
-  const bodyHtml = `
-              <p style="font-family:${BODY};font-style:italic;font-size:22px;font-weight:500;color:${C} !important;margin:0 0 12px;letter-spacing:0.01em;text-align:left;">
+  const html = `
+<!DOCTYPE html>
+<html lang="it" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>${escapeHtml(subject)}</title>
+  <style type="text/css">
+    :root { color-scheme: light only; }
+    html, body, table, td, th, p, div {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    html, body { background-color: #FFFFFF !important; color: #1D1D1F !important; }
+    @media (prefers-color-mode: dark) {
+      body, table, td, .email-bg, .wrapper, .kpi-card, .utility-box {
+        background-color: #FFFFFF !important; color: #1D1D1F !important;
+      }
+      td, p, h2, div, th, span, strong { color: #1D1D1F !important; }
+      .kpi-card, .utility-box { border-color: #E5E5EA !important; }
+      .data-table th { background-color: #F4F7F9 !important; color: #124453 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#FFFFFF !important;color:#1D1D1F !important;">
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#FFFFFF;">
+    ${escapeHtml(`${count} anagrafiche · ${couponCount} coupon · CSV allegato · ${dateLabel}`)}
+  </div>
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:32px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:540px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E5E5EA;">
+
+          <tr>
+            <td align="center" style="padding:36px 24px;border-bottom:1px solid #E5E5EA;background-color:#FFFFFF !important;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:700;letter-spacing:0.06em;color:#124453 !important;text-transform:uppercase;">
+                ${escapeHtml(hotelName)}
+              </div>
+              <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.25em;color:#64748B !important;margin-top:6px;">
+                Venice Experience · Audit Notturno
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:32px 24px;background-color:#FFFFFF !important;">
+              <p style="font-size:15px;line-height:1.5;color:#124453 !important;margin:0 0 8px;font-weight:600;">
                 Ciao Payel,
               </p>
-              <p style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
-                Ecco il registro automatico dei contatti raccolti via QR in reception
-                <span style="white-space:nowrap;">(${escapeHtml(dateLabel)})</span>.
-                Stanza, ospite, telefono e staff sono qui sotto — CSV in allegato.
+              <p style="font-size:13.5px;line-height:1.5;color:#48484A !important;margin:0 0 24px;font-weight:500;">
+                Resoconto delle anagrafiche dei capigruppo raccolte in modalità Fast Check-in
+                (<span style="white-space:nowrap;">${escapeHtml(dateLabel)}</span>).
               </p>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;background-color:${BOX} !important;border-radius:18px;">
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="kpi-card" style="background-color:#F4F7F9 !important;border-radius:14px;border:1px solid rgba(18,68,83,0.06);margin-bottom:16px;">
                 <tr>
-                  <td align="center" style="padding:24px 18px;">
-                    <span style="${labelStyle};display:block;margin-bottom:10px;">Nuovi ospiti</span>
-                    <strong style="font-family:${SERIF};font-size:42px;color:${C} !important;font-weight:700;letter-spacing:0.04em;line-height:1;">${count}</strong>
-                    <div style="font-family:${SANS};font-size:11px;font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.14em;margin-top:12px;">
-                      Ultime 24 ore · Europe/Rome
-                    </div>
+                  <td width="50%" align="center" style="padding:20px 12px;">
+                    <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B !important;letter-spacing:0.08em;display:block;margin-bottom:4px;">Camere registrate</span>
+                    <strong style="font-size:36px;color:#124453 !important;font-weight:700;line-height:1;">${count}</strong>
+                  </td>
+                  <td width="50%" align="center" style="padding:20px 12px;border-left:1px solid rgba(18,68,83,0.08);">
+                    <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B !important;letter-spacing:0.08em;display:block;margin-bottom:4px;">Coupon Trattoria</span>
+                    <strong style="font-size:36px;color:#124453 !important;font-weight:700;line-height:1;">${couponCount}</strong>
                   </td>
                 </tr>
               </table>
 
-              ${sectionTitle('Registro giornaliero')}
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:0 0 36px;font-size:13px;">
+              <h2 style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;font-weight:700;color:#124453 !important;border-bottom:1px solid rgba(18,68,83,0.15);padding-bottom:6px;margin:24px 0 16px 0;letter-spacing:0.04em;text-transform:uppercase;">
+                Registro Giornaliero
+              </h2>
+
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;margin-bottom:28px;font-size:12.5px;">
                 <thead>
-                  <tr>
-                    ${th('Stanza')}
-                    ${th('Ospite')}
-                    ${th('Telefono')}
-                    ${th('Staff')}
+                  <tr style="background-color:#F4F7F9 !important;">
+                    <th align="left" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:left;padding:10px 8px;background-color:#F4F7F9 !important;">Stanza</th>
+                    <th align="left" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:left;padding:10px 8px;background-color:#F4F7F9 !important;">Ospite / Email</th>
+                    <th align="left" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:left;padding:10px 8px;background-color:#F4F7F9 !important;">Telefono</th>
+                    <th align="center" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:center;padding:10px 8px;background-color:#F4F7F9 !important;">Staff</th>
+                    <th align="center" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:center;padding:10px 8px;background-color:#F4F7F9 !important;">Voucher</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${buildTableRows(rows)}
+                  ${buildDailyTableRows(rows)}
                 </tbody>
               </table>
 
-              ${sectionTitle('Copia rapida numeri')}
-              <p style="${bodyStyle};color:#5C6670 !important;margin:0 0 14px;font-size:15.5px;">
-                Seleziona e copia tutti i numeri (separati da virgola):
-              </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
+              <h2 style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;font-weight:700;color:#124453 !important;border-bottom:1px solid rgba(18,68,83,0.15);padding-bottom:6px;margin:0 0 12px 0;letter-spacing:0.04em;text-transform:uppercase;">
+                Copia Rapida WhatsApp
+              </h2>
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="utility-box" style="background-color:#F4F7F9 !important;border:1px solid #E5E5EA;border-radius:14px;margin-bottom:28px;">
                 <tr>
-                  <td style="padding:20px 16px;font-family:${MONO};font-size:12px;color:#334155;word-break:break-all;line-height:1.55;">
+                  <td style="padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#1D1D1F !important;word-break:break-all;line-height:1.55;">
                     ${escapeHtml(listaSoloNumeri || '—')}
                   </td>
                 </tr>
               </table>
 
-              ${sectionTitle('Dati strutturati')}
-              <p style="${bodyStyle};color:#5C6670 !important;margin:0 0 14px;font-size:15.5px;">
-                JSON pronto per CRM / WhatsApp / automazioni:
+              <p style="font-size:12.5px;line-height:1.5;color:#48484A !important;margin:0 0 8px;">
+                L'archivio master in formato <strong style="color:#124453 !important;">.CSV</strong> (compatibile Excel) è allegato a questo messaggio.
               </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;background-color:${IVORY} !important;border:1px solid #E2E6E8;border-radius:18px;">
-                <tr>
-                  <td style="padding:16px 14px;">
-                    <pre style="margin:0;font-family:${MONO};font-size:11px;color:#334155;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;">${escapeHtml(bloccoDatiAI)}</pre>
-                  </td>
-                </tr>
-              </table>
+              <p style="font-size:11px;line-height:1.45;color:#8A949C !important;margin:0;">
+                Generato automaticamente dal motore ${escapeHtml(hotelName)} Core.
+              </p>
+            </td>
+          </tr>
 
-              ${closingFooter(
-                hotelName,
-                'Il file sorgente <strong style="color:' +
-                  C +
-                  ';font-style:normal;">.CSV</strong> è allegato a questa mail.',
-              )}
-  `;
-
-  const html = reportShell({
-    title: subject,
-    hotelName,
-    eyebrow: 'Santa Croce 553 · Venezia · Report Payel',
-    preheader: `${count} nuovi ospiti · ${dateLabel} · CSV allegato`,
-    bodyHtml,
-  });
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
 
   return { subject, text, html };
 }

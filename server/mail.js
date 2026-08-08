@@ -146,7 +146,7 @@ export async function runDailyReport({ force = false } = {}) {
     rows,
   });
 
-  const filename = `contatti_hotel_canal_${new Date()
+  const filename = `report_presenze_hotel_canal_${new Date()
     .toISOString()
     .slice(0, 10)}.csv`;
 
