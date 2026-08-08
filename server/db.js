@@ -103,13 +103,30 @@ export function getCheckinByCouponToken(token) {
   return db
     .prepare(
       `
-      SELECT id, phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, created_at
+      SELECT id, phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, coupon_sent_at, created_at
       FROM checkins
       WHERE coupon_token = ?
       LIMIT 1
     `,
     )
     .get(token);
+}
+
+export function updateCheckinCouponDetails(id, { roomNumber, receptionist }) {
+  return db
+    .prepare(
+      `
+      UPDATE checkins
+      SET room_number = @roomNumber,
+          receptionist = @receptionist
+      WHERE id = @id
+    `,
+    )
+    .run({
+      id,
+      roomNumber: roomNumber || null,
+      receptionist: receptionist || null,
+    }).changes;
 }
 
 export function getUnreportedCheckins() {

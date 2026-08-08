@@ -10,11 +10,14 @@ import {
   createCouponToken,
   markCouponSent,
   getCheckinByCouponToken,
+  updateCheckinCouponDetails,
 } from './db.js';
 import { runDailyReport, runMonthlyStaffReport } from './mail.js';
 import {
   sendWelcomeEmail,
   buildCouponRedeemPage,
+  buildCouponClaimPage,
+  buildCouponQrPng,
 } from './coupon.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -33,6 +36,7 @@ initDb(DATABASE_PATH);
 
 const app = express();
 app.use(express.json({ limit: '32kb' }));
+app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 app.use(express.static(path.join(rootDir, 'public')));
 
 const REPORT_TRIGGER_TOKEN = 'grandcanalhotel';
@@ -114,6 +118,59 @@ app.get('/coupon/:token/qr.png', async (req, res) => {
   }
 });
 
+app.get('/coupon/claim/:token', (req, res) => {
+  const row = getCheckinByCouponToken(req.params.token);
+  if (!row) {
+    return res
+      .status(404)
+      .type('html')
+      .send(
+        `<!DOCTYPE html><html lang="it"><body style="font-family:sans-serif;padding:40px;text-align:center;"><h1>Link non valido</h1><p>Questo coupon non esiste o è scaduto.</p></body></html>`,
+      );
+  }
+  // Già attivato con stanza → vai al pass
+  if (row.room_number && row.receptionist) {
+    return res.redirect(302, `/coupon/${req.params.token}`);
+  }
+  return res.type('html').send(
+    buildCouponClaimPage({
+      token: req.params.token,
+      guestName: row.guest_name,
+    }),
+  );
+});
+
+app.post('/coupon/claim/:token', (req, res) => {
+  const row = getCheckinByCouponToken(req.params.token);
+  if (!row) {
+    return res
+      .status(404)
+      .type('html')
+      .send(
+        `<!DOCTYPE html><html lang="it"><body style="font-family:sans-serif;padding:40px;text-align:center;"><h1>Link non valido</h1></body></html>`,
+      );
+  }
+
+  const roomNumber = toUpperOrNull(req.body?.roomNumber || req.body?.room || '');
+  const receptionist =
+    normalizeReceptionist(req.body?.receptionist || req.body?.staff || '') ||
+    'TOMMASO';
+
+  if (!roomNumber) {
+    return res.status(400).type('html').send(
+      buildCouponClaimPage({
+        token: req.params.token,
+        guestName: row.guest_name,
+        error: 'Inserisci il numero di stanza.',
+      }),
+    );
+  }
+
+  updateCheckinCouponDetails(row.id, { roomNumber, receptionist });
+  markCouponSent(row.id);
+  return res.redirect(302, `/coupon/${req.params.token}`);
+});
+
 app.get('/coupon/:token', (req, res) => {
   const row = getCheckinByCouponToken(req.params.token);
   if (!row) {
@@ -123,6 +180,11 @@ app.get('/coupon/:token', (req, res) => {
       .send(
         `<!DOCTYPE html><html lang="it"><body style="font-family:sans-serif;padding:40px;text-align:center;"><h1>Coupon non trovato</h1><p>Questo codice non è valido o è scaduto.</p></body></html>`,
       );
+  }
+
+  // Nessuna stanza ancora → form claim (receptionist default TOMMASO)
+  if (!row.room_number || !row.receptionist) {
+    return res.redirect(302, `/coupon/claim/${req.params.token}`);
   }
 
   return res.type('html').send(
@@ -159,6 +221,8 @@ async function handleCheckin(req, res) {
     ).trim();
     const guestsRaw =
       req.body?.guestsCount ?? req.body?.guests_count ?? req.body?.guests ?? '';
+    const languageRaw =
+      req.body?.language ?? req.body?.lang ?? req.body?.locale ?? '';
     const privacy =
       req.body?.privacy === true ||
       req.body?.privacy === 'true' ||
@@ -219,15 +283,26 @@ async function handleCheckin(req, res) {
     }
 
     const guestName = `${firstName} ${lastName}`;
-    const roomNumber = toUpperOrNull(roomNumberRaw);
-
-    const receptionist = normalizeReceptionist(receptionistRaw);
+    let roomNumber = toUpperOrNull(roomNumberRaw);
+    let receptionist = normalizeReceptionist(receptionistRaw);
 
     let guestsCount = Number.parseInt(String(guestsRaw).trim(), 10);
     if (!Number.isFinite(guestsCount) || guestsCount < 1) guestsCount = 2;
     if (guestsCount > 20) guestsCount = 20;
 
-    // Ogni ospite riceve subito QR coupon + welcome concierge
+    const wantCoupon =
+      req.body?.wantCoupon === true ||
+      req.body?.wantCoupon === 'true' ||
+      req.body?.includeCoupon === true ||
+      req.body?.includeCoupon === 'true';
+
+    // Coupon in mail solo se richiesto + stanza + receptionist
+    const includeCoupon = Boolean(wantCoupon && roomNumber && receptionist);
+    if (!includeCoupon) {
+      roomNumber = null;
+      receptionist = null;
+    }
+
     const couponToken = createCouponToken();
 
     const id = insertCheckin({
@@ -249,11 +324,13 @@ async function handleCheckin(req, res) {
         receptionist,
         guestsCount,
         token: couponToken,
+        language: languageRaw,
+        includeCoupon,
       });
-      markCouponSent(id);
+      if (includeCoupon) markCouponSent(id);
       welcomeSent = true;
       console.log(
-        `[welcome] Concierge email → ${email} · room ${roomNumber || '—'} · staff ${receptionist || 'RECEPTION'} · guests ${guestsCount}`,
+        `[welcome] Concierge email → ${email} · lang ${String(languageRaw || 'en').slice(0, 2)} · coupon ${includeCoupon ? 'yes' : 'claim-link'} · room ${roomNumber || '—'} · staff ${receptionist || '—'} · guests ${guestsCount}`,
       );
     } catch (mailErr) {
       console.error('[welcome] Errore invio:', mailErr.message || mailErr);
@@ -265,7 +342,7 @@ async function handleCheckin(req, res) {
       checkCode: `HC-${String(id).padStart(4, '0')}`,
       createdAt: new Date().toISOString(),
       welcomeSent,
-      couponSent: welcomeSent,
+      couponSent: includeCoupon && welcomeSent,
       receptionist: receptionist || null,
       guestsCount,
     });

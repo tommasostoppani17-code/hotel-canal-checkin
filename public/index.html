@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Hotel Canal — Fast Registration</title>
+  <title>Hotel Canal - Fast Registration</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="/venice-bg.jpg">
+  <link rel="preload" as="image" href="/restaurant/01-terrazza-canale.jpg">
   <style>
     :root {
       --canal-petroleum: #124453;
       --canal-petroleum-hover: #0A2D37;
       --text-main: #1D1D1F;
       --text-muted: #515154;
-      --radius-ios: 14px;
-      --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --radius-ios: 18px;
+      --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Blocca rimbalzo/overscroll del browser — effetto app a schermo fisso */
+    /* Blocca rimbalzo/overscroll del browser - effetto app a schermo fisso */
     html, body {
       margin: 0;
       width: 100%;
@@ -85,45 +86,15 @@
       -webkit-backdrop-filter: blur(40px) saturate(220%);
       border: 1px solid rgba(255, 255, 255, 0.7);
       border-radius: 30px;
-      padding: 40px 0 32px;
+      padding: 28px 0 28px;
       box-sizing: border-box;
       box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.02),
         0 20px 50px rgba(10, 45, 55, 0.18),
         inset 0 1px 1px rgba(255, 255, 255, 0.9);
-      overflow: hidden !important;
-    }
-
-    .lang-selector {
-      position: absolute;
-      top: 20px;
-      right: 24px;
-      display: flex;
-      gap: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      z-index: 10;
-    }
-
-    .lang-btn {
-      appearance: none;
-      border: none;
-      background: none;
-      padding: 0;
-      margin: 0;
-      font: inherit;
-      color: var(--text-muted);
-      cursor: pointer;
-      opacity: 0.55;
-      transition: color 0.2s, opacity 0.2s;
-      border-bottom: 1.5px solid transparent;
-    }
-
-    .lang-btn.active {
-      color: var(--canal-petroleum);
-      opacity: 1;
-      border-bottom-color: var(--canal-petroleum);
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .step-dots {
@@ -151,24 +122,36 @@
       display: none;
     }
 
+    button, a, input, select, textarea, label, .btn-ghost, .btn-canal {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .slider-viewport {
       width: 100%;
       overflow: hidden !important;
       position: relative;
       flex: 0 0 auto;
-      /* Altezza impostata da JS sullo step attivo */
-      transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      /* Altezza sync via JS - niente transition height (evita reflow/jank) */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
 
-    /* Binario: larghezza = card; gli step escono a destra e vengono clippati */
+    /* Binario GPU: solo translate3d + opacity (niente top/left/margin/width) */
     .slider-track {
       display: flex;
       flex-wrap: nowrap;
       align-items: flex-start;
       width: 100%;
       transform: translate3d(0, 0, 0);
-      transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+      -webkit-transform: translate3d(0, 0, 0);
+      transition: transform 0.5s var(--ios-ease);
+      -webkit-transition: -webkit-transform 0.5s var(--ios-ease);
       will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      perspective: 1000px;
+      -webkit-perspective: 1000px;
     }
 
     .slide-step {
@@ -180,8 +163,13 @@
       display: flex;
       flex-direction: column;
       height: auto;
-      overflow: hidden !important;
+      overflow: visible;
       padding: 0 32px;
+      /* Layer compositing per testo stabile durante lo slide */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     .step-body {
@@ -192,9 +180,10 @@
     }
 
     .step-footer-fixed {
-      padding-top: 4px;
+      padding-top: 8px;
       flex-shrink: 0;
-      margin-top: 4px;
+      margin-top: 16px;
+      text-align: center;
     }
 
     .step-footer-fixed .privacy-box {
@@ -235,29 +224,34 @@
       pointer-events: none;
     }
 
-    .rest-photos {
-      display: none !important;
+    /* Vetrina Step 2: hero + striscia piatti */
+    .restaurant-showcase {
+      margin: 0 0 14px;
+      flex-shrink: 0;
     }
 
-    /* Vetrina fotografica: proporzioni reali della foto (niente crop a 150px) */
     .restaurant-hero-card {
       position: relative;
       width: 100%;
-      border-radius: 16px;
+      height: 188px;
+      border-radius: 18px;
       overflow: hidden;
-      margin: 0 0 14px;
+      margin: 0;
       flex-shrink: 0;
-      box-shadow: 0 8px 24px rgba(18, 68, 83, 0.15);
+      box-shadow: 0 8px 24px rgba(18, 68, 83, 0.14);
       background: #124453;
+    }
+
+    #step2 .restaurant-hero-card {
+      margin-top: 0;
     }
 
     .restaurant-hero-card > img {
       display: block;
       width: 100%;
-      height: auto;
-      max-height: min(52dvh, 360px);
+      height: 100%;
       object-fit: cover;
-      object-position: center 28%;
+      object-position: center 42%;
       border: 0;
     }
 
@@ -266,7 +260,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 28px 16px 14px;
+      padding: 36px 16px 14px;
       box-sizing: border-box;
       background: linear-gradient(transparent, rgba(18, 68, 83, 0.92));
       display: flex;
@@ -276,12 +270,12 @@
 
     .restaurant-hero-card h4 {
       font-family: "Cinzel", Georgia, serif;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       color: #FFFFFF;
       margin: 0 0 2px;
       letter-spacing: 0.02em;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
 
     .restaurant-hero-card p {
@@ -293,6 +287,35 @@
       letter-spacing: 0.05em;
     }
 
+    .rest-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .rest-strip figure {
+      margin: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #124453;
+      aspect-ratio: 1 / 1;
+      box-shadow: 0 4px 14px rgba(18, 68, 83, 0.1);
+    }
+
+    .rest-strip img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 0;
+      transition: transform 0.45s var(--ios-ease);
+    }
+
+    .rest-strip figure:active img {
+      transform: scale(1.04);
+    }
+
     .rest-desc-hero {
       font-size: 12.5px;
       line-height: 1.5;
@@ -301,6 +324,18 @@
       margin: 0 0 16px;
       padding: 0 4px;
       font-weight: 500;
+    }
+
+    #step2 .form-grid-container {
+      gap: 12px;
+    }
+
+    #step2 .form-group.span-2 {
+      margin-top: 4px;
+    }
+
+    #step2 .step-footer-fixed {
+      margin-top: 20px;
     }
 
     .header {
@@ -572,7 +607,7 @@
       background: #FFFFFF;
     }
 
-    /* Toast solo per errori di rete/server — fuori flusso, non sposta la griglia */
+    /* Toast solo per errori di rete/server - fuori flusso, non sposta la griglia */
     .error {
       display: none;
       position: absolute;
@@ -683,14 +718,6 @@
   <div class="background-overlay" aria-hidden="true"></div>
 
   <div class="apple-card" id="card">
-    <div class="lang-selector" role="group" aria-label="Language" id="langBar">
-      <button type="button" class="lang-btn" data-lang="en">EN</button>
-      <button type="button" class="lang-btn" data-lang="it">IT</button>
-      <button type="button" class="lang-btn" data-lang="fr">FR</button>
-      <button type="button" class="lang-btn" data-lang="de">DE</button>
-      <button type="button" class="lang-btn" data-lang="es">ES</button>
-    </div>
-
     <div class="step-dots" id="stepDots" aria-hidden="true">
       <span class="active"></span><span></span><span></span>
     </div>
@@ -739,28 +766,36 @@
         </div>
       </section>
 
-      <!-- STEP 2: hero fotografico + campi -->
+      <!-- STEP 2: vetrina ristorante + campi; receptionist a testo libero -->
       <section class="slide-step" id="step2">
-        <div class="header" style="margin-bottom: 14px;">
-          <span class="hotel-title">Hotel Canal</span>
-          <span class="hotel-subtitle">Venice Experience</span>
-          <h1 id="lbl-title-2" style="display:none;">Regalo di benvenuto</h1>
-        </div>
-
         <div class="step-body">
-          <div class="restaurant-hero-card" aria-label="Trattoria alla Terrazza">
-            <img src="/restaurant/hero-form.jpg" alt="Trattoria alla Terrazza — tavolo sul canale" width="768" height="1022" decoding="async" id="restHeroImg">
-            <div class="hero-caption">
-              <h4>Trattoria alla Terrazza</h4>
-              <p id="lbl-rest-tag">Privilegio ospiti esclusivo</p>
+          <div class="restaurant-showcase" aria-label="Trattoria alla Terrazza">
+            <div class="restaurant-hero-card">
+              <img src="/restaurant/01-terrazza-canale.jpg" alt="Trattoria alla Terrazza sul canale" width="900" height="600" decoding="async" id="restHeroImg">
+              <div class="hero-caption">
+                <h4>Trattoria alla Terrazza</h4>
+                <p id="lbl-rest-tag">Privilegio ospiti esclusivo</p>
+              </div>
+            </div>
+            <div class="rest-strip" aria-hidden="true">
+              <figure>
+                <img src="/restaurant/11-tavolo-canale.jpg" alt="" width="400" height="400" loading="lazy" decoding="async">
+              </figure>
+              <figure>
+                <img src="/restaurant/02-gondola-ingresso.jpg" alt="" width="400" height="400" loading="lazy" decoding="async">
+              </figure>
+              <figure>
+                <img src="/restaurant/08-risotto.jpg" alt="" width="400" height="400" loading="lazy" decoding="async">
+              </figure>
             </div>
           </div>
+
           <p id="lbl-rest-desc" class="rest-desc-hero">
-            Coupon esclusivo 10% completando stanza e receptionist.
+            Coupon 10%: inserisci numero stanza e nome receptionist.
           </p>
-          <!-- hidden for i18n compatibility -->
           <p class="rest-sub" id="lbl-rest-sub" hidden>Ristorante tipico veneziano</p>
           <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
+          <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
 
           <div class="form-grid-container">
             <div class="form-group">
@@ -771,9 +806,9 @@
               <label id="lbl-guests" for="guests">Ospiti</label>
               <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="2" placeholder="2">
             </div>
-            <div class="form-group span-2" style="margin-top: 4px;">
+            <div class="form-group span-2">
               <label id="lbl-staff" for="receptionist">Receptionist</label>
-              <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="name" placeholder="Es. Maria" maxlength="40">
+              <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Nome" inputmode="text">
             </div>
           </div>
         </div>
@@ -816,19 +851,21 @@
         lastName: 'Cognome *',
         nameRequired: 'Il nome è obbligatorio.',
         lastNameRequired: 'Il cognome è obbligatorio.',
-        room: 'Numero di Stanza (Opzionale)',
+        room: 'Numero di Stanza',
         roomShort: 'Stanza',
         guestsShort: 'Ospiti',
         staffShort: 'Receptionist',
-        restDescShort: 'Coupon esclusivo 10% completando stanza e receptionist.',
+        staffPlaceholder: 'Nome',
+        restDescShort: 'Coupon 10%: inserisci numero stanza e nome receptionist.',
         restTag: 'Privilegio ospiti esclusivo',
         nextBtn: 'Continua',
         restSub: 'Ristorante tipico veneziano',
         restTitle: 'Sconto 10% di benvenuto',
-        restDesc: 'Riceverai subito via email la guida e lo sconto 10%. Stanza e nome del receptionist sono opzionali.',
-        staff: 'Nome del Receptionist (Opzionale)',
-        staffNone: 'Es. Maria',
+        restDesc: 'Per il coupon 10% servono numero di stanza e nome del receptionist.',
+        staff: 'Nome del Receptionist',
+        staffNone: 'Seleziona…',
         staffInvalid: 'Inserisci il nome del receptionist.',
+        roomInvalid: 'Inserisci il numero di stanza.',
         guests: 'Numero ospiti',
         button: 'Conferma e ricevi coupon',
         skip: 'Salta, solo registrazione',
@@ -866,19 +903,21 @@
         lastName: 'Last Name *',
         nameRequired: 'First name is required.',
         lastNameRequired: 'Last name is required.',
-        room: 'Room Number (Optional)',
+        room: 'Room Number',
         roomShort: 'Room',
         guestsShort: 'Guests',
         staffShort: 'Receptionist',
-        restDescShort: 'Exclusive 10% coupon — add room and receptionist.',
+        staffPlaceholder: 'Name',
+        restDescShort: '10% coupon: enter room number and receptionist name.',
         restTag: 'Exclusive Guest Benefit',
         nextBtn: 'Continue',
         restSub: 'Typical Venetian restaurant',
         restTitle: '10% Welcome Discount',
-        restDesc: 'You will instantly receive a welcome guide and 10% discount. Room and receptionist name are optional.',
-        staff: 'Receptionist Name (Optional)',
-        staffNone: 'e.g. Maria',
+        restDesc: 'Room number and receptionist name are required for the 10% coupon.',
+        staff: 'Receptionist Name',
+        staffNone: 'Select…',
         staffInvalid: 'Please enter the receptionist name.',
+        roomInvalid: 'Please enter the room number.',
         guests: 'Number of guests',
         button: 'Confirm & get coupon',
         skip: 'Skip, registration only',
@@ -915,15 +954,21 @@
         lastName: 'Nom *',
         nameRequired: 'Le prénom est obligatoire.',
         lastNameRequired: 'Le nom est obligatoire.',
-        room: 'Numéro de chambre (optionnel)',
+        room: 'Numéro de chambre',
+        roomShort: 'Chambre',
+        guestsShort: 'Pers.',
+        staffShort: 'Réceptionniste',
+        staffPlaceholder: 'Nom',
+        restDescShort: 'Coupon 10% : n° de chambre et nom du réceptionniste.',
         nextBtn: 'Continuer',
         restSub: 'Restaurant typique vénitien',
         restTitle: 'Réduction de bienvenue 10%',
-        restDesc: 'Guide et −10% par e-mail. Chambre et nom du réceptionniste optionnels.',
+        restDesc: 'Chambre et nom du réceptionniste requis pour le coupon 10%.',
         restTag: 'Privilège exclusif clients',
-        staff: 'Nom du réceptionniste (optionnel)',
-        staffNone: 'ex. Maria',
+        staff: 'Nom du réceptionniste',
+        staffNone: 'Choisir…',
         staffInvalid: 'Entrez le nom du réceptionniste.',
+        roomInvalid: 'Entrez le numéro de chambre.',
         guests: 'Nombre de personnes',
         button: 'Confirmer et recevoir le coupon',
         skip: 'Passer, inscription seule',
@@ -960,15 +1005,21 @@
         lastName: 'Nachname *',
         nameRequired: 'Vorname ist erforderlich.',
         lastNameRequired: 'Nachname ist erforderlich.',
-        room: 'Zimmernummer (optional)',
+        room: 'Zimmernummer',
+        roomShort: 'Zimmer',
+        guestsShort: 'Gäste',
+        staffShort: 'Empfang',
+        staffPlaceholder: 'Name',
+        restDescShort: '10%-Gutschein: Zimmernummer und Empfangsname eingeben.',
         nextBtn: 'Weiter',
         restSub: 'Typisch venezianisches Restaurant',
         restTitle: '10% Willkommensrabatt',
-        restDesc: 'Willkommensguide und 10% per E-Mail. Zimmer und Empfangsname optional.',
+        restDesc: 'Für den 10%-Gutschein sind Zimmer und Empfangsname erforderlich.',
         restTag: 'Exklusiver Gästevorteil',
-        staff: 'Name Empfang (optional)',
-        staffNone: 'z. B. Maria',
+        staff: 'Name Empfang',
+        staffNone: 'Auswählen…',
         staffInvalid: 'Bitte den Namen des Empfangs eingeben.',
+        roomInvalid: 'Bitte die Zimmernummer eingeben.',
         guests: 'Anzahl Gäste',
         button: 'Bestätigen & Gutschein erhalten',
         skip: 'Überspringen, nur Registrierung',
@@ -1005,15 +1056,21 @@
         lastName: 'Apellido *',
         nameRequired: 'El nombre es obligatorio.',
         lastNameRequired: 'El apellido es obligatorio.',
-        room: 'Número de habitación (opcional)',
+        room: 'Número de habitación',
+        roomShort: 'Habitación',
+        guestsShort: 'Huéspedes',
+        staffShort: 'Recepcionista',
+        staffPlaceholder: 'Nombre',
+        restDescShort: 'Cupón 10%: número de habitación y nombre del recepcionista.',
         nextBtn: 'Continuar',
         restSub: 'Restaurante típico veneciano',
         restTitle: 'Descuento de bienvenida 10%',
-        restDesc: 'Guía y 10% por email. Habitación y nombre del recepcionista opcionales.',
+        restDesc: 'Para el cupón 10% hacen falta habitación y nombre del recepcionista.',
         restTag: 'Beneficio exclusivo huéspedes',
-        staff: 'Nombre del recepcionista (opcional)',
-        staffNone: 'ej. Maria',
+        staff: 'Nombre del recepcionista',
+        staffNone: 'Seleccionar…',
         staffInvalid: 'Escriba el nombre del recepcionista.',
+        roomInvalid: 'Introduzca el número de habitación.',
         guests: 'Número de huéspedes',
         button: 'Confirmar y recibir cupón',
         skip: 'Omitir, solo registro',
@@ -1109,7 +1166,9 @@
     }
 
     function detectLanguage() {
-      const nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+      const nav = (navigator.language || navigator.userLanguage || 'en')
+        .slice(0, 2)
+        .toLowerCase();
       return translations[nav] ? nav : 'en';
     }
 
@@ -1121,15 +1180,20 @@
 
     function setStep(step) {
       currentStep = step;
-      // Clip geometrico: ogni step = 100% della card → -0%, -100%, -200%
-      track.style.transform = `translate3d(-${(step - 1) * 100}%, 0, 0)`;
-      if (dots) {
-        dots.classList.toggle('hidden', step === TOTAL_STEPS);
-        [...dots.children].forEach((el, i) => {
-          el.classList.toggle('active', i === step - 1);
-        });
-      }
-      requestAnimationFrame(syncViewportHeight);
+      // Solo GPU: translate3d (X, Y, Z) - niente top/left/margin
+      const x = `translate3d(-${(step - 1) * 100}%, 0, 0)`;
+      requestAnimationFrame(() => {
+        track.style.webkitTransform = x;
+        track.style.transform = x;
+        if (dots) {
+          dots.classList.toggle('hidden', step === TOTAL_STEPS);
+          [...dots.children].forEach((el, i) => {
+            el.classList.toggle('active', i === step - 1);
+          });
+        }
+        // Altezza dopo il paint dello slide (evita reflow in mezzo all'animazione)
+        requestAnimationFrame(syncViewportHeight);
+      });
     }
 
     function shakeCard() {
@@ -1180,6 +1244,7 @@
       lastNameEl.classList.remove('is-invalid');
       privacyBox.classList.remove('is-invalid', 'shake');
       staffEl?.classList.remove('is-invalid');
+      roomEl?.classList.remove('is-invalid');
       document
         .querySelectorAll('.label-error-state')
         .forEach((el) => el.classList.remove('label-error-state'));
@@ -1205,7 +1270,7 @@
       const restTag = document.getElementById('lbl-rest-tag');
       if (restTag) restTag.textContent = dict.restTag || dict.restTitle;
       document.getElementById('lbl-staff').textContent = dict.staffShort || dict.staff;
-      if (staffEl && dict.staffNone) staffEl.placeholder = dict.staffNone;
+      if (staffEl) staffEl.placeholder = dict.staffPlaceholder || 'Nome';
       const guestsLbl = document.getElementById('lbl-guests');
       if (guestsLbl) guestsLbl.textContent = dict.guestsShort || dict.guests || 'Ospiti';
       btnNext.textContent = dict.nextBtn;
@@ -1218,9 +1283,6 @@
       if (!translations[lang]) lang = 'en';
       currentLang = lang;
       document.documentElement.lang = lang;
-      document.querySelectorAll('.lang-btn').forEach((el) => {
-        el.classList.toggle('active', el.dataset.lang === lang);
-      });
 
       if (!formMode) return;
       applyFormLabels();
@@ -1233,28 +1295,10 @@
       }
     }
 
-    function langBarHtml() {
-      return ['en', 'it', 'fr', 'de', 'es']
-        .map(
-          (lang) =>
-            `<button type="button" class="lang-btn${lang === currentLang ? ' active' : ''}" data-lang="${lang}">${lang.toUpperCase()}</button>`,
-        )
-        .join('');
-    }
-
-    function bindLangButtons(root = document) {
-      root.querySelectorAll('.lang-btn').forEach((el) => {
-        el.addEventListener('click', () => {
-          setLanguage(el.dataset.lang);
-        });
-      });
-    }
-
     function showAlreadyRegisteredScreen() {
       formMode = false;
       const dict = t();
       card.innerHTML = `
-        <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
         <div style="padding: 28px 32px 12px; text-align: center;">
           <div class="success-check" aria-hidden="true"></div>
           <h1 style="font-family:Cinzel,Georgia,serif;font-size:21px;color:#124453;margin:0 0 12px;">${dict.alreadyRegisteredTitle}</h1>
@@ -1262,7 +1306,6 @@
           <button type="button" class="btn-ghost" id="btnTestReset" style="margin-top:22px;">Nuovo check-in (test)</button>
         </div>
       `;
-      bindLangButtons(card);
       document.getElementById('btnTestReset')?.addEventListener('click', () => {
         clearRegistrationLock();
         window.location.href = `${location.pathname}?test=1`;
@@ -1273,14 +1316,12 @@
       formMode = false;
       const dict = t();
       card.innerHTML = `
-        <div class="lang-selector" role="group" aria-label="Language">${langBarHtml()}</div>
         <div style="padding: 28px 32px 12px; text-align: center;">
           <h1 style="font-family:Cinzel,Georgia,serif;font-size:20px;color:#C62828;margin:0 0 12px;">${dict.networkErrorTitle}</h1>
           <p style="font-size:12.5px;color:#515154;line-height:1.5;margin:0 0 20px;font-weight:500;">${dict.networkErrorSub}</p>
           <button type="button" class="btn-canal" id="retryBtn">${dict.retry}</button>
         </div>
       `;
-      bindLangButtons(card);
       document.getElementById('retryBtn')?.addEventListener('click', () => window.location.reload());
     }
 
@@ -1389,6 +1430,23 @@
       return true;
     }
 
+    /** Coupon: stanza + nome receptionist obbligatori */
+    function validateCouponFields() {
+      clearError();
+      const dict = t();
+      const roomRaw = roomEl.value.trim();
+      const staffRaw = staffEl.value.trim();
+      if (!roomRaw) {
+        showError(dict.roomInvalid, roomEl);
+        return false;
+      }
+      if (!normalizeReceptionist(staffRaw)) {
+        showError(dict.staffInvalid, staffEl);
+        return false;
+      }
+      return true;
+    }
+
     btnNext.addEventListener('click', () => {
       if (submitting) return;
       if (!validateStep1()) return;
@@ -1430,20 +1488,26 @@
       firstNameEl.focus();
     });
 
-    btnSubmit.addEventListener('click', () => submitFinal({ clearStaff: false }));
+    btnSubmit.addEventListener('click', () => {
+      if (submitting) return;
+      if (!validateCouponFields()) return;
+      submitFinal({ clearStaff: false, requireCoupon: true });
+    });
     btnSkip?.addEventListener('click', () => {
       if (submitting) return;
       staffEl.value = '';
-      submitFinal({ clearStaff: true });
+      roomEl.value = '';
+      submitFinal({ clearStaff: true, requireCoupon: false });
     });
 
-    async function submitFinal({ clearStaff = false } = {}) {
+    async function submitFinal({ clearStaff = false, requireCoupon = false } = {}) {
       if (submitting) return;
       if (currentStep !== 2) setStep(2);
       if (!validateStep1()) {
         setStep(1);
         return;
       }
+      if (requireCoupon && !validateCouponFields()) return;
 
       const dict = t();
       const phoneRaw = phoneEl.value.trim();
@@ -1451,7 +1515,7 @@
       const firstName = firstNameEl.value.trim();
       const lastName = lastNameEl.value.trim();
       const guestNameRaw = `${firstName} ${lastName}`.trim();
-      const roomRaw = roomEl.value.trim();
+      const roomRaw = clearStaff ? '' : roomEl.value.trim();
       const staffRaw = clearStaff ? '' : staffEl.value.trim();
       const receptionistNormalized = clearStaff
         ? null
@@ -1479,6 +1543,7 @@
         roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
         receptionist: receptionistNormalized,
         guestsCount,
+        wantCoupon: Boolean(requireCoupon),
         privacy: true,
         language: currentLang,
       };
@@ -1549,11 +1614,10 @@
       }
     }
 
-    // Init
+    // Init: lingua dal telefono (en / it / fr / de / es), altrimenti inglese
     currentLang = detectLanguage();
     clearRegistrationLock(); // sempre sblocca in fase di test
 
-    bindLangButtons();
     setLanguage(currentLang);
     setStep(1);
     window.addEventListener('resize', syncViewportHeight);

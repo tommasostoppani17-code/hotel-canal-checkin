@@ -51,7 +51,7 @@ async function sendViaResend({ to, subject, text, html, filename, csv }) {
 
   const from = env(
     'SMTP_FROM',
-    'Hotel Canal Check-in <onboarding@resend.dev>',
+    'Welcome to Hotel Canal <onboarding@resend.dev>',
   );
 
   const { data, error } = await resend.emails.send({

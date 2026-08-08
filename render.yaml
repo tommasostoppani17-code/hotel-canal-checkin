@@ -1,5 +1,5 @@
-# Hotel Canal Check-in — Blueprint Render (free)
-# Docs: https://render.com/docs/blueprint-spec
+# Hotel Canal Check-in — Blueprint Render
+# https://dashboard.render.com/blueprints
 
 services:
   - type: web
@@ -29,3 +29,57 @@ services:
         sync: false
       - key: CRON_SECRET
         sync: false
+      - key: WIFI_SSID
+        sync: false
+      - key: WIFI_PASSWORD
+        sync: false
+      - key: WIFI_TYPE
+        value: WPA
+      - key: DOOR_CODE_WALTER
+        sync: false
+      - key: DOOR_CODE_AIRONE
+        sync: false
+
+  # 00:00 Europe/Rome ≈ 22:00 UTC (estate) / 23:00 UTC (inverno) — usiamo 22:00 UTC
+  - type: cron
+    name: hotel-canal-daily-report
+    runtime: node
+    plan: free
+    region: frankfurt
+    schedule: "0 22 * * *"
+    buildCommand: npm install
+    startCommand: node scripts/trigger-cron.mjs daily
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: CRON_SECRET
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+      - key: HOST
+        fromService:
+          name: hotel-canal-checkin
+          type: web
+          property: host
+
+  # Fine mese 23:59 Rome ≈ 21:59 UTC estate — check ogni sera; il server salta se non è ultimo giorno
+  - type: cron
+    name: hotel-canal-monthly-report
+    runtime: node
+    plan: free
+    region: frankfurt
+    schedule: "59 21 * * *"
+    buildCommand: npm install
+    startCommand: node scripts/trigger-cron.mjs monthly
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: CRON_SECRET
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+      - key: HOST
+        fromService:
+          name: hotel-canal-checkin
+          type: web
+          property: host
