@@ -236,28 +236,71 @@
     }
 
     .rest-photos {
-      display: flex;
-      gap: 8px;
-      margin: 10px 0 0;
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      padding-bottom: 2px;
+      display: none !important;
     }
 
-    .rest-photos::-webkit-scrollbar {
-      display: none;
+    /* Vetrina fotografica: proporzioni reali della foto (niente crop a 150px) */
+    .restaurant-hero-card {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 0 0 14px;
+      flex-shrink: 0;
+      box-shadow: 0 8px 24px rgba(18, 68, 83, 0.15);
+      background: #124453;
     }
 
-    .rest-photos img {
-      flex: 0 0 auto;
-      width: 96px;
-      height: 68px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid rgba(18, 68, 83, 0.12);
+    .restaurant-hero-card > img {
       display: block;
+      width: 100%;
+      height: auto;
+      max-height: min(52dvh, 360px);
+      object-fit: cover;
+      object-position: center 28%;
+      border: 0;
+    }
+
+    .restaurant-hero-card .hero-caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 28px 16px 14px;
+      box-sizing: border-box;
+      background: linear-gradient(transparent, rgba(18, 68, 83, 0.92));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .restaurant-hero-card h4 {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin: 0 0 2px;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    .restaurant-hero-card p {
+      font-size: 11px;
+      color: #A0C2CB;
+      margin: 0;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .rest-desc-hero {
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      text-align: center;
+      margin: 0 0 16px;
+      padding: 0 4px;
+      font-weight: 500;
     }
 
     .header {
@@ -313,26 +356,6 @@
       position: relative;
     }
 
-    .field-hint {
-      display: none;
-      position: absolute;
-      left: 2px;
-      top: calc(100% + 3px);
-      font-size: 10px;
-      font-weight: 600;
-      color: #C62828;
-      letter-spacing: 0.01em;
-      line-height: 1.2;
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 2;
-      animation: fadeInError 0.2s ease-out;
-    }
-
-    .form-group.has-error .field-hint {
-      display: block;
-    }
-
     .form-group label {
       display: block;
       font-size: 10.5px;
@@ -342,6 +365,12 @@
       color: var(--canal-petroleum);
       margin-bottom: 8px;
       padding-left: 2px;
+      transition: color 0.2s ease;
+    }
+
+    .form-group label.label-error-state,
+    #lbl-privacy.label-error-state {
+      color: #C62828 !important;
     }
 
     .apple-input {
@@ -376,8 +405,10 @@
 
     .apple-input.is-invalid {
       border-color: #C62828 !important;
-      background: #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1) !important;
+      background: #FFF9F9 !important;
+      box-shadow:
+        0 0 0 3.5px rgba(198, 40, 40, 0.12),
+        inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
     }
 
     select.apple-input {
@@ -541,7 +572,7 @@
       background: #FFFFFF;
     }
 
-    /* Toast errori: fluttua in basso, non schiaccia header/logo */
+    /* Toast solo per errori di rete/server — fuori flusso, non sposta la griglia */
     .error {
       display: none;
       position: absolute;
@@ -708,29 +739,28 @@
         </div>
       </section>
 
-      <!-- STEP 2: gift compatto + campi + CTA in fondo -->
+      <!-- STEP 2: hero fotografico + campi -->
       <section class="slide-step" id="step2">
-        <div class="header">
+        <div class="header" style="margin-bottom: 14px;">
           <span class="hotel-title">Hotel Canal</span>
           <span class="hotel-subtitle">Venice Experience</span>
-          <h1 id="lbl-title-2">Regalo di benvenuto</h1>
+          <h1 id="lbl-title-2" style="display:none;">Regalo di benvenuto</h1>
         </div>
 
         <div class="step-body">
-          <div class="welcome-gift">
-            <p class="rest-brand">🍷 Trattoria alla Terrazza</p>
-            <p class="rest-sub" id="lbl-rest-sub">Ristorante tipico veneziano</p>
-            <h4 id="lbl-rest-title">Sconto 10% di benvenuto</h4>
-            <p id="lbl-rest-desc">Coupon esclusivo 10% completando stanza e receptionist.</p>
-            <div class="rest-photos" aria-label="Trattoria alla Terrazza">
-              <img src="/restaurant/11-tavolo-canale.jpg" alt="Tavolo sul canale" width="96" height="68" loading="lazy">
-              <img src="/restaurant/01-terrazza-canale.jpg" alt="Terrazza sul canale" width="96" height="68" loading="lazy">
-              <img src="/restaurant/02-gondola-ingresso.jpg" alt="Ingresso con gondola" width="96" height="68" loading="lazy">
-              <img src="/restaurant/03-sala-interna.jpg" alt="Sala interna" width="96" height="68" loading="lazy">
-              <img src="/restaurant/07-spaghetti-mare.jpg" alt="Spaghetti ai frutti di mare" width="96" height="68" loading="lazy">
-              <img src="/restaurant/08-risotto.jpg" alt="Risotto" width="96" height="68" loading="lazy">
+          <div class="restaurant-hero-card" aria-label="Trattoria alla Terrazza">
+            <img src="/restaurant/hero-form.jpg" alt="Trattoria alla Terrazza — tavolo sul canale" width="768" height="1022" decoding="async">
+            <div class="hero-caption">
+              <h4>Trattoria alla Terrazza</h4>
+              <p id="lbl-rest-tag">Privilegio ospiti esclusivo</p>
             </div>
           </div>
+          <p id="lbl-rest-desc" class="rest-desc-hero">
+            Coupon esclusivo 10% completando stanza e receptionist.
+          </p>
+          <!-- hidden for i18n compatibility -->
+          <p class="rest-sub" id="lbl-rest-sub" hidden>Ristorante tipico veneziano</p>
+          <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
 
           <div class="form-grid-container">
             <div class="form-group">
@@ -791,6 +821,7 @@
         guestsShort: 'Ospiti',
         staffShort: 'Receptionist',
         restDescShort: 'Coupon esclusivo 10% completando stanza e receptionist.',
+        restTag: 'Privilegio ospiti esclusivo',
         nextBtn: 'Continua',
         restSub: 'Ristorante tipico veneziano',
         restTitle: 'Sconto 10% di benvenuto',
@@ -840,6 +871,7 @@
         guestsShort: 'Guests',
         staffShort: 'Receptionist',
         restDescShort: 'Exclusive 10% coupon — add room and receptionist.',
+        restTag: 'Exclusive Guest Benefit',
         nextBtn: 'Continue',
         restSub: 'Typical Venetian restaurant',
         restTitle: '10% Welcome Discount',
@@ -888,6 +920,7 @@
         restSub: 'Restaurant typique vénitien',
         restTitle: 'Réduction de bienvenue 10%',
         restDesc: 'Guide et −10% par e-mail. Chambre et nom du réceptionniste optionnels.',
+        restTag: 'Privilège exclusif clients',
         staff: 'Nom du réceptionniste (optionnel)',
         staffNone: 'ex. Maria',
         staffInvalid: 'Entrez le nom du réceptionniste.',
@@ -932,6 +965,7 @@
         restSub: 'Typisch venezianisches Restaurant',
         restTitle: '10% Willkommensrabatt',
         restDesc: 'Willkommensguide und 10% per E-Mail. Zimmer und Empfangsname optional.',
+        restTag: 'Exklusiver Gästevorteil',
         staff: 'Name Empfang (optional)',
         staffNone: 'z. B. Maria',
         staffInvalid: 'Bitte den Namen des Empfangs eingeben.',
@@ -976,6 +1010,7 @@
         restSub: 'Restaurante típico veneciano',
         restTitle: 'Descuento de bienvenida 10%',
         restDesc: 'Guía y 10% por email. Habitación y nombre del recepcionista opcionales.',
+        restTag: 'Beneficio exclusivo huéspedes',
         staff: 'Nombre del recepcionista (opcional)',
         staffNone: 'ej. Maria',
         staffInvalid: 'Escriba el nombre del recepcionista.',
@@ -1104,29 +1139,20 @@
       setTimeout(() => card.classList.remove('ios-shake'), 400);
     }
 
-    function markFieldError(el, message) {
+    function markFieldError(el) {
       if (!el) return;
       el.classList.add('is-invalid');
       const group = el.closest('.form-group');
-      if (group) {
-        group.classList.add('has-error');
-        let hint = group.querySelector('.field-hint');
-        if (!hint) {
-          hint = document.createElement('span');
-          hint.className = 'field-hint';
-          hint.setAttribute('aria-live', 'polite');
-          group.appendChild(hint);
-        }
-        hint.textContent = message;
-      }
+      const label = group?.querySelector('label') || document.querySelector(`label[for="${el.id}"]`);
+      if (label) label.classList.add('label-error-state');
     }
 
-    /** fieldEl: evidenzia input + micro-testo; senza fieldEl: toast soft in basso (privacy/rete) */
+    /** Campo: solo colore (label + bordo) + shake. Toast solo per errori server/rete. */
     function showError(message, fieldEl) {
       if (fieldEl) {
         errorEl.textContent = '';
         errorEl.classList.remove('visible');
-        markFieldError(fieldEl, message);
+        markFieldError(fieldEl);
         try {
           fieldEl.focus({ preventScroll: true });
         } catch (_) {
@@ -1135,11 +1161,13 @@
         shakeCard();
         return;
       }
-      errorEl.textContent = message;
-      errorEl.classList.add('visible');
-      errorEl.style.animation = 'none';
-      void errorEl.offsetWidth;
-      errorEl.style.animation = '';
+      if (message) {
+        errorEl.textContent = message;
+        errorEl.classList.add('visible');
+        errorEl.style.animation = 'none';
+        void errorEl.offsetWidth;
+        errorEl.style.animation = '';
+      }
       shakeCard();
     }
 
@@ -1152,10 +1180,11 @@
       lastNameEl.classList.remove('is-invalid');
       privacyBox.classList.remove('is-invalid', 'shake');
       staffEl?.classList.remove('is-invalid');
+      document
+        .querySelectorAll('.label-error-state')
+        .forEach((el) => el.classList.remove('label-error-state'));
       document.querySelectorAll('.form-group.has-error').forEach((group) => {
         group.classList.remove('has-error');
-        const hint = group.querySelector('.field-hint');
-        if (hint) hint.textContent = '';
       });
     }
 
@@ -1173,6 +1202,8 @@
       document.getElementById('lbl-rest-sub').textContent = dict.restSub;
       document.getElementById('lbl-rest-title').textContent = dict.restTitle;
       document.getElementById('lbl-rest-desc').textContent = dict.restDescShort || dict.restDesc;
+      const restTag = document.getElementById('lbl-rest-tag');
+      if (restTag) restTag.textContent = dict.restTag || dict.restTitle;
       document.getElementById('lbl-staff').textContent = dict.staffShort || dict.staff;
       if (staffEl && dict.staffNone) staffEl.placeholder = dict.staffNone;
       const guestsLbl = document.getElementById('lbl-guests');
@@ -1321,35 +1352,38 @@
       );
 
       if (!privacyEl.checked) {
-        showError(dict.privacyRequired);
-        privacyBox.classList.add('is-invalid', 'shake');
+        clearError();
+        const privacyLbl = document.getElementById('lbl-privacy');
+        privacyLbl?.classList.add('label-error-state');
+        privacyBox.classList.add('is-invalid');
+        shakeCard();
         return false;
       }
 
       if (magic) return true;
 
       if (!firstName) {
-        showError(dict.nameRequired, firstNameEl);
+        showError(null, firstNameEl);
         return false;
       }
       if (!lastName) {
-        showError(dict.lastNameRequired, lastNameEl);
+        showError(null, lastNameEl);
         return false;
       }
       if (!emailNormalized) {
-        showError(dict.emailRequired, emailEl);
+        showError(null, emailEl);
         return false;
       }
       if (!EMAIL_REGEX.test(emailNormalized)) {
-        showError(dict.emailInvalid, emailEl);
+        showError(null, emailEl);
         return false;
       }
       if (!cleaned) {
-        showError(dict.phoneRequired, phoneEl);
+        showError(null, phoneEl);
         return false;
       }
       if (!PHONE_REGEX.test(cleaned)) {
-        showError(dict.phoneInvalid, phoneEl);
+        showError(null, phoneEl);
         return false;
       }
       return true;
@@ -1368,11 +1402,11 @@
         input.addEventListener('input', () => {
           input.classList.remove('is-invalid');
           const group = input.closest('.form-group');
-          if (group) {
-            group.classList.remove('has-error');
-            const hint = group.querySelector('.field-hint');
-            if (hint) hint.textContent = '';
-          }
+          const label =
+            group?.querySelector('label') ||
+            document.querySelector(`label[for="${input.id}"]`);
+          label?.classList.remove('label-error-state');
+          group?.classList.remove('has-error');
           if (errorEl.classList.contains('visible')) {
             errorEl.classList.remove('visible');
             errorEl.textContent = '';
@@ -1382,6 +1416,7 @@
 
     privacyEl?.addEventListener('change', () => {
       privacyBox.classList.remove('is-invalid', 'shake');
+      document.getElementById('lbl-privacy')?.classList.remove('label-error-state');
       if (errorEl.classList.contains('visible')) {
         errorEl.classList.remove('visible');
         errorEl.textContent = '';
