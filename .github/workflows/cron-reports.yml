@@ -1,0 +1,63 @@
+# Report automatici (alternativa gratuita ai Cron Job Render a pagamento)
+name: Hotel Canal reports
+
+on:
+  schedule:
+    # 00:00 Europe/Rome ≈ 22:00 UTC (ora legale)
+    - cron: "0 22 * * *"
+    # fine mese: ogni sera ~23:59 Rome; il server salta se non è ultimo giorno
+    - cron: "59 21 * * *"
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: daily o monthly
+        required: true
+        default: daily
+        type: choice
+        options:
+          - daily
+          - monthly
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call report endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PUBLIC_URL: https://hotel-canal-checkin.onrender.com
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_KIND: ${{ inputs.kind }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "Missing secret CRON_SECRET"
+            exit 1
+          fi
+          KIND="daily"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            KIND="$INPUT_KIND"
+          elif [ "$SCHEDULE" = "59 21 * * *" ]; then
+            KIND="monthly"
+          fi
+          if [ "$KIND" = "monthly" ]; then
+            PATH_API="/api/cron/monthly-staff-report"
+          else
+            PATH_API="/api/cron/daily-report"
+          fi
+          URL="${PUBLIC_URL%/}${PATH_API}"
+          echo "POST $URL (kind=$KIND)"
+          # Free tier può essere in sleep: ritenta
+          for i in 1 2 3 4 5; do
+            code=$(curl -sS -o /tmp/cron-body.txt -w "%{http_code}" -X POST "$URL" \
+              -H "Authorization: Bearer ${CRON_SECRET}" \
+              -H "Content-Type: application/json" || echo "000")
+            echo "attempt $i -> HTTP $code"
+            head -c 400 /tmp/cron-body.txt; echo
+            if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+              exit 0
+            fi
+            sleep 20
+          done
+          exit 1
