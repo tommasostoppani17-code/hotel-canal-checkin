@@ -749,7 +749,7 @@
 
         <div class="step-body">
           <div class="restaurant-hero-card" aria-label="Trattoria alla Terrazza">
-            <img src="/restaurant/hero-form.jpg" alt="Trattoria alla Terrazza — tavolo sul canale" width="768" height="1022" decoding="async">
+            <img src="/restaurant/hero-form.jpg" alt="Trattoria alla Terrazza — tavolo sul canale" width="768" height="1022" decoding="async" id="restHeroImg">
             <div class="hero-caption">
               <h4>Trattoria alla Terrazza</h4>
               <p id="lbl-rest-tag">Privilegio ospiti esclusivo</p>
@@ -1557,6 +1557,7 @@
     setLanguage(currentLang);
     setStep(1);
     window.addEventListener('resize', syncViewportHeight);
+    document.getElementById('restHeroImg')?.addEventListener('load', syncViewportHeight);
     if (document.fonts?.ready) {
       document.fonts.ready.then(syncViewportHeight).catch(() => {});
     }
