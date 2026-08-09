@@ -2051,7 +2051,6 @@
       if (submitting) return;
       clearError();
       setStep(1);
-      firstNameEl.focus();
     });
 
     btnSubmit.addEventListener('click', () => {
@@ -2212,7 +2211,6 @@
     const bootParams = new URLSearchParams(location.search);
     const prefEmail = bootParams.get('email');
     if (prefEmail && emailEl) emailEl.value = prefEmail;
-    firstNameEl?.focus();
   </script>
 </body>
 </html>
