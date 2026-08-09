@@ -686,50 +686,84 @@
     .guest-call {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      min-height: 40px;
-      padding: 8px 12px;
-      margin: 0 0 6px;
-      border: 1px solid rgba(18, 68, 83, 0.22);
-      border-radius: 12px;
-      background: rgba(18, 68, 83, 0.08);
-      color: var(--canal-petroleum);
+      gap: 12px;
+      min-height: 52px;
+      padding: 10px 14px;
+      margin: 0 0 8px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--canal-petroleum);
+      color: #fff;
       text-decoration: none;
       box-sizing: border-box;
+      box-shadow: 0 6px 16px rgba(18, 68, 83, 0.18);
       -webkit-tap-highlight-color: transparent;
     }
 
     .guest-call:active {
-      background: rgba(18, 68, 83, 0.12);
+      background: var(--canal-petroleum-hover);
+      transform: scale(0.985);
+    }
+
+    .guest-call .ga-call-icon {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .guest-call .ga-call-icon svg {
+      display: block;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .guest-call .ga-label {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 2px;
       min-width: 0;
+      flex: 1 1 auto;
     }
 
     .guest-call .ga-title {
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.2;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.15;
+      color: rgba(255, 255, 255, 0.78);
     }
 
     .guest-call .ga-sub {
-      font-size: 10.5px;
-      font-weight: 500;
-      color: #6B7780;
-      line-height: 1.25;
+      font-size: 12.5px;
+      font-weight: 650;
+      color: #fff;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .guest-call .ga-phone {
       flex-shrink: 0;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.03em;
       font-variant-numeric: tabular-nums;
+      color: #fff;
+      padding: 7px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.14);
     }
 
     .guest-action.is-static .guest-action-head {
@@ -1692,6 +1726,11 @@
 
           <div class="guest-actions" id="guestActions" hidden>
             <a class="guest-call" id="btnCallTrattoria" href="tel:+393282464972">
+              <span class="ga-call-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M6.5 3.8h2.4l1.2 3.1-1.5 1.5a12.5 12.5 0 0 0 5.5 5.5l1.5-1.5 3.1 1.2v2.4c0 .9-.7 1.7-1.6 1.7C9.6 17.7 4 12.1 4 5.4c0-.9.8-1.6 1.7-1.6Z"/>
+                </svg>
+              </span>
               <span class="ga-label">
                 <span class="ga-title" id="lbl-act-call">Chiama la trattoria</span>
                 <span class="ga-sub" id="lbl-act-call-sub">Trattoria alla Terrazza</span>
