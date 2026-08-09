@@ -38,7 +38,7 @@
       --ios-5: 20px;
       --ios-6: 24px;
       --ios-touch: 44px;
-      --ios-inset: 20px;
+      --ios-inset: 22px;
       /* Viewport stabile su mobile; JS scrive --vvh da visualViewport */
       --app-vh: var(--vvh, 100svh);
       /* Step heights — desktop/tablet; su phone vedi @media sotto */
@@ -206,14 +206,14 @@
       }
 
       .slide-step {
-        padding-left: 14px;
-        padding-right: 14px;
+        padding-left: 18px;
+        padding-right: 18px;
       }
 
       /* Foto ristorante: usano tutta la larghezza utile della card */
       #step2 .restaurant-showcase {
-        margin-left: -14px;
-        margin-right: -14px;
+        margin-left: -18px;
+        margin-right: -18px;
       }
 
       #step2 .carousel-viewport {
@@ -225,8 +225,8 @@
       }
 
       #step2 .carousel-caption {
-        padding-left: 14px;
-        padding-right: 14px;
+        padding-left: 18px;
+        padding-right: 18px;
       }
 
       .apple-input {
@@ -449,6 +449,9 @@
       gap: var(--ios-3);
       width: 100%;
       box-sizing: border-box;
+      /* Aria per bordo/focus inset: non finiscono sotto il clip della card */
+      padding: 2px;
+      margin: 0 -2px;
     }
 
     .input-row-grid .form-group,
@@ -1661,6 +1664,12 @@
     .form-group {
       margin-bottom: var(--ios-2);
       position: relative;
+      /* Evita che bordo arrotondato + overflow della card mangino i box */
+      z-index: 0;
+    }
+
+    .form-group:focus-within {
+      z-index: 2;
     }
 
     .form-group label {
@@ -1691,7 +1700,7 @@
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-weight: 400;
       background: var(--input-white);
-      border: 0;
+      border: 1.5px solid transparent;
       border-radius: 14px;
       padding: 0 var(--ios-3);
       font-size: 17px;
@@ -1726,17 +1735,20 @@
 
     .apple-input:focus {
       outline: none;
-      border-color: transparent;
+      border-color: rgba(18, 68, 83, 0.45);
       background: var(--input-white);
       transform: none;
-      box-shadow: 0 0 0 3.5px rgba(18, 68, 83, 0.14);
+      /* Anello interno: non viene tagliato da overflow:hidden della card */
+      box-shadow:
+        inset 0 0 0 1px rgba(18, 68, 83, 0.12),
+        0 1px 2px rgba(18, 68, 83, 0.06);
     }
 
     .apple-input.is-invalid {
       border: 1.5px solid #C62828 !important;
       background: #FFF9F9 !important;
       box-shadow:
-        0 0 0 3.5px rgba(198, 40, 40, 0.12),
+        inset 0 0 0 1px rgba(198, 40, 40, 0.18),
         inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
     }
 
