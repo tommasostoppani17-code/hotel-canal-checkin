@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#0a2d37">
   <title>Hotel Canal - Fast Registration</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,10 +13,13 @@
   <link rel="preload" as="image" href="/restaurant/12-tavolo-terrazza-pasta.jpg">
   <style>
     :root {
+      color-scheme: light only;
       --canal-petroleum: #124453;
       --canal-petroleum-hover: #0A2D37;
       --text-main: #1D1D1F;
       --text-muted: #515154;
+      --card-cream: #F8F5F0;
+      --card-glass: rgba(252, 250, 246, 0.86);
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -51,6 +56,8 @@
       overflow: hidden !important;
       overscroll-behavior: none !important;
       touch-action: manipulation;
+      color-scheme: light only;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -124,10 +131,12 @@
       max-height: var(--card-h);
       display: flex;
       flex-direction: column;
-      background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(35px) saturate(210%);
-      -webkit-backdrop-filter: blur(35px) saturate(210%);
-      border: 1px solid rgba(255, 255, 255, 0.45);
+      /* Fallback solido: se backdrop fallisce su iOS resta crema, non petrolio */
+      background-color: var(--card-cream);
+      background: var(--card-glass);
+      backdrop-filter: blur(35px) saturate(140%);
+      -webkit-backdrop-filter: blur(35px) saturate(140%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
       border-radius: 28px;
       padding: 16px 0 12px;
       box-sizing: border-box;
@@ -172,6 +181,29 @@
             env(safe-area-inset-bottom, 0px) - 16px
         );
         padding: 14px 0 14px;
+        /* iOS satura troppo il vetro → tinge di petrolio. Più crema, meno saturate. */
+        background-color: var(--card-cream);
+        background: rgba(252, 250, 246, 0.94);
+        -webkit-backdrop-filter: blur(24px) saturate(115%);
+        backdrop-filter: blur(24px) saturate(115%);
+        isolation: auto;
+        border-color: rgba(255, 255, 255, 0.65);
+      }
+
+      .bg-inertia,
+      body[data-step="1"] .bg-inertia,
+      body[data-step="2"] .bg-inertia,
+      body[data-step="3"] .bg-inertia {
+        /* Stessa “ricetta” colore su tutti gli step (niente shift verde/rosa) */
+        filter: blur(10px) brightness(0.86) saturate(1.08);
+      }
+
+      .apple-input {
+        background: rgba(245, 242, 236, 0.95);
+      }
+
+      .apple-input:focus {
+        background: #FFFFFF;
       }
     }
 
