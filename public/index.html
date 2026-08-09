@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#0a2d37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hotel Canal">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <title>Hotel Canal - Fast Registration</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -195,12 +202,12 @@
       body {
         padding-top: max(8px, env(safe-area-inset-top));
         padding-bottom: max(8px, env(safe-area-inset-bottom));
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 14px;
+        padding-right: 14px;
       }
 
       .apple-card {
-        max-width: 100%;
+        max-width: 360px;
         width: 100%;
         margin-left: auto;
         margin-right: auto;
@@ -4907,6 +4914,13 @@
     });
     const prefEmail = bootParams.get('email');
     if (prefEmail && emailEl) emailEl.value = prefEmail;
+
+    // PWA: unico modo reale per aprire senza barra browser (Aggiungi a Home)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
   </script>
 </body>
 </html>

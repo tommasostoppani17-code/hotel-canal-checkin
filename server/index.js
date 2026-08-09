@@ -140,6 +140,17 @@ app.use(
   }),
 );
 
+app.get('/manifest.webmanifest', (_req, res) => {
+  res.type('application/manifest+json');
+  res.sendFile(path.join(rootDir, 'public', 'manifest.webmanifest'));
+});
+
+app.get('/sw.js', (_req, res) => {
+  res.type('application/javascript');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(rootDir, 'public', 'sw.js'));
+});
+
 app.use(express.static(path.join(rootDir, 'public')));
 
 const REPORT_TRIGGER_TOKEN = 'grandcanalhotel';
