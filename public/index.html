@@ -81,7 +81,7 @@
       max-height: min(92dvh, 760px);
       display: flex;
       flex-direction: column;
-      background: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.65);
       backdrop-filter: blur(40px) saturate(220%);
       -webkit-backdrop-filter: blur(40px) saturate(220%);
       border: 1px solid rgba(255, 255, 255, 0.7);
@@ -89,9 +89,10 @@
       padding: 28px 0 28px;
       box-sizing: border-box;
       box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.02),
-        0 20px 50px rgba(10, 45, 55, 0.18),
-        inset 0 1px 1px rgba(255, 255, 255, 0.9);
+        0 4px 12px rgba(0, 0, 0, 0.01),
+        0 30px 70px rgba(10, 45, 55, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
@@ -420,7 +421,10 @@
       font-size: 14px;
       color: #000000;
       box-sizing: border-box;
-      transition: all 0.2s ease;
+      transition:
+        border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
     }
 
@@ -530,24 +534,55 @@
       border-radius: var(--radius-ios);
       font-size: 13.5px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
       box-shadow: 0 4px 12px rgba(18, 68, 83, 0.2);
     }
 
     .btn-canal:hover:not(:disabled) {
       background: var(--canal-petroleum-hover);
-      transform: translateY(-1px);
       box-shadow: 0 8px 20px rgba(18, 68, 83, 0.35);
     }
 
-    .btn-canal:active:not(:disabled) {
-      transform: translateY(1px);
+    .btn-canal:active:not(:disabled):not(.is-loading) {
+      transform: scale(0.97) translate3d(0, 0, 0);
+      background-color: var(--canal-petroleum-hover);
+      box-shadow: 0 2px 6px rgba(18, 68, 83, 0.1);
     }
 
     .btn-canal:disabled {
       opacity: 0.65;
       cursor: not-allowed;
       transform: none;
+    }
+
+    /* Caricamento iOS: testo off, spinner on — geometria bottone immobile */
+    .btn-canal.is-loading,
+    .btn-canal.is-loading:disabled {
+      opacity: 1;
+      cursor: default;
+      transform: none;
+      pointer-events: none;
+    }
+
+    .ios-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: iosRotation 0.65s linear infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes iosRotation {
+      to { transform: rotate(360deg); }
     }
 
     .btn-ghost {
@@ -1203,6 +1238,23 @@
       setTimeout(() => card.classList.remove('ios-shake'), 400);
     }
 
+    /** Bottone iOS: testo sparisce, spinner al centro, card immobile. */
+    function setCanalButtonLoading(btn) {
+      if (!btn) return;
+      btn.disabled = true;
+      btn.classList.add('is-loading');
+      btn.setAttribute('aria-busy', 'true');
+      btn.innerHTML = '<span class="ios-spinner" aria-hidden="true"></span>';
+    }
+
+    function resetCanalButton(btn, label) {
+      if (!btn) return;
+      btn.disabled = false;
+      btn.classList.remove('is-loading');
+      btn.removeAttribute('aria-busy');
+      btn.textContent = label;
+    }
+
     function hideToast() {
       errorEl.textContent = '';
       errorEl.classList.remove('visible');
@@ -1540,8 +1592,8 @@
       btnSubmit.disabled = true;
       if (btnSkip) btnSkip.disabled = true;
       if (btnBack) btnBack.disabled = true;
-      const nextLabel = btnNext.textContent;
-      btnNext.textContent = dict.loading;
+      const nextLabel = t().nextBtn;
+      setCanalButtonLoading(btnNext);
 
       try {
         const response = await fetch('/api/checkins', {
@@ -1560,8 +1612,7 @@
 
         if (!response.ok) {
           submitting = false;
-          btnNext.disabled = false;
-          btnNext.textContent = nextLabel;
+          resetCanalButton(btnNext, nextLabel);
           btnSubmit.disabled = false;
           if (btnSkip) btnSkip.disabled = false;
           if (btnBack) btnBack.disabled = false;
@@ -1581,16 +1632,14 @@
         }
 
         submitting = false;
-        btnNext.disabled = false;
-        btnNext.textContent = nextLabel;
+        resetCanalButton(btnNext, nextLabel);
         btnSubmit.disabled = false;
         if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
         showServerToast(dict.submitError);
       } catch (err) {
         submitting = false;
-        btnNext.disabled = false;
-        btnNext.textContent = nextLabel;
+        resetCanalButton(btnNext, nextLabel);
         btnSubmit.disabled = false;
         if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
@@ -1696,8 +1745,7 @@
       const magic = isReportTrigger(phoneRaw, firstName, lastName);
 
       submitting = true;
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = dict.loading;
+      setCanalButtonLoading(btnSubmit);
       btnNext.disabled = true;
       if (btnSkip) btnSkip.disabled = true;
       if (btnBack) btnBack.disabled = true;
@@ -1727,8 +1775,7 @@
 
         if (!response.ok) {
           submitting = false;
-          btnSubmit.disabled = false;
-          btnSubmit.textContent = dict.button;
+          resetCanalButton(btnSubmit, dict.button);
           btnNext.disabled = false;
           if (btnSkip) btnSkip.disabled = false;
           if (btnBack) btnBack.disabled = false;
@@ -1759,8 +1806,7 @@
         });
       } catch (err) {
         submitting = false;
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = dict.button;
+        resetCanalButton(btnSubmit, dict.button);
         btnNext.disabled = false;
         if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
@@ -1774,6 +1820,13 @@
         showServerToast(err.message || dict.networkError);
       }
     }
+
+    // Raddrizza il viewport mobile alla chiusura tastiera
+    document.querySelectorAll('.apple-input').forEach((input) => {
+      input.addEventListener('blur', () => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      });
+    });
 
     // Init: lingua dal telefono (en / it / fr / de / es), altrimenti inglese
     currentLang = detectLanguage();
