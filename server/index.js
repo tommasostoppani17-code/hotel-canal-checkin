@@ -641,6 +641,10 @@ app.post('/api/table-booking', async (req, res) => {
     const rawTime = String(req.body?.tableBooking ?? req.body?.time ?? 'REQUESTED')
       .trim()
       .toUpperCase();
+    const guestLang = String(req.body?.language ?? req.body?.lang ?? '')
+      .trim()
+      .toLowerCase()
+      .slice(0, 5);
     if (!Number.isFinite(id) || id < 1) {
       return res.status(400).json({ error: 'checkinId non valido' });
     }
@@ -658,6 +662,7 @@ app.post('/api/table-booking', async (req, res) => {
     if (!row) {
       return res.status(404).json({ error: 'Check-in non trovato' });
     }
+    if (guestLang) row.guest_lang = guestLang;
 
     const channels = { email: null, whatsapp: null };
     const errors = [];

@@ -156,6 +156,11 @@ export async function sendTableBookingAlert(row) {
   const pax = row.guests_count ?? 2;
   const staff = row.receptionist || '-';
   const hasCoupon = Boolean(row.coupon_sent_at || row.coupon_token);
+  const langMap = { it: 'IT', en: 'EN', fr: 'FR', de: 'DE', es: 'ES' };
+  const guestLang =
+    langMap[String(row.guest_lang || '').slice(0, 2).toLowerCase()] ||
+    String(row.guest_lang || '').toUpperCase() ||
+    '-';
 
   const subject = `🍽️ TAVOLO · Stanza ${room} · ${phone} · ${hotelName}`;
   const text = [
@@ -170,6 +175,7 @@ export async function sendTableBookingAlert(row) {
     `Orario: ${timeLabel}`,
     `Receptionist check-in: ${staff}`,
     `Coupon 10%: ${hasCoupon ? 'SÌ (inviato / attivo)' : 'no'}`,
+    `Lingua ospite: ${guestLang}`,
     ``,
     `L'ospite ha premuto "Prenota un tavolo" al check-in Hotel Canal.`,
     ``,
@@ -191,6 +197,7 @@ export async function sendTableBookingAlert(row) {
         <tr><td style="padding:6px 0;color:#6B7780;">Orario</td><td style="padding:6px 0;font-weight:700;text-align:right;">${timeLabel}</td></tr>
         <tr><td style="padding:6px 0;color:#6B7780;">Receptionist</td><td style="padding:6px 0;font-weight:700;text-align:right;">${staff}</td></tr>
         <tr><td style="padding:6px 0;color:#6B7780;">Coupon 10%</td><td style="padding:6px 0;font-weight:700;text-align:right;">${hasCoupon ? 'SÌ' : 'no'}</td></tr>
+        <tr><td style="padding:6px 0;color:#6B7780;">Lingua ospite</td><td style="padding:6px 0;font-weight:700;text-align:right;">${guestLang}</td></tr>
       </table>
       <p style="margin:16px 0 0;font-size:12px;color:#6B7780;">Ha premuto “Prenota un tavolo” al check-in ${hotelName}.</p>
     </div>

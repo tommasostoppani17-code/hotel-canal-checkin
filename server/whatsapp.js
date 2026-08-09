@@ -172,6 +172,7 @@ export async function sendTableBookingWhatsApp(row) {
   const pax = row.guests_count ?? 2;
   const staff = row.receptionist || '-';
   const coupon = row.coupon_sent_at || row.coupon_token ? 'SÌ' : 'no';
+  const lang = String(row.guest_lang || '').slice(0, 2).toUpperCase() || '-';
 
   const body = [
     `🍽️ TAVOLO — ${hotelName}`,
@@ -183,6 +184,7 @@ export async function sendTableBookingWhatsApp(row) {
     `Orario ${timeLabel}`,
     `Reception ${staff}`,
     `Coupon ${coupon}`,
+    `Lingua ${lang}`,
   ].join('\n');
 
   const client = twilio(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
