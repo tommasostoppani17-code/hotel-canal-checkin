@@ -144,6 +144,7 @@ function buildWelcomeHtml({
   lang = 'en',
   includeCoupon = true,
   claimUrl = '',
+  guidePdfUrl = '',
 }) {
   const lp = welcomeCopy(lang);
   const C = '#164E5B';
@@ -162,6 +163,7 @@ function buildWelcomeHtml({
   const guests = escapeHtml(String(guestsCount ?? 2));
   const maps = escapeHtml(mapsUrl);
   const claim = escapeHtml(claimUrl);
+  const guidePdf = escapeHtml(guidePdfUrl);
   const hero = escapeHtml(heroSrc);
   const resto = escapeHtml(restaurantSrc);
   const gallery = escapeHtml(gallerySrc || restaurantSrc);
@@ -204,6 +206,45 @@ function buildWelcomeHtml({
                   </td>
                 </tr>
               </table>`;
+
+  const veniceLinesHtml = (Array.isArray(lp.veniceLines) ? lp.veniceLines : [])
+    .map(
+      (line) => `
+                    <tr>
+                      <td style="padding:0 0 8px 0;font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.5;color:#4A5560 !important;">
+                        ${line}
+                      </td>
+                    </tr>`,
+    )
+    .join('');
+
+  const veniceGuideBlock = `
+              ${sectionTitle(lp.veniceTitle, icons.gondola || icons.path, 'Venice')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 14px;text-align:left;">
+                ${lp.veniceIntro}
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;background-color:${BOX};border-radius:16px;">
+                <tr>
+                  <td style="padding:16px 18px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      ${veniceLinesHtml}
+                    </table>
+                  </td>
+                </tr>
+              </table>`;
+
+  const venicePdfFooter = guidePdf
+    ? `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;">
+                <tr>
+                  <td align="center" style="border-top:1px solid #E8E4DC;padding-top:22px;">
+                    <a href="${guidePdf}" target="_blank" style="display:inline-block;text-align:center;background-color:#FFFFFF;color:${C} !important;text-decoration:none;padding:14px 22px;border-radius:14px;border:1.5px solid ${C};font-family:${SANS};font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;">
+                      ${lp.venicePdfBtn}
+                    </a>
+                  </td>
+                </tr>
+              </table>`
+    : '';
 
   const photoCell = (src, alt, pad) => `
                     <td width="50%" valign="top" style="${pad}">
@@ -428,62 +469,6 @@ function buildWelcomeHtml({
                 ${lp.mapsBtn}
               </a>
 
-              ${sectionTitle(lp.guideTitle, icons.gondola || icons.path, 'Venezia')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 18px;text-align:center;">
-                ${lp.guideIntro}
-              </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;background-color:${BOX} !important;border-radius:16px;">
-                <tr>
-                  <td style="padding:16px 16px 14px 16px;">
-                    <div style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${C} !important;margin:0 0 8px;">
-                      ${lp.guideTransitTitle}
-                    </div>
-                    <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0;text-align:left;font-size:15px;">
-                      ${lp.guideTransitBody}
-                    </p>
-                  </td>
-                </tr>
-              </table>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 16px;border-top:1px solid #E8E4DC;">
-                <tr>
-                  <td style="padding:0;">
-                    ${(lp.guidePlaces || [])
-                      .map(
-                        (place, i, arr) => `
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === arr.length - 1 ? '0' : '1px solid #E8E4DC'};">
-                      <tr>
-                        <td valign="top" style="padding:12px 0;">
-                          <div style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 4px;">
-                            ${place.title}
-                          </div>
-                          <div class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0;text-align:left;font-size:14.5px;">
-                            ${place.line}
-                          </div>
-                        </td>
-                      </tr>
-                    </table>`,
-                      )
-                      .join('')}
-                  </td>
-                </tr>
-              </table>
-              <div style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${C} !important;margin:0 0 10px;">
-                ${lp.guideDoTitle}
-              </div>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 40px;">
-                ${(lp.guideDoItems || [])
-                  .map(
-                    (item) => `
-                <tr>
-                  <td width="14" valign="top" style="padding:0 0 8px 0;font-family:${SERIF};font-size:14px;color:${BRASS} !important;line-height:1.5;">·</td>
-                  <td valign="top" style="padding:0 0 8px 0;font-family:${BODY};font-style:italic;font-size:15px;line-height:1.5;color:#4A5560 !important;">
-                    ${item}
-                  </td>
-                </tr>`,
-                  )
-                  .join('')}
-              </table>
-
               ${
                 includeCoupon
                   ? `
@@ -556,6 +541,8 @@ function buildWelcomeHtml({
               `
               }
 
+              ${veniceGuideBlock}
+
               ${sectionTitle(lp.tastesTitle, icons.cloche, 'Cucina')}
               <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
                 ${lp.tastesDesc}
@@ -574,6 +561,8 @@ function buildWelcomeHtml({
                     .join('')}
                 </tr>
               </table>
+
+              ${venicePdfFooter}
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0 0;">
                 <tr>
@@ -856,6 +845,8 @@ export async function sendWelcomeEmail({
   if (!doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
   const doorAirone = env('DOOR_CODE_AIRONE', '532E').trim() || '532E';
 
+  const guidePdfUrl = `${publicBaseUrl()}/venice-guide.pdf?lang=${encodeURIComponent(resolvedLang)}`;
+
   const html = buildWelcomeHtml({
     guestName,
     roomNumber,
@@ -877,6 +868,7 @@ export async function sendWelcomeEmail({
     lang: resolvedLang,
     includeCoupon: withCoupon,
     claimUrl,
+    guidePdfUrl,
   });
 
   const room = roomNumber || lp.roomFallback;
@@ -926,16 +918,10 @@ export async function sendWelcomeEmail({
       `4) ${lp.step4Title} - ${lp.step4Line.replace(/&rsquo;/g, "'")}`,
       `Maps: ${mapsUrl}`,
       '',
-      lp.textGuideHeader,
-      `${lp.guideTransitTitle}: ${String(lp.guideTransitBody || '').replace(/&rsquo;/g, "'").replace(/&egrave;/g, 'e')}`,
-      ...(lp.guidePlaces || []).map(
-        (p) =>
-          `- ${p.title}: ${String(p.line || '').replace(/&rsquo;/g, "'")}`,
-      ),
-      `${lp.guideDoTitle}:`,
-      ...(lp.guideDoItems || []).map((item) => `- ${item}`),
-      '',
       ...textTail,
+      '',
+      lp.textVenice,
+      guidePdfUrl,
       '',
       lp.textSignature,
     ].join('\n'),

@@ -25,6 +25,7 @@ import {
   buildPosterPdfBuffer,
   sendPosterEmail,
 } from './poster.js';
+import { buildVeniceGuidePdfBuffer } from './venice-guide.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -120,6 +121,24 @@ app.get('/qr-checkin.png', async (_req, res) => {
   } catch (err) {
     console.error('QR check-in:', err);
     return res.status(500).end();
+  }
+});
+
+/** Venice guest guide PDF (lang=it|en|fr|de|es). */
+app.get('/venice-guide.pdf', async (req, res) => {
+  try {
+    const lang = String(req.query.lang || 'en').slice(0, 2);
+    const pdf = await buildVeniceGuidePdfBuffer(lang);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `inline; filename="hotel-canal-venice-guide-${lang}.pdf"`,
+    );
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(pdf);
+  } catch (err) {
+    console.error('Venice guide PDF:', err);
+    return res.status(500).type('text').send('Venice guide PDF error');
   }
 });
 

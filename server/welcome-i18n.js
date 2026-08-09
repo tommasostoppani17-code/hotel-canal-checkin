@@ -42,42 +42,6 @@ export const WELCOME_I18N = {
     step4Line:
       'Cinquanta passi: Trattoria alla Terrazza sull&rsquo;acqua.',
     mapsBtn: 'Apri Google Maps',
-    guideTitle: 'Venezia da vivere',
-    guideIntro:
-      'Dalla reception di Santa Croce: come muoversi e cosa non perdere.',
-    guideTransitTitle: 'Come muoversi',
-    guideTransitBody:
-      'Il vaporetto &egrave; il mezzo principale. Fermate utili vicino all&rsquo;hotel: San Tom&agrave; e Rialto. Biglietto ACTV o Venezia Unica. A piedi &egrave; lento ma magico: segui le frecce gialle.',
-    guidePlaces: [
-      {
-        title: 'San Marco',
-        line: 'Basilica, Campanile e Palazzo Ducale. Vaporetto linea 1 o 2 verso San Marco, oppure 25-30 minuti a piedi passando da Rialto.',
-      },
-      {
-        title: 'Rialto',
-        line: 'Ponte e mercato del pesce al mattino. Circa 12-15 minuti a piedi da Santa Croce, oppure vaporetto fino a Rialto.',
-      },
-      {
-        title: 'Casinò di Venezia',
-        line: 'Ca&rsquo; Vendramin Calergi. Vaporetto fino a San Marcuola, poi pochi minuti a piedi. Serata elegante: abbigliamento curato.',
-      },
-      {
-        title: 'Murano',
-        line: 'Isola del vetro soffiato. Da Fondamente Nove: vaporetto 4.1 / 4.2 (circa 10-15 minuti). Visita una fornace e i negozi lungo il canale.',
-      },
-      {
-        title: 'Burano',
-        line: 'Case colorate e merletti. Da Fondamente Nove: linea 12 (circa 40-45 minuti). Ideale mezza giornata, magari dopo Murano.',
-      },
-    ],
-    guideDoTitle: 'Cosa fare',
-    guideDoItems: [
-      'Tramonto sul Canal Grande da un ponte o da una fondamenta',
-      'Cicchetto e ombra in un bacaro tipico',
-      'Passeggiata senza mappa nei sestieri: perdersi fa parte del viaggio',
-      'Serata in Terrazza con il vostro sconto ospiti',
-    ],
-    textGuideHeader: 'Guida Venezia (mezzi e luoghi):',
     discountTitle: 'Sconto di benvenuto',
     discountBefore: 'Presentando questo pass al cameriere ',
     discountBold1: 'prima di ordinare',
@@ -92,6 +56,17 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Assaggi dalla Terrazza',
     tastesDesc: 'Pesce, risotto e sapori veneziani.',
+    veniceTitle: 'Venezia in breve',
+    veniceIntro:
+      'Come muoversi e cosa vedere vicino a Santa Croce. La guida completa e in PDF in fondo alla mail.',
+    veniceLines: [
+      '<strong>San Marco</strong> - a piedi 25-35 min via Rialto, oppure vaporetto 1/2.',
+      '<strong>Rialto</strong> - 15-20 min a piedi; mercato al mattino.',
+      '<strong>Casino</strong> - vaporetto 1 fino a San Marcuola.',
+      '<strong>Murano</strong> - linee 4.1/4.2 (vetro); <strong>Burano</strong> - linea 12 (case colorate).',
+      '<strong>Consiglio</strong> - ACTV app per i biglietti; tramonto alle Zattere o Accademia.',
+    ],
+    venicePdfBtn: 'Scarica guida Venezia (PDF)',
     wishes: 'Le auguriamo un soggiorno indimenticabile.',
     signatureLine1: 'La Direzione',
     signatureLine2: 'Hotel Canal Venezia',
@@ -100,6 +75,8 @@ export const WELCOME_I18N = {
     textRouteHeader: 'Come raggiungere Trattoria alla Terrazza a piedi:',
     textVoucher:
       'Voucher sconto 10%: mostra il QR di questa email al cameriere.',
+    textVenice:
+      'Guida Venezia: San Marco, Rialto, Casino, Murano, Burano e mezzi - PDF:',
     textSignature: 'La Direzione - Hotel Canal Venezia',
   },
   en: {
@@ -142,42 +119,6 @@ export const WELCOME_I18N = {
     step4Title: 'Arrival',
     step4Line: 'Fifty steps: Trattoria alla Terrazza on the water.',
     mapsBtn: 'Open Google Maps',
-    guideTitle: 'Venice to explore',
-    guideIntro:
-      'From Santa Croce reception: how to get around and what not to miss.',
-    guideTransitTitle: 'Getting around',
-    guideTransitBody:
-      'The vaporetto is the main way to move. Handy stops near the hotel: San Tomà and Rialto. Use an ACTV or Venezia Unica ticket. Walking is slower but magical - follow the yellow signs.',
-    guidePlaces: [
-      {
-        title: 'St Mark\'s',
-        line: 'Basilica, Campanile and Doge\'s Palace. Vaporetto line 1 or 2 to San Marco, or a 25-30 minute walk via Rialto.',
-      },
-      {
-        title: 'Rialto',
-        line: 'Bridge and morning fish market. About 12-15 minutes on foot from Santa Croce, or vaporetto to Rialto.',
-      },
-      {
-        title: 'Venice Casino',
-        line: 'Ca\' Vendramin Calergi. Vaporetto to San Marcuola, then a short walk. Smart dress for the evening.',
-      },
-      {
-        title: 'Murano',
-        line: 'Glassblowing island. From Fondamente Nove: vaporetto 4.1 / 4.2 (about 10-15 minutes). Visit a furnace and the canal-side shops.',
-      },
-      {
-        title: 'Burano',
-        line: 'Coloured houses and lace. From Fondamente Nove: line 12 (about 40-45 minutes). Perfect half-day, often after Murano.',
-      },
-    ],
-    guideDoTitle: 'What to do',
-    guideDoItems: [
-      'Sunset on the Grand Canal from a bridge or fondamenta',
-      'Cicchetti and a spritz in a classic bacaro',
-      'Wander the sestieri without a map - getting lost is part of it',
-      'Evening at the Terrazza with your guest discount',
-    ],
-    textGuideHeader: 'Venice guide (transport & places):',
     discountTitle: 'Welcome discount',
     discountBefore: 'Show this pass to your waiter ',
     discountBold1: 'before ordering',
@@ -191,6 +132,17 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Tastes from the Terrazza',
     tastesDesc: 'Fish, risotto and Venetian flavours.',
+    veniceTitle: 'Venice at a glance',
+    veniceIntro:
+      'How to get around and what to see from Santa Croce. Full guide in the PDF at the bottom.',
+    veniceLines: [
+      '<strong>San Marco</strong> - 25-35 min walk via Rialto, or vaporetto 1/2.',
+      '<strong>Rialto</strong> - 15-20 min on foot; market before midday.',
+      '<strong>Casino</strong> - vaporetto 1 to San Marcuola.',
+      '<strong>Murano</strong> - lines 4.1/4.2 (glass); <strong>Burano</strong> - line 12 (coloured houses).',
+      '<strong>Tip</strong> - ACTV app for tickets; sunset at Zattere or Accademia Bridge.',
+    ],
+    venicePdfBtn: 'Download Venice guide (PDF)',
     wishes: 'We wish you an unforgettable stay.',
     signatureLine1: 'The Management',
     signatureLine2: 'Hotel Canal Venice',
@@ -199,6 +151,8 @@ export const WELCOME_I18N = {
     textRouteHeader: 'How to reach Trattoria alla Terrazza on foot:',
     textVoucher:
       '10% discount voucher: show the QR in this email to your waiter.',
+    textVenice:
+      'Venice guide: San Marco, Rialto, Casino, Murano, Burano & transport - PDF:',
     textSignature: 'The Management - Hotel Canal Venice',
   },
   fr: {
@@ -241,42 +195,6 @@ export const WELCOME_I18N = {
     step4Title: 'Arrivée',
     step4Line: 'Cinquante pas : Trattoria alla Terrazza sur l&rsquo;eau.',
     mapsBtn: 'Ouvrir Google Maps',
-    guideTitle: 'Venise à découvrir',
-    guideIntro:
-      'Depuis Santa Croce : comment vous déplacer et quoi ne pas manquer.',
-    guideTransitTitle: 'Se déplacer',
-    guideTransitBody:
-      'Le vaporetto est le moyen principal. Arrêts utiles près de l&rsquo;hôtel : San Tomà et Rialto. Ticket ACTV ou Venezia Unica. À pied c&rsquo;est plus lent mais magique - suivez les flèches jaunes.',
-    guidePlaces: [
-      {
-        title: 'Saint-Marc',
-        line: 'Basilique, Campanile et Palais des Doges. Vaporetto ligne 1 ou 2 vers San Marco, ou 25-30 minutes à pied via Rialto.',
-      },
-      {
-        title: 'Rialto',
-        line: 'Pont et marché du poisson le matin. Environ 12-15 minutes à pied depuis Santa Croce, ou vaporetto jusqu&rsquo;à Rialto.',
-      },
-      {
-        title: 'Casino de Venise',
-        line: 'Ca&rsquo; Vendramin Calergi. Vaporetto jusqu&rsquo;à San Marcuola, puis quelques minutes à pied. Tenue soignée le soir.',
-      },
-      {
-        title: 'Murano',
-        line: 'Île du verre soufflé. Depuis Fondamente Nove : vaporetto 4.1 / 4.2 (environ 10-15 minutes). Visitez une fournaise et les boutiques.',
-      },
-      {
-        title: 'Burano',
-        line: 'Maisons colorées et dentelle. Depuis Fondamente Nove : ligne 12 (environ 40-45 minutes). Idéal en demi-journée, souvent après Murano.',
-      },
-    ],
-    guideDoTitle: 'Que faire',
-    guideDoItems: [
-      'Coucher de soleil sur le Grand Canal depuis un pont',
-      'Cicchetti et spritz dans un bacaro typique',
-      'Se perdre dans les sestieri sans carte',
-      'Soirée à la Terrazza avec votre réduction hôtes',
-    ],
-    textGuideHeader: 'Guide Venise (transports et lieux) :',
     discountTitle: 'Offre de bienvenue',
     discountBefore: 'Présentez ce pass au serveur ',
     discountBold1: 'avant de commander',
@@ -291,6 +209,17 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Saveurs de la Terrazza',
     tastesDesc: 'Poisson, risotto et saveurs vénitiennes.',
+    veniceTitle: 'Venise en bref',
+    veniceIntro:
+      'Se déplacer et que voir depuis Santa Croce. Guide complet en PDF en bas du message.',
+    veniceLines: [
+      '<strong>San Marco</strong> - 25-35 min à pied via Rialto, ou vaporetto 1/2.',
+      '<strong>Rialto</strong> - 15-20 min à pied ; marché le matin.',
+      '<strong>Casino</strong> - vaporetto 1 jusqu\'à San Marcuola.',
+      '<strong>Murano</strong> - lignes 4.1/4.2 ; <strong>Burano</strong> - ligne 12.',
+      '<strong>Conseil</strong> - appli ACTV ; coucher de soleil Zattere / Accademia.',
+    ],
+    venicePdfBtn: 'Télécharger le guide Venise (PDF)',
     wishes: 'Nous vous souhaitons un séjour inoubliable.',
     signatureLine1: 'La Direction',
     signatureLine2: 'Hotel Canal Venise',
@@ -298,7 +227,9 @@ export const WELCOME_I18N = {
     textHours: 'Check-in : à partir de 14h00 · Check-out : avant 10h30',
     textRouteHeader: 'Comment rejoindre Trattoria alla Terrazza à pied :',
     textVoucher:
-      'Bon de réduction 5 % : montrez le QR de cet e-mail au serveur.',
+      'Bon de réduction 10 % : montrez le QR de cet e-mail au serveur.',
+    textVenice:
+      'Guide Venise : San Marco, Rialto, Casino, Murano, Burano - PDF :',
     textSignature: 'La Direction - Hotel Canal Venise',
   },
   de: {
@@ -341,42 +272,6 @@ export const WELCOME_I18N = {
     step4Title: 'Ankunft',
     step4Line: 'Fünfzig Schritte: Trattoria alla Terrazza am Wasser.',
     mapsBtn: 'Google Maps öffnen',
-    guideTitle: 'Venedig entdecken',
-    guideIntro:
-      'Ab Santa Croce: so kommen Sie weiter und das sollten Sie nicht verpassen.',
-    guideTransitTitle: 'Unterwegs',
-    guideTransitBody:
-      'Der Vaporetto ist das wichtigste Verkehrsmittel. Praktische Haltestellen nahe dem Hotel: San Tomà und Rialto. ACTV- oder Venezia-Unica-Ticket. Zu Fuß ist langsamer, aber magisch - folgen Sie den gelben Schildern.',
-    guidePlaces: [
-      {
-        title: 'Markusplatz',
-        line: 'Basilika, Campanile und Dogenpalast. Vaporetto Linie 1 oder 2 nach San Marco, oder 25-30 Minuten zu Fuß über Rialto.',
-      },
-      {
-        title: 'Rialto',
-        line: 'Brücke und Fischmarkt am Morgen. Etwa 12-15 Minuten zu Fuß von Santa Croce, oder Vaporetto nach Rialto.',
-      },
-      {
-        title: 'Casino Venedig',
-        line: 'Ca\' Vendramin Calergi. Vaporetto nach San Marcuola, dann kurze Fußstrecke. Abends elegante Kleidung.',
-      },
-      {
-        title: 'Murano',
-        line: 'Glasbläserinsel. Ab Fondamente Nove: Vaporetto 4.1 / 4.2 (ca. 10-15 Minuten). Ofen und Läden entlang des Kanals.',
-      },
-      {
-        title: 'Burano',
-        line: 'Bunte Häuser und Spitze. Ab Fondamente Nove: Linie 12 (ca. 40-45 Minuten). Ideal als Halbtagesausflug, oft nach Murano.',
-      },
-    ],
-    guideDoTitle: 'Was tun',
-    guideDoItems: [
-      'Sonnenuntergang am Canal Grande von einer Brücke',
-      'Cicchetti und Spritz in einem typischen Bacaro',
-      'Ohne Karte durch die Sestieri schlendern',
-      'Abend auf der Terrazza mit Ihrem Gästerabatt',
-    ],
-    textGuideHeader: 'Venedig-Guide (Verkehr & Orte):',
     discountTitle: 'Willkommensrabatt',
     discountBefore: 'Zeigen Sie diesen Pass dem Kellner ',
     discountBold1: 'vor der Bestellung',
@@ -391,6 +286,17 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Kostproben von der Terrazza',
     tastesDesc: 'Fisch, Risotto und venezianische Aromen.',
+    veniceTitle: 'Venedig kurz',
+    veniceIntro:
+      'Mobilität und Highlights ab Santa Croce. Vollständiger Guide als PDF unten.',
+    veniceLines: [
+      '<strong>San Marco</strong> - 25-35 Min. zu Fuß via Rialto oder Vaporetto 1/2.',
+      '<strong>Rialto</strong> - 15-20 Min. zu Fuß; Markt vormittags.',
+      '<strong>Casino</strong> - Linie 1 nach San Marcuola.',
+      '<strong>Murano</strong> - Linien 4.1/4.2; <strong>Burano</strong> - Linie 12.',
+      '<strong>Tipp</strong> - ACTV-App; Sonnenuntergang Zattere / Accademia.',
+    ],
+    venicePdfBtn: 'Venedig-Guide herunterladen (PDF)',
     wishes: 'Wir wünschen Ihnen einen unvergesslichen Aufenthalt.',
     signatureLine1: 'Die Direktion',
     signatureLine2: 'Hotel Canal Venedig',
@@ -399,6 +305,8 @@ export const WELCOME_I18N = {
     textRouteHeader: 'Fußweg zur Trattoria alla Terrazza:',
     textVoucher:
       '10%-Gutschein: zeigen Sie den QR in dieser E-Mail dem Kellner.',
+    textVenice:
+      'Venedig-Guide: San Marco, Rialto, Casino, Murano, Burano - PDF:',
     textSignature: 'Die Direktion - Hotel Canal Venedig',
   },
   es: {
@@ -441,42 +349,6 @@ export const WELCOME_I18N = {
     step4Title: 'Llegada',
     step4Line: 'Cincuenta pasos: Trattoria alla Terrazza sobre el agua.',
     mapsBtn: 'Abrir Google Maps',
-    guideTitle: 'Venecia para disfrutar',
-    guideIntro:
-      'Desde Santa Croce: cómo moverse y qué no perderse.',
-    guideTransitTitle: 'Cómo moverse',
-    guideTransitBody:
-      'El vaporetto es el medio principal. Paradas útiles cerca del hotel: San Tomà y Rialto. Billete ACTV o Venezia Unica. A pie es más lento pero mágico: siga las flechas amarillas.',
-    guidePlaces: [
-      {
-        title: 'San Marcos',
-        line: 'Basílica, Campanile y Palacio Ducal. Vaporetto línea 1 o 2 hacia San Marcos, o 25-30 minutos a pie pasando por Rialto.',
-      },
-      {
-        title: 'Rialto',
-        line: 'Puente y mercado de pescado por la mañana. Unos 12-15 minutos a pie desde Santa Croce, o vaporetto hasta Rialto.',
-      },
-      {
-        title: 'Casino de Venecia',
-        line: 'Ca\' Vendramin Calergi. Vaporetto hasta San Marcuola y unos minutos a pie. Vestimenta elegante por la noche.',
-      },
-      {
-        title: 'Murano',
-        line: 'Isla del cristal soplado. Desde Fondamente Nove: vaporetto 4.1 / 4.2 (unos 10-15 minutos). Visite un horno y las tiendas del canal.',
-      },
-      {
-        title: 'Burano',
-        line: 'Casas de colores y encaje. Desde Fondamente Nove: línea 12 (unos 40-45 minutos). Ideal media jornada, a menudo después de Murano.',
-      },
-    ],
-    guideDoTitle: 'Qué hacer',
-    guideDoItems: [
-      'Atardecer en el Canal Grande desde un puente',
-      'Cicchetti y spritz en un bacaro típico',
-      'Perderse por los sestieri sin mapa',
-      'Noche en la Terrazza con su descuento de huéspedes',
-    ],
-    textGuideHeader: 'Guía Venecia (transporte y lugares):',
     discountTitle: 'Descuento de bienvenida',
     discountBefore: 'Presente este pase al camarero ',
     discountBold1: 'antes de pedir',
@@ -491,6 +363,17 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Sabores de la Terrazza',
     tastesDesc: 'Pescado, risotto y sabores venecianos.',
+    veniceTitle: 'Venecia en breve',
+    veniceIntro:
+      'Cómo moverse y qué ver desde Santa Croce. Guía completa en PDF al final del correo.',
+    veniceLines: [
+      '<strong>San Marco</strong> - 25-35 min a pie vía Rialto, o vaporetto 1/2.',
+      '<strong>Rialto</strong> - 15-20 min a pie; mercado por la mañana.',
+      '<strong>Casino</strong> - vaporetto 1 a San Marcuola.',
+      '<strong>Murano</strong> - líneas 4.1/4.2; <strong>Burano</strong> - línea 12.',
+      '<strong>Consejo</strong> - app ACTV; atardecer en Zattere o Accademia.',
+    ],
+    venicePdfBtn: 'Descargar guía Venecia (PDF)',
     wishes: 'Le deseamos una estancia inolvidable.',
     signatureLine1: 'La Dirección',
     signatureLine2: 'Hotel Canal Venecia',
@@ -499,6 +382,8 @@ export const WELCOME_I18N = {
     textRouteHeader: 'Cómo llegar a pie a Trattoria alla Terrazza:',
     textVoucher:
       'Cupón 10%: muestre el QR de este correo al camarero.',
+    textVenice:
+      'Guía Venecia: San Marco, Rialto, Casino, Murano, Burano - PDF:',
     textSignature: 'La Dirección - Hotel Canal Venecia',
   },
 };
