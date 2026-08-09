@@ -2497,10 +2497,33 @@
     }
 
     document.getElementById('guestActions')?.addEventListener('click', (e) => {
+      const tableLink = e.target.closest('#trattoriaPhoneBtn');
+      if (tableLink) {
+        // Notifica Payel (email + WhatsApp Twilio se attivo), poi apre la chiamata
+        if (lastCheckinId && !tableLink.dataset.notifying) {
+          e.preventDefault();
+          tableLink.dataset.notifying = '1';
+          const href = tableLink.getAttribute('href') || 'tel:+393282464972';
+          fetch('/api/table-booking', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              checkinId: lastCheckinId,
+              tableBooking: 'REQUESTED',
+            }),
+          })
+            .catch(() => {})
+            .finally(() => {
+              tableLink.dataset.notifying = '';
+              window.location.href = href;
+            });
+        }
+        return;
+      }
+
       const btn = e.target.closest('.guest-action-btn[data-panel]');
       if (!btn) return;
       e.preventDefault();
-      const panelId = btn.getAttribute('data-panel');
       const action = btn.closest('.guest-action');
       if (!action) return;
       const willOpen = !action.classList.contains('is-open');

@@ -22,7 +22,7 @@ import {
   runMonthlyStaffReport,
   sendTableBookingAlert,
 } from './mail.js';
-import { getCsvMedia, whatsappConfigured } from './whatsapp.js';
+import { getCsvMedia, whatsappConfigured, sendTableBookingWhatsApp } from './whatsapp.js';
 import {
   sendWelcomeEmail,
   buildCouponRedeemPage,
@@ -634,19 +634,24 @@ async function handleCheckin(req, res) {
 app.post('/api/checkins', handleCheckin);
 app.post('/api/save-lead', handleCheckin);
 
-/** Prenotazione tavolo dopo Confirm & Get Coupon (alert email gratis). */
+/** Richiesta tavolo dopo check-in → email Payel + WhatsApp Twilio (se configurato). */
 app.post('/api/table-booking', async (req, res) => {
   try {
     const id = Number(req.body?.checkinId ?? req.body?.id);
-    const rawTime = String(req.body?.tableBooking ?? req.body?.time ?? '').trim();
+    const rawTime = String(req.body?.tableBooking ?? req.body?.time ?? 'REQUESTED')
+      .trim()
+      .toUpperCase();
     if (!Number.isFinite(id) || id < 1) {
       return res.status(400).json({ error: 'checkinId non valido' });
     }
     if (!rawTime || /^(NO|SKIP|NONE)$/i.test(rawTime)) {
       return res.json({ sent: false, skipped: true });
     }
-    if (!/^\d{1,2}:\d{2}$/.test(rawTime)) {
-      return res.status(400).json({ error: 'Orario non valido' });
+    const okTime =
+      /^\d{1,2}:\d{2}$/.test(rawTime) ||
+      /^(REQUESTED|CALL|TAVOLO)$/i.test(rawTime);
+    if (!okTime) {
+      return res.status(400).json({ error: 'Orario / richiesta non valida' });
     }
 
     const row = setTableBooking(id, rawTime);
@@ -654,18 +659,42 @@ app.post('/api/table-booking', async (req, res) => {
       return res.status(404).json({ error: 'Check-in non trovato' });
     }
 
-    let alert = null;
+    const channels = { email: null, whatsapp: null };
+    const errors = [];
+
     try {
-      alert = await sendTableBookingAlert(row);
+      channels.email = await sendTableBookingAlert(row);
       console.log(
-        `[table] Alert → ${alert.to} · stanza ${row.room_number || '-'} · ${rawTime} · ${row.phone}`,
+        `[table] Email → ${channels.email.to} · stanza ${row.room_number || '-'} · ${rawTime} · ${row.phone}`,
       );
     } catch (err) {
-      console.error('[table] Alert email fallita:', err.message || err);
+      const message = err.message || String(err);
+      console.error('[table] Alert email fallita:', message);
+      errors.push(`email: ${message}`);
+      channels.email = { sent: false, error: message };
+    }
+
+    try {
+      channels.whatsapp = await sendTableBookingWhatsApp(row);
+      if (channels.whatsapp?.sent) {
+        console.log(
+          `[table] WhatsApp → ${channels.whatsapp.to} · stanza ${row.room_number || '-'}`,
+        );
+      }
+    } catch (err) {
+      const message = err.message || String(err);
+      console.error('[table] Alert WhatsApp fallita:', message);
+      errors.push(`whatsapp: ${message}`);
+      channels.whatsapp = { sent: false, error: message };
+    }
+
+    const anySent = Boolean(channels.email?.sent || channels.whatsapp?.sent);
+    if (!anySent) {
       return res.status(502).json({
-        error: err.message || 'Errore invio alert tavolo',
+        error: errors.join(' | ') || 'Nessun canale alert disponibile',
         saved: true,
         tableBooking: rawTime,
+        channels,
       });
     }
 
@@ -673,7 +702,7 @@ app.post('/api/table-booking', async (req, res) => {
     return res.json({
       success: true,
       tableBooking: rawTime,
-      alert,
+      channels,
     });
   } catch (err) {
     console.error('Errore table-booking:', err);

@@ -217,10 +217,10 @@ export function getCheckinById(id) {
     .get(Number(id));
 }
 
-/** Save dinner table time (e.g. 20:15). Returns updated row or null. */
+/** Save dinner table preference (e.g. 20:15 or REQUESTED). Returns updated row or null. */
 export function setTableBooking(id, tableBooking) {
-  const time = String(tableBooking || '').trim().slice(0, 16);
-  if (!time || time === 'NO' || time === 'SKIP') {
+  const time = String(tableBooking || '').trim().slice(0, 32).toUpperCase();
+  if (!time || time === 'NO' || time === 'SKIP' || time === 'NONE') {
     return getCheckinById(id);
   }
   const result = db

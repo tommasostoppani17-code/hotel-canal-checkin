@@ -37,6 +37,16 @@ export function whatsappConfigured() {
   );
 }
 
+/** WhatsApp testo (alert tavolo): non serve PUBLIC_URL / CSV. */
+export function whatsappTextConfigured() {
+  return Boolean(
+    env('TWILIO_ACCOUNT_SID') &&
+      env('TWILIO_AUTH_TOKEN') &&
+      env('TWILIO_WHATSAPP_FROM') &&
+      payelWhatsAppNumber(),
+  );
+}
+
 /** Payel WhatsApp — default hotel contact; override with WHATSAPP_PAYEL */
 function payelWhatsAppNumber() {
   return env('WHATSAPP_PAYEL', '+393514362677');
@@ -141,5 +151,53 @@ export async function sendDailyWhatsAppReport({
     sent: true,
     to: payelWhatsAppNumber(),
     mediaUrl,
+  };
+}
+
+/** Alert immediato richiesta tavolo → Payel (Twilio WhatsApp). */
+export async function sendTableBookingWhatsApp(row) {
+  if (!whatsappTextConfigured()) {
+    return { sent: false, reason: 'whatsapp_not_configured' };
+  }
+
+  const hotelName = env('HOTEL_NAME', 'Hotel Canal');
+  const rawTime = String(row.table_booking || '').trim();
+  const timeLabel =
+    !rawTime || /REQUESTED|CALL|TAVOLO/i.test(rawTime)
+      ? 'da confermare'
+      : `ore ${rawTime}`;
+  const room = row.room_number || '-';
+  const phone = row.phone || '-';
+  const name = row.guest_name || 'Ospite';
+  const pax = row.guests_count ?? 2;
+  const staff = row.receptionist || '-';
+  const coupon = row.coupon_sent_at || row.coupon_token ? 'SÌ' : 'no';
+
+  const body = [
+    `🍽️ TAVOLO — ${hotelName}`,
+    `Richiama l'ospite e conferma tavolo + coupon −10%.`,
+    ``,
+    `Stanza ${room} · ${pax} pax`,
+    `Tel ${phone}`,
+    `Nome ${name}`,
+    `Orario ${timeLabel}`,
+    `Reception ${staff}`,
+    `Coupon ${coupon}`,
+  ].join('\n');
+
+  const client = twilio(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
+  const from = toWhatsAppAddress(env('TWILIO_WHATSAPP_FROM'));
+  const to = toWhatsAppAddress(payelWhatsAppNumber());
+  const msg = await client.messages.create({ from, to, body });
+
+  console.log(
+    `[whatsapp] Alert tavolo → ${payelWhatsAppNumber()} · stanza ${room} · ${phone}`,
+  );
+
+  return {
+    sent: true,
+    channel: 'whatsapp',
+    to: payelWhatsAppNumber(),
+    sid: msg.sid,
   };
 }
