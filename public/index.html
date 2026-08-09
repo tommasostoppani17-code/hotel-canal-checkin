@@ -309,21 +309,21 @@
       pointer-events: none;
     }
 
-    /* Foto: cornici che respirano (hero 150px, strip 1:1 ~60px) */
+    /* Vetrina ristorante: foto che si vedono, non fettine */
     .restaurant-showcase {
-      margin: 0 0 10px;
+      margin: 0 0 12px;
       flex-shrink: 0;
     }
 
     .restaurant-hero-card {
       position: relative;
       width: 100%;
-      height: 150px;
-      border-radius: 14px;
+      height: 178px;
+      border-radius: 16px;
       overflow: hidden;
       margin: 0;
       flex-shrink: 0;
-      box-shadow: 0 6px 18px rgba(18, 68, 83, 0.1);
+      box-shadow: 0 8px 22px rgba(18, 68, 83, 0.14);
       background: #124453;
     }
 
@@ -336,7 +336,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 42%;
+      object-position: center 40%;
       border: 0;
     }
 
@@ -345,9 +345,9 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 24px 12px 10px;
+      padding: 32px 14px 12px;
       box-sizing: border-box;
-      background: linear-gradient(transparent, rgba(18, 68, 83, 0.92));
+      background: linear-gradient(transparent, rgba(18, 68, 83, 0.9));
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -355,7 +355,7 @@
 
     .restaurant-hero-card h4 {
       font-family: "Cinzel", Georgia, serif;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       color: #FFFFFF;
       margin: 0 0 2px;
@@ -364,7 +364,7 @@
     }
 
     .restaurant-hero-card p {
-      font-size: 9px;
+      font-size: 10px;
       color: #A0C2CB;
       margin: 0;
       font-weight: 600;
@@ -381,13 +381,14 @@
 
     .rest-strip figure {
       margin: 0;
-      border-radius: 8px;
+      border-radius: 12px;
       overflow: hidden;
       background: #124453;
+      /* Quadrati veri: niente max-height che li schiaccia */
       aspect-ratio: 1 / 1;
+      width: 100%;
       height: auto;
-      max-height: 60px;
-      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.08);
+      box-shadow: 0 3px 10px rgba(18, 68, 83, 0.1);
     }
 
     .rest-strip img {
@@ -395,6 +396,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
       border: 0;
       transition: transform 0.45s var(--ios-ease);
     }
@@ -1318,7 +1320,7 @@
     let formMode = true;
     let submitting = false;
 
-    /* Molla controllata: stiffness 420 / mass 1.0 / damping 36 */
+    /* Molla bella originale (fluida), solo un filo più reattiva della prima versione lenta */
     let slideX = 0;
     let parallaxX = 0;
     let springRaf = 0;
@@ -1384,9 +1386,13 @@
         return;
       }
 
-      // Felpato: overshoot sordo, non nervoso
-      const stiffness = 420;
-      const damping = 36;
+      /*
+       * Parametri “poesia” originali (era ~210/24/1, troppo pigra).
+       * Ora: un filo più reattiva, stesso overshoot morbido.
+       * ζ ≈ 0.85 → rimbalzo leggero, non nervoso.
+       */
+      const stiffness = 280;
+      const damping = 28;
       const mass = 1.0;
       let vSlide = 0;
       let vPara = 0;
@@ -1405,10 +1411,10 @@
         applyParallax(parallaxX + vPara * dt, toScale);
 
         const settled =
-          Math.abs(slideX - toSlide) < 0.06 &&
-          Math.abs(vSlide) < 0.55 &&
-          Math.abs(parallaxX - toParallax) < 0.06 &&
-          Math.abs(vPara) < 0.55;
+          Math.abs(slideX - toSlide) < 0.05 &&
+          Math.abs(vSlide) < 0.45 &&
+          Math.abs(parallaxX - toParallax) < 0.05 &&
+          Math.abs(vPara) < 0.45;
 
         if (settled) {
           applyTrack(toSlide);
@@ -1529,7 +1535,7 @@
         });
       };
 
-      // Pre-misura: allunga il viewport PRIMA dello slide
+      // Pre-misura altezza, breve respiro Y, poi molla X
       syncViewportHeight(step);
 
       if (reduceMotion) {
@@ -1539,8 +1545,7 @@
         return;
       }
 
-      // Lascia respirare l'asse Y (~100ms) poi spara la molla X
-      heightGoTimer = setTimeout(startSpring, 100);
+      heightGoTimer = setTimeout(startSpring, 60);
     }
 
     function playSuccessKinetics(thenGo) {
