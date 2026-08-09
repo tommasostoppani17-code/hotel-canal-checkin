@@ -52,7 +52,7 @@ function publicAssetUrl(...parts) {
 const C = '#164E5B';
 const BOX = '#E9EEF0';
 const WHITE = '#FFFFFF';
-const BRASS = '#B79A63';
+const BRASS = '#6E868F';
 const SERIF = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
 const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
 const SANS =
@@ -333,7 +333,7 @@ export function buildMonthlyStaffEmail({
   const rowsHtml = ranking
     .map((row, index) => {
       const bg =
-        index === 0 ? `background-color:rgba(183,154,99,0.14);` : '';
+        index === 0 ? `background-color:rgba(110,134,143,0.14);` : '';
       const pos = `${index + 1}`;
       const border =
         index === ranking.length - 1 ? '0' : '1px solid #E8E4DC';
