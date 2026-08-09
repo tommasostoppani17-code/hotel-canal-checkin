@@ -508,19 +508,57 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 <strong style="color:${C} !important;font-weight:600;font-style:italic;">Trattoria alla Terrazza</strong>
                 dal check-in Hotel Canal.
               </p>
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 18px;text-align:left;">
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 22px;text-align:left;">
                 Richiama l&rsquo;ospite e conferma il tavolo${
                   hasCoupon ? ' con coupon &minus;10%' : ''
                 }.
               </p>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;background-color:${C};border-radius:14px;">
+              ${
+                phoneTel
+                  ? `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;">
                 <tr>
-                  <td style="padding:14px 16px;font-family:${SANS};font-size:13px;font-weight:600;color:#FFFFFF !important;line-height:1.45;text-align:center;">
-                    Azione: richiama ${escapeHtml(name)} · ${escapeHtml(phone)}
+                  <td align="center" style="padding:0;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="width:100%;border-collapse:separate;">
+                      <tr>
+                        <td align="center" bgcolor="${C}" style="background-color:${C};border-radius:16px;mso-padding-alt:0;">
+                          <!--[if mso]>
+                          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="tel:${escapeHtml(phoneTel)}" style="height:72px;v-text-anchor:middle;width:420px;" arcsize="22%" stroke="f" fillcolor="${C}">
+                            <w:anchorlock/>
+                            <center style="color:#FFFFFF;font-family:Segoe UI,Arial,sans-serif;font-size:15px;font-weight:700;">
+                              Richiama ${escapeHtml(name)} · ${escapeHtml(phone)}
+                            </center>
+                          </v:roundrect>
+                          <![endif]-->
+                          <!--[if !mso]><!-- -->
+                          <a href="tel:${escapeHtml(phoneTel)}" style="display:block;padding:16px 18px;background-color:${C};border-radius:16px;text-decoration:none;text-align:center;line-height:1.25;-webkit-text-size-adjust:none;">
+                            <span style="display:block;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.78) !important;margin:0 0 6px;">
+                              Azione · tocca per chiamare
+                            </span>
+                            <span style="display:block;font-family:${SANS};font-size:16px;font-weight:700;color:#FFFFFF !important;letter-spacing:0.01em;">
+                              Richiama ${escapeHtml(name)}
+                            </span>
+                            <span style="display:block;font-family:${SANS};font-size:14px;font-weight:600;color:#FFFFFF !important;letter-spacing:0.04em;margin-top:5px;">
+                              ${escapeHtml(phone)}
+                            </span>
+                          </a>
+                          <!--<![endif]-->
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
-              </table>
+              </table>`
+                  : `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;background-color:${BOX};border-radius:16px;border:1px solid #E2E6E8;">
+                <tr>
+                  <td style="padding:16px 18px;font-family:${SANS};font-size:13px;font-weight:600;color:${C} !important;line-height:1.45;text-align:center;">
+                    Azione: richiama ${escapeHtml(name)}
+                  </td>
+                </tr>
+              </table>`
+              }
 
               ${sectionTitle('Dettagli prenotazione')}
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 8px;border-top:1px solid #E8E4DC;">
