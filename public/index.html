@@ -234,8 +234,8 @@
     /*
      * Scatole rigide: ogni step = 100% del viewport fisso.
      * Niente height diverse per step (evita di nuovo la diagonale 440→510).
-     * pointer-events SOLO su .slide-step (classe): gli ID #stepN battevano
-     * .is-active e spegnevano i campi anche sullo step attivo.
+     * MAI pointer-events: none sugli step: spegne i campi su iOS
+     * (e con selettori #stepN batteva .is-active).
      */
     .slide-step {
       flex: 0 0 33.333%;
@@ -258,7 +258,7 @@
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       overflow: hidden;
-      pointer-events: none;
+      pointer-events: auto;
       opacity: 1;
     }
 
@@ -266,14 +266,15 @@
       pointer-events: auto;
     }
 
-    .slide-step.is-active .apple-input,
-    .slide-step.is-active input,
-    .slide-step.is-active select,
-    .slide-step.is-active textarea {
-      pointer-events: auto;
+    .apple-input,
+    .slide-step input,
+    .slide-step select,
+    .slide-step textarea {
+      pointer-events: auto !important;
       cursor: text;
       -webkit-user-select: text;
       user-select: text;
+      touch-action: manipulation;
     }
 
     /* Niente stagger interno. */
