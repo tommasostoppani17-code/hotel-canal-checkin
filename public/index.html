@@ -323,11 +323,11 @@
       transform: translateZ(0);
     }
 
-    /* Binario 300%: solo transform orizzontale */
+    /* Binario 300%: solo transform orizzontale — content top-aligned (niente squash) */
     .slider-track {
       display: flex;
       flex-wrap: nowrap;
-      align-items: stretch;
+      align-items: flex-start;
       width: 300%;
       height: 100%;
       transform: translate3d(0, 0, 0);
@@ -343,21 +343,21 @@
     }
 
     /*
-     * Scatole per-step: riempiono l'altezza della card (diversa per step).
-     * Il blocco contenuto è centrato in verticale (asse di simmetria al centro).
+     * Altezza = contenuto (auto). min-height riempie la card se più alta.
+     * Così quando la card rimpicciolisce il testo non si schiaccia: viene solo clipato.
      */
     .slide-step {
       flex: 0 0 33.333%;
       width: 33.333%;
       max-width: 33.333%;
       min-width: 33.333%;
-      height: 100%;
-      min-height: 0;
-      max-height: 100%;
+      height: auto;
+      min-height: 100%;
+      max-height: none;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 0 var(--ios-inset);
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
@@ -366,7 +366,7 @@
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
-      overflow: hidden;
+      overflow: visible;
       pointer-events: none;
       opacity: 1;
       visibility: hidden;
@@ -415,9 +415,9 @@
     .step-body {
       display: flex;
       flex-direction: column;
-      flex: 0 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .step-footer-fixed {
@@ -747,12 +747,10 @@
 
     /* Step 2: Cupertino 8pt — gruppi 8, sezioni 16, touch 44 */
     #step2.slide-step {
-      justify-content: center;
+      justify-content: flex-start;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: visible;
       overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
     }
 
     #step2.slide-step::-webkit-scrollbar {
@@ -762,7 +760,7 @@
     #step2 .step-body {
       display: flex;
       flex-direction: column;
-      flex: 0 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
       justify-content: flex-start;
       gap: var(--ios-4);
@@ -1186,12 +1184,10 @@
     }
 
     #step3.slide-step {
-      justify-content: center;
+      justify-content: flex-start;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: visible;
       overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
       padding-top: 0;
     }
 
@@ -3179,6 +3175,19 @@
         syncCardHeight(step);
         void card.offsetHeight;
         card.style.transition = prevTransition;
+      } else if (sliding && card) {
+        // Durante lo slide: altezza = max(prima, dopo).
+        // Lo scorrimento orizzontale non comprime più le scritte.
+        const curH = Math.round(card.getBoundingClientRect().height);
+        const prevTransition = card.style.transition;
+        card.style.transition = 'none';
+        syncCardHeight(step);
+        void card.offsetHeight;
+        const nextH = Math.round(card.getBoundingClientRect().height);
+        const hold = Math.max(curH, nextH);
+        card.style.setProperty('--card-h', `${hold}px`);
+        void card.offsetHeight;
+        card.style.transition = prevTransition;
       } else {
         syncCardHeight(step);
       }
@@ -3196,11 +3205,8 @@
       slideRevealTimer = setTimeout(() => {
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
-        if (isPhoneViewport()) {
-          requestAnimationFrame(() =>
-            syncCardHeight(step, { allowMicroAdjust: false }),
-          );
-        }
+        // Dopo lo slide: ritraglia l’altezza al nuovo step (contenuto già a misura naturale)
+        syncCardHeight(step, { allowMicroAdjust: true });
       }, reduceMotion || hardCut ? 0 : SLIDE_MS + 48);
     }
 
