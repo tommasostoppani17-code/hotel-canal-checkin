@@ -162,6 +162,10 @@
       transition:
         height var(--slide-ms) var(--height-ease),
         max-height var(--slide-ms) var(--height-ease);
+    }
+
+    /* Solo al primo load — mai dopo shake/rubber (altrimenti riparte da opacity 0) */
+    .apple-card.is-entering {
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
@@ -2478,7 +2482,7 @@
     <div class="bg-inertia" id="bgInertia"></div>
   </div>
 
-  <div class="apple-card" id="card">
+  <div class="apple-card is-entering" id="card">
     <div class="card-sheen" aria-hidden="true"></div>
     <div class="step-dots" id="stepDots" aria-hidden="true">
       <span class="active"></span><span></span><span></span>
@@ -3693,7 +3697,7 @@
         return;
       }
 
-      card.classList.remove('is-rubber');
+      card.classList.remove('is-entering', 'is-rubber');
       void card.offsetWidth;
       card.classList.add('is-rubber');
       setTimeout(() => {
@@ -3704,7 +3708,8 @@
 
     function shakeCard() {
       pinCardInView();
-      card.classList.remove('ios-shake');
+      // Mai lasciare is-entering: dopo lo shake il browser ripartirebbe cardIntro da zero
+      card.classList.remove('is-entering', 'ios-shake');
       void card.offsetWidth;
       card.classList.add('ios-shake');
       setTimeout(() => card.classList.remove('ios-shake'), 400);
@@ -4698,6 +4703,16 @@
     setStep(1);
     startAmbientInertia();
     startCardSheen();
+    // Intro una sola volta: altrimenti shake/rubber rimuovendo la class riparte cardIntro
+    if (card) {
+      const endIntro = (e) => {
+        if (e && e.animationName && e.animationName !== 'cardIntro') return;
+        card.classList.remove('is-entering');
+        card.removeEventListener('animationend', endIntro);
+      };
+      card.addEventListener('animationend', endIntro);
+      setTimeout(() => card.classList.remove('is-entering'), 700);
+    }
     window.addEventListener('resize', syncAppViewportHeight, { passive: true });
     window.addEventListener('orientationchange', () => {
       setTimeout(syncAppViewportHeight, 120);
