@@ -638,9 +638,12 @@ app.post('/api/save-lead', handleCheckin);
 app.post('/api/table-booking', async (req, res) => {
   try {
     const id = Number(req.body?.checkinId ?? req.body?.id);
-    const rawTime = String(req.body?.tableBooking ?? req.body?.time ?? 'REQUESTED')
-      .trim()
-      .toUpperCase();
+    const rawTimeIn = String(req.body?.tableBooking ?? req.body?.time ?? 'REQUESTED')
+      .trim();
+    const timeMatch = rawTimeIn.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    const rawTime = timeMatch
+      ? `${String(Math.min(23, Number(timeMatch[1]))).padStart(2, '0')}:${String(Math.min(59, Number(timeMatch[2]))).padStart(2, '0')}`
+      : rawTimeIn.toUpperCase();
     const guestLang = String(req.body?.language ?? req.body?.lang ?? '')
       .trim()
       .toLowerCase()
@@ -654,7 +657,7 @@ app.post('/api/table-booking', async (req, res) => {
       return res.json({ sent: false, skipped: true });
     }
     const okTime =
-      /^\d{1,2}:\d{2}$/.test(rawTime) ||
+      /^\d{2}:\d{2}$/.test(rawTime) ||
       /^(REQUESTED|CALL|TAVOLO)$/i.test(rawTime);
     if (!okTime) {
       return res.status(400).json({ error: 'Orario / richiesta non valida' });

@@ -22,8 +22,9 @@
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
       --card-h-2: min(658px, calc(100dvh - 12px));
-      --card-h-3: min(600px, calc(100dvh - 16px));
-      --card-h-3-booking: min(640px, calc(100dvh - 12px));
+      --card-h-3: min(560px, calc(100dvh - 16px));
+      --card-h-3-booking: min(600px, calc(100dvh - 12px));
+      --card-h-3-open: min(720px, calc(100dvh - 8px));
       --card-h: var(--card-h-1);
     }
 
@@ -740,9 +741,10 @@
 
     .book-fields {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: 1.15fr 0.85fr;
       gap: 8px;
       margin-bottom: 10px;
+      align-items: end;
     }
 
     .book-field label {
@@ -755,28 +757,30 @@
       margin: 0 0 4px;
     }
 
-    .book-field input,
-    .book-field select {
+    .book-field input {
       width: 100%;
-      height: 38px;
+      height: 40px;
       box-sizing: border-box;
       border: 1px solid rgba(0, 0, 0, 0.12);
       border-radius: 10px;
       background: #fff;
       padding: 0 10px;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--canal-petroleum);
       -webkit-appearance: none;
       appearance: none;
     }
 
-    .book-field select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23124453' d='M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      padding-right: 28px;
+    .book-field input[type="time"] {
+      min-width: 0;
+      padding-right: 6px;
+    }
+
+    .book-field input[type="time"]::-webkit-calendar-picker-indicator {
+      opacity: 0.55;
+      cursor: pointer;
     }
 
     .book-submit {
@@ -852,33 +856,76 @@
       text-align: center;
     }
 
+    #step3.slide-step {
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    #step3.slide-step::-webkit-scrollbar {
+      display: none;
+    }
+
     #step3 .header {
       margin-bottom: 0;
       justify-content: flex-start !important;
-      padding-top: 4px !important;
+      padding-top: 2px !important;
     }
 
     #step3 .success-check {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 10px;
+      width: 36px;
+      height: 36px;
+      margin-bottom: 8px;
     }
 
     #step3 .success-check::after {
-      left: 15px;
-      top: 10px;
+      left: 13px;
+      top: 9px;
       width: 7px;
-      height: 13px;
+      height: 12px;
+    }
+
+    #step3 #lbl-succ-title {
+      font-size: 20px !important;
+      line-height: 1.25 !important;
+    }
+
+    #step3 #lbl-succ-sub {
+      font-size: 11.5px !important;
+      margin: 4px 0 6px !important;
+      line-height: 1.4 !important;
     }
 
     #step3 .receipt-badge {
-      padding: 8px 10px;
-      margin-top: 2px;
+      padding: 7px 10px;
+      margin-top: 0;
     }
 
     #step3 .receipt-badge .code {
-      font-size: 16px;
-      margin: 3px 0 2px;
+      font-size: 15px;
+      margin: 2px 0 1px;
+    }
+
+    #step3 .guest-actions {
+      margin-top: 8px;
+      gap: 6px;
+    }
+
+    #step3 .guest-action-btn {
+      min-height: 40px;
+      padding: 8px 11px;
+    }
+
+    #step3 .reception-note {
+      margin-top: 8px;
+      font-size: 10.5px;
+    }
+
+    #step3 .book-hint {
+      margin: 8px 0 8px;
+      font-size: 11px;
     }
 
     .header {
@@ -1507,19 +1554,12 @@
               </button>
               <div class="guest-action-panel" id="tablePanel">
                 <p class="book-hint" id="lbl-book-hint">
-                  Inserisci l’orario e quante persone siete — vi ricontatteremo.
+                  Scegli l’orario che preferisci e quante persone siete — vi ricontatteremo.
                 </p>
                 <div class="book-fields">
                   <div class="book-field">
                     <label id="lbl-book-time" for="bookTime">Orario</label>
-                    <select id="bookTime">
-                      <option value="19:00">19:00</option>
-                      <option value="19:30" selected>19:30</option>
-                      <option value="20:00">20:00</option>
-                      <option value="20:30">20:30</option>
-                      <option value="21:00">21:00</option>
-                      <option value="21:30">21:30</option>
-                    </select>
+                    <input type="time" id="bookTime" value="19:30" step="300" required>
                   </div>
                   <div class="book-field">
                     <label id="lbl-book-pax" for="bookPax">Persone</label>
@@ -1607,7 +1647,7 @@
         actTable: 'Prenota un tavolo per stasera',
         actTableSub: 'Trattoria alla Terrazza · −10% · vi ricontattiamo',
         actTableSubNoCoupon: 'Trattoria alla Terrazza · vi ricontattiamo',
-        bookHint: 'Inserisci l’orario e quante persone siete — vi ricontatteremo.',
+        bookHint: 'Scegli l’orario che preferisci e quante persone siete — vi ricontatteremo.',
         bookTime: 'Orario',
         bookPax: 'Persone',
         bookSend: 'Invia richiesta',
@@ -1683,7 +1723,7 @@
         actTable: 'Book a table for tonight',
         actTableSub: 'Trattoria alla Terrazza · −10% · we’ll call you back',
         actTableSubNoCoupon: 'Trattoria alla Terrazza · we’ll call you back',
-        bookHint: 'Enter the time and how many people — we’ll contact you.',
+        bookHint: 'Choose your preferred time and party size — we’ll contact you.',
         bookTime: 'Time',
         bookPax: 'Guests',
         bookSend: 'Send request',
@@ -1758,7 +1798,7 @@
         actTable: 'Réserver une table ce soir',
         actTableSub: 'Trattoria alla Terrazza · −10% · on vous rappelle',
         actTableSubNoCoupon: 'Trattoria alla Terrazza · on vous rappelle',
-        bookHint: 'Indiquez l’heure et le nombre de personnes — nous vous recontacterons.',
+        bookHint: 'Choisissez l’heure qui vous convient et le nombre de personnes — nous vous recontacterons.',
         bookTime: 'Heure',
         bookPax: 'Personnes',
         bookSend: 'Envoyer la demande',
@@ -1833,7 +1873,7 @@
         actTable: 'Tisch für heute Abend reservieren',
         actTableSub: 'Trattoria alla Terrazza · −10% · wir rufen zurück',
         actTableSubNoCoupon: 'Trattoria alla Terrazza · wir rufen zurück',
-        bookHint: 'Uhrzeit und Personenanzahl angeben — wir melden uns.',
+        bookHint: 'Wählen Sie Ihre Wunschuhrzeit und die Personenanzahl — wir melden uns.',
         bookTime: 'Uhrzeit',
         bookPax: 'Personen',
         bookSend: 'Anfrage senden',
@@ -1908,7 +1948,7 @@
         actTable: 'Reservar mesa esta noche',
         actTableSub: 'Trattoria alla Terrazza · −10% · le llamamos',
         actTableSubNoCoupon: 'Trattoria alla Terrazza · le llamamos',
-        bookHint: 'Indique la hora y cuántas personas son — le contactaremos.',
+        bookHint: 'Elija la hora que prefiera y cuántas personas son — le contactaremos.',
         bookTime: 'Hora',
         bookPax: 'Personas',
         bookSend: 'Enviar solicitud',
@@ -2226,9 +2266,25 @@
       let h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
       const actions = document.getElementById('guestActions');
       if (step === 3 && actions && !actions.hidden) {
-        h = 'var(--card-h-3-booking)';
+        const tableOpen = document
+          .getElementById('actionTable')
+          ?.classList.contains('is-open');
+        h = tableOpen
+          ? 'var(--card-h-3-open)'
+          : 'var(--card-h-3-booking)';
       }
       card.style.setProperty('--card-h', h);
+    }
+
+    function normalizeBookTime(value) {
+      const m = String(value || '')
+        .trim()
+        .match(/^(\d{1,2}):(\d{2})/);
+      if (!m) return '';
+      const hh = Math.min(23, Number(m[1]));
+      const mm = Math.min(59, Number(m[2]));
+      if (!Number.isFinite(hh) || !Number.isFinite(mm)) return '';
+      return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
     }
 
     function setStep(step) {
@@ -2582,7 +2638,10 @@
       const bookPax = document.getElementById('bookPax');
       const bookSend = document.getElementById('btnBookSend');
       const bookDone = document.getElementById('bookDoneMsg');
-      if (bookTime) bookTime.disabled = false;
+      if (bookTime) {
+        bookTime.disabled = false;
+        bookTime.value = '19:30';
+      }
       if (bookPax) {
         bookPax.disabled = false;
         const fromForm = document.getElementById('guests');
@@ -2672,7 +2731,11 @@
       });
       if (willOpen) action.classList.add('is-open');
       syncCardHeight(3);
-    });
+      if (willOpen) {
+        requestAnimationFrame(() => {
+          action.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        });
+      }
 
     document.getElementById('btnBookSend')?.addEventListener('click', async () => {
       const dict = t();
@@ -2682,7 +2745,7 @@
       const paxEl = document.getElementById('bookPax');
       if (!lastCheckinId || !sendBtn) return;
 
-      const timeValue = String(timeEl?.value || '').trim();
+      const timeValue = normalizeBookTime(timeEl?.value);
       let pax = Number.parseInt(String(paxEl?.value || '').trim(), 10);
       if (!timeValue) {
         if (done) {
