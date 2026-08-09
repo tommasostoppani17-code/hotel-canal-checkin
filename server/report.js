@@ -1,7 +1,5 @@
 /** Report email per Payel - audit front office istituzionale */
 
-import crypto from 'node:crypto';
-
 function csvEscape(value) {
   const raw = value == null ? '' : String(value);
   if (/[",\n\r]/.test(raw)) {
@@ -157,7 +155,7 @@ export function buildCsv(rows) {
   const header =
     'Numero Stanza,Nome Capogruppo,Numero Telefono,Email,Receptionist Assistente,Numero Ospiti (Pax),Voucher Ristorante,Data/Ora';
   const lines = rows.map((row) => {
-    const coupon = hasRestaurantCoupon(row) ? 'SI' : 'NO';
+    const coupon = hasRestaurantCoupon(row) ? 'EMESSO' : 'NON EMESSO';
     return [
       csvEscape(row.room_number || '-'),
       csvEscape(row.guest_name || '-'),
@@ -169,7 +167,8 @@ export function buildCsv(rows) {
       csvEscape(row.created_at),
     ].join(',');
   });
-  return `\uFEFF${[header, ...lines].join('\n')}\n`;
+  // BOM + sep=, so Excel (IT/EU) opens columns correctly on double-click
+  return `\uFEFFsep=,\n${[header, ...lines].join('\n')}\n`;
 }
 
 export function formatRomeDate(date = new Date()) {
@@ -181,91 +180,11 @@ export function formatRomeDate(date = new Date()) {
   }).format(date);
 }
 
-function broadcastSecret() {
-  return (
-    process.env.CRON_SECRET ||
-    process.env.COUPON_SECRET ||
-    process.env.RESEND_API_KEY ||
-    'hotel-canal-dev-broadcast'
-  );
-}
-
-/** URL firmato con i numeri esatti della mail (non ricalcola dal DB). */
-export function buildCopyBroadcastUrl(phoneList) {
-  const text = String(phoneList || '');
-  const payload = Buffer.from(text, 'utf8').toString('base64url');
-  const sig = crypto
-    .createHmac('sha256', broadcastSecret())
-    .update(payload)
-    .digest('base64url');
-  return `${publicBaseUrl()}/api/copy-broadcast?d=${encodeURIComponent(payload)}&s=${encodeURIComponent(sig)}`;
-}
-
-export function verifyCopyBroadcastQuery(d, s) {
-  const payload = String(d || '').trim();
-  const sig = String(s || '').trim();
-  if (!payload || !sig) return null;
-  const expect = crypto
-    .createHmac('sha256', broadcastSecret())
-    .update(payload)
-    .digest('base64url');
-  const a = Buffer.from(sig);
-  const b = Buffer.from(expect);
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
-  try {
-    return Buffer.from(payload, 'base64url').toString('utf8');
-  } catch {
-    return null;
-  }
-}
-
-export function buildCopyBroadcastPage(phoneText) {
-  const jsonText = JSON.stringify(String(phoneText || ''));
-  return `<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Copia numeri</title>
-  <style>
-    body { margin:0; min-height:100dvh; display:flex; align-items:center; justify-content:center; background:#F4F6F9; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; padding:24px; }
-    .badge { background:#124453; color:#fff; padding:22px 28px; border-radius:14px; font-weight:600; font-size:16px; text-align:center; box-shadow:0 10px 25px rgba(18,68,83,0.15); max-width:420px; }
-    textarea { width:100%; margin-top:14px; min-height:72px; border-radius:10px; border:1px solid #D8DEE3; padding:10px; font-family:ui-monospace,Menlo,monospace; font-size:12px; box-sizing:border-box; }
-  </style>
-</head>
-<body>
-  <div class="badge" id="msg">Copia in corso...</div>
-  <script>
-    const textToCopy = ${jsonText};
-    const msg = document.getElementById('msg');
-    function ok() {
-      msg.textContent = 'Numeri copiati negli appunti';
-      setTimeout(function () { try { window.close(); } catch (e) {} }, 1200);
-    }
-    function fallback() {
-      msg.innerHTML = 'Seleziona e copia:<br>';
-      const ta = document.createElement('textarea');
-      ta.readOnly = true;
-      ta.value = textToCopy;
-      msg.appendChild(ta);
-      ta.focus();
-      ta.select();
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy).then(ok).catch(fallback);
-    } else {
-      fallback();
-    }
-  </script>
-</body>
-</html>`;
-}
-
 function buildDailyTableRows(rows) {
   if (!rows.length) {
     return `
       <tr>
-        <td colspan="5" style="padding:20px 4px;border-bottom:1px solid #E5E5EA;color:#8E8E93;text-align:center;font-size:12.5px;">
+        <td colspan="5" style="padding:20px 2px;border-bottom:1px solid #E5E5EA;color:#8E8E93;text-align:center;font-size:12.5px;">
           Nessuna registrazione in questa giornata
         </td>
       </tr>
@@ -282,29 +201,29 @@ function buildDailyTableRows(rows) {
       const pax = cleanCell(row.guests_count ?? '2') || '2';
       const haVoucher = hasRestaurantCoupon(row);
       const couponCell = haVoucher
-        ? `<span style="color:#124453 !important;font-weight:700;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;">ISSUED (pax: ${escapeHtml(pax)})</span>`
-        : `<span style="color:#8E8E93 !important;font-weight:500;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;">DECLINED</span>`;
+        ? `<span style="color:#124453 !important;font-weight:700;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;">YES (${escapeHtml(pax)})</span>`
+        : `<span style="color:#B4B4B4 !important;font-weight:500;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;">NO</span>`;
 
       return `
         <tr>
-          <td width="70" style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:700;color:#124453 !important;padding:16px 4px;border-bottom:1px solid #E5E5EA;vertical-align:middle;">
+          <td width="12%" style="width:12%;font-family:Georgia,'Times New Roman',serif;font-size:17px;font-weight:700;color:#124453 !important;padding:14px 2px;border-bottom:1px solid #E5E5EA;vertical-align:top;word-break:break-word;">
             ${escapeHtml(room || '-')}
           </td>
-          <td style="padding:16px 8px;border-bottom:1px solid #E5E5EA;vertical-align:middle;">
-            <div style="font-weight:700;font-size:12.5px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.03em;line-height:1.3;">
+          <td width="40%" style="width:40%;padding:14px 6px;border-bottom:1px solid #E5E5EA;vertical-align:top;word-break:break-word;">
+            <div style="font-weight:700;font-size:12px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.02em;line-height:1.35;word-break:break-word;">
               ${escapeHtml(name || 'NON SPECIFICATO')}
             </div>
-            <div style="font-size:11px;color:#8E8E93 !important;margin-top:4px;line-height:1.3;">
+            <div style="font-size:10.5px;color:#8E8E93 !important;margin-top:4px;line-height:1.35;word-break:break-all;">
               ${escapeHtml(email || '-')}
             </div>
           </td>
-          <td width="120" style="padding:16px 8px;border-bottom:1px solid #E5E5EA;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;font-weight:600;color:#1D1D1F !important;vertical-align:middle;letter-spacing:0.01em;">
+          <td width="24%" style="width:24%;padding:14px 6px;border-bottom:1px solid #E5E5EA;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;font-weight:600;color:#1D1D1F !important;vertical-align:top;word-break:break-all;">
             ${escapeHtml(phone)}
           </td>
-          <td width="70" align="center" style="padding:16px 4px;border-bottom:1px solid #E5E5EA;font-size:10px;font-weight:700;color:#124453 !important;text-transform:uppercase;letter-spacing:0.06em;vertical-align:middle;">
+          <td width="12%" align="center" style="width:12%;padding:14px 2px;border-bottom:1px solid #E5E5EA;font-size:9.5px;font-weight:700;color:#124453 !important;text-transform:uppercase;letter-spacing:0.04em;vertical-align:top;word-break:break-word;">
             ${escapeHtml(staff)}
           </td>
-          <td width="100" align="right" style="padding:16px 4px;border-bottom:1px solid #E5E5EA;vertical-align:middle;">
+          <td width="12%" align="right" style="width:12%;padding:14px 2px;border-bottom:1px solid #E5E5EA;vertical-align:top;word-break:break-word;">
             ${couponCell}
           </td>
         </tr>
@@ -314,8 +233,7 @@ function buildDailyTableRows(rows) {
 }
 
 /**
- * Report notturno Payel: hero Venezia, tabella glass-line, zero emoji.
- * CSV allegato + tasto COPIA TUTTI via /api/copy-broadcast.
+ * Report notturno Payel: tabella fixed-layout, copia nativa via textarea, CSV Excel-ready.
  */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   const subject = `AUDIT RECEPTION - ${count} Camere - ${dateLabel}`;
@@ -326,21 +244,18 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
     .map((row) => row.phone)
     .filter(Boolean)
     .join(', ');
-  const copyUrl = escapeHtml(buildCopyBroadcastUrl(listaSoloNumeri));
 
   const text = [
     `Ciao Payel,`,
     ``,
     `Front Office Audit ${hotelName} - ${dateLabel}.`,
-    `Sincronizzazioni 24h: ${count}`,
-    `Coupon ISSUED: ${couponCount}`,
+    `Sincronizzazioni: ${count}`,
+    `Coupon YES: ${couponCount}`,
     ``,
-    `WhatsApp broadcast:`,
+    `WhatsApp broadcast (tieni premuto sul box in mail per Copia):`,
     listaSoloNumeri || '-',
     ``,
-    `Copia numeri: ${buildCopyBroadcastUrl(listaSoloNumeri)}`,
-    ``,
-    `CSV allegato.`,
+    `CSV allegato (Excel: sep=, + BOM).`,
     ``,
     `${hotelName} Ledger`,
   ].join('\n');
@@ -357,17 +272,24 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   <style type="text/css">
     :root { color-scheme: light only; }
     img { display: block; max-width: 100%; height: auto; border: 0; }
-    html, body, table, td, th, p, div {
+    html, body, table, td, th, p, div, textarea {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     html, body { background-color: #FFFFFF !important; color: #1D1D1F !important; }
+    .data-table { table-layout: fixed !important; width: 100% !important; }
+    .utility-textarea {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
     @media (prefers-color-mode: dark) {
       body, table, td, .email-bg, .wrapper { background-color: #FFFFFF !important; color: #1D1D1F !important; }
-      td, p, h2, div, th, strong, span { color: #1D1D1F !important; }
+      td, p, h2, div, th, strong, span, textarea { color: #1D1D1F !important; background-color: #FFFFFF !important; }
       .data-table th { color: #8E8E93 !important; border-bottom: 1px solid #1D1D1F !important; background: #FFFFFF !important; }
       .data-table td { border-bottom: 1px solid #E5E5EA !important; }
-      .utility-box { background-color: #F4F7F9 !important; border-color: #E5E5EA !important; }
+      .utility-textarea { background-color: #F4F7F9 !important; border: 1px solid #E5E5EA !important; color: #1D1D1F !important; }
     }
   </style>
 </head>
@@ -378,14 +300,14 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:40px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:560px;background-color:#FFFFFF !important;">
+        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:580px;background-color:#FFFFFF !important;table-layout:fixed;">
 
           <tr>
             <td align="center" style="padding:0 0 36px 0;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:18px;overflow:hidden;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:14px;overflow:hidden;">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:#E9EEF0;border-radius:18px;">
-                    <img src="${hero}" width="560" alt="Venezia" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:18px;">
+                  <td style="padding:0;line-height:0;font-size:0;background-color:#E9EEF0;border-radius:14px;">
+                    <img src="${hero}" width="580" alt="Venezia" style="display:block;width:100%;max-width:580px;height:auto;border:0;border-radius:14px;">
                   </td>
                 </tr>
               </table>
@@ -394,30 +316,30 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
 
           <tr>
             <td align="center" style="padding:0 0 40px 0;border-bottom:1px solid #1D1D1F;">
-              <div style="font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:700;letter-spacing:0.1em;color:#124453 !important;text-transform:uppercase;line-height:1;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:700;letter-spacing:0.1em;color:#124453 !important;text-transform:uppercase;line-height:1;">
                 ${escapeHtml(hotelName)}
               </div>
-              <div style="font-family:Georgia,'Times New Roman',serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.28em;color:#8E8E93 !important;margin-top:8px;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:8.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.28em;color:#8E8E93 !important;margin-top:8px;">
                 Venice Experience · Front Office Business Intelligence
               </div>
             </td>
           </tr>
 
           <tr>
-            <td style="padding:32px 0 12px 0;">
+            <td style="padding:32px 0 16px 0;">
               <p style="font-size:14px;line-height:1.45;color:#124453 !important;margin:0 0 18px;font-weight:600;">
                 Ciao Payel,
               </p>
               <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td valign="bottom">
-                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;color:#124453 !important;margin:0;letter-spacing:0.08em;text-transform:uppercase;">
+                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;font-weight:700;color:#124453 !important;margin:0;letter-spacing:0.08em;text-transform:uppercase;">
                       Front Office Audit
                     </div>
                   </td>
-                  <td align="right" valign="bottom" style="font-size:12.5px;color:#64748B !important;font-weight:500;">
-                    Sincronizzazioni 24h:
-                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:700;color:#124453 !important;margin-left:4px;">${count}</span>
+                  <td align="right" valign="bottom" style="font-size:13px;color:#64748B !important;font-weight:500;">
+                    Sincronizzazioni totali:
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700;color:#124453 !important;margin-left:2px;">${count}</span>
                   </td>
                 </tr>
               </table>
@@ -425,15 +347,22 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
           </tr>
 
           <tr>
-            <td style="padding-top:16px;">
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+            <td style="padding-top:8px;">
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed;">
+                <colgroup>
+                  <col style="width:12%">
+                  <col style="width:40%">
+                  <col style="width:24%">
+                  <col style="width:12%">
+                  <col style="width:12%">
+                </colgroup>
                 <thead>
                   <tr>
-                    <th width="70" align="left" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:left;padding:12px 4px;border-bottom:1px solid #1D1D1F;">Room</th>
-                    <th align="left" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:left;padding:12px 8px;border-bottom:1px solid #1D1D1F;">Guest / Contacts</th>
-                    <th width="120" align="left" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:left;padding:12px 8px;border-bottom:1px solid #1D1D1F;">Telephone</th>
-                    <th width="70" align="center" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:center;padding:12px 4px;border-bottom:1px solid #1D1D1F;">Staff</th>
-                    <th width="100" align="right" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:right;padding:12px 4px;border-bottom:1px solid #1D1D1F;">Coupon</th>
+                    <th width="12%" align="left" style="width:12%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:left;padding:12px 2px;border-bottom:1px solid #1D1D1F;">Room</th>
+                    <th width="40%" align="left" style="width:40%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:left;padding:12px 6px;border-bottom:1px solid #1D1D1F;">Guest / Parameters</th>
+                    <th width="24%" align="left" style="width:24%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:left;padding:12px 6px;border-bottom:1px solid #1D1D1F;">Telephone</th>
+                    <th width="12%" align="center" style="width:12%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:center;padding:12px 2px;border-bottom:1px solid #1D1D1F;">Staff</th>
+                    <th width="12%" align="right" style="width:12%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:right;padding:12px 2px;border-bottom:1px solid #1D1D1F;">Privilege</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -445,27 +374,10 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
 
           <tr>
             <td style="padding-top:28px;">
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0 0 8px;">
-                <tr>
-                  <td valign="middle">
-                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:11px;font-weight:700;color:#8E8E93 !important;text-transform:uppercase;letter-spacing:0.06em;">
-                      WhatsApp Broadcast List
-                    </div>
-                  </td>
-                  <td align="right" valign="middle">
-                    <a href="${copyUrl}" target="_blank" style="font-size:10px;font-weight:700;background-color:rgba(18,68,83,0.06);color:#124453 !important;text-decoration:none;padding:7px 12px;border-radius:6px;letter-spacing:0.06em;text-transform:uppercase;display:inline-block;">
-                      Copia tutti
-                    </a>
-                  </td>
-                </tr>
-              </table>
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="utility-box" style="background-color:#F4F7F9 !important;border:1px solid #E5E5EA;border-radius:8px;margin:0 0 28px;">
-                <tr>
-                  <td style="padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;color:#334155 !important;word-break:break-all;line-height:1.55;">
-                    ${escapeHtml(listaSoloNumeri || '-')}
-                  </td>
-                </tr>
-              </table>
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:11px;font-weight:700;color:#8E8E93 !important;text-transform:uppercase;letter-spacing:0.06em;margin:0 0 8px;">
+                WhatsApp Broadcast List (tap &amp; hold to copy)
+              </div>
+              <textarea class="utility-textarea" readonly rows="3" style="display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 28px;padding:12px;background-color:#F4F7F9 !important;border:1px solid #E5E5EA;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.55;color:#1D1D1F !important;-webkit-user-select:text;user-select:text;resize:none;">${escapeHtml(listaSoloNumeri || '-')}</textarea>
             </td>
           </tr>
 

@@ -15,10 +15,6 @@ import {
 } from './db.js';
 import { runDailyReport, runMonthlyStaffReport } from './mail.js';
 import {
-  verifyCopyBroadcastQuery,
-  buildCopyBroadcastPage,
-} from './report.js';
-import {
   sendWelcomeEmail,
   buildCouponRedeemPage,
   buildCouponClaimPage,
@@ -396,28 +392,6 @@ async function handleCheckin(req, res) {
 
 app.post('/api/checkins', handleCheckin);
 app.post('/api/save-lead', handleCheckin);
-
-/** Micro-pagina per "Copia tutti" nella mail report (clipboard via browser). */
-app.get('/api/copy-broadcast', (req, res) => {
-  const phones = verifyCopyBroadcastQuery(req.query.d, req.query.s);
-  if (!phones) {
-    return res
-      .status(400)
-      .type('html')
-      .send(
-        `<!DOCTYPE html><html><body style="font-family:-apple-system,sans-serif;text-align:center;padding:48px;color:#C62828;">Link non valido o scaduto.</body></html>`,
-      );
-  }
-  if (!String(phones).trim()) {
-    return res
-      .status(404)
-      .type('html')
-      .send(
-        `<!DOCTYPE html><html><body style="font-family:-apple-system,sans-serif;text-align:center;padding:48px;color:#C62828;">Nessun numero da copiare.</body></html>`,
-      );
-  }
-  res.type('html').send(buildCopyBroadcastPage(phones));
-});
 
 app.post('/api/cron/daily-report', async (req, res) => {
   if (!isAuthorizedCron(req)) {

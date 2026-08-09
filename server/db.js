@@ -258,6 +258,7 @@ export function getUnreportedCheckins() {
       WHERE reported_at IS NULL
       ORDER BY
         CASE WHEN room_number IS NULL OR TRIM(room_number) = '' THEN 1 ELSE 0 END,
+        CAST(room_number AS INTEGER) ASC,
         room_number ASC,
         created_at ASC
     `,
