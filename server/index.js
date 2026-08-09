@@ -698,21 +698,16 @@ app.post('/api/table-booking', async (req, res) => {
       channels.whatsapp = { sent: false, error: message };
     }
 
-    const anySent = Boolean(channels.email?.sent || channels.whatsapp?.sent);
-    if (!anySent) {
-      return res.status(502).json({
-        error: errors.join(' | ') || 'Nessun canale alert disponibile',
-        saved: true,
-        tableBooking: rawTime,
-        channels,
-      });
-    }
-
     void syncCheckinsBackup('table-booking');
-    return res.json({
+    const anySent = Boolean(channels.email?.sent || channels.whatsapp?.sent);
+    // Prenotazione salvata: successo ospite anche se alert Payel fallisce
+    return res.status(anySent ? 200 : 202).json({
       success: true,
+      saved: true,
+      alertSent: anySent,
       tableBooking: rawTime,
       channels,
+      warning: anySent ? undefined : (errors.join(' | ') || 'Alert staff non inviato'),
     });
   } catch (err) {
     console.error('Errore table-booking:', err);

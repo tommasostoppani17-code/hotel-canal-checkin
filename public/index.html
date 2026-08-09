@@ -1331,12 +1331,23 @@
     }
 
     .book-done {
-      margin: 8px 0 0;
-      font-size: 12px;
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(18, 68, 83, 0.08);
+      border: 1px solid rgba(18, 68, 83, 0.14);
+      font-size: 13px;
       font-weight: 600;
       color: var(--canal-petroleum);
       text-align: center;
       line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+
+    .book-done.is-error {
+      background: rgba(198, 40, 40, 0.08);
+      border-color: rgba(198, 40, 40, 0.18);
+      color: #C62828;
     }
 
     .book-done[hidden] {
@@ -1749,10 +1760,9 @@
     }
 
     @keyframes iosShakeAnim {
-      10%, 90% { transform: translate3d(-2px, 0, 0); }
-      20%, 80% { transform: translate3d(4px, 0, 0); }
-      30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
-      40%, 60% { transform: translate3d(5px, 0, 0); }
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      20%, 80% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
     }
 
     .success-check {
@@ -2123,6 +2133,7 @@
         bookPax: 'Persone',
         bookSend: 'Invia richiesta',
         bookSending: 'Invio…',
+        bookSent: 'Inviata',
         bookDone: 'Richiesta inviata. Ti ricontatteremo al telefono.',
         bookError: 'Non inviata. Riprova o chiedi in reception.',
         bookNeedTime: 'Scegli un orario.',
@@ -2201,6 +2212,7 @@
         bookPax: 'Guests',
         bookSend: 'Send request',
         bookSending: 'Sending…',
+        bookSent: 'Sent',
         bookDone: 'Request sent. We’ll call you back.',
         bookError: 'Could not send. Try again or ask reception.',
         bookNeedTime: 'Please choose a time.',
@@ -2278,6 +2290,7 @@
         bookPax: 'Personnes',
         bookSend: 'Envoyer la demande',
         bookSending: 'Envoi…',
+        bookSent: 'Envoyée',
         bookDone: 'Demande envoyée. Nous vous rappellerons.',
         bookError: 'Échec. Réessayez ou demandez à la réception.',
         bookNeedTime: 'Choisissez une heure.',
@@ -2355,6 +2368,7 @@
         bookPax: 'Personen',
         bookSend: 'Anfrage senden',
         bookSending: 'Senden…',
+        bookSent: 'Gesendet',
         bookDone: 'Anfrage gesendet. Wir rufen Sie zurück.',
         bookError: 'Nicht gesendet. Erneut versuchen oder Rezeption fragen.',
         bookNeedTime: 'Bitte eine Uhrzeit wählen.',
@@ -2432,6 +2446,7 @@
         bookPax: 'Personas',
         bookSend: 'Enviar solicitud',
         bookSending: 'Enviando…',
+        bookSent: 'Enviada',
         bookDone: 'Solicitud enviada. Le llamaremos.',
         bookError: 'No enviada. Intente de nuevo o pregunte en recepción.',
         bookNeedTime: 'Elija una hora.',
@@ -2779,10 +2794,21 @@
       return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
     }
 
-    function setStep(step) {
+    function pinCardInView() {
+      try {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      } catch (_) {
+        /* ignore */
+      }
+    }
+
+    function setStep(step, { instant = false } = {}) {
       const prev = currentStep;
       currentStep = step;
       document.body.dataset.step = String(step);
+      pinCardInView();
 
       if (dots) {
         dots.classList.toggle('hidden', step === TOTAL_STEPS);
@@ -2791,65 +2817,70 @@
         });
       }
 
-      const sliding = prev !== step && !reduceMotion;
+      // Successo: taglio netto (niente overlap form + Registered)
+      const hardCut = instant || step === TOTAL_STEPS || prev === TOTAL_STEPS;
+      const sliding = !hardCut && prev !== step && !reduceMotion;
       markStepClasses(step, { slidingFrom: sliding ? prev : null });
 
       const toSlide = -((step - 1) * 100) / TOTAL_STEPS;
       const toParallax = ((step - 1) * 100) / 22;
       const toScale = 1.05 + (step - 1) * 0.012;
 
-      if (reduceMotion && track) {
+      if ((reduceMotion || hardCut) && track) {
         track.style.transition = 'none';
+      } else if (track) {
+        track.style.transition = '';
       }
 
       freezeAmbient(true);
-      syncCardHeight(step);
+      if (hardCut && card) {
+        const prevTransition = card.style.transition;
+        card.style.transition = 'none';
+        syncCardHeight(step);
+        void card.offsetHeight;
+        card.style.transition = prevTransition;
+      } else {
+        syncCardHeight(step);
+      }
       applyTrack(toSlide);
       applyParallax(toParallax, toScale);
 
       clearTimeout(ambientUnlockTimer);
       ambientUnlockTimer = setTimeout(
         () => freezeAmbient(false),
-        reduceMotion ? 0 : SLIDE_MS + 20,
+        reduceMotion || hardCut ? 0 : SLIDE_MS + 20,
       );
 
       clearTimeout(slideRevealTimer);
       slideRevealTimer = setTimeout(() => {
         markStepClasses(step, { slidingFrom: null });
-      }, reduceMotion ? 0 : SLIDE_MS + 40);
+        if (track) track.style.transition = '';
+      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 40);
     }
 
     /**
-     * Successo: 1) fumo foto → 2) rubber 280ms → 3) setStep(3) + badge CSS.
-     * Sequenza unica, niente parallelismo sullo stesso layer.
+     * Successo: micro rubber, poi salto netto allo step 3 (niente dissolve + slide sovrapposti).
      */
     function playSuccessKinetics(thenGo) {
       const step2 = document.getElementById('step2');
-      if (step2 && currentStep === 2) {
-        step2.classList.add('is-dissolving');
-      }
-
-      const startRubber = () => {
-        card.classList.remove('is-rubber');
-        void card.offsetWidth;
-        card.classList.add('is-rubber');
-        setTimeout(() => {
-          card.classList.remove('is-rubber');
-          if (step2) step2.classList.remove('is-dissolving');
-          thenGo();
-        }, 280);
-      };
+      if (step2) step2.classList.remove('is-dissolving');
 
       if (reduceMotion) {
-        if (step2) step2.classList.remove('is-dissolving');
         thenGo();
         return;
       }
 
-      setTimeout(startRubber, 100);
+      card.classList.remove('is-rubber');
+      void card.offsetWidth;
+      card.classList.add('is-rubber');
+      setTimeout(() => {
+        card.classList.remove('is-rubber');
+        thenGo();
+      }, 160);
     }
 
     function shakeCard() {
+      pinCardInView();
       card.classList.remove('ios-shake');
       void card.offsetWidth;
       card.classList.add('ios-shake');
@@ -2894,6 +2925,7 @@
      */
     function showFieldError(fieldEl) {
       hideToast();
+      pinCardInView();
       if (!fieldEl) {
         shakeCard();
         return;
@@ -2902,7 +2934,33 @@
       try {
         fieldEl.focus({ preventScroll: true });
       } catch (_) {
-        fieldEl.focus();
+        try {
+          fieldEl.focus();
+        } catch (__) {
+          /* ignore */
+        }
+      }
+      shakeCard();
+    }
+
+    /** Evidenzia più campi insieme (stesso UX iOS, niente toast). */
+    function showFieldsError(fieldEls) {
+      hideToast();
+      pinCardInView();
+      const list = (fieldEls || []).filter(Boolean);
+      if (!list.length) {
+        shakeCard();
+        return;
+      }
+      list.forEach(markFieldError);
+      try {
+        list[0].focus({ preventScroll: true });
+      } catch (_) {
+        try {
+          list[0].focus();
+        } catch (__) {
+          /* ignore */
+        }
       }
       shakeCard();
     }
@@ -2910,17 +2968,13 @@
     /** Privacy non spuntata: messaggio chiaro + shake. */
     function showPrivacyError() {
       hideToast();
+      pinCardInView();
       const dict = t();
       document.getElementById('lbl-privacy')?.classList.add('label-error-state');
       privacyBox.classList.add('is-invalid');
       if (errorEl) {
         errorEl.textContent = dict.privacyRequired;
         errorEl.classList.add('visible');
-      }
-      try {
-        privacyBox.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      } catch (_) {
-        /* ignore */
       }
       shakeCard();
     }
@@ -3289,22 +3343,33 @@
       const done = document.getElementById('bookDoneMsg');
       const timeEl = document.getElementById('bookTime');
       const paxEl = document.getElementById('bookPax');
-      if (!lastCheckinId || !sendBtn) return;
+      if (!sendBtn) return;
+
+      const showBookMsg = (text, isError = false) => {
+        if (!done) return;
+        done.hidden = false;
+        done.textContent = text;
+        done.classList.toggle('is-error', Boolean(isError));
+        try {
+          done.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        } catch (_) {
+          /* ignore */
+        }
+      };
+
+      if (!lastCheckinId) {
+        showBookMsg(dict.bookError || 'Request failed.', true);
+        return;
+      }
 
       const timeValue = normalizeBookTime(timeEl?.value);
       let pax = Number.parseInt(String(paxEl?.value || '').trim(), 10);
       if (!timeValue) {
-        if (done) {
-          done.hidden = false;
-          done.textContent = dict.bookNeedTime;
-        }
+        showBookMsg(dict.bookNeedTime || 'Choose a time.', true);
         return;
       }
       if (!Number.isFinite(pax) || pax < 1) {
-        if (done) {
-          done.hidden = false;
-          done.textContent = dict.bookNeedPax;
-        }
+        showBookMsg(dict.bookNeedPax || 'Enter guests.', true);
         return;
       }
       if (pax > 20) pax = 20;
@@ -3314,6 +3379,7 @@
       if (done) {
         done.hidden = true;
         done.textContent = '';
+        done.classList.remove('is-error');
       }
 
       try {
@@ -3328,29 +3394,22 @@
           }),
         });
         const body = await res.json().catch(() => ({}));
-        if (!res.ok && !body.saved) {
+        const savedOk = Boolean(body.saved || body.success || res.ok);
+        if (!savedOk) {
           sendBtn.disabled = false;
           sendBtn.textContent = dict.bookSend;
-          if (done) {
-            done.hidden = false;
-            done.textContent = body.error || dict.bookError;
-          }
+          showBookMsg(body.error || dict.bookError, true);
           return;
         }
-        if (done) {
-          done.hidden = false;
-          done.textContent = dict.bookDone;
-        }
-        sendBtn.textContent = dict.bookSend;
-        timeEl.disabled = true;
-        paxEl.disabled = true;
+        showBookMsg(dict.bookDone, false);
+        sendBtn.disabled = true;
+        sendBtn.textContent = dict.bookSent || dict.bookDone || dict.bookSend;
+        if (timeEl) timeEl.disabled = true;
+        if (paxEl) paxEl.disabled = true;
       } catch (_) {
         sendBtn.disabled = false;
         sendBtn.textContent = dict.bookSend;
-        if (done) {
-          done.hidden = false;
-          done.textContent = dict.bookError;
-        }
+        showBookMsg(dict.bookError, true);
       }
     });
 
@@ -3360,6 +3419,7 @@
 
     function validateStep1() {
       clearError();
+      pinCardInView();
       const phoneRaw = phoneEl.value.trim();
       const emailNormalized = normalizeEmailInput(emailEl.value);
       const firstName = firstNameEl.value.trim();
@@ -3368,37 +3428,27 @@
       const magic = isReportTrigger(phoneRaw, firstName, lastName);
 
       if (!privacyEl.checked) {
-        clearError();
         showPrivacyError();
         return false;
       }
 
       if (magic) return true;
 
-      if (!firstName) {
-        showFieldError(firstNameEl);
+      const invalid = [];
+      if (!firstName) invalid.push(firstNameEl);
+      if (!lastName) invalid.push(lastNameEl);
+      if (!emailNormalized || !EMAIL_REGEX.test(emailNormalized)) {
+        invalid.push(emailEl);
+      }
+      if (!cleaned || !PHONE_REGEX.test(cleaned)) {
+        invalid.push(phoneEl);
+      }
+
+      if (invalid.length) {
+        showFieldsError(invalid);
         return false;
       }
-      if (!lastName) {
-        showFieldError(lastNameEl);
-        return false;
-      }
-      if (!emailNormalized) {
-        showFieldError(emailEl);
-        return false;
-      }
-      if (!EMAIL_REGEX.test(emailNormalized)) {
-        showFieldError(emailEl);
-        return false;
-      }
-      if (!cleaned) {
-        showFieldError(phoneEl);
-        return false;
-      }
-      if (!PHONE_REGEX.test(cleaned)) {
-        showFieldError(phoneEl);
-        return false;
-      }
+
       // Riscrivi email pulita nel campo (togli spazi invisibili da copia/incolla)
       if (emailEl.value !== emailNormalized) emailEl.value = emailNormalized;
       return true;
@@ -3512,23 +3562,14 @@
 
     btnNext.addEventListener('click', () => {
       if (submitting) return;
-      // Chiudi tastiera iOS: altrimenti Continua resta nascosto sotto
+      // Chiudi tastiera iOS senza scrollare la card fuori viewport
       try {
         document.activeElement?.blur?.();
       } catch (_) {
         /* ignore */
       }
-      if (!validateStep1()) {
-        // Porta privacy/Continua in vista se il form è lungo o la tastiera è aperta
-        try {
-          document
-            .getElementById('btnNext')
-            ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        } catch (_) {
-          /* ignore */
-        }
-        return;
-      }
+      pinCardInView();
+      if (!validateStep1()) return;
       clearError();
       if (
         isReportTrigger(
@@ -3661,6 +3702,7 @@
         }
 
         if (body.reportTriggered) {
+          submitting = false;
           showReportResult(body);
           return;
         }
@@ -3670,6 +3712,7 @@
         } else {
           clearRegistrationLock();
         }
+        submitting = false;
         showSuccessStep({
           id: body.id,
           verifiedAt: body.createdAt,
@@ -3692,10 +3735,10 @@
       }
     }
 
-    // Raddrizza il viewport mobile alla chiusura tastiera
+    // Raddrizza il viewport mobile alla chiusura tastiera (senza scroll che sposta la card)
     document.querySelectorAll('.apple-input').forEach((input) => {
       input.addEventListener('blur', () => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        pinCardInView();
       });
     });
 
