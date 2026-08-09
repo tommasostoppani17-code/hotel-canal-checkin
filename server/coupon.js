@@ -541,8 +541,6 @@ function buildWelcomeHtml({
               `
               }
 
-              ${veniceGuideBlock}
-
               ${sectionTitle(lp.tastesTitle, icons.cloche, 'Cucina')}
               <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
                 ${lp.tastesDesc}
@@ -562,6 +560,7 @@ function buildWelcomeHtml({
                 </tr>
               </table>
 
+              ${veniceGuideBlock}
               ${venicePdfFooter}
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0 0;">
