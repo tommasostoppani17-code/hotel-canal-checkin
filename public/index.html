@@ -2092,7 +2092,9 @@
       height: var(--ios-touch);
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-weight: 400;
-      background: var(--input-white);
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      background-image: none !important;
       border: 1.5px solid transparent;
       border-radius: 14px;
       padding: 0 var(--ios-3);
@@ -2102,10 +2104,10 @@
       box-sizing: border-box;
       transition:
         border-color 0.35s var(--ios-ease),
-        background-color 0.35s var(--ios-ease),
         box-shadow 0.35s var(--ios-ease),
         transform 0.28s var(--ios-ease);
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+      color-scheme: light;
     }
 
     .apple-input::placeholder {
@@ -2129,7 +2131,8 @@
     .apple-input:focus {
       outline: none;
       border-color: rgba(18, 68, 83, 0.45);
-      background: var(--input-white);
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
       transform: none;
       /* Anello interno: non viene tagliato da overflow:hidden della card */
       box-shadow:
@@ -2155,27 +2158,39 @@
       cursor: pointer;
     }
 
-    /* Autofill Safari/Chrome: niente alone azzurro/giallo (Apple HIG = bianco) */
+    /* Autofill Chrome/Safari: forza bianco (Chrome usa #E8F0FE azzurro) */
     .apple-input:-webkit-autofill,
     .apple-input:-webkit-autofill:hover,
     .apple-input:-webkit-autofill:focus,
-    .apple-input:-webkit-autofill:active {
-      -webkit-text-fill-color: var(--text-main) !important;
-      caret-color: var(--text-main);
+    .apple-input:-webkit-autofill:active,
+    .apple-input.is-autofilled {
+      -webkit-text-fill-color: #1D1D1F !important;
+      color: #1D1D1F !important;
+      caret-color: #1D1D1F !important;
       border-color: transparent !important;
-      /* Copre il background interno che WebKit non lascia sovrascrivere */
-      box-shadow:
-        inset 0 0 0 1000px var(--input-white),
-        0 1px 2px rgba(18, 68, 83, 0.04) !important;
-      transition: background-color 99999s ease-out 0s;
+      background-color: #FFFFFF !important;
+      background-image: none !important;
+      -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+      box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+      filter: none !important;
+      transition: background-color 99999s ease-out 0s !important;
+      animation: appleAutofillOk 0.01s;
     }
 
-    .apple-input:-webkit-autofill:focus {
+    .apple-input:-webkit-autofill:focus,
+    .apple-input.is-autofilled:focus {
       border-color: rgba(18, 68, 83, 0.45) !important;
+      -webkit-box-shadow:
+        0 0 0 1000px #FFFFFF inset,
+        inset 0 0 0 1px rgba(18, 68, 83, 0.12) !important;
       box-shadow:
-        inset 0 0 0 1000px var(--input-white),
-        inset 0 0 0 1px rgba(18, 68, 83, 0.12),
-        0 1px 2px rgba(18, 68, 83, 0.06) !important;
+        0 0 0 1000px #FFFFFF inset,
+        inset 0 0 0 1px rgba(18, 68, 83, 0.12) !important;
+    }
+
+    @keyframes appleAutofillOk {
+      from { opacity: 0.99; }
+      to { opacity: 1; }
     }
 
     .privacy-box {
@@ -4780,10 +4795,67 @@
     }
 
     // Raddrizza il viewport mobile alla chiusura tastiera (senza scroll che sposta la card)
+    // + neutralizza tint azzurro autofill (Chrome/Safari usa #E8F0FE)
+    function isAutofilled(input) {
+      try {
+        return input.matches(':-webkit-autofill');
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function paintInputSurface(input) {
+      if (!input) return;
+      const autofilled = isAutofilled(input);
+      input.classList.toggle('is-autofilled', autofilled);
+      if (autofilled) {
+        input.style.setProperty('background-color', '#FFFFFF', 'important');
+        input.style.setProperty('background-image', 'none', 'important');
+        input.style.setProperty(
+          '-webkit-box-shadow',
+          '0 0 0 1000px #FFFFFF inset',
+          'important',
+        );
+        input.style.setProperty(
+          'box-shadow',
+          '0 0 0 1000px #FFFFFF inset',
+          'important',
+        );
+        input.style.setProperty('-webkit-text-fill-color', '#1D1D1F', 'important');
+      } else if (input.classList.contains('is-autofilled') === false) {
+        input.style.removeProperty('background-color');
+        input.style.removeProperty('background-image');
+        input.style.removeProperty('-webkit-box-shadow');
+        input.style.removeProperty('box-shadow');
+        input.style.removeProperty('-webkit-text-fill-color');
+      }
+    }
+
     document.querySelectorAll('.apple-input').forEach((input) => {
       input.addEventListener('blur', () => {
         pinCardInView();
+        paintInputSurface(input);
       });
+      input.addEventListener('input', () => paintInputSurface(input));
+      input.addEventListener('change', () => paintInputSurface(input));
+      input.addEventListener('animationstart', (e) => {
+        if (String(e.animationName || '').includes('appleAutofillOk')) {
+          paintInputSurface(input);
+        }
+      });
+      paintInputSurface(input);
+      [50, 200, 600, 1200].forEach((ms) => {
+        setTimeout(() => paintInputSurface(input), ms);
+      });
+    });
+
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.apple-input').forEach(paintInputSurface);
+    });
+    document.addEventListener('focusin', (e) => {
+      if (e.target && e.target.classList && e.target.classList.contains('apple-input')) {
+        paintInputSurface(e.target);
+      }
     });
 
     /** Luce speculare sul vetro — solo pointer fine; niente tilt / magnete cursore */
