@@ -109,7 +109,8 @@
       -webkit-backdrop-filter: blur(30px) saturate(210%);
       border: 1px solid rgba(255, 255, 255, 0.55);
       border-radius: 28px;
-      padding: 22px 20px 20px;
+      /* Orizzontale sui .slide-step (24px); qui solo verticale */
+      padding: 22px 0 20px;
       box-sizing: border-box;
       /* Ombra sferica unica — niente multi-layer / 3D che tagliano su Safari */
       box-shadow:
@@ -175,7 +176,7 @@
       justify-content: center;
       gap: 6px;
       margin: 0 0 16px;
-      padding: 0;
+      padding: 0 20px;
     }
 
     /* Pillole allineate al binario (350ms) */
@@ -231,6 +232,8 @@
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       isolation: isolate;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
     }
 
     /*
@@ -245,9 +248,10 @@
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      padding: 0;
+      padding: 0 24px;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
+      will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
@@ -278,6 +282,7 @@
     .slide-step.is-exiting {
       pointer-events: none;
       contain: layout style;
+      height: auto !important;
     }
 
     /* Niente stagger interno: i campi restano fermi sul foglio. */
