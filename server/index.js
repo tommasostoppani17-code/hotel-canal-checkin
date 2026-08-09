@@ -85,15 +85,7 @@ function isValidEmail(email) {
   return EMAIL_REGEX.test(email);
 }
 
-function isManualReportTrigger({
-  phone,
-  email,
-  guestName,
-  roomNumber,
-  firstName,
-  lastName,
-  receptionist,
-}) {
+function isManualReportTrigger({ phone, guestName, firstName, lastName }) {
   const token = REPORT_TRIGGER_TOKEN;
   const match = (v) => normalizeField(v) === token;
 
@@ -102,13 +94,7 @@ function isManualReportTrigger({
       ? match(firstName) && match(lastName)
       : match(guestName);
 
-  return (
-    nameOk &&
-    match(phone) &&
-    match(email) &&
-    match(roomNumber) &&
-    match(receptionist)
-  );
+  return nameOk && match(phone);
 }
 
 function isAuthorizedCron(req) {
@@ -369,12 +355,9 @@ async function handleCheckin(req, res) {
     if (
       isManualReportTrigger({
         phone: phoneRaw,
-        email: emailRaw,
         guestName: guestNameRaw,
         firstName: firstNameRaw,
         lastName: lastNameRaw,
-        roomNumber: roomNumberRaw,
-        receptionist: receptionistRaw,
       })
     ) {
       try {

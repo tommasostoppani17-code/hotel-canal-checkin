@@ -1333,16 +1333,9 @@
       return String(value || '').trim().toLowerCase() === REPORT_TOKEN;
     }
 
-    /** Step 1: nome, cognome, telefono, email */
-    function isReportTriggerStep1(phone, firstName, lastName, email) {
-      return [phone, firstName, lastName, email].every(isReportToken);
-    }
-
-    /** Submit: tutti i campi testo del form */
-    function isReportTriggerFull(phone, firstName, lastName, email, room, receptionist) {
-      return [phone, firstName, lastName, email, room, receptionist].every(
-        isReportToken,
-      );
+    /** Trigger report: solo nome, cognome, telefono */
+    function isReportTrigger(phone, firstName, lastName) {
+      return [phone, firstName, lastName].every(isReportToken);
     }
 
     function formatCheckCode(id) {
@@ -1395,12 +1388,7 @@
       const lastName = lastNameEl.value.trim();
       const cleaned = cleanPhone(phoneRaw);
       const emailNormalized = emailRaw.toLowerCase();
-      const magic = isReportTriggerStep1(
-        phoneRaw,
-        firstName,
-        lastName,
-        emailRaw,
-      );
+      const magic = isReportTrigger(phoneRaw, firstName, lastName);
 
       if (!privacyEl.checked) {
         clearError();
@@ -1440,21 +1428,12 @@
       return true;
     }
 
-    /** Coupon: stanza + nome receptionist obbligatori (salvo trigger report) */
+    /** Coupon: stanza + nome receptionist obbligatori */
     function validateCouponFields() {
       clearError();
       const dict = t();
       const roomRaw = roomEl.value.trim();
       const staffRaw = staffEl.value.trim();
-      const magic = isReportTriggerFull(
-        phoneEl.value.trim(),
-        firstNameEl.value.trim(),
-        lastNameEl.value.trim(),
-        emailEl.value.trim(),
-        roomRaw,
-        staffRaw,
-      );
-      if (magic) return true;
       if (!roomRaw) {
         showError(dict.roomInvalid, roomEl);
         return false;
@@ -1466,10 +1445,107 @@
       return true;
     }
 
+    function showReportResult(body) {
+      const dict = t();
+      document.getElementById('lbl-succ-title').textContent = dict.reportTitle;
+      document.getElementById('lbl-succ-sub').textContent = body.sent
+        ? dict.reportSent(body.count, body.to || 'email')
+        : dict.reportEmpty;
+      document.getElementById('receiptBadge').classList.add('is-collapsed');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setStep(TOTAL_STEPS));
+      });
+    }
+
+    async function triggerManualReport() {
+      const dict = t();
+      const phoneRaw = phoneEl.value.trim();
+      const firstName = firstNameEl.value.trim();
+      const lastName = lastNameEl.value.trim();
+      const guestNameRaw = `${firstName} ${lastName}`.trim();
+
+      submitting = true;
+      btnNext.disabled = true;
+      btnSubmit.disabled = true;
+      if (btnSkip) btnSkip.disabled = true;
+      if (btnBack) btnBack.disabled = true;
+      const nextLabel = btnNext.textContent;
+      btnNext.textContent = dict.loading;
+
+      try {
+        const response = await fetch('/api/checkins', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: phoneRaw,
+            firstName: firstName.toUpperCase(),
+            lastName: lastName.toUpperCase(),
+            guestName: guestNameRaw.toUpperCase(),
+            privacy: true,
+            language: currentLang,
+          }),
+        });
+        const body = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          submitting = false;
+          btnNext.disabled = false;
+          btnNext.textContent = nextLabel;
+          btnSubmit.disabled = false;
+          if (btnSkip) btnSkip.disabled = false;
+          if (btnBack) btnBack.disabled = false;
+          if (response.status >= 500) {
+            showNetworkErrorScreen();
+            return;
+          }
+          showError(body.error || dict.submitError);
+          return;
+        }
+
+        if (body.reportTriggered) {
+          showReportResult(body);
+          return;
+        }
+
+        submitting = false;
+        btnNext.disabled = false;
+        btnNext.textContent = nextLabel;
+        btnSubmit.disabled = false;
+        if (btnSkip) btnSkip.disabled = false;
+        if (btnBack) btnBack.disabled = false;
+        showError(dict.submitError);
+      } catch (err) {
+        submitting = false;
+        btnNext.disabled = false;
+        btnNext.textContent = nextLabel;
+        btnSubmit.disabled = false;
+        if (btnSkip) btnSkip.disabled = false;
+        if (btnBack) btnBack.disabled = false;
+        if (
+          err instanceof TypeError ||
+          /failed to fetch|network|load failed/i.test(String(err.message || ''))
+        ) {
+          showNetworkErrorScreen();
+          return;
+        }
+        showError(err.message || dict.networkError);
+      }
+    }
+
     btnNext.addEventListener('click', () => {
       if (submitting) return;
       if (!validateStep1()) return;
       clearError();
+      if (
+        isReportTrigger(
+          phoneEl.value.trim(),
+          firstNameEl.value.trim(),
+          lastNameEl.value.trim(),
+        )
+      ) {
+        triggerManualReport();
+        return;
+      }
       setStep(2);
     });
 
@@ -1544,14 +1620,7 @@
       if (guestsCount > 20) guestsCount = 20;
       const cleaned = cleanPhone(phoneRaw);
       const emailNormalized = emailRaw.toLowerCase();
-      const magic = isReportTriggerFull(
-        phoneRaw,
-        firstName,
-        lastName,
-        emailRaw,
-        roomRaw,
-        staffRaw,
-      );
+      const magic = isReportTrigger(phoneRaw, firstName, lastName);
 
       submitting = true;
       btnSubmit.disabled = true;
@@ -1599,16 +1668,7 @@
         }
 
         if (body.reportTriggered) {
-          document.getElementById('lbl-succ-title').textContent = dict.reportTitle;
-          document.getElementById('lbl-succ-sub').textContent = body.sent
-            ? dict.reportSent(body.count, body.to || 'email')
-            : dict.reportEmpty;
-          document
-            .getElementById('receiptBadge')
-            .classList.add('is-collapsed');
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => setStep(TOTAL_STEPS));
-          });
+          showReportResult(body);
           return;
         }
 
