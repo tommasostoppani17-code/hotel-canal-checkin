@@ -2600,7 +2600,6 @@
                 <strong class="rest-score">4,5</strong>
                 <span class="rest-reviews" id="lbl-rest-reviews">128 recensioni</span>
               </div>
-              <p class="step2-tag" id="lbl-rest-tag">Il nostro regalo per te</p>
               <p class="rest-blurb" id="lbl-rest-blurb">
                 Un tavolo sulla terrazza, sapori di Venezia e il tuo −10% di benvenuto. Conferma sotto e te lo mandiamo subito via email.
               </p>
@@ -3289,7 +3288,7 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 380;
+    const SLIDE_MS = 440;
 
     /* Carosello foto ristorante (Step 2) — frecce + swipe */
     (function initRestaurantCarousel() {
@@ -3787,7 +3786,7 @@
           const cur = Math.round(card.getBoundingClientRect().height);
           if (Math.abs(cur - settled) >= 14) {
             applyCardHeightPx(settled, { animate: true, shrink: settled < cur });
-            setTimeout(() => card?.classList.remove('is-height-shrink'), 220);
+            setTimeout(() => card?.classList.remove('is-height-shrink'), SLIDE_MS);
           }
         }
       }, reduceMotion || hardCut ? 0 : SLIDE_MS + 20);
