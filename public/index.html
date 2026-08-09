@@ -16,10 +16,11 @@
       --text-main: #1D1D1F;
       --text-muted: #515154;
       --radius-ios: 18px;
-      /* Stessa curva per transform + height (sync Back/Continua) */
+      /* Solo slide orizzontale — card altezza fissa, niente sync height JS */
       --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
-      --slide-ms: 380ms;
+      --slide-ms: 350ms;
+      --card-h: min(480px, calc(100dvh - 28px));
     }
 
     /* Blocca rimbalzo/overscroll del browser - effetto app a schermo fisso */
@@ -99,32 +100,27 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 360px;
-      height: auto;
-      max-height: min(94dvh, 780px);
+      max-width: 350px;
+      /* Chassis fisso: zero CLS, zero height JS, Back senza lag */
+      height: var(--card-h);
+      max-height: var(--card-h);
       display: flex;
       flex-direction: column;
       background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(30px) saturate(210%);
-      -webkit-backdrop-filter: blur(30px) saturate(210%);
-      border: 1px solid rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(35px) saturate(210%);
+      -webkit-backdrop-filter: blur(35px) saturate(210%);
+      border: 1px solid rgba(255, 255, 255, 0.45);
       border-radius: 28px;
-      /* Orizzontale sui .slide-step (24px); qui solo verticale */
-      padding: 22px 0 20px;
+      padding: 24px 0 20px;
       box-sizing: border-box;
-      /* Ombra sferica unica — niente multi-layer / 3D che tagliano su Safari */
       box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.85);
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
       isolation: isolate;
-      transform-style: flat;
-      -webkit-transform-style: flat;
-      perspective: none;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
+      will-change: transform;
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
@@ -206,25 +202,24 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Viewport: height anima in sincrono col transform (stessa curva/ms) */
+    /* Viewport passivo: riempie la card, nessuna transition height */
     .slider-viewport {
       width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
       overflow: hidden !important;
       position: relative;
-      flex: 0 0 auto;
-      height: auto;
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
-      transition: height var(--slide-ms) var(--ios-ease);
-      will-change: height;
+      transition: none;
     }
 
-    /* Binario 3 pannelli: width 300%, ogni step 33.333% */
+    /* Binario 300%: solo transform orizzontale */
     .slider-track {
       display: flex;
       flex-wrap: nowrap;
-      align-items: flex-start;
+      align-items: stretch;
       width: 300%;
+      height: 100%;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
       transition: transform var(--slide-ms) var(--ios-ease);
@@ -236,19 +231,17 @@
       -webkit-transform-style: preserve-3d;
     }
 
-    /*
-     * Anti-CLS: inattivi height 0.
-     * Durante lo slide lo step uscente resta .is-exiting (altezza piena).
-     */
     .slide-step {
       flex: 0 0 33.333%;
       width: 33.333%;
       max-width: 33.333%;
       min-width: 33.333%;
+      height: 100%;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      padding: 0 24px;
+      justify-content: space-between;
+      padding: 0 22px;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
       will-change: transform;
@@ -256,36 +249,16 @@
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
-      word-break: normal;
-      overflow-wrap: normal;
-      hyphens: none;
-      height: 0;
-      max-height: 0;
-      min-height: 0;
-      opacity: 0;
-      overflow: hidden !important;
+      overflow: hidden;
       pointer-events: none;
-    }
-
-    .slide-step.is-active,
-    .slide-step.is-exiting {
-      height: auto;
-      max-height: none;
       opacity: 1;
-      overflow: hidden !important;
     }
 
     .slide-step.is-active {
       pointer-events: auto;
     }
 
-    .slide-step.is-exiting {
-      pointer-events: none;
-      contain: layout size style !important;
-      height: auto !important;
-    }
-
-    /* Niente stagger interno: i campi restano fermi sul foglio. */
+    /* Niente stagger interno. */
 
     @media (prefers-reduced-motion: reduce) {
       .apple-card,
@@ -306,8 +279,11 @@
     .step-body {
       display: flex;
       flex-direction: column;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .step-footer-fixed {
@@ -364,8 +340,8 @@
     .restaurant-hero-card {
       position: relative;
       width: 100%;
-      height: 178px;
-      border-radius: 16px;
+      height: 110px;
+      border-radius: 12px;
       overflow: hidden;
       margin: 0;
       flex-shrink: 0;
@@ -427,13 +403,12 @@
 
     .rest-strip figure {
       margin: 0;
-      border-radius: 12px;
+      border-radius: 6px;
       overflow: hidden;
       background: #124453;
-      /* Quadrati veri: niente max-height che li schiaccia */
-      aspect-ratio: 1 / 1;
+      aspect-ratio: auto;
       width: 100%;
-      height: auto;
+      height: 40px;
       box-shadow: 0 3px 10px rgba(18, 68, 83, 0.1);
     }
 
@@ -550,14 +525,14 @@
 
     .apple-input {
       width: 100%;
-      height: 40px;
+      height: 38px;
       font-family: "Montserrat", sans-serif;
       font-weight: 500;
       background: rgba(245, 248, 250, 0.85);
       border: 1px solid rgba(0, 0, 0, 0.1);
-      border-radius: var(--radius-ios);
+      border-radius: 16px;
       padding: 0 12px;
-      font-size: 13.5px;
+      font-size: 13px;
       color: #000000;
       box-sizing: border-box;
       transition:
@@ -665,7 +640,7 @@
 
     .btn-canal {
       width: 100%;
-      height: 44px;
+      height: 42px;
       font-family: "Montserrat", sans-serif;
       font-weight: 600;
       text-transform: uppercase;
@@ -673,12 +648,13 @@
       background: var(--canal-petroleum);
       color: #FFFFFF;
       border: none;
-      border-radius: var(--radius-ios);
+      border-radius: 16px;
       font-size: 12.5px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      margin-top: 8px;
       /* Release: overshoot breve; press: override sotto */
       transition:
         transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
@@ -952,7 +928,7 @@
 
     <div class="error" id="error" role="alert"></div>
 
-    <div class="slider-viewport" id="sliderViewport" style="height: 380px;">
+    <div class="slider-viewport" id="sliderViewport">
     <div class="slider-track" id="sliderTrack">
       <!-- STEP 1: griglia unica allineata + privacy/CTA subito sotto -->
       <section class="slide-step is-active" id="step1">
@@ -1394,7 +1370,6 @@
     /* Slide CSS 350ms — niente RAF mid-frame, niente height in parallelo */
     let slideX = 0;
     let parallaxX = 0;
-    let heightGoTimer = 0;
     let ambientUnlockTimer = 0;
     let ambientRaf = 0;
     let ambX = 0;
@@ -1403,8 +1378,7 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 380;
-    let exitClearTimer = 0;
+    const SLIDE_MS = 350;
 
     function applyTrack(xPercent) {
       slideX = xPercent;
@@ -1435,33 +1409,6 @@
         targetAmbX = ambX;
         targetAmbY = ambY;
       }
-    }
-
-    function measureStepHeight(step) {
-      const el = document.getElementById(`step${step}`);
-      if (!el) return 0;
-      return el.scrollHeight;
-    }
-
-    /** Scrive height destinazione subito — CSS anima in parallelo allo slide. */
-    function syncViewportHeight(step = currentStep, instant = false) {
-      if (!viewport) return;
-      const h = measureStepHeight(step);
-      if (h <= 0) return;
-      if (instant || reduceMotion) {
-        const prev = viewport.style.transition;
-        viewport.style.transition = 'none';
-        viewport.style.height = `${h}px`;
-        void viewport.offsetHeight;
-        viewport.style.transition = prev;
-        return;
-      }
-      viewport.style.height = `${h}px`;
-    }
-
-    function scheduleViewportHeight(step = currentStep) {
-      clearTimeout(heightGoTimer);
-      syncViewportHeight(step);
     }
 
     function startAmbientInertia() {
@@ -1513,12 +1460,12 @@
       return translations[nav] ? nav : 'en';
     }
 
-    function markStepClasses(step, exitingStep = null) {
+    function markStepClasses(step) {
       for (let i = 1; i <= TOTAL_STEPS; i++) {
         const el = document.getElementById(`step${i}`);
         if (!el) continue;
         el.classList.toggle('is-active', i === step);
-        el.classList.toggle('is-exiting', exitingStep != null && i === exitingStep);
+        el.classList.remove('is-exiting');
         if (i !== 2 || step !== TOTAL_STEPS) {
           el.classList.remove('is-dissolving');
         }
@@ -1526,13 +1473,9 @@
     }
 
     /**
-     * Slide + height nello stesso istante (CSS).
-     * Niente setTimeout sull'altezza: Back non aspetta fine corsa.
-     * is-exiting tiene il testo intero durante i 380ms.
+     * Solo slide GPU. Card altezza fissa CSS — zero scrollHeight / height JS.
      */
     function setStep(step) {
-      const fromStep = currentStep;
-      const isTransit = fromStep !== step;
       currentStep = step;
       document.body.dataset.step = String(step);
 
@@ -1543,9 +1486,8 @@
         });
       }
 
-      markStepClasses(step, isTransit ? fromStep : null);
+      markStepClasses(step);
 
-      /* Track 300%: uno step = 100/3 % del binario (NON -100%) */
       const toSlide = -((step - 1) * 100) / TOTAL_STEPS;
       const toParallax = ((step - 1) * 100) / 22;
       const toScale = 1.05 + (step - 1) * 0.012;
@@ -1555,21 +1497,14 @@
       }
 
       freezeAmbient(true);
-      /* Stesso frame: misura → height + transform insieme (niente lag) */
-      const targetEl = document.getElementById(`step${step}`);
-      if (targetEl) void targetEl.offsetHeight;
-      syncViewportHeight(step, !isTransit);
       applyTrack(toSlide);
       applyParallax(toParallax, toScale);
 
-      clearTimeout(exitClearTimer);
       clearTimeout(ambientUnlockTimer);
-      clearTimeout(heightGoTimer);
-      const unlockDelay = reduceMotion ? 0 : SLIDE_MS + 20;
-      exitClearTimer = setTimeout(() => {
-        markStepClasses(step, null);
-      }, unlockDelay);
-      ambientUnlockTimer = setTimeout(() => freezeAmbient(false), unlockDelay);
+      ambientUnlockTimer = setTimeout(
+        () => freezeAmbient(false),
+        reduceMotion ? 0 : SLIDE_MS + 20,
+      );
     }
 
     /**
@@ -1784,7 +1719,6 @@
 
       if (!formMode) return;
       applyFormLabels();
-      requestAnimationFrame(() => syncViewportHeight(currentStep, true));
 
       if (currentStep === TOTAL_STEPS) {
         const dict = t();
@@ -2234,16 +2168,6 @@
     setStep(1);
     startAmbientInertia();
     startCardSheen();
-    /* Boot: riallinea i 380px inline senza animare l'altezza */
-    syncViewportHeight(1, true);
-    requestAnimationFrame(() => syncViewportHeight(1, true));
-    window.addEventListener('resize', () => syncViewportHeight(currentStep, true));
-    document.getElementById('restHeroImg')?.addEventListener('load', () => {
-      syncViewportHeight(currentStep, true);
-    });
-    if (document.fonts?.ready) {
-      document.fonts.ready.then(() => syncViewportHeight(currentStep, true)).catch(() => {});
-    }
     const bootParams = new URLSearchParams(location.search);
     const prefEmail = bootParams.get('email');
     if (prefEmail && emailEl) emailEl.value = prefEmail;
