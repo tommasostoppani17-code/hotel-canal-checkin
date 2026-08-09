@@ -81,6 +81,21 @@ async function restoreCheckinsBackupIfNeeded() {
 const app = express();
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+
+// Cache lunga su asset email: i proxy Gmail/Apple rifetchano spesso
+app.use(
+  '/email',
+  express.static(path.join(rootDir, 'public', 'email'), {
+    maxAge: '7d',
+    etag: true,
+    lastModified: true,
+    setHeaders(res) {
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    },
+  }),
+);
+
 app.use(express.static(path.join(rootDir, 'public')));
 
 const REPORT_TRIGGER_TOKEN = 'grandcanalhotel';

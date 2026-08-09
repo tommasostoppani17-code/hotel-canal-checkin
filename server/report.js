@@ -27,12 +27,26 @@ function publicBaseUrl() {
   return (process.env.PUBLIC_URL || 'http://localhost:3000').replace(/\/$/, '');
 }
 
+function emailAssetBaseUrl() {
+  const custom = String(process.env.EMAIL_ASSET_BASE || '')
+    .trim()
+    .replace(/\/$/, '');
+  if (custom) return custom;
+  const mode = String(process.env.EMAIL_ASSETS_CDN || 'jsdelivr')
+    .trim()
+    .toLowerCase();
+  if (mode === 'render' || mode === 'public' || mode === 'off') {
+    return publicBaseUrl();
+  }
+  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@main/public';
+}
+
 function publicAssetUrl(...parts) {
   const rel = parts
     .map((p) => String(p).replace(/^\/+|\/+$/g, ''))
     .filter(Boolean)
     .join('/');
-  return `${publicBaseUrl()}/${rel}`;
+  return `${emailAssetBaseUrl()}/${rel}`;
 }
 
 const C = '#164E5B';

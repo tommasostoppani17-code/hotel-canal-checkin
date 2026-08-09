@@ -42,13 +42,31 @@ export function publicBaseUrl() {
   );
 }
 
+/**
+ * Base URL per foto/icone email (remote, zero allegati).
+ * Default: jsDelivr su GitHub — i proxy Gmail/Apple non dipendono dal cold-start Render.
+ * Override: EMAIL_ASSET_BASE=https://...  oppure EMAIL_ASSETS_CDN=render|jsdelivr
+ */
+function emailAssetBaseUrl() {
+  const custom = env('EMAIL_ASSET_BASE', '').trim().replace(/\/$/, '');
+  if (custom) return custom;
+
+  const mode = env('EMAIL_ASSETS_CDN', 'jsdelivr').trim().toLowerCase();
+  if (mode === 'render' || mode === 'public' || mode === 'off') {
+    return publicBaseUrl();
+  }
+
+  // Repo pubblico: CDN sempre caldo
+  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@main/public';
+}
+
 /** Absolute URL for a file under /public (remote assets → email sotto 102KB Gmail). */
 function publicAssetUrl(...parts) {
   const rel = parts
     .map((p) => String(p).replace(/^\/+|\/+$/g, ''))
     .filter(Boolean)
     .join('/');
-  return `${publicBaseUrl()}/${rel}`;
+  return `${emailAssetBaseUrl()}/${rel}`;
 }
 
 /** True when PUBLIC_URL is a stable public HTTPS host (e.g. Render). */
@@ -957,7 +975,7 @@ export async function sendWelcomeEmail({
       : `${lp.subject} · ${String(token).slice(0, 6)}`;
 
   console.log(
-    `[welcome] assets remoti da ${publicBaseUrl()} · coupon ${withCoupon ? 'sì' : 'no (claim link)'} · html ~${Math.round(Buffer.byteLength(html, 'utf8') / 1024)}KB · 0 allegati`,
+    `[welcome] assets da ${emailAssetBaseUrl()} · QR/claim su ${publicBaseUrl()} · coupon ${withCoupon ? 'sì' : 'no (claim link)'} · html ~${Math.round(Buffer.byteLength(html, 'utf8') / 1024)}KB · 0 allegati`,
   );
 
   const textTail = withCoupon
