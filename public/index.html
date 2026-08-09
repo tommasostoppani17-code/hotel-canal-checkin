@@ -2605,10 +2605,10 @@
                 <div class="carousel-viewport" id="restCarouselViewport">
                   <div class="carousel-track" id="restCarouselTrack">
                     <figure class="carousel-slide">
-                      <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="1020" height="682" decoding="async">
+                      <img src="/restaurant/13-sala-interna.jpg" alt="" width="664" height="373" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
-                      <img src="/restaurant/13-sala-interna.jpg" alt="" width="664" height="373" loading="lazy" decoding="async">
+                      <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="1020" height="682" loading="lazy" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
                       <img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="768" height="1024" loading="lazy" decoding="async">
@@ -2763,13 +2763,23 @@
                   <div class="book-field">
                     <label id="lbl-book-time" for="bookTime">Orario</label>
                     <select id="bookTime" class="book-select">
-                      <option value="18:30">18:30</option>
-                      <option value="19:00">19:00</option>
-                      <option value="19:30" selected>19:30</option>
-                      <option value="20:00">20:00</option>
-                      <option value="20:30">20:30</option>
-                      <option value="21:00">21:00</option>
-                      <option value="21:30">21:30</option>
+                      <optgroup label="Pranzo" id="bookTimeLunch">
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="13:30">13:30</option>
+                        <option value="14:00">14:00</option>
+                        <option value="14:30">14:30</option>
+                      </optgroup>
+                      <optgroup label="Cena" id="bookTimeDinner">
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30" selected>19:30</option>
+                        <option value="20:00">20:00</option>
+                        <option value="20:30">20:30</option>
+                        <option value="21:00">21:00</option>
+                        <option value="21:30">21:30</option>
+                      </optgroup>
                     </select>
                   </div>
                   <div class="book-field">
@@ -4236,6 +4246,10 @@
         couponSent ? dict.actTableSub : dict.actTableSubNoCoupon || dict.actTableSub,
       );
       setTxt('lbl-book-time', dict.bookTime);
+      const lunchGroup = document.getElementById('bookTimeLunch');
+      if (lunchGroup) lunchGroup.label = dict.bookLunch || 'Pranzo';
+      const dinnerGroup = document.getElementById('bookTimeDinner');
+      if (dinnerGroup) dinnerGroup.label = dict.bookDinner || 'Cena';
       setTxt('lbl-book-pax', dict.bookPax);
       setTxt('lbl-book-or', dict.bookOr);
       setTxt('lbl-sheet-back', dict.back);
