@@ -67,7 +67,7 @@ if (wifiSsid && wifiPassword) {
   console.log(`Wi-Fi QR: SSID="${wifiSsid}" T=${wifiType}`);
 } else {
   console.warn(
-    'WIFI_SSID / WIFI_PASSWORD non impostati in .env — cartello solo con QR app.',
+    'WIFI_SSID / WIFI_PASSWORD non impostati in .env - cartello solo con QR app.',
   );
 }
 
@@ -78,7 +78,7 @@ const poster = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel Canal — Cartello Reception QR</title>
+  <title>Hotel Canal - Cartello Reception QR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
@@ -257,7 +257,7 @@ const poster = `<!DOCTYPE html>
     <p class="instructions">
       ${
         dual
-          ? '1) Connettiti al Wi‑Fi dell’hotel &nbsp;·&nbsp; 2) Registrati per i servizi digitali della stanza'
+          ? '1) Connettiti al Wi-Fi dell’hotel &nbsp;·&nbsp; 2) Registrati per i servizi digitali della stanza'
           : 'Inquadra il QR Code con il tuo smartphone per registrare la stanza e attivare i servizi digitali.'
       }
     </p>
@@ -266,7 +266,7 @@ const poster = `<!DOCTYPE html>
         dual
           ? `<div class="qr-col">
         <img src="${wifiQrDataUrl}" alt="QR Wi-Fi Hotel Canal" width="800" height="800">
-        <div class="qr-label">1 · Wi‑Fi</div>
+        <div class="qr-label">1 · Wi-Fi</div>
         <div class="qr-hint">Rete: ${wifiSsid.replace(/</g, '')}<br>Connessione automatica</div>
       </div>
       <div class="qr-col">
@@ -284,7 +284,7 @@ const poster = `<!DOCTYPE html>
       <strong>Regalo di benvenuto</strong>
       <p>
         Nel form, inserisci il nome del receptionist e ricevi via email
-        lo sconto 10% per la Trattoria alla Terrazza.
+        lo sconto 5% per la Trattoria alla Terrazza.
       </p>
     </div>
     <p class="url">${publicUrl}</p>
