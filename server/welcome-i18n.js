@@ -69,6 +69,14 @@ export const WELCOME_I18N = {
     veniceWalkBody:
       'Camminare nel centro storico e\' il modo migliore per vivere la citta\'.<br><strong style="color:#124453 !important;">Ponte di Rialto:</strong> 15-25 minuti dalla lobby.<br><strong style="color:#124453 !important;">Piazza San Marco:</strong> 25-40 minuti lungo i percorsi pedonali principali.',
     venicePdfBtn: 'Scarica guida completa Venezia (PDF)',
+    ticketTitle: 'Esenzione ticket di accesso a Venezia',
+    ticketDesc:
+      'Come ospite dell&rsquo;<strong>Hotel Canal</strong>, sei completamente esentato dal pagamento del contributo di accesso giornaliero a Venezia. Devi solo registrare la presenza per ottenere il QR Code ufficiale del Comune.',
+    ticketBox:
+      '<strong>Dati da inserire sul sito del Comune:</strong><br>&bull; Motivo esenzione: Ospite in struttura ricettiva a Venezia<br>&bull; Nome struttura: Hotel Canal (Santa Croce 553)<br>&bull; Riferimento: Stanza ',
+    ticketBtn: 'Ottieni QR Code di esenzione',
+    legalText:
+      'Questa e-mail &egrave; stata inviata automaticamente dal sistema di check-in dell&rsquo;Hotel Canal. I tuoi dati sono trattati in conformit&agrave; al Regolamento UE 2016/679 (GDPR) per le finalit&agrave; legate al tuo soggiorno. Puoi consultare l&rsquo;informativa completa al banco o su hotelcanal.com.',
     wishes: 'Le auguriamo un soggiorno indimenticabile.',
     signatureLine1: 'La Direzione',
     signatureLine2: 'Hotel Canal Venezia',
@@ -79,6 +87,8 @@ export const WELCOME_I18N = {
       'Voucher sconto 10%: mostra il QR di questa email al cameriere.',
     textVenice:
       'Guida Venezia: San Marco, Rialto, Casino, Murano, Burano e mezzi - PDF:',
+    textTicket:
+      'Esenzione ticket accesso Venezia (ospite in struttura): registra su https://cda.ve.it',
     textSignature: 'La Direzione - Hotel Canal Venezia',
   },
   en: {
@@ -147,6 +157,14 @@ export const WELCOME_I18N = {
     veniceWalkBody:
       'Walking inside the historic center is the best way to experience the city.<br><strong style="color:#124453 !important;">Rialto Bridge:</strong> 15-25 minutes from the hotel lobby.<br><strong style="color:#124453 !important;">San Marco Square:</strong> 25-40 minutes along the main pedestrian routes.',
     venicePdfBtn: 'Download Full Venice Guide (PDF)',
+    ticketTitle: 'Venice access fee exemption',
+    ticketDesc:
+      'As a guest of <strong>Hotel Canal</strong>, you are completely exempt from paying the Venice daily access fee. You only need to register your stay to get the official municipal QR code.',
+    ticketBox:
+      '<strong>Details to use on the municipal website:</strong><br>&bull; Reason for exemption: Guest in an accommodation facility in Venice<br>&bull; Facility name: Hotel Canal (Santa Croce 553)<br>&bull; Reference: Room ',
+    ticketBtn: 'Get official exemption QR code',
+    legalText:
+      'This e-mail was sent automatically by the Hotel Canal check-in system. Your personal data is processed in compliance with EU Regulation 2016/679 (GDPR) for hospitality purposes related to your stay. You can view our full privacy policy at the desk or on hotelcanal.com.',
     wishes: 'We wish you an unforgettable stay.',
     signatureLine1: 'The Management',
     signatureLine2: 'Hotel Canal Venice',
@@ -157,6 +175,8 @@ export const WELCOME_I18N = {
       '10% discount voucher: show the QR in this email to your waiter.',
     textVenice:
       'Venice guide: San Marco, Rialto, Casino, Murano, Burano & transport - PDF:',
+    textTicket:
+      'Venice access fee exemption (hotel guest): register at https://cda.ve.it',
     textSignature: 'The Management - Hotel Canal Venice',
   },
   fr: {
@@ -226,6 +246,14 @@ export const WELCOME_I18N = {
     veniceWalkBody:
       'Marcher dans le centre historique est la meilleure façon de découvrir la ville.<br><strong style="color:#124453 !important;">Pont du Rialto :</strong> 15-25 minutes depuis le hall.<br><strong style="color:#124453 !important;">Place Saint-Marc :</strong> 25-40 minutes par les parcours piétons principaux.',
     venicePdfBtn: 'Télécharger le guide Venise (PDF)',
+    ticketTitle: 'Exemption du ticket d&rsquo;accès à Venise',
+    ticketDesc:
+      'En tant qu&rsquo;hôte de l&rsquo;<strong>Hotel Canal</strong>, vous êtes totalement exonéré du droit d&rsquo;accès journalier à Venise. Il vous suffit d&rsquo;enregistrer votre séjour pour obtenir le QR Code officiel de la municipalité.',
+    ticketBox:
+      '<strong>Données à saisir sur le site de la municipalité :</strong><br>&bull; Motif d&rsquo;exonération : Client d&rsquo;un établissement d&rsquo;hébergement à Venise<br>&bull; Nom de la structure : Hotel Canal (Santa Croce 553)<br>&bull; Référence : Chambre ',
+    ticketBtn: 'Obtenir le QR Code d&rsquo;exonération',
+    legalText:
+      'Cet e-mail a été envoyé automatiquement par le système de check-in de l&rsquo;Hotel Canal. Vos données sont traitées conformément au Règlement UE 2016/679 (RGPD) pour les finalités liées à votre séjour. Vous pouvez consulter notre politique de confidentialité à la réception ou sur hotelcanal.com.',
     wishes: 'Nous vous souhaitons un séjour inoubliable.',
     signatureLine1: 'La Direction',
     signatureLine2: 'Hotel Canal Venise',
@@ -236,6 +264,8 @@ export const WELCOME_I18N = {
       'Bon de réduction 10 % : montrez le QR de cet e-mail au serveur.',
     textVenice:
       'Guide Venise : San Marco, Rialto, Casino, Murano, Burano - PDF :',
+    textTicket:
+      'Exemption ticket d\'accès Venise (client hébergé) : enregistrez sur https://cda.ve.it',
     textSignature: 'La Direction - Hotel Canal Venise',
   },
   de: {
@@ -305,6 +335,14 @@ export const WELCOME_I18N = {
     veniceWalkBody:
       'Zu Fuß durch die Altstadt ist der schönste Weg, Venedig zu erleben.<br><strong style="color:#124453 !important;">Rialtobrücke:</strong> 15-25 Minuten von der Lobby.<br><strong style="color:#124453 !important;">Markusplatz:</strong> 25-40 Minuten über die Hauptwege.',
     venicePdfBtn: 'Venedig-Guide herunterladen (PDF)',
+    ticketTitle: 'Befreiung von der Venedig-Zutrittsgebühr',
+    ticketDesc:
+      'Als Gast des <strong>Hotel Canal</strong> sind Sie vollständig von der täglichen Zutrittsgebühr für Venedig befreit. Sie müssen Ihren Aufenthalt nur registrieren, um den offiziellen QR-Code der Stadt zu erhalten.',
+    ticketBox:
+      '<strong>Angaben für die Website der Stadt:</strong><br>&bull; Grund der Befreiung: Gast in einer Unterkunft in Venedig<br>&bull; Name der Unterkunft: Hotel Canal (Santa Croce 553)<br>&bull; Referenz: Zimmer ',
+    ticketBtn: 'Offiziellen Befreiungs-QR-Code holen',
+    legalText:
+      'Diese E-Mail wurde automatisch vom Check-in-System des Hotel Canal gesendet. Ihre Daten werden gemäß EU-Verordnung 2016/679 (DSGVO) für Zwecke Ihres Aufenthalts verarbeitet. Die vollständige Datenschutzerklärung finden Sie an der Rezeption oder auf hotelcanal.com.',
     wishes: 'Wir wünschen Ihnen einen unvergesslichen Aufenthalt.',
     signatureLine1: 'Die Direktion',
     signatureLine2: 'Hotel Canal Venedig',
@@ -315,6 +353,8 @@ export const WELCOME_I18N = {
       '10%-Gutschein: zeigen Sie den QR in dieser E-Mail dem Kellner.',
     textVenice:
       'Venedig-Guide: San Marco, Rialto, Casino, Murano, Burano - PDF:',
+    textTicket:
+      'Befreiung Venedig-Zutritt (Hotelgast): Registrierung unter https://cda.ve.it',
     textSignature: 'Die Direktion - Hotel Canal Venedig',
   },
   es: {
@@ -384,6 +424,14 @@ export const WELCOME_I18N = {
     veniceWalkBody:
       'Caminar por el centro histórico es la mejor forma de vivir la ciudad.<br><strong style="color:#124453 !important;">Puente de Rialto:</strong> 15-25 minutos desde el hall.<br><strong style="color:#124453 !important;">Plaza San Marcos:</strong> 25-40 minutos por las rutas peatonales principales.',
     venicePdfBtn: 'Descargar guía completa Venecia (PDF)',
+    ticketTitle: 'Exención del ticket de acceso a Venecia',
+    ticketDesc:
+      'Como huésped del <strong>Hotel Canal</strong>, está totalmente exento del pago de la tasa diaria de acceso a Venecia. Solo debe registrar su estancia para obtener el código QR oficial del Ayuntamiento.',
+    ticketBox:
+      '<strong>Datos a introducir en el sitio municipal:</strong><br>&bull; Motivo de exención: Huésped en establecimiento de alojamiento en Venecia<br>&bull; Nombre del establecimiento: Hotel Canal (Santa Croce 553)<br>&bull; Referencia: Habitación ',
+    ticketBtn: 'Obtener código QR de exención',
+    legalText:
+      'Este correo se envió automáticamente desde el sistema de check-in del Hotel Canal. Sus datos se tratan conforme al Reglamento UE 2016/679 (RGPD) para fines relacionados con su estancia. Puede consultar la política de privacidad en recepción o en hotelcanal.com.',
     wishes: 'Le deseamos una estancia inolvidable.',
     signatureLine1: 'La Dirección',
     signatureLine2: 'Hotel Canal Venecia',
@@ -394,6 +442,8 @@ export const WELCOME_I18N = {
       'Cupón 10%: muestre el QR de este correo al camarero.',
     textVenice:
       'Guía Venecia: San Marco, Rialto, Casino, Murano, Burano - PDF:',
+    textTicket:
+      'Exención ticket acceso Venecia (huésped hotel): registre en https://cda.ve.it',
     textSignature: 'La Dirección - Hotel Canal Venecia',
   },
 };

@@ -264,6 +264,50 @@ function buildWelcomeHtml({
               </table>`
     : '';
 
+  const accessTicketBlock = `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:8px 0 0;">
+                <tr>
+                  <td style="padding:36px 0 16px 0;border-top:1px solid #E5E5EA;">
+                    <div style="font-family:${CINZEL};font-size:14px;font-weight:700;color:${C} !important;margin:0 0 8px 0;letter-spacing:0.05em;text-transform:uppercase;text-align:center;line-height:1.3;">
+                      ${lp.ticketTitle}
+                    </div>
+                    <p style="font-family:${SANS};font-size:13.5px;line-height:1.65;color:#48484A !important;margin:0 0 20px 0;font-weight:400;text-align:center;">
+                      ${lp.ticketDesc}
+                    </p>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F4F7F9;border-radius:18px;border:1px solid rgba(18,68,83,0.06);margin:0 0 24px;">
+                      <tr>
+                        <td style="padding:16px 20px;font-family:${SANS};font-size:13px;line-height:1.65;color:#334155 !important;font-weight:500;">
+                          ${lp.ticketBox}<strong>${room}</strong>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding:0 0 36px 0;border-bottom:1px solid #E5E5EA;">
+                    <a href="https://cda.ve.it" target="_blank" style="display:inline-block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px 28px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.06em;">
+                      ${lp.ticketBtn}
+                    </a>
+                  </td>
+                </tr>
+              </table>`;
+
+  const legalFooterBlock = `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 0;">
+                <tr>
+                  <td align="center" style="border-top:1px solid #E5E5EA;padding-top:24px;text-align:center;">
+                    <p style="font-family:${SANS};font-size:10px;color:#8E8E93 !important;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;line-height:1.4;">
+                      Hotel Canal<br>
+                      Santa Croce 553, 30135 Venezia (VE) — Italy<br>
+                      P.IVA: 04711930273
+                    </p>
+                    <p style="font-family:${SANS};font-size:9.5px;color:#AEAEB2 !important;font-weight:400;margin:0;line-height:1.5;padding:0 16px;">
+                      ${lp.legalText}
+                    </p>
+                  </td>
+                </tr>
+              </table>`;
+
   const photoCell = (src, alt, pad) => `
                     <td width="50%" valign="top" style="${pad}">
                       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:14px;overflow:hidden;border:1px solid #E2E6E8;">
@@ -571,6 +615,7 @@ function buildWelcomeHtml({
 
               ${veniceGuideBlock}
               ${venicePdfFooter}
+              ${accessTicketBlock}
 
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:28px auto 0;">
                 <tr>
@@ -597,6 +642,8 @@ function buildWelcomeHtml({
                   </td>
                 </tr>
               </table>
+
+              ${legalFooterBlock}
             </td>
           </tr>
         </table>
@@ -942,6 +989,8 @@ export async function sendWelcomeEmail({
       '',
       lp.textVenice,
       guidePdfUrl,
+      '',
+      lp.textTicket,
       '',
       lp.textSignature,
     ].join('\n'),
