@@ -25,9 +25,11 @@
       --input-white: #FFFFFF;
       --placeholder: #AEB3B8;
       --radius-ios: 14px;
-      --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ios-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
-      --slide-ms: 520ms;
+      --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --slide-ms: 560ms;
+      --height-ease: cubic-bezier(0.4, 0, 0.2, 1);
       /* Cupertino 8pt grid */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -153,8 +155,8 @@
       -webkit-transform: translate3d(0, 0, 0);
       will-change: transform, height;
       transition:
-        height var(--slide-ms) var(--ios-ease),
-        max-height var(--slide-ms) var(--ios-ease);
+        height var(--slide-ms) var(--height-ease),
+        max-height var(--slide-ms) var(--height-ease);
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
@@ -271,8 +273,8 @@
       border-radius: 999px;
       background: rgba(18, 68, 83, 0.15);
       transition:
-        width var(--slide-ms) var(--ios-ease),
-        background-color var(--slide-ms) var(--ios-ease);
+        width var(--slide-ms) var(--slide-ease),
+        background-color var(--slide-ms) var(--slide-ease);
     }
 
     .step-dots span.active {
@@ -314,7 +316,7 @@
       height: 100%;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      transition: transform var(--slide-ms) var(--ios-ease);
+      transition: transform var(--slide-ms) var(--slide-ease);
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -2733,7 +2735,7 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 520;
+    const SLIDE_MS = 560;
 
     /* Carosello foto ristorante (Step 2) — frecce + swipe */
     (function initRestaurantCarousel() {
@@ -2834,6 +2836,12 @@
     function applyParallax(xPercent, scale) {
       parallaxX = xPercent;
       if (!bgInertia) return;
+      // Durante lo slide: stessa durata del binario (niente scatto sullo sfondo)
+      if (ambientFrozen && !reduceMotion) {
+        bgInertia.style.transition = `transform ${SLIDE_MS}ms var(--slide-ease)`;
+      } else {
+        bgInertia.style.transition = 'none';
+      }
       bgInertia.style.setProperty('--parallax-x', `${xPercent}%`);
       if (scale != null) {
         bgInertia.style.setProperty('--parallax-scale', String(scale));
@@ -2851,6 +2859,8 @@
       if (on) {
         targetAmbX = ambX;
         targetAmbY = ambY;
+      } else if (bgInertia) {
+        bgInertia.style.transition = 'none';
       }
     }
 
@@ -2880,11 +2890,11 @@
 
       function ambientFrame(now) {
         if (!ambientFrozen) {
-          breathT = now * 0.00028;
-          const breathX = Math.sin(breathT) * 1.1;
-          const breathY = Math.cos(breathT * 0.85) * 0.7;
-          ambX += (targetAmbX + breathX - ambX) * 0.04;
-          ambY += (targetAmbY + breathY - ambY) * 0.04;
+          breathT = now * 0.00022;
+          const breathX = Math.sin(breathT) * 0.55;
+          const breathY = Math.cos(breathT * 0.85) * 0.35;
+          ambX += (targetAmbX + breathX - ambX) * 0.035;
+          ambY += (targetAmbY + breathY - ambY) * 0.035;
           applyAmbient(ambX, ambY);
         }
         ambientRaf = requestAnimationFrame(ambientFrame);
@@ -2984,7 +2994,7 @@
       return Math.ceil(padY + dotsH + inner + 6);
     }
 
-    function syncCardHeight(step) {
+    function syncCardHeight(step, { allowMicroAdjust = true } = {}) {
       const card = document.getElementById('card');
       if (!card) return;
 
@@ -2992,7 +3002,6 @@
         const maxH = availableCardMax();
         let natural = measureStepContentHeight(step);
         if (!Number.isFinite(natural) || natural < 280) {
-          // fallback CSS vars
           card.style.setProperty(
             '--card-h',
             CARD_HEIGHTS[step] || CARD_HEIGHTS[1],
@@ -3001,7 +3010,6 @@
         }
         if (step === 1) measuredStep1Height = natural;
         if (step === 2 && measuredStep1Height > 0) {
-          // Step 2 sempre più alto dello Step 1
           natural = Math.max(natural, measuredStep1Height + 28);
         }
         if (step === 3) {
@@ -3014,6 +3022,11 @@
           }
         }
         const h = Math.min(Math.max(natural, 400), maxH);
+        // Evita rimbalzi da remisura (± pochi px) a fine slide
+        if (!allowMicroAdjust) {
+          const prev = Number.parseFloat(card.style.getPropertyValue('--card-h'));
+          if (Number.isFinite(prev) && Math.abs(prev - h) < 14) return;
+        }
         card.style.setProperty('--card-h', `${h}px`);
         return;
       }
@@ -3099,24 +3112,26 @@
       } else {
         syncCardHeight(step);
       }
-      applyTrack(toSlide);
+      // Ordine: prima parallasse (con transition), poi binario — stesso frame
       applyParallax(toParallax, toScale);
+      applyTrack(toSlide);
 
       clearTimeout(ambientUnlockTimer);
       ambientUnlockTimer = setTimeout(
         () => freezeAmbient(false),
-        reduceMotion || hardCut ? 0 : SLIDE_MS + 20,
+        reduceMotion || hardCut ? 0 : SLIDE_MS + 40,
       );
 
       clearTimeout(slideRevealTimer);
       slideRevealTimer = setTimeout(() => {
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
-        // Remisura a layout stabilizzato (font/carousel) su telefono
         if (isPhoneViewport()) {
-          requestAnimationFrame(() => syncCardHeight(step));
+          requestAnimationFrame(() =>
+            syncCardHeight(step, { allowMicroAdjust: false }),
+          );
         }
-      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 40);
+      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 48);
     }
 
     /**
