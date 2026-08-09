@@ -446,14 +446,18 @@ export function buildMonthlyStaffEmail({
 }
 
 /**
- * Alert immediato richiesta tavolo → Payel (stesso look del report notturno).
+ * Alert immediato richiesta tavolo → Payel.
+ * Look allineato alla welcome ospite (stessi font/misure), sole immagini ristorante,
+ * tono da collega che passa una nuova prenotazione.
  */
 export function buildTableBookingEmail({ hotelName, row }) {
   const rawTime = String(row?.table_booking || '').trim();
   const timeLabel =
     !rawTime || /REQUESTED|CALL|TAVOLO/i.test(rawTime)
-      ? 'Da confermare (richiamare ospite)'
-      : `Ore ${rawTime}`;
+      ? 'Da confermare'
+      : rawTime;
+  const timeDisplay =
+    timeLabel === 'Da confermare' ? 'Da confermare' : `Ore ${timeLabel}`;
   const room = cleanCell(row?.room_number) || '-';
   const phone = cleanCell(row?.phone) || '-';
   const phoneTel = String(row?.phone || '').replace(/[\s\-()]/g, '');
@@ -467,92 +471,169 @@ export function buildTableBookingEmail({ hotelName, row }) {
     String(row?.guest_lang || '').toUpperCase() ||
     '-';
 
-  const subject = `🛶 Tavolo · Stanza ${room} · ${timeLabel}`;
-  const preheader = `Richiesta tavolo Trattoria alla Terrazza — stanza ${room}, ${pax} persone, ${timeLabel}.`;
+  const subject = `Nuova prenotazione ristorante · Stanza ${room} · ${timeDisplay}`;
+  const preheader = `Payel, hai una nuova richiesta di tavolo per Trattoria alla Terrazza. Stanza ${room}, ${pax} persone, ${timeDisplay}.`;
 
   const text = [
     `Ciao Payel,`,
     ``,
-    `Nuova richiesta tavolo per Trattoria alla Terrazza`,
-    `dal check-in ${hotelName}.`,
-    ``,
-    `Richiama l'ospite e conferma l'orario.`,
-    hasCoupon ? `Coupon −10%: già inviato all'ospite via email.` : null,
+    `ti passo una nuova richiesta di prenotazione per Trattoria alla Terrazza.`,
+    `L'ospite l'ha lasciata dal check-in ${hotelName}: ti chiedo di richiamarlo e confermare il tavolo.`,
+    hasCoupon
+      ? `Nota: ha già ricevuto il coupon −10% via email, ricordaglielo in chiamata.`
+      : null,
     ``,
     `Stanza: ${room}`,
     `Telefono: ${phone}`,
     `Ospite: ${name}`,
     `Persone: ${pax}`,
-    `Orario: ${timeLabel}`,
+    `Orario: ${timeDisplay}`,
     `Receptionist: ${staff}`,
     `Coupon −10%: ${hasCoupon ? 'SÌ' : 'no'}`,
     `Lingua: ${guestLang}`,
     ``,
-    `Saluti,`,
-    `Front Desk — ${hotelName}`,
+    `Grazie,`,
+    `Check-in digitale — ${hotelName}`,
   ]
     .filter((line) => line != null)
     .join('\n');
 
+  /* Tipografia = welcome ospite (coupon.js) */
+  const FS = {
+    section: '12px',
+    body: '13px',
+    bodySm: '12px',
+    label: '9.5px',
+    button: '11.5px',
+    legal: '9px',
+  };
+  const brass = '#B79A63';
+  const hero = escapeHtml(publicAssetUrl('email', 'postcard-tavolo.jpg'));
+  const dish = escapeHtml(publicAssetUrl('email', 'postcard-dish.jpg'));
+  const gallery = escapeHtml(publicAssetUrl('email', 'postcard-ingresso.jpg'));
+  const thumbs = [
+    publicAssetUrl('email', 'thumb-ingresso.jpg'),
+    publicAssetUrl('email', 'thumb-pesce.jpg'),
+    publicAssetUrl('email', 'thumb-risotto.jpg'),
+    publicAssetUrl('email', 'thumb-linguine.jpg'),
+  ].map((src) => escapeHtml(src));
+
   const detailRow = (label, valueHtml) => `
                 <tr>
-                  <td style="padding:10px 0;border-bottom:1px solid #E8E4DC;${labelStyle};vertical-align:top;">
+                  <td style="padding:11px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:${FS.label};font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;vertical-align:top;">
                     ${label}
                   </td>
-                  <td style="padding:10px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:14px;font-weight:700;color:${C} !important;text-align:right;vertical-align:top;">
+                  <td style="padding:11px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:13px;font-weight:700;color:${C} !important;text-align:right;vertical-align:top;letter-spacing:0.02em;">
                     ${valueHtml}
                   </td>
                 </tr>`;
 
-  const bodyHtml = `
-              <p style="font-family:${SERIF};font-style:normal;font-size:22px;font-weight:600;color:${C} !important;margin:0 0 18px;letter-spacing:0.01em;text-align:left;line-height:1.25;">
-                Ciao Payel,
-              </p>
+  const sectionTitle = (label) => `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 12px;border-bottom:1px solid rgba(22,78,91,0.14);">
+                <tr>
+                  <td style="padding:0 0 10px 0;">
+                    <div style="font-family:${CINZEL};font-size:${FS.section};font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                  </td>
+                </tr>
+              </table>`;
 
-              <p style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${BRASS} !important;margin:0 0 8px;line-height:1.3;">
-                Nuova richiesta tavolo
-              </p>
-              <p style="font-family:${SERIF};font-style:normal;font-size:20px;font-weight:700;color:${C} !important;margin:0 0 6px;letter-spacing:0.02em;text-align:left;line-height:1.3;">
-                Trattoria alla Terrazza
-              </p>
-              <p style="font-family:${SANS};font-size:13px;font-weight:500;color:#5C6670 !important;margin:0 0 20px;line-height:1.45;letter-spacing:0.01em;">
-                dal check-in Hotel Canal
-              </p>
+  const thumbRow = thumbs
+    .map(
+      (src, i) => `
+                        <td width="25%" valign="top" style="padding:${i % 2 === 0 ? '0 4px 0 0' : '0 0 0 4px'};">
+                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:12px;overflow:hidden;border:1px solid #E2E6E8;">
+                            <tr>
+                              <td style="line-height:0;font-size:0;background-color:${BOX};">
+                                <img src="${src}" width="100" alt="" style="display:block;width:100%;max-width:110px;height:auto;border:0;">
+                              </td>
+                            </tr>
+                          </table>
+                        </td>`,
+    )
+    .join('');
 
-              <p style="font-family:${BODY};font-style:italic;font-size:15.5px;line-height:1.55;font-weight:400;color:#3D4A52 !important;margin:0 0 ${
-                hasCoupon ? '14' : '22'
-              }px;text-align:left;">
-                Richiama l&rsquo;ospite e conferma l&rsquo;orario del tavolo.
-              </p>
-              ${
-                hasCoupon
-                  ? `
+  const html = `
+<!DOCTYPE html>
+<html lang="it" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>${escapeHtml(subject)}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style type="text/css">
+    :root { color-scheme: light only; }
+    img { display: block; max-width: 100%; height: auto; border: 0; outline: none; }
+    @media (prefers-color-scheme: dark) {
+      .email-bg, .email-card, .email-content, body { background-color: #FFFFFF !important; color: #1D1D1F !important; }
+      .text-main, .brand-title { color: #164E5B !important; }
+    }
+  </style>
+</head>
+<body class="email-bg" style="margin:0;padding:0;background-color:${WHITE} !important;color:#1D1D1F !important;">
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">
+    ${escapeHtml(preheader)}
+  </div>
+  <table role="presentation" class="email-bg" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
+    <tr>
+      <td align="center" style="padding:20px 10px;background-color:${WHITE} !important;">
+        <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
+          <tr>
+            <td class="email-content" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;border-radius:16px;overflow:hidden;border:1px solid #E2E6E8;">
+                <tr>
+                  <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
+                    <img src="${hero}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  </td>
+                </tr>
+              </table>
+
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
                 <tr>
-                  <td style="padding:11px 14px;background-color:#F3EEE6;border:1px solid rgba(138,106,69,0.28);border-radius:12px;">
-                    <div style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A6A45 !important;margin:0 0 4px;line-height:1.2;">
-                      Coupon &minus;10%
-                    </div>
-                    <div style="font-family:${SANS};font-size:13px;font-weight:600;color:#5C4A36 !important;line-height:1.4;">
-                      Gi&agrave; inviato all&rsquo;ospite via email. Ricordaglielo in chiamata.
+                  <td align="center" style="padding:2px 0 0 0;">
+                    <div class="brand-title" style="font-family:${SERIF};font-size:24px;font-weight:700;letter-spacing:0.12em;color:${C} !important;text-transform:uppercase;line-height:1.15;">HOTEL CANAL</div>
+                    <div style="font-family:${SANS};font-size:9.5px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${brass} !important;margin-top:8px;">TRATTORIA ALLA TERRAZZA</div>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
+                Ciao Payel,
+              </p>
+              <p style="font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.5;font-weight:400;color:#4A5560 !important;margin:0 0 8px;text-align:left;">
+                ti passo una <strong style="font-style:italic;font-weight:600;color:${C} !important;">nuova richiesta di prenotazione</strong> per il ristorante.
+              </p>
+              <p style="font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.5;font-weight:400;color:#4A5560 !important;margin:0 0 22px;text-align:left;">
+                L&rsquo;ospite l&rsquo;ha lasciata dal check-in: puoi richiamarlo e confermare il tavolo quando ti &egrave; comodo.
+              </p>
+
+              <table role="presentation" class="room-badge" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;background-color:${BOX} !important;border-radius:16px;">
+                <tr>
+                  <td style="padding:16px 18px;text-align:center;">
+                    <span style="font-family:${SANS};font-size:10px;font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.14em;display:block;margin-bottom:6px;">Orario richiesto</span>
+                    <strong class="brand-title" style="font-family:${SERIF};font-size:26px;color:${C} !important;font-weight:700;letter-spacing:0.06em;line-height:1;text-transform:uppercase;">${escapeHtml(timeDisplay)}</strong>
+                    <div style="font-family:${SANS};font-size:11px;font-weight:600;color:#7A8690 !important;letter-spacing:0.06em;margin-top:10px;text-transform:uppercase;">
+                      Stanza ${escapeHtml(room)} · ${escapeHtml(String(pax))} pers.
                     </div>
                   </td>
                 </tr>
-              </table>`
-                  : ''
-              }
+              </table>
 
               ${
                 phoneTel
                   ? `
-              <a href="tel:${escapeHtml(phoneTel)}" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px 18px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 10px;-webkit-text-size-adjust:none;">
+              <a href="tel:${escapeHtml(phoneTel)}" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">
                 Richiama ${escapeHtml(name)}
               </a>
-              <p style="font-family:${SANS};font-size:12px;font-weight:600;color:${BRASS} !important;text-align:center;margin:0 0 26px;letter-spacing:0.04em;line-height:1.35;">
+              <p style="font-family:${SANS};font-size:11px;font-weight:600;color:${brass} !important;text-align:center;margin:0 0 22px;letter-spacing:0.06em;">
                 ${escapeHtml(phone)}
               </p>`
                   : `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;background-color:${BOX};border-radius:14px;border:1px solid #E2E6E8;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;background-color:${BOX};border-radius:14px;border:1px solid #E2E6E8;">
                 <tr>
                   <td style="padding:15px 18px;font-family:${SANS};font-size:12.5px;font-weight:600;color:${C} !important;line-height:1.45;text-align:center;text-transform:uppercase;letter-spacing:0.08em;">
                     Richiama ${escapeHtml(name)}
@@ -561,8 +642,25 @@ export function buildTableBookingEmail({ hotelName, row }) {
               </table>`
               }
 
-              ${sectionTitle('Dettagli prenotazione')}
+              ${
+                hasCoupon
+                  ? `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;border:1.5px dashed ${C};border-radius:16px;overflow:hidden;background-color:#FFFFFF;">
+                <tr>
+                  <td style="padding:14px 16px;">
+                    <div style="font-family:${CINZEL};font-size:${FS.section};font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 6px;">Coupon &minus;10%</div>
+                    <p style="font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.45;color:#4A5560 !important;margin:0;">
+                      Gi&agrave; inviato all&rsquo;ospite via email. In chiamata puoi ricordarglielo.
+                    </p>
+                  </td>
+                </tr>
+              </table>`
+                  : ''
+              }
+
+              ${sectionTitle('Dettagli richiesta')}
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 8px;border-top:1px solid #E8E4DC;">
+                ${detailRow('Ospite', escapeHtml(name))}
                 ${detailRow('Stanza', escapeHtml(room))}
                 ${detailRow(
                   'Telefono',
@@ -570,30 +668,67 @@ export function buildTableBookingEmail({ hotelName, row }) {
                     ? `<a href="tel:${escapeHtml(phoneTel)}" style="color:${C} !important;text-decoration:none;font-weight:700;">${escapeHtml(phone)}</a>`
                     : escapeHtml(phone),
                 )}
-                ${detailRow('Ospite', escapeHtml(name))}
                 ${detailRow('Persone', escapeHtml(String(pax)))}
-                ${detailRow('Orario', escapeHtml(timeLabel))}
+                ${detailRow('Orario', escapeHtml(timeDisplay))}
                 ${detailRow('Receptionist', escapeHtml(staff))}
                 ${detailRow('Coupon −10%', hasCoupon ? 'SÌ' : 'no')}
-                ${detailRow('Lingua ospite', escapeHtml(guestLang))}
+                ${detailRow('Lingua', escapeHtml(guestLang))}
               </table>
 
-              ${closingFooter(
-                hotelName,
-                'Richiesta inviata automaticamente dal check-in ospite.',
-                'Front Desk',
-                veniceStickersRow(),
-              )}
-  `;
+              ${sectionTitle('Trattoria alla Terrazza')}
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 12px;border-radius:16px;overflow:hidden;border:1px solid #E2E6E8;">
+                <tr>
+                  <td style="padding:0;line-height:0;font-size:0;">
+                    <img src="${gallery}" width="452" alt="Vista canale Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 12px;">
+                <tr>
+                  ${thumbRow}
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;border-radius:16px;overflow:hidden;border:1px solid #E2E6E8;">
+                <tr>
+                  <td style="padding:0;line-height:0;font-size:0;">
+                    <img src="${dish}" width="452" alt="Cucina della Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  </td>
+                </tr>
+              </table>
 
-  const html = reportShell({
-    title: subject,
-    hotelName,
-    eyebrow: 'Trattoria alla Terrazza · Partner',
-    preheader,
-    bodyHtml,
-  });
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #E8E4DC;margin-top:4px;">
+                <tr>
+                  <td align="center" style="padding:28px 0 0;text-align:center;">
+                    <p style="font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.45;font-weight:400;color:#5C6670 !important;margin:0 0 16px;">
+                      Messaggio automatico dal check-in digitale, per tenerti aggiornata sulle richieste tavolo.
+                    </p>
+                    <div style="width:28px;height:1px;line-height:1px;font-size:1px;background-color:${brass};margin:0 auto 14px;">&nbsp;</div>
+                    <div style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;margin:0 0 6px;">
+                      A presto,
+                    </div>
+                    <div style="font-family:${BODY};font-style:italic;font-size:15px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.4;margin:0 0 6px;">
+                      il check-in digitale
+                    </div>
+                    <div style="font-family:${SERIF};font-style:italic;font-size:13px;font-weight:600;color:${brass} !important;letter-spacing:0.06em;line-height:1.4;">
+                      ${escapeHtml(hotelName)}
+                    </div>
+                    <p style="font-family:${SANS};font-size:${FS.legal};font-weight:500;color:#AEAEB2 !important;margin:18px 0 0;letter-spacing:0.04em;line-height:1.5;">
+                      Santa Croce 553 · Venezia · P.IVA 04711930273
+                    </p>
+                  </td>
+                </tr>
+              </table>
 
-  return { subject, text, html, timeLabel, room, phone };
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+
+  return { subject, text, html, timeLabel: timeDisplay, room, phone };
 }
 
