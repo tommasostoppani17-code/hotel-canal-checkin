@@ -18,8 +18,12 @@
       --canal-petroleum-hover: #0A2D37;
       --text-main: #1D1D1F;
       --text-muted: #515154;
-      --card-cream: #F8F5F0;
-      --card-glass: rgba(252, 250, 246, 0.86);
+      /* Palette fissa come nello screenshot reception */
+      --card-cream: #EDE4D8;
+      --card-cream-top: #F3EBE2;
+      --card-cream-bottom: #E6DBCF;
+      --input-white: #FFFFFF;
+      --placeholder: #6B7280;
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -87,16 +91,16 @@
       background-image: url('/venice-bg.jpg');
       background-size: cover;
       background-position: center;
-      filter: blur(10px) brightness(0.82) saturate(1.18);
+      /* Fisso: niente shift colore per step (niente grigio/marrone random) */
+      filter: blur(10px) brightness(0.88) saturate(1.05);
       transform: translate3d(
           calc(var(--parallax-x, 0%) + var(--ambient-x, 0px)),
           calc(var(--ambient-y, 0px)),
           0
         )
         scale(var(--parallax-scale, 1.08));
-      will-change: transform, filter;
-      /* Parallasse: la molla JS guida --parallax-x; niente CSS transition che frena */
-      transition: filter 0.35s var(--ios-ease);
+      will-change: transform;
+      transition: none;
     }
 
     .background-overlay::after {
@@ -104,19 +108,15 @@
       position: absolute;
       inset: 0;
       background: linear-gradient(
-        rgba(18, 68, 83, 0.22),
-        rgba(10, 45, 55, 0.38)
+        rgba(18, 68, 83, 0.18),
+        rgba(10, 45, 55, 0.32)
       );
     }
 
-    body[data-step="1"] .bg-inertia {
-      filter: blur(10px) brightness(0.82) saturate(1.12);
-    }
-    body[data-step="2"] .bg-inertia {
-      filter: blur(11px) brightness(0.8) saturate(1.28);
-    }
+    body[data-step="1"] .bg-inertia,
+    body[data-step="2"] .bg-inertia,
     body[data-step="3"] .bg-inertia {
-      filter: blur(12px) brightness(0.78) saturate(1.35);
+      filter: blur(10px) brightness(0.88) saturate(1.05);
     }
 
     .apple-card {
@@ -131,11 +131,15 @@
       max-height: var(--card-h);
       display: flex;
       flex-direction: column;
-      /* Fallback solido: se backdrop fallisce su iOS resta crema, non petrolio */
+      /* Crema solida come nello screenshot — niente vetro che tinge */
       background-color: var(--card-cream);
-      background: var(--card-glass);
-      backdrop-filter: blur(35px) saturate(140%);
-      -webkit-backdrop-filter: blur(35px) saturate(140%);
+      background-image: linear-gradient(
+        180deg,
+        var(--card-cream-top) 0%,
+        var(--card-cream-bottom) 100%
+      );
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       border: 1px solid rgba(255, 255, 255, 0.55);
       border-radius: 28px;
       padding: 16px 0 12px;
@@ -154,8 +158,7 @@
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
-    /* Smartphone: dopo .apple-card così non viene sovrascritto.
-     * Altezze “da contenuto” (non full-bleed): JS misura e aggiorna --card-h. */
+    /* Smartphone: card più larga + stessi colori dello screenshot */
     @media (max-width: 480px) {
       :root {
         --card-h-1: min(548px, calc(var(--app-vh) - 36px));
@@ -173,37 +176,40 @@
       body {
         padding-top: max(8px, env(safe-area-inset-top));
         padding-bottom: max(8px, env(safe-area-inset-bottom));
+        padding-left: 8px;
+        padding-right: 8px;
       }
 
       .apple-card {
+        max-width: none;
+        width: 100%;
         max-height: calc(
           var(--app-vh) - env(safe-area-inset-top, 0px) -
             env(safe-area-inset-bottom, 0px) - 16px
         );
         padding: 14px 0 14px;
-        /* iOS satura troppo il vetro → tinge di petrolio. Più crema, meno saturate. */
+        border-radius: 26px;
         background-color: var(--card-cream);
-        background: rgba(252, 250, 246, 0.94);
-        -webkit-backdrop-filter: blur(24px) saturate(115%);
-        backdrop-filter: blur(24px) saturate(115%);
-        isolation: auto;
-        border-color: rgba(255, 255, 255, 0.65);
+        background-image: linear-gradient(
+          180deg,
+          var(--card-cream-top) 0%,
+          var(--card-cream-bottom) 100%
+        );
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
 
-      .bg-inertia,
-      body[data-step="1"] .bg-inertia,
-      body[data-step="2"] .bg-inertia,
-      body[data-step="3"] .bg-inertia {
-        /* Stessa “ricetta” colore su tutti gli step (niente shift verde/rosa) */
-        filter: blur(10px) brightness(0.86) saturate(1.08);
+      .slide-step {
+        padding-left: 18px;
+        padding-right: 18px;
       }
 
       .apple-input {
-        background: rgba(245, 242, 236, 0.95);
+        background: var(--input-white);
       }
 
       .apple-input:focus {
-        background: #FFFFFF;
+        background: var(--input-white);
       }
     }
 
@@ -824,18 +830,19 @@
     #step2 .form-group label {
       margin-bottom: var(--ios-2);
       font-size: 11px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      text-transform: none;
-      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--canal-petroleum);
       padding-left: 0;
     }
 
     #step2 .apple-input {
       height: var(--ios-touch);
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 17px;
       font-weight: 400;
+      background: var(--input-white);
     }
 
     #step2 .step-footer-fixed {
@@ -1534,11 +1541,11 @@
 
     .form-group label {
       display: block;
-      font-size: 13px;
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: -0.01em;
-      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--canal-petroleum);
       margin-bottom: var(--ios-2);
       padding-left: 0;
       transition: color 0.2s var(--ios-snap), transform 0.2s var(--ios-snap);
@@ -1546,7 +1553,7 @@
 
     .form-group:focus-within label:not(.label-error-state) {
       transform: translate3d(0, -2px, 0);
-      color: #0A2D37;
+      color: var(--canal-petroleum-hover);
     }
 
     .form-group label.label-error-state,
@@ -1559,9 +1566,9 @@
       height: var(--ios-touch);
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-weight: 400;
-      background: rgba(118, 118, 128, 0.12);
+      background: var(--input-white);
       border: 0;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 0 var(--ios-3);
       font-size: 17px;
       letter-spacing: -0.02em;
@@ -1572,11 +1579,11 @@
         background-color 0.35s var(--ios-ease),
         box-shadow 0.35s var(--ios-ease),
         transform 0.28s var(--ios-ease);
-      box-shadow: none;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     .apple-input::placeholder {
-      color: #5C6368;
+      color: var(--placeholder);
       font-weight: 500;
       opacity: 1;
     }
@@ -1584,9 +1591,9 @@
     .apple-input:focus {
       outline: none;
       border-color: transparent;
-      background: rgba(118, 118, 128, 0.16);
+      background: var(--input-white);
       transform: none;
-      box-shadow: 0 0 0 3.5px rgba(18, 68, 83, 0.12);
+      box-shadow: 0 0 0 3.5px rgba(18, 68, 83, 0.14);
     }
 
     .apple-input.is-invalid {
@@ -1626,7 +1633,7 @@
     .privacy-text {
       font-size: 10.5px;
       font-weight: 500;
-      color: #4A5560;
+      color: var(--canal-petroleum);
       line-height: 1.4;
       user-select: none;
     }
