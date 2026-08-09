@@ -154,6 +154,7 @@ function buildWelcomeHtml({
   const SERIF = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
   const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
   const SANS = "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  const CINZEL = "'Cinzel',Georgia,'Times New Roman',serif";
   const bodyStyle = `font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;font-weight:400`;
   const labelStyle = `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
 
@@ -175,6 +176,11 @@ function buildWelcomeHtml({
   const preheader = escapeHtml(
     includeCoupon ? lp.preheader(roomNumber) : lp.preheaderNoCoupon,
   );
+  const preheaderHash = escapeHtml(
+    String(claimUrl || qrSrc || 'hc')
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .slice(-8) || 'hotelcanal',
+  );
 
   const iconCell = (src, alt, size = 28) =>
     src
@@ -190,10 +196,10 @@ function buildWelcomeHtml({
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 12px;border-bottom:1px solid rgba(22,78,91,0.14);">
                 <tr>
                   <td width="28" valign="middle" style="padding:0 8px 8px 0;line-height:0;font-size:0;">
-                    ${iconCell(iconSrc, iconAlt || label, 22)}
+                    ${iconCell(iconSrc, iconAlt || label, 20)}
                   </td>
                   <td valign="middle" style="padding:0 0 8px 0;">
-                    <div class="brand-title" style="font-family:${SERIF};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                    <div class="brand-title" style="font-family:${CINZEL};font-size:13px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
                   </td>
                 </tr>
               </table>`;
@@ -206,8 +212,6 @@ function buildWelcomeHtml({
                   </td>
                 </tr>
               </table>`;
-
-  const CINZEL = "'Cinzel',Georgia,'Times New Roman',serif";
 
   const veniceGuideBlock = `
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:44px 0 0;">
@@ -421,8 +425,8 @@ function buildWelcomeHtml({
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">
     ${preheader}
   </div>
-  <!-- ref univoco: evita "contenuto nascosto" Gmail nelle conversazioni -->
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">${escapeHtml(String(claimUrl || qrSrc || Date.now()).slice(-24))}</div>
+  <!-- anti-collapse + anti-thread preview filler -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">${preheaderHash}${'&nbsp;'.repeat(48)}</div>
   <table role="presentation" class="email-bg" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
     <tr>
       <td align="center" style="padding:20px 10px;background-color:${WHITE} !important;">
@@ -597,7 +601,7 @@ function buildWelcomeHtml({
                 </tr>
                 <tr>
                   <td align="center" style="padding:26px 22px 28px;background-color:#FFFFFF !important;">
-                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px 18px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;">
+                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:#FFFFFF !important;color:${C} !important;text-decoration:none;padding:15px 18px;border-radius:14px;border:1.5px solid ${C};font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;">
                       ${lp.claimBtn}
                     </a>
                   </td>

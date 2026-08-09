@@ -199,6 +199,8 @@ EMAIL_SPEC.md             # questo documento
 
 > Refactor only `server/coupon.js` + `server/welcome-i18n.js` following `EMAIL_SPEC.md`. Keep ESM imports, existing QR path `/coupon/${token}/qr.png`, all five languages, zero welcome attachments, X-Entity-Ref-ID, unique subjects, light-mode lock, Get Around title fixed, Walter/Airone untranslated, VAT 04711930273. Do not invent `/api/qr`. Do not drop tastes/Get Around/ticket sections. Keep HTML table-based for Outlook.
 
+**Stato esecuzione (§10):** applicata su `coupon.js` + `welcome-i18n.js` (Cinzel titoli, claim outline, preheader pad, copy IT/EN luxury, hex `#164E5B` unificato).
+
 ---
 
 *Ultimo aggiornamento: allineato al codice live su Render (`hotel-canal-checkin`).*
