@@ -22,7 +22,8 @@
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
       --card-h-2: min(540px, calc(100dvh - 28px));
-      --card-h-3: min(340px, calc(100dvh - 100px));
+      --card-h-3: min(420px, calc(100dvh - 80px));
+      --card-h-3-booking: min(480px, calc(100dvh - 48px));
       --card-h: var(--card-h-1);
     }
 
@@ -571,6 +572,89 @@
 
     #step2 .step-footer-fixed .btn-ghost {
       margin-top: 2px;
+    }
+
+    /* Prenotazione tavolo — solo sullo Step 3 dopo Confirm coupon */
+    .booking-segment-container {
+      width: 100%;
+      margin-top: 14px;
+      padding: 0 2px;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .booking-segment-container[hidden] {
+      display: none !important;
+    }
+
+    .booking-segment-label {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--canal-petroleum);
+      margin: 0 0 8px;
+      text-align: center;
+    }
+
+    .booking-grid-hours {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .hour-pill-ios {
+      height: 34px;
+      margin: 0;
+      padding: 0;
+      background: rgba(245, 248, 250, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s var(--ios-ease), color 0.2s, transform 0.12s, box-shadow 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hour-pill-ios.is-skip {
+      font-size: 11px;
+      color: #8E8E93;
+    }
+
+    .hour-pill-ios:active {
+      transform: scale(0.95);
+    }
+
+    .hour-pill-ios.is-selected {
+      background: var(--canal-petroleum);
+      border-color: var(--canal-petroleum);
+      color: #FFFFFF;
+      box-shadow: 0 4px 10px rgba(18, 68, 83, 0.18);
+    }
+
+    .hour-pill-ios:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    .booking-confirm-msg {
+      margin: 10px 0 0;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--canal-petroleum);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .booking-confirm-msg[hidden] {
+      display: none !important;
     }
 
     .header {
@@ -1171,18 +1255,29 @@
         </div>
       </section>
 
-      <!-- STEP 3 SUCCESS -->
+      <!-- STEP 3 SUCCESS (+ prenotazione tavolo solo dopo coupon) -->
       <section class="slide-step" id="step3">
-        <div class="header" style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 0 4px;">
+        <div class="header" style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8px 0 4px;">
           <div class="success-check" aria-hidden="true"></div>
           <h1 id="lbl-succ-title" style="font-size: 23px; text-transform: none; letter-spacing: 0.02em; color: var(--canal-petroleum);">Registrato!</h1>
-          <p id="lbl-succ-sub" style="display: block; font-size: 13px; color: var(--text-muted); margin: 8px 0 16px; line-height: 1.5; font-weight: 500;">
+          <p id="lbl-succ-sub" style="display: block; font-size: 13px; color: var(--text-muted); margin: 8px 0 12px; line-height: 1.5; font-weight: 500;">
             I servizi digitali della stanza sono ora attivi sul tuo dispositivo.
           </p>
           <div class="receipt-badge" id="receiptBadge">
             <span class="eyebrow" id="lbl-badge">Mostra alla Reception</span>
             <strong class="code" id="verificationCode">HC-0000</strong>
             <span class="time" id="lbl-verified-time"></span>
+          </div>
+
+          <div class="booking-segment-container" id="tableBookingPanel" hidden>
+            <span class="booking-segment-label" id="lbl-table-booking">Prenota tavolo stasera? (10% incluso)</span>
+            <div class="booking-grid-hours" id="tableBookingHours" role="group" aria-labelledby="lbl-table-booking">
+              <button type="button" class="hour-pill-ios" data-time="19:30">19:30</button>
+              <button type="button" class="hour-pill-ios" data-time="20:15">20:15</button>
+              <button type="button" class="hour-pill-ios" data-time="21:00">21:00</button>
+              <button type="button" class="hour-pill-ios is-skip" data-time="SKIP" id="lbl-table-skip">No</button>
+            </div>
+            <p class="booking-confirm-msg" id="tableBookingDone" hidden></p>
           </div>
         </div>
       </section>
@@ -1225,6 +1320,10 @@
         successTitle: 'Registrato!',
         successSub: 'I servizi digitali della stanza sono ora attivi sul tuo dispositivo.',
         successSubCoupon: 'Controlla la tua email: benvenuto, guida Venezia e coupon 10% Trattoria alla Terrazza.',
+        tableBookingLabel: 'Prenota tavolo stasera? (10% incluso)',
+        tableBookingSkip: 'No',
+        tableBookingDone: 'Perfetto — il ristorante ti contatterà al telefono.',
+        tableBookingError: 'Non riuscito. Riprova o chiedi in reception.',
         badgeTxt: 'Mostra alla Reception',
         verifiedTxt: 'Verificato alle ore',
         phoneRequired: 'Il numero di telefono è obbligatorio.',
@@ -1277,6 +1376,10 @@
         successTitle: 'Registered!',
         successSub: 'Digital room services are now active on your device.',
         successSubCoupon: 'Check your email: welcome guide, Venice tips and 10% Trattoria alla Terrazza coupon.',
+        tableBookingLabel: 'Reserve a table tonight? (10% included)',
+        tableBookingSkip: 'No',
+        tableBookingDone: 'Done — the restaurant will call you.',
+        tableBookingError: 'Could not save. Try again or ask reception.',
         badgeTxt: 'Show to Reception',
         verifiedTxt: 'Verified at',
         phoneRequired: 'Phone number is required.',
@@ -1328,6 +1431,10 @@
         successTitle: 'Enregistré !',
         successSub: 'Les services numériques sont actifs sur votre appareil.',
         successSubCoupon: 'Vérifiez votre e-mail : bienvenue, guide Venise et coupon 10% Trattoria alla Terrazza.',
+        tableBookingLabel: 'Réserver une table ce soir ? (10% inclus)',
+        tableBookingSkip: 'Non',
+        tableBookingDone: 'Parfait — le restaurant vous appellera.',
+        tableBookingError: 'Échec. Réessayez ou demandez à la réception.',
         badgeTxt: 'Montrer à la réception',
         verifiedTxt: 'Vérifié à',
         phoneRequired: 'Le numéro de téléphone est obligatoire.',
@@ -1379,6 +1486,10 @@
         successTitle: 'Registriert!',
         successSub: 'Die digitalen Zimmerdienste sind jetzt aktiv.',
         successSubCoupon: 'E-Mail prüfen: Willkommen, Venedig-Tipps und 10%-Gutschein Trattoria alla Terrazza.',
+        tableBookingLabel: 'Tisch für heute Abend? (10% inklusive)',
+        tableBookingSkip: 'Nein',
+        tableBookingDone: 'Perfekt — das Restaurant ruft Sie an.',
+        tableBookingError: 'Nicht gespeichert. Erneut versuchen oder Rezeption fragen.',
         badgeTxt: 'An der Rezeption vorzeigen',
         verifiedTxt: 'Verifiziert um',
         phoneRequired: 'Telefonnummer ist erforderlich.',
@@ -1430,6 +1541,10 @@
         successTitle: '¡Registrado!',
         successSub: 'Los servicios digitales ya están activos en su dispositivo.',
         successSubCoupon: 'Revise su correo: bienvenida, guía de Venecia y cupón 10% Trattoria alla Terrazza.',
+        tableBookingLabel: '¿Reservar mesa esta noche? (10% incluido)',
+        tableBookingSkip: 'No',
+        tableBookingDone: 'Listo — el restaurante le llamará.',
+        tableBookingError: 'No se pudo guardar. Intente de nuevo o pregunte en recepción.',
         badgeTxt: 'Mostrar en recepción',
         verifiedTxt: 'Verificado a las',
         phoneRequired: 'El número de teléfono es obligatorio.',
@@ -1709,10 +1824,17 @@
       3: 'var(--card-h-3)',
     };
 
+    let lastCheckinId = null;
+    let tableBookingLocked = false;
+
     function syncCardHeight(step) {
       const card = document.getElementById('card');
       if (!card) return;
-      const h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
+      let h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
+      const bookingPanel = document.getElementById('tableBookingPanel');
+      if (step === 3 && bookingPanel && !bookingPanel.hidden) {
+        h = 'var(--card-h-3-booking)';
+      }
       card.style.setProperty('--card-h', h);
     }
 
@@ -2027,6 +2149,9 @@
         { hour: '2-digit', minute: '2-digit' },
       );
 
+      lastCheckinId = id != null ? Number(id) : null;
+      tableBookingLocked = false;
+
       // Solo testi (niente display:none / flex recalc). Poi slide → successo.
       document.getElementById('lbl-succ-title').textContent = already
         ? dict.alreadyRegisteredTitle
@@ -2043,12 +2168,98 @@
       const badge = document.getElementById('receiptBadge');
       badge.classList.toggle('is-collapsed', Boolean(already));
 
+      const bookingPanel = document.getElementById('tableBookingPanel');
+      const bookingDone = document.getElementById('tableBookingDone');
+      const bookingLabel = document.getElementById('lbl-table-booking');
+      const skipBtn = document.getElementById('lbl-table-skip');
+      if (bookingLabel) bookingLabel.textContent = dict.tableBookingLabel;
+      if (skipBtn) skipBtn.textContent = dict.tableBookingSkip || 'No';
+      if (bookingDone) {
+        bookingDone.hidden = true;
+        bookingDone.textContent = '';
+      }
+      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
+        pill.classList.remove('is-selected');
+        pill.disabled = false;
+      });
+
+      // Solo dopo Confirm & Get Coupon (non dopo Skip)
+      if (bookingPanel) {
+        bookingPanel.hidden = !(couponSent && !already && lastCheckinId);
+      }
+
       playSuccessKinetics(() => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => setStep(TOTAL_STEPS));
         });
       });
     }
+
+    async function submitTableBooking(timeValue) {
+      const dict = t();
+      const panel = document.getElementById('tableBookingPanel');
+      const done = document.getElementById('tableBookingDone');
+      if (!lastCheckinId || tableBookingLocked) return;
+
+      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
+        const match = pill.getAttribute('data-time') === timeValue;
+        pill.classList.toggle('is-selected', match);
+      });
+
+      if (/^(SKIP|NO|NONE)$/i.test(timeValue)) {
+        tableBookingLocked = true;
+        if (panel) panel.hidden = true;
+        syncCardHeight(3);
+        return;
+      }
+
+      tableBookingLocked = true;
+      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
+        pill.disabled = true;
+      });
+
+      try {
+        const res = await fetch('/api/table-booking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            checkinId: lastCheckinId,
+            tableBooking: timeValue,
+          }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok && !body.saved) {
+          tableBookingLocked = false;
+          document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
+            pill.disabled = false;
+          });
+          if (done) {
+            done.hidden = false;
+            done.textContent = body.error || dict.tableBookingError;
+          }
+          return;
+        }
+        if (done) {
+          done.hidden = false;
+          done.textContent = dict.tableBookingDone;
+        }
+      } catch (err) {
+        tableBookingLocked = false;
+        document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
+          pill.disabled = false;
+        });
+        if (done) {
+          done.hidden = false;
+          done.textContent = dict.tableBookingError;
+        }
+      }
+    }
+
+    document.getElementById('tableBookingHours')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.hour-pill-ios');
+      if (!btn || btn.disabled) return;
+      submitTableBooking(btn.getAttribute('data-time') || 'SKIP');
+    });
 
     function fullGuestName() {
       return `${firstNameEl.value.trim()} ${lastNameEl.value.trim()}`.trim();
@@ -2351,7 +2562,7 @@
         showSuccessStep({
           id: body.id,
           verifiedAt: body.createdAt,
-          couponSent: Boolean(body.welcomeSent || body.couponSent),
+          couponSent: Boolean(body.couponSent),
         });
       } catch (err) {
         submitting = false;

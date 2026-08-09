@@ -46,6 +46,7 @@ export function initDb(databasePath) {
   ensureColumn('guests_count', 'guests_count INTEGER');
   ensureColumn('coupon_token', 'coupon_token TEXT');
   ensureColumn('coupon_sent_at', 'coupon_sent_at TEXT');
+  ensureColumn('table_booking', 'table_booking TEXT');
 
   db.exec(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_coupon_token
@@ -202,6 +203,33 @@ export function markCouponSent(id) {
     .run(id).changes;
 }
 
+export function getCheckinById(id) {
+  return db
+    .prepare(
+      `
+      SELECT
+        id, phone, email, guest_name, room_number, receptionist, guests_count,
+        coupon_token, coupon_sent_at, table_booking, created_at, reported_at
+      FROM checkins
+      WHERE id = ?
+    `,
+    )
+    .get(Number(id));
+}
+
+/** Save dinner table time (e.g. 20:15). Returns updated row or null. */
+export function setTableBooking(id, tableBooking) {
+  const time = String(tableBooking || '').trim().slice(0, 16);
+  if (!time || time === 'NO' || time === 'SKIP') {
+    return getCheckinById(id);
+  }
+  const result = db
+    .prepare(`UPDATE checkins SET table_booking = ? WHERE id = ?`)
+    .run(time, Number(id));
+  if (!result.changes) return null;
+  return getCheckinById(id);
+}
+
 export function getCheckinByCouponToken(token) {
   return db
     .prepare(
@@ -253,6 +281,7 @@ export function getUnreportedCheckins() {
         guests_count,
         coupon_token,
         coupon_sent_at,
+        table_booking,
         created_at
       FROM checkins
       WHERE reported_at IS NULL
@@ -338,6 +367,7 @@ export function exportAllCheckins() {
         guests_count,
         coupon_token,
         coupon_sent_at,
+        table_booking,
         privacy_accepted_at,
         created_at,
         reported_at
@@ -359,10 +389,10 @@ export function importCheckinsIfEmpty(rows) {
   const stmt = db.prepare(`
     INSERT INTO checkins (
       id, phone, email, guest_name, room_number, receptionist, guests_count,
-      coupon_token, coupon_sent_at, privacy_accepted_at, created_at, reported_at
+      coupon_token, coupon_sent_at, table_booking, privacy_accepted_at, created_at, reported_at
     ) VALUES (
       @id, @phone, @email, @guest_name, @room_number, @receptionist, @guests_count,
-      @coupon_token, @coupon_sent_at, @privacy_accepted_at, @created_at, @reported_at
+      @coupon_token, @coupon_sent_at, @table_booking, @privacy_accepted_at, @created_at, @reported_at
     )
   `);
 
@@ -380,6 +410,7 @@ export function importCheckinsIfEmpty(rows) {
         guests_count: row.guests_count ?? null,
         coupon_token: row.coupon_token || null,
         coupon_sent_at: row.coupon_sent_at || null,
+        table_booking: row.table_booking || null,
         privacy_accepted_at:
           row.privacy_accepted_at || row.created_at || new Date().toISOString(),
         created_at: row.created_at || new Date().toISOString(),

@@ -196,7 +196,7 @@ export function hasRestaurantCoupon(row) {
 
 export function buildCsv(rows) {
   const header =
-    'Numero Stanza,Nome Capogruppo,Numero Telefono,Email,Receptionist Assistente,Numero Ospiti (Pax),Voucher Ristorante,Data/Ora';
+    'Numero Stanza,Nome Capogruppo,Numero Telefono,Email,Receptionist Assistente,Numero Ospiti (Pax),Voucher Ristorante,Prenotazione Tavolo,Data/Ora';
   const lines = rows.map((row) => {
     const coupon = hasRestaurantCoupon(row) ? 'EMESSO' : 'NON EMESSO';
     return [
@@ -207,6 +207,7 @@ export function buildCsv(rows) {
       csvEscape(row.receptionist || 'RECEPTION'),
       csvEscape(row.guests_count ?? '2'),
       csvEscape(coupon),
+      csvEscape(row.table_booking || '-'),
       csvEscape(row.created_at),
     ].join(',');
   });
@@ -249,6 +250,7 @@ function buildDailyGuestRows(rows) {
       const haVoucher = hasRestaurantCoupon(row);
       const offer = haVoucher ? 'Voucher sì' : 'Voucher no';
       const offerColor = haVoucher ? C : '#8A949C';
+      const tableTime = cleanCell(row.table_booking);
       const border = index === rows.length - 1 ? '0' : '1px solid #E8E4DC';
 
       return `
@@ -269,7 +271,11 @@ function buildDailyGuestRows(rows) {
                 : ''
             }
             <div style="font-family:${SANS};font-size:10px;font-weight:600;letter-spacing:0.03em;color:#5C6670 !important;line-height:1.4;margin-top:8px;white-space:nowrap;">
-              ${escapeHtml(staff)}&nbsp;&nbsp;·&nbsp;&nbsp;${escapeHtml(pax)} pax&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${offerColor} !important;">${offer}</span>
+              ${escapeHtml(staff)}&nbsp;&nbsp;·&nbsp;&nbsp;${escapeHtml(pax)} pax&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${offerColor} !important;">${offer}</span>${
+                tableTime
+                  ? `&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${C} !important;">Tavolo ${escapeHtml(tableTime)}</span>`
+                  : ''
+              }
             </div>
           </td>
         </tr>

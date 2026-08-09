@@ -135,6 +135,83 @@ function assertEmailReady(reportEmail) {
   }
 }
 
+export async function sendTableBookingAlert(row) {
+  const to = env('TABLE_BOOKING_EMAIL') || env('REPORT_EMAIL');
+  if (!to) {
+    throw new Error('REPORT_EMAIL / TABLE_BOOKING_EMAIL non configurata');
+  }
+  if (!resendConfigured() && !smtpConfigured()) {
+    throw new Error('Email non configurata');
+  }
+
+  const hotelName = env('HOTEL_NAME', 'Hotel Canal');
+  const time = String(row.table_booking || '').trim();
+  const room = row.room_number || '-';
+  const phone = row.phone || '-';
+  const name = row.guest_name || 'Ospite';
+  const pax = row.guests_count ?? 2;
+  const staff = row.receptionist || '-';
+
+  const subject = `🍽️ Tavolo ${time} · Stanza ${room} · ${hotelName}`;
+  const text = [
+    `Richiesta tavolo Trattoria alla Terrazza`,
+    ``,
+    `Orario: ${time}`,
+    `Stanza: ${room}`,
+    `Telefono: ${phone}`,
+    `Ospite: ${name}`,
+    `Pax: ${pax}`,
+    `Reception: ${staff}`,
+    ``,
+    `Contattare l'ospite per confermare il tavolo.`,
+    ``,
+    `— Check-in ${hotelName}`,
+  ].join('\n');
+
+  const html = `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1D1D1F;line-height:1.5;">
+      <p style="margin:0 0 12px;font-size:16px;"><strong>Richiesta tavolo — Trattoria alla Terrazza</strong></p>
+      <p style="margin:0 0 8px;">Orario: <strong>${time}</strong></p>
+      <p style="margin:0 0 8px;">Stanza: <strong>${room}</strong></p>
+      <p style="margin:0 0 8px;">Telefono: <strong>${phone}</strong></p>
+      <p style="margin:0 0 8px;">Ospite: <strong>${name}</strong> · ${pax} pax</p>
+      <p style="margin:0 0 16px;">Reception: ${staff}</p>
+      <p style="margin:0;color:#515154;">Contattare l'ospite per confermare il tavolo.</p>
+    </div>
+  `;
+
+  const from =
+    env('REPORT_FROM') ||
+    env('SMTP_FROM', 'Hotel Canal Front Desk <onboarding@resend.dev>').replace(
+      /Welcome to Hotel Canal/i,
+      'Hotel Canal Front Desk',
+    );
+
+  if (resendConfigured()) {
+    const resend = getResendClient();
+    const { data, error } = await resend.emails.send({
+      from,
+      to: [to],
+      subject,
+      text,
+      html,
+    });
+    if (error) {
+      throw new Error(
+        `Resend API error: ${error.message || JSON.stringify(error)}`.slice(
+          0,
+          300,
+        ),
+      );
+    }
+    return { sent: true, to, time, room, phone, id: data?.id };
+  }
+
+  const transporter = createTransporter();
+  await transporter.sendMail({ from, to, subject, text, html });
+  return { sent: true, to, time, room, phone };
+}
+
 export async function runDailyReport({ force = false } = {}) {
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
   const reportEmail = env('REPORT_EMAIL');

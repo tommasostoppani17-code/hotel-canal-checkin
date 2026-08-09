@@ -70,6 +70,13 @@ export function buildWhatsAppDailyBody({ hotelName, dateLabel, count, rows = [] 
     .filter(Boolean)
     .join(', ');
 
+  const tavoli = rows
+    .filter((row) => row.table_booking)
+    .map(
+      (row) =>
+        `· Stanza ${row.room_number || '-'} · ${row.table_booking} · ${row.phone || '-'} (${row.guests_count ?? 2} pax)`,
+    );
+
   return [
     `Ciao Payel,`,
     ``,
@@ -78,6 +85,9 @@ export function buildWhatsAppDailyBody({ hotelName, dateLabel, count, rows = [] 
     ``,
     `*Numeri:*`,
     lista || '—',
+    ...(tavoli.length
+      ? ['', '*Tavoli richiesti:*', ...tavoli]
+      : []),
     ``,
     `CSV nel messaggio successivo.`,
     ``,

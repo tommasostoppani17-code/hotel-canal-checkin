@@ -15,8 +15,13 @@ import {
   exportAllCheckins,
   importCheckinsIfEmpty,
   countCheckins,
+  setTableBooking,
 } from './db.js';
-import { runDailyReport, runMonthlyStaffReport } from './mail.js';
+import {
+  runDailyReport,
+  runMonthlyStaffReport,
+  sendTableBookingAlert,
+} from './mail.js';
 import { getCsvMedia, whatsappConfigured } from './whatsapp.js';
 import {
   sendWelcomeEmail,
@@ -600,6 +605,53 @@ async function handleCheckin(req, res) {
 
 app.post('/api/checkins', handleCheckin);
 app.post('/api/save-lead', handleCheckin);
+
+/** Prenotazione tavolo dopo Confirm & Get Coupon (alert email gratis). */
+app.post('/api/table-booking', async (req, res) => {
+  try {
+    const id = Number(req.body?.checkinId ?? req.body?.id);
+    const rawTime = String(req.body?.tableBooking ?? req.body?.time ?? '').trim();
+    if (!Number.isFinite(id) || id < 1) {
+      return res.status(400).json({ error: 'checkinId non valido' });
+    }
+    if (!rawTime || /^(NO|SKIP|NONE)$/i.test(rawTime)) {
+      return res.json({ sent: false, skipped: true });
+    }
+    if (!/^\d{1,2}:\d{2}$/.test(rawTime)) {
+      return res.status(400).json({ error: 'Orario non valido' });
+    }
+
+    const row = setTableBooking(id, rawTime);
+    if (!row) {
+      return res.status(404).json({ error: 'Check-in non trovato' });
+    }
+
+    let alert = null;
+    try {
+      alert = await sendTableBookingAlert(row);
+      console.log(
+        `[table] Alert → ${alert.to} · stanza ${row.room_number || '-'} · ${rawTime} · ${row.phone}`,
+      );
+    } catch (err) {
+      console.error('[table] Alert email fallita:', err.message || err);
+      return res.status(502).json({
+        error: err.message || 'Errore invio alert tavolo',
+        saved: true,
+        tableBooking: rawTime,
+      });
+    }
+
+    void syncCheckinsBackup('table-booking');
+    return res.json({
+      success: true,
+      tableBooking: rawTime,
+      alert,
+    });
+  } catch (err) {
+    console.error('Errore table-booking:', err);
+    return res.status(500).json({ error: 'Errore interno server' });
+  }
+});
 
 app.post('/api/cron/daily-report', async (req, res) => {
   if (!isAuthorizedCron(req)) {
