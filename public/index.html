@@ -75,7 +75,7 @@
       align-items: center;
       -webkit-font-smoothing: antialiased;
       position: relative;
-      background-color: #0a2d37;
+      background-color: #074a63;
     }
 
     .background-overlay {
@@ -224,17 +224,17 @@
         padding-right: 16px;
       }
 
-      /* Foto ristorante: landscape full-bleed, basse */
+      /* Foto ristorante: inset pulito, niente bleed che accavalla */
       #step2 .restaurant-showcase {
-        margin-left: -16px;
-        margin-right: -16px;
+        margin-left: 0;
+        margin-right: 0;
       }
 
       #step2 .carousel-viewport {
-        border-radius: 0;
+        border-radius: 14px;
         height: auto;
-        aspect-ratio: 4 / 3;
-        max-height: min(200px, 28svh);
+        aspect-ratio: 16 / 10;
+        max-height: min(168px, 24svh);
         width: 100%;
       }
 
@@ -244,8 +244,8 @@
       }
 
       #step2 .carousel-caption {
-        padding-left: 16px;
-        padding-right: 16px;
+        padding-left: 0;
+        padding-right: 0;
       }
 
       .apple-input {
@@ -776,7 +776,7 @@
       padding-left: 34px;
     }
 
-    /* Step 2: layout compatto, foto landscape, niente vuoti verticali */
+    /* Step 2: stack Apple — una colonna, ritmi fissi, zero accavallamenti */
     #step2.slide-step {
       justify-content: flex-start;
       overflow-x: hidden;
@@ -785,6 +785,7 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       gap: 0;
+      isolation: isolate;
     }
 
     #step2.slide-step::-webkit-scrollbar {
@@ -795,28 +796,56 @@
       display: flex;
       flex-direction: column;
       flex: 0 0 auto;
+      width: 100%;
       min-height: 0;
       justify-content: flex-start;
-      gap: 10px;
+      align-items: stretch;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
     }
 
     #step2 .step2-top {
-      flex-shrink: 0;
-      margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      align-items: stretch;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      flex: 0 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
-    #step2 .restaurant-showcase {
+    #step2 .restaurant-showcase,
+    #step2 .rest-carousel {
+      position: relative;
+      width: 100%;
       margin: 0;
+      padding: 0;
+      flex: 0 0 auto;
+      z-index: 0;
     }
 
     #step2 .carousel-viewport {
+      position: relative;
+      width: 100%;
       height: auto;
-      aspect-ratio: 4 / 3;
-      max-height: 188px;
-      border-radius: 12px;
+      aspect-ratio: 16 / 10;
+      max-height: 168px;
+      border-radius: 14px;
+      overflow: hidden;
+      isolation: isolate;
+      background: #124453;
+      box-shadow: none;
+      z-index: 0;
+    }
+
+    #step2 .carousel-track,
+    #step2 .carousel-slide,
+    #step2 .carousel-slide img {
+      position: relative;
+      z-index: 0;
     }
 
     #step2 .carousel-slide img {
@@ -824,81 +853,125 @@
       object-position: center 42%;
     }
 
-    #step2 .carousel-caption {
-      margin: 2px 0 0;
-      padding: 0;
+    #step2 .carousel-discount-badge,
+    #step2 .carousel-arrow,
+    #step2 .carousel-dots {
+      z-index: 2;
     }
 
-    #step2 .carousel-caption h4 {
-      font-size: 13px;
-      letter-spacing: 0.04em;
-      margin: 0;
-      line-height: 1.2;
-      text-transform: uppercase;
-    }
-
-    #step2 .carousel-caption p {
-      font-size: 9px;
-      letter-spacing: 0.08em;
-      line-height: 1.2;
-      margin: 3px 0 0;
-      font-weight: 600;
-    }
-
-    #step2 .rest-offer-blurb {
-      margin: 0;
-      padding: 0;
-      display: block;
-    }
-
-    #step2 .rest-offer-blurb .rest-blurb {
-      margin: 0;
+    #step2 .carousel-discount-badge {
+      top: 10px;
+      left: 10px;
+      padding: 5px 9px;
       font-size: 11px;
-      line-height: 1.35;
+      border-radius: 8px;
+    }
+
+    #step2 .carousel-arrow {
+      width: 28px;
+      height: 28px;
+    }
+
+    #step2 .carousel-arrow.left { left: 8px; }
+    #step2 .carousel-arrow.right { right: 8px; }
+
+    #step2 .carousel-dots {
+      bottom: 8px;
+    }
+
+    #step2 .step2-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin: 0;
+      padding: 0 4px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    #step2 .step2-copy h4 {
+      margin: 0;
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.25;
+      text-transform: uppercase;
+      color: var(--canal-petroleum);
+    }
+
+    #step2 .step2-copy .step2-tag {
+      margin: 0;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8A949C;
+      line-height: 1.3;
+    }
+
+    #step2 .step2-copy .rest-blurb {
+      margin: 4px 0 0;
+      max-width: 28ch;
+      font-size: 12px;
+      line-height: 1.4;
       font-weight: 500;
       color: var(--text-muted);
       letter-spacing: -0.01em;
       white-space: normal;
-      overflow: visible;
-      text-overflow: unset;
-      text-align: center;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
     }
 
-    #step2 .rest-offer-blurb .rest-sub,
-    #step2 .rest-offer-blurb .rest-desc-hero {
+    #step2 .carousel-caption,
+    #step2 .rest-offer-blurb {
       display: none;
     }
 
     #step2 .form-grid-container {
       margin: 0;
-      gap: 8px 10px;
-      flex-shrink: 0;
       padding: 0;
+      gap: 12px 12px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      width: 100%;
     }
 
     #step2 .form-group {
-      margin-bottom: 0;
+      margin: 0;
+      min-width: 0;
     }
 
     #step2 .form-group.span-2 {
-      margin-top: 0;
+      margin: 0;
     }
 
     #step2 .form-group label {
-      margin-bottom: 4px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.07em;
+      display: block;
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       color: var(--canal-petroleum);
-      padding-left: 0;
+      padding: 0;
+      line-height: 1.2;
+    }
+
+    #step2 .input-with-icon {
+      position: relative;
+      z-index: 0;
+    }
+
+    #step2 .input-with-icon .field-glyph {
+      z-index: 2;
     }
 
     #step2 .apple-input {
-      height: 42px;
+      position: relative;
+      z-index: 1;
+      height: 44px;
       border-radius: 12px;
       font-size: 16px;
       font-weight: 400;
@@ -906,56 +979,44 @@
     }
 
     #step2 .step-footer-fixed {
-      margin-top: 8px;
-      padding-top: 0;
-      padding-bottom: 0;
+      margin: 2px 0 0;
+      padding: 12px 0 0;
+      border-top: 1px solid rgba(18, 68, 83, 0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 4px;
       flex: 0 0 auto;
+      position: relative;
+      z-index: 1;
+      width: 100%;
     }
 
     #step2 .step-footer-fixed .btn-canal {
-      margin: 0 0 2px;
+      margin: 0;
       height: 44px;
       border-radius: 12px;
       font-size: 16px;
       font-weight: 600;
       text-transform: none;
       letter-spacing: -0.02em;
+      width: 100%;
     }
 
     #step2 .step-footer-fixed .btn-ghost {
       margin: 0;
-      height: 34px;
-      min-height: 34px;
+      height: 36px;
+      min-height: 36px;
       font-size: 14px;
       font-weight: 500;
-      opacity: 1;
+      opacity: 0.9;
       color: var(--canal-petroleum);
-      padding: 0 8px;
+      padding: 0 10px;
+      width: auto;
     }
 
     #step2 .step-footer-fixed .btn-ghost:first-of-type {
-      margin-top: 0;
-    }
-
-    #step2 .carousel-discount-badge {
-      top: 8px;
-      left: 8px;
-      padding: 5px 8px;
-      font-size: 11px;
-      border-radius: 7px;
-    }
-
-    #step2 .carousel-arrow {
-      width: 24px;
-      height: 24px;
-    }
-
-    #step2 .carousel-dots {
-      bottom: 8px;
+      margin-top: 2px;
     }
 
     /* Contatti / servizi rapidi dopo check-in — stessa palette crema/petrolio */
@@ -2434,19 +2495,23 @@
                   </button>
                   <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
                 </div>
-                <div class="carousel-caption">
-                  <h4>Trattoria alla Terrazza</h4>
-                  <p id="lbl-rest-tag">Per gli ospiti hotel</p>
-                </div>
               </div>
             </div>
 
-            <div class="rest-offer-blurb">
+            <div class="step2-copy">
+              <h4>Trattoria alla Terrazza</h4>
+              <p class="step2-tag" id="lbl-rest-tag">Per gli ospiti hotel</p>
               <p class="rest-blurb" id="lbl-rest-blurb">
                 Cena veneziana per due · conferma sotto per il −10% via email.
               </p>
-              <p class="rest-sub" id="lbl-rest-sub" hidden></p>
-              <p id="lbl-rest-desc" class="rest-desc-hero" hidden></p>
+            </div>
+            <div class="carousel-caption" hidden>
+              <h4>Trattoria alla Terrazza</h4>
+              <p>Per gli ospiti hotel</p>
+            </div>
+            <div class="rest-offer-blurb" hidden>
+              <p class="rest-sub" id="lbl-rest-sub"></p>
+              <p id="lbl-rest-desc" class="rest-desc-hero"></p>
             </div>
             <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
             <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
