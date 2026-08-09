@@ -20,7 +20,11 @@ import {
   buildCouponClaimPage,
   buildCouponQrPng,
 } from './coupon.js';
-import { buildCheckinQrPng, sendPosterEmail } from './poster.js';
+import {
+  buildCheckinQrPng,
+  buildPosterPdfBuffer,
+  sendPosterEmail,
+} from './poster.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -106,7 +110,7 @@ app.get('/health', (_req, res) => {
   });
 });
 
-/** QR PNG check-in (URL pubblico) — usato dal poster email e dalla locandina. */
+/** QR PNG check-in (URL pubblico) — usato dal poster PDF e dalla locandina. */
 app.get('/qr-checkin.png', async (_req, res) => {
   try {
     const png = await buildCheckinQrPng();
@@ -119,14 +123,31 @@ app.get('/qr-checkin.png', async (_req, res) => {
   }
 });
 
+/** Download A4 PDF poster (English · Welcome Discount). */
+app.get('/poster-a4.pdf', async (_req, res) => {
+  try {
+    const pdf = await buildPosterPdfBuffer({ hotelName: HOTEL_NAME });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      'inline; filename="hotel-canal-reception-poster-a4.pdf"',
+    );
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.send(pdf);
+  } catch (err) {
+    console.error('Poster PDF:', err);
+    return res.status(500).type('text').send('Poster PDF error');
+  }
+});
+
 /**
- * Invia il poster A4 stampabile via email.
- * Auth: ?secret=CRON_SECRET (stesso token dei cron).
+ * Email the A4 PDF poster.
+ * Auth: ?secret=CRON_SECRET
  */
 app.get('/api/send-poster', async (req, res) => {
   if (!isAuthorizedCron(req)) {
     return res.status(401).type('html').send(
-      `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Non autorizzato.</body></html>`,
+      `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Unauthorized.</body></html>`,
     );
   }
 
@@ -140,9 +161,9 @@ app.get('/api/send-poster', async (req, res) => {
       .replace(/>/g, '&gt;');
     return res.type('html').send(
       `<!DOCTYPE html><html><body style="font-family:-apple-system,sans-serif;text-align:center;padding:48px;color:#124453;">
-        <h2 style="margin:0 0 12px;">Poster A4 inviato</h2>
-        <p style="margin:0;color:#64748B;">Destinatario: <strong style="color:#124453;">${safeTo}</strong></p>
-        <p style="margin:16px 0 0;font-size:13px;color:#8E8E93;">Apri la mail → Stampa → margini nessuno → grafica di sfondo.</p>
+        <h2 style="margin:0 0 12px;">A4 PDF poster sent</h2>
+        <p style="margin:0;color:#64748B;">To: <strong style="color:#124453;">${safeTo}</strong> · ~${result.pdfKb} KB</p>
+        <p style="margin:16px 0 0;font-size:13px;color:#8E8E93;">Also available at <a href="/poster-a4.pdf" style="color:#124453;">/poster-a4.pdf</a></p>
       </body></html>`,
     );
   } catch (err) {
@@ -151,7 +172,7 @@ app.get('/api/send-poster', async (req, res) => {
       .status(500)
       .type('html')
       .send(
-        `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Errore invio poster: ${String(err.message || err)}</body></html>`,
+        `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Poster send error: ${String(err.message || err).replace(/</g, '')}</body></html>`,
       );
   }
 });

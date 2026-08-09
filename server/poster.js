@@ -1,3 +1,4 @@
+import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 import { Resend } from 'resend';
 
@@ -12,163 +13,209 @@ function publicBaseUrl() {
   );
 }
 
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 export function checkinPublicUrl() {
   return `${publicBaseUrl()}/`;
 }
 
+const CANAL = '#124453';
+const GOLD = '#C5A059';
+const MUTED = '#515154';
+const FOOT = '#8E8E93';
+const RULE = '#1D1D1F';
+
 export async function buildCheckinQrPng() {
   return QRCode.toBuffer(checkinPublicUrl(), {
     type: 'png',
-    width: 512,
+    width: 640,
     margin: 1,
-    errorCorrectionLevel: 'M',
-    color: { dark: '#124453', light: '#FFFFFF' },
+    errorCorrectionLevel: 'H',
+    color: { dark: CANAL, light: '#FFFFFF' },
   });
 }
 
+function drawCenteredText(doc, text, y, { font, size, color } = {}) {
+  doc
+    .font(font)
+    .fontSize(size)
+    .fillColor(color)
+    .text(text, 0, y, { width: doc.page.width, align: 'center' });
+}
+
 /**
- * Poster A4 in HTML email-ready: stampa da client mail (Cmd/Ctrl+P).
- * QR remoto da PUBLIC_URL/qr-checkin.png (alta definizione, 0 allegati pesanti).
+ * True A4 PDF poster (210×297mm) — English, Welcome Discount, vector layout.
  */
-export function buildPosterEmailHtml({
+export async function buildPosterPdfBuffer({
   hotelName = 'Hotel Canal',
-  address = 'Santa Croce 553 · Venezia',
-  qrSrc,
+  address = 'Santa Croce 553 · Venice',
 } = {}) {
-  const brand = escapeHtml(hotelName);
-  const place = escapeHtml(address);
-  const qr = escapeHtml(qrSrc || `${publicBaseUrl()}/qr-checkin.png`);
+  const qrPng = await buildCheckinQrPng();
 
-  return `
-<!DOCTYPE html>
-<html lang="it" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light">
-  <meta name="supported-color-schemes" content="light">
-  <title>${brand} — Poster Reception A4</title>
-  <style type="text/css">
-    :root { color-scheme: light only; }
-    img { display: block; max-width: 100%; height: auto; border: 0; }
-    html, body, table, td, p, div, h1, span {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 0,
+      info: {
+        Title: `${hotelName} — Reception Poster A4`,
+        Author: hotelName,
+        Subject: 'Fast Check-in & Welcome Discount',
+      },
+    });
+
+    const chunks = [];
+    doc.on('data', (c) => chunks.push(c));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+
+    const pageW = doc.page.width; // 595.28
+    const pageH = doc.page.height; // 841.89
+    const side = 72; // ~25mm margins
+
+    // Top canal band
+    doc.rect(0, 0, pageW, 14).fill(CANAL);
+
+    // Brand
+    drawCenteredText(doc, String(hotelName).toUpperCase(), 88, {
+      font: 'Times-Bold',
+      size: 34,
+      color: CANAL,
+    });
+    drawCenteredText(doc, String(address).toUpperCase(), 132, {
+      font: 'Times-Bold',
+      size: 9,
+      color: GOLD,
+    });
+
+    // Hairline rule
+    const ruleY = 168;
+    doc
+      .moveTo(side, ruleY)
+      .lineTo(pageW - side, ruleY)
+      .lineWidth(0.8)
+      .strokeColor(RULE)
+      .stroke();
+
+    // Claim
+    drawCenteredText(doc, 'FAST CHECK-IN &', 210, {
+      font: 'Times-Bold',
+      size: 22,
+      color: CANAL,
+    });
+    drawCenteredText(doc, 'WELCOME DISCOUNT', 238, {
+      font: 'Times-Bold',
+      size: 22,
+      color: CANAL,
+    });
+
+    doc
+      .font('Helvetica')
+      .fontSize(11)
+      .fillColor(MUTED)
+      .text(
+        "Scan the code to activate your room's digital services instantly and unlock a 10% welcome discount for Trattoria alla Terrazza.",
+        side + 24,
+        280,
+        { width: pageW - side * 2 - 48, align: 'center', lineGap: 4 },
+      );
+
+    // QR plate
+    const qrSize = 196;
+    const platePad = 16;
+    const plate = qrSize + platePad * 2;
+    const plateX = (pageW - plate) / 2;
+    const plateY = 360;
+
+    doc
+      .roundedRect(plateX, plateY, plate, plate, 4)
+      .lineWidth(1)
+      .strokeColor(CANAL)
+      .stroke();
+
+    doc.image(qrPng, plateX + platePad, plateY + platePad, {
+      width: qrSize,
+      height: qrSize,
+    });
+
+    drawCenteredText(doc, 'SCAN WITH YOUR SMARTPHONE', plateY + plate + 22, {
+      font: 'Helvetica-Bold',
+      size: 9.5,
+      color: CANAL,
+    });
+
+    // Language chips
+    const langs = ['IT', 'EN', 'FR', 'DE', 'ES'];
+    const chipW = 36;
+    const chipH = 18;
+    const gap = 8;
+    const rowW = langs.length * chipW + (langs.length - 1) * gap;
+    let chipX = (pageW - rowW) / 2;
+    const chipY = plateY + plate + 52;
+
+    for (const lang of langs) {
+      doc
+        .roundedRect(chipX, chipY, chipW, chipH, 2)
+        .fillColor('#EEF3F4')
+        .fill();
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(8)
+        .fillColor(CANAL)
+        .text(lang, chipX, chipY + 5, { width: chipW, align: 'center' });
+      chipX += chipW + gap;
     }
-    html, body { background-color: #FFFFFF !important; color: #1D1D1F !important; }
-    @media (prefers-color-mode: dark) {
-      body, table, td, .email-bg, .wrapper { background-color: #FFFFFF !important; color: #1D1D1F !important; }
-      td, p, h1, span, div { color: #1D1D1F !important; }
-      .qr-plate { background-color: #FFFFFF !important; border: 1px solid #124453 !important; }
-      .lang-badge { background-color: rgba(18, 68, 83, 0.05) !important; color: #124453 !important; }
-    }
-    @media print {
-      body { background: #FFFFFF !important; }
-      .email-bg { padding: 0 !important; }
-      .wrapper { border: none !important; max-width: none !important; }
-    }
-  </style>
-</head>
-<body style="margin:0;padding:0;background-color:#FFFFFF !important;color:#1D1D1F !important;">
-  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:40px 16px;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:500px;background-color:#FFFFFF !important;border:1px solid #E5E5EA;border-top:6px solid #124453;border-radius:4px;">
-          <tr>
-            <td style="padding:52px 36px 40px 36px;">
 
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td align="center" style="padding:0 0 44px 0;border-bottom:1px solid #E5E5EA;">
-                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:32px;font-weight:700;letter-spacing:0.08em;color:#124453 !important;text-transform:uppercase;line-height:1;">
-                      ${brand}
-                    </div>
-                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.25em;color:#C5A059 !important;margin-top:10px;">
-                      ${place}
-                    </div>
-                  </td>
-                </tr>
+    // Footer
+    const footY = pageH - 78;
+    doc
+      .moveTo(side, footY)
+      .lineTo(pageW - side, footY)
+      .lineWidth(0.6)
+      .strokeColor('#E5E5EA')
+      .stroke();
 
-                <tr>
-                  <td align="center" style="padding:44px 12px 28px 12px;">
-                    <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:600;color:#124453 !important;line-height:1.4;margin:0 0 18px 0;letter-spacing:0.02em;text-transform:uppercase;text-align:center;">
-                      Fast Check-in &amp;<br>Welcome Discount
-                    </h1>
-                    <p style="font-size:13.5px;line-height:1.65;color:#48484A !important;font-weight:500;margin:0;text-align:center;">
-                      Scan the code to activate your room's digital services instantly and unlock your exclusive welcome discount for your stay in Venice.
-                    </p>
-                  </td>
-                </tr>
+    drawCenteredText(doc, 'EXCLUSIVE PARTNER · TRATTORIA ALLA TERRAZZA, VENICE', footY + 16, {
+      font: 'Helvetica',
+      size: 8.5,
+      color: FOOT,
+    });
+    drawCenteredText(doc, '10% WELCOME DISCOUNT FOR REGISTERED GUESTS', footY + 34, {
+      font: 'Helvetica-Bold',
+      size: 9,
+      color: CANAL,
+    });
 
-                <tr>
-                  <td align="center" style="padding:0 0 24px 0;">
-                    <table role="presentation" border="0" cellspacing="0" cellpadding="0" class="qr-plate" style="background-color:#FFFFFF !important;border:1px solid #124453;border-radius:18px;">
-                      <tr>
-                        <td style="padding:18px;">
-                          <img src="${qr}" width="180" height="180" alt="Fast Check-in QR" style="display:block;width:180px;height:180px;border:0;">
-                        </td>
-                      </tr>
-                    </table>
-                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#124453 !important;margin-top:14px;">
-                      Scan with your smartphone
-                    </div>
-                  </td>
-                </tr>
+    doc.end();
+  });
+}
 
-                <tr>
-                  <td align="center" style="padding:0 0 40px 0;">
-                    <span class="lang-badge" style="font-size:10px;font-weight:700;background-color:rgba(18,68,83,0.05);color:#124453 !important;padding:5px 10px;border-radius:4px;margin:0 2px;letter-spacing:0.02em;display:inline-block;">IT</span>
-                    <span class="lang-badge" style="font-size:10px;font-weight:700;background-color:rgba(18,68,83,0.05);color:#124453 !important;padding:5px 10px;border-radius:4px;margin:0 2px;letter-spacing:0.02em;display:inline-block;">EN</span>
-                    <span class="lang-badge" style="font-size:10px;font-weight:700;background-color:rgba(18,68,83,0.05);color:#124453 !important;padding:5px 10px;border-radius:4px;margin:0 2px;letter-spacing:0.02em;display:inline-block;">FR</span>
-                    <span class="lang-badge" style="font-size:10px;font-weight:700;background-color:rgba(18,68,83,0.05);color:#124453 !important;padding:5px 10px;border-radius:4px;margin:0 2px;letter-spacing:0.02em;display:inline-block;">DE</span>
-                    <span class="lang-badge" style="font-size:10px;font-weight:700;background-color:rgba(18,68,83,0.05);color:#124453 !important;padding:5px 10px;border-radius:4px;margin:0 2px;letter-spacing:0.02em;display:inline-block;">ES</span>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td align="center" style="border-top:1px solid #E5E5EA;padding-top:18px;">
-                    <p style="font-size:11px;color:#8E8E93 !important;font-weight:500;letter-spacing:0.02em;margin:0;text-transform:uppercase;">
-                      Exclusive Partner Offer: Trattoria alla Terrazza Venezia
-                    </p>
-                  </td>
-                </tr>
-              </table>
-
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `.trim();
+function buildPosterEmailHtml({ hotelName, pdfKb }) {
+  const brand = String(hotelName || 'Hotel Canal');
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="color-scheme" content="light">
+<style>body{font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#fff;color:#1D1D1F;margin:0;padding:32px 20px;}
+.card{max-width:480px;margin:0 auto;border:1px solid #E5E5EA;border-top:5px solid #124453;padding:28px 24px;}
+h1{font-family:Georgia,serif;font-size:22px;color:#124453;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 10px;}
+p{font-size:14px;line-height:1.55;color:#515154;margin:0 0 12px;}
+.meta{font-size:12px;color:#8E8E93;}</style></head>
+<body><div class="card">
+<h1>${brand}</h1>
+<p>Your A4 reception poster is attached as a PDF (Welcome Discount · English).</p>
+<p>Open the attachment and print at <strong>100% / actual size</strong> on A4. No browser scaling.</p>
+<p class="meta">File size ~${pdfKb} KB · QR points to ${publicBaseUrl()}/</p>
+</div></body></html>`;
 }
 
 export async function sendPosterEmail({ to } = {}) {
   const apiKey = env('RESEND_API_KEY').trim();
-  if (!apiKey) {
-    throw new Error('RESEND_API_KEY non configurata');
-  }
+  if (!apiKey) throw new Error('RESEND_API_KEY non configurata');
 
-  const recipient =
-    String(to || env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com').trim();
-  if (!recipient) {
-    throw new Error('Destinatario poster non configurato');
-  }
+  const recipient = String(
+    to || env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com',
+  ).trim();
+  if (!recipient) throw new Error('Destinatario poster non configurato');
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
-  const qrSrc = `${publicBaseUrl()}/qr-checkin.png`;
-  const html = buildPosterEmailHtml({ hotelName, qrSrc });
+  const pdf = await buildPosterPdfBuffer({ hotelName });
+  const pdfKb = Math.max(1, Math.round(pdf.length / 1024));
   const from = env(
     'SMTP_FROM',
     'Welcome to Hotel Canal <onboarding@resend.dev>',
@@ -178,17 +225,20 @@ export async function sendPosterEmail({ to } = {}) {
   const { data, error } = await resend.emails.send({
     from,
     to: [recipient],
-    subject: `POSTER RECEPTION A4 — ${hotelName} (stampa)`,
+    subject: `${hotelName} — A4 Reception Poster (PDF)`,
     text: [
-      `${hotelName} — Poster Reception A4`,
+      `${hotelName} — A4 Reception Poster`,
       ``,
-      `Apri questa mail sul PC reception, stampa (Cmd/Ctrl+P),`,
-      `margini nessuno, grafica di sfondo attiva.`,
-      ``,
+      `PDF attached. Print at 100% / actual size on A4.`,
       `Check-in URL: ${checkinPublicUrl()}`,
-      `QR: ${qrSrc}`,
     ].join('\n'),
-    html,
+    html: buildPosterEmailHtml({ hotelName, pdfKb }),
+    attachments: [
+      {
+        filename: 'hotel-canal-reception-poster-a4.pdf',
+        content: pdf,
+      },
+    ],
   });
 
   if (error) {
@@ -200,5 +250,5 @@ export async function sendPosterEmail({ to } = {}) {
     );
   }
 
-  return { to: recipient, id: data?.id || null, qrSrc };
+  return { to: recipient, id: data?.id || null, bytes: pdf.length, pdfKb };
 }

@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel Canal — A4 QR Poster</title>
+  <title>Hotel Canal — A4 Reception Poster</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    @page {
-      size: A4;
-      margin: 0;
-    }
+    @page { size: A4; margin: 0; }
 
     html, body {
       margin: 0;
@@ -30,14 +27,13 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .poster-wrapper {
+    .poster {
       width: 210mm;
       height: 297mm;
       box-sizing: border-box;
-      padding: 30mm 24mm 22mm;
+      padding: 28mm 26mm 20mm;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       align-items: center;
       background: #FFFFFF;
       position: relative;
@@ -45,165 +41,195 @@
       box-shadow: 0 18px 48px rgba(18, 68, 83, 0.12);
     }
 
-    .watermark {
+    .poster::before {
+      content: "";
       position: absolute;
-      left: 50%;
-      bottom: 42mm;
-      width: 120mm;
-      height: 48mm;
-      transform: translateX(-50%);
-      opacity: 0.045;
-      pointer-events: none;
-      color: #124453;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5mm;
+      background: #124453;
     }
 
-    .brand-section {
+    .brand {
       text-align: center;
       width: 100%;
-      position: relative;
-      z-index: 1;
+      padding-top: 8mm;
     }
 
     .hotel-title {
       font-family: Cinzel, Georgia, serif;
-      font-size: 38px;
+      font-size: 40px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       color: #124453;
       text-transform: uppercase;
       margin: 0;
-      line-height: 1.1;
+      line-height: 1;
     }
 
     .hotel-subtitle {
       font-family: Cinzel, Georgia, serif;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.32em;
       color: #C5A059;
-      margin: 12px 0 0;
+      margin: 14px 0 0;
     }
 
-    .cta-section {
+    .rule {
+      width: 100%;
+      height: 1px;
+      background: #1D1D1F;
+      border: 0;
+      margin: 18mm 0 0;
+      opacity: 0.85;
+    }
+
+    .cta {
       text-align: center;
-      max-width: 140mm;
-      margin-top: 8mm;
-      position: relative;
-      z-index: 1;
+      max-width: 145mm;
+      margin-top: 14mm;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
     }
 
     .main-claim {
       font-family: Cinzel, Georgia, serif;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 600;
       color: #124453;
       line-height: 1.35;
-      margin: 0 0 14px;
-      letter-spacing: 0.02em;
+      margin: 0 0 16px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .sub-claim {
-      font-family: Montserrat, sans-serif;
       font-size: 13.5px;
-      line-height: 1.65;
+      line-height: 1.7;
       color: #515154;
       font-weight: 500;
       margin: 0;
+      max-width: 130mm;
     }
 
-    .qr-display-box {
+    .qr-block {
       text-align: center;
-      margin: 10mm 0 6mm;
-      position: relative;
-      z-index: 1;
+      margin: 16mm 0 8mm;
     }
 
     .qr-plate {
       background: #FFFFFF;
-      padding: 18px;
-      border-radius: 18px;
+      padding: 16px;
+      border-radius: 4px;
       display: inline-block;
       border: 1px solid #124453;
-      box-shadow: 0 8px 24px rgba(18, 68, 83, 0.04);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .qr-image {
-      width: 58mm;
-      height: 58mm;
+      width: 62mm;
+      height: 62mm;
       display: block;
     }
 
-    .scan-instruction {
-      font-family: Montserrat, sans-serif;
-      font-size: 11.5px;
+    .scan {
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.16em;
       color: #124453;
       display: block;
     }
 
-    .poster-footer {
+    .langs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10mm;
+      flex-wrap: wrap;
+    }
+
+    .lang {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #124453;
+      background: rgba(18, 68, 83, 0.05);
+      padding: 6px 11px;
+      border-radius: 3px;
+    }
+
+    .footer {
       text-align: center;
       width: 100%;
       border-top: 1px solid #E5E5EA;
-      padding-top: 16px;
-      position: relative;
-      z-index: 1;
+      padding-top: 14px;
+      margin-top: auto;
     }
 
     .footer-text {
-      font-family: Montserrat, sans-serif;
-      font-size: 11px;
+      font-size: 10.5px;
       color: #8E8E93;
       font-weight: 500;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       margin: 0;
     }
 
+    .footer-discount {
+      margin: 8px 0 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: #124453;
+      letter-spacing: 0.04em;
+    }
+
     @media print {
-      body {
-        background: #FFFFFF;
-        display: block;
-        min-height: auto;
-      }
-      .poster-wrapper {
-        box-shadow: none;
-        margin: 0;
-      }
+      body { background: #FFFFFF; display: block; min-height: auto; }
+      .poster { box-shadow: none; margin: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="poster-wrapper">
-    <svg class="watermark" viewBox="0 0 240 80" aria-hidden="true" focusable="false">
-      <path fill="currentColor" d="M18 48c18-2 34-10 52-12 16-2 30 2 44 6 12 4 26 8 40 6 18-2 34-12 52-14v8c-16 4-30 12-46 14-16 2-30-2-44-6-14-4-28-8-44-6-14 2-28 8-42 12l-12-8zm8 10h188c2 0 4 2 4 4s-2 4-4 4H26c-2 0-4-2-4-4s2-4 4-4zm96-36c2-8 8-14 16-16 6-2 12 2 14 8 2 4 0 10-4 12-6 4-14 2-18-2-4-4-6-6-8-2z"/>
-    </svg>
-
-    <div class="brand-section">
+  <div class="poster">
+    <div class="brand">
       <h1 class="hotel-title">Hotel Canal</h1>
-      <p class="hotel-subtitle">Santa Croce 553 · Venezia</p>
+      <p class="hotel-subtitle">Santa Croce 553 · Venice</p>
     </div>
+    <hr class="rule">
 
-    <div class="cta-section">
+    <div class="cta">
       <h2 class="main-claim">Fast Check-in &amp;<br>Welcome Discount</h2>
       <p class="sub-claim">
-        Scan the code to activate your room's digital services instantly
-        and unlock your exclusive welcome discount for your stay in Venice.
+        Scan the code to activate your room’s digital services instantly
+        and unlock a 10% welcome discount for Trattoria alla Terrazza.
       </p>
-    </div>
 
-    <div class="qr-display-box">
-      <div class="qr-plate">
-        <img class="qr-image" src="./qr.png" alt="QR Fast Check-in Hotel Canal" width="220" height="220">
+      <div class="qr-block">
+        <div class="qr-plate">
+          <img class="qr-image" src="./qr.png" alt="Hotel Canal Fast Check-in QR" width="240" height="240">
+        </div>
+        <span class="scan">Scan with your smartphone</span>
       </div>
-      <span class="scan-instruction">Scan with your smartphone</span>
+
+      <div class="langs" aria-label="Languages">
+        <span class="lang">IT</span>
+        <span class="lang">EN</span>
+        <span class="lang">FR</span>
+        <span class="lang">DE</span>
+        <span class="lang">ES</span>
+      </div>
     </div>
 
-    <div class="poster-footer">
-      <p class="footer-text">Exclusive Partner Offer · Trattoria alla Terrazza Venezia</p>
+    <div class="footer">
+      <p class="footer-text">Exclusive partner · Trattoria alla Terrazza, Venice</p>
+      <p class="footer-discount">10% welcome discount for registered guests</p>
     </div>
   </div>
 </body>
