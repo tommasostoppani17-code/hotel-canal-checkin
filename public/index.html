@@ -16,11 +16,10 @@
       --text-main: #1D1D1F;
       --text-muted: #515154;
       --radius-ios: 18px;
+      /* Stessa curva per transform + height (sync Back/Continua) */
       --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --ios-snap: cubic-bezier(0.1, 1, 0.1, 1);
-      /* Overshoot elastico breve (~0.38s feel) */
-      --ios-spring-fast: cubic-bezier(0.25, 1.4, 0.5, 1);
-      --stagger-ms: 20ms;
+      --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --slide-ms: 380ms;
     }
 
     /* Blocca rimbalzo/overscroll del browser - effetto app a schermo fisso */
@@ -71,7 +70,7 @@
         scale(var(--parallax-scale, 1.08));
       will-change: transform, filter;
       /* Parallasse: la molla JS guida --parallax-x; niente CSS transition che frena */
-      transition: filter 0.35s var(--ios-spring-fast);
+      transition: filter 0.35s var(--ios-ease);
     }
 
     .background-overlay::after {
@@ -95,6 +94,8 @@
     }
 
     .apple-card {
+      --spot-x: 50%;
+      --spot-y: 18%;
       position: relative;
       z-index: 1;
       width: 100%;
@@ -103,23 +104,49 @@
       max-height: min(94dvh, 780px);
       display: flex;
       flex-direction: column;
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(40px) saturate(220%);
-      -webkit-backdrop-filter: blur(40px) saturate(220%);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(30px) saturate(210%);
+      -webkit-backdrop-filter: blur(30px) saturate(210%);
       border: 1px solid rgba(255, 255, 255, 0.55);
       border-radius: 28px;
       padding: 22px 20px 20px;
       box-sizing: border-box;
+      /* Ombra sferica unica — niente multi-layer / 3D che tagliano su Safari */
       box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.01),
-        0 30px 80px rgba(5, 11, 13, 0.3),
+        0 20px 60px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.85);
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      isolation: isolate;
+      transform-style: flat;
+      -webkit-transform-style: flat;
+      perspective: none;
       transform: translate3d(0, 0, 0);
-      transition: transform 0.25s var(--ios-snap);
-      animation: cardIntro 0.4s var(--ios-snap) both;
+      -webkit-transform: translate3d(0, 0, 0);
+      animation: cardIntro 0.5s var(--ios-ease) both;
+    }
+
+    /* Specchio di luce sul vetro (desktop) — niente preserve-3d / tilt */
+    .card-sheen {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      background:
+        radial-gradient(
+          520px circle at var(--spot-x) var(--spot-y),
+          rgba(255, 255, 255, 0.22),
+          transparent 42%
+        );
+      mix-blend-mode: soft-light;
+      transition: opacity 0.45s var(--ios-ease);
+    }
+
+    .apple-card.is-lit .card-sheen {
+      opacity: 1;
     }
 
     @keyframes cardIntro {
@@ -134,14 +161,13 @@
     }
 
     .apple-card.is-rubber {
-      animation: cardRubber 280ms var(--ios-ease) both;
+      animation: cardRubber 280ms cubic-bezier(0.25, 1, 0.5, 1) both;
     }
 
-    /* Rubber-band accennato (non gomma esagerata) */
     @keyframes cardRubber {
-      0% { transform: scale(1); }
-      40% { transform: scale(0.985); }
-      100% { transform: scale(1); }
+      0% { transform: scale(1) translate3d(0, 0, 0); }
+      50% { transform: scale(0.985) translate3d(0, 2px, 0); }
+      100% { transform: scale(1) translate3d(0, 0, 0); }
     }
 
     .step-dots {
@@ -152,16 +178,15 @@
       padding: 0;
     }
 
-    /* Pillola: schizza in anticipo (molla CSS rapida) */
+    /* Pillole allineate al binario (350ms) */
     .step-dots span {
       width: 6px;
       height: 6px;
       border-radius: 999px;
       background: rgba(18, 68, 83, 0.15);
       transition:
-        width 0.3s var(--ios-spring-fast),
-        background-color 0.3s var(--ios-spring-fast);
-      will-change: width;
+        width var(--slide-ms) var(--ios-ease),
+        background-color var(--slide-ms) var(--ios-ease);
     }
 
     .step-dots span.active {
@@ -180,17 +205,20 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Binario carosello GPU: transform guidato dalla molla JS */
+    /* Viewport: height anima in sincrono col transform (stessa curva/ms) */
     .slider-viewport {
       width: 100%;
       overflow: hidden !important;
       position: relative;
       flex: 0 0 auto;
+      height: auto;
       transform: translateZ(0);
       -webkit-transform: translateZ(0);
-      transition: height 0.3s var(--ios-ease);
+      transition: height var(--slide-ms) var(--ios-ease);
+      will-change: height;
     }
 
+    /* Binario: stessa durata/curva del viewport */
     .slider-track {
       display: flex;
       flex-wrap: nowrap;
@@ -198,12 +226,19 @@
       width: 100%;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      transition: none;
+      transition: transform var(--slide-ms) var(--ios-ease);
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      /* Isola il compositing — NO preserve-3d (rompe ombra Safari) */
+      isolation: isolate;
     }
 
+    /*
+     * Anti-CLS: inattivi height 0.
+     * Durante lo slide lo step uscente resta .is-exiting (altezza piena)
+     * così il testo non viene “affettato” a metà animazione.
+     */
     .slide-step {
       flex: 0 0 100%;
       width: 100%;
@@ -213,48 +248,57 @@
       display: flex;
       flex-direction: column;
       padding: 0;
-      transform: translateZ(0);
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
       backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      word-break: normal;
+      overflow-wrap: normal;
+      hyphens: none;
+      height: 0;
+      max-height: 0;
+      min-height: 0;
+      opacity: 0;
+      overflow: hidden !important;
+      pointer-events: none;
     }
 
-    /* Stagger SOLO a fine slide: richiede .is-settled (onRest) */
-    .slide-step.is-settled > .header,
-    .slide-step.is-settled > .step-body > *,
-    .slide-step.is-settled > .step-footer-fixed > * {
-      animation: elementCascade 0.45s var(--ios-ease) both;
+    .slide-step.is-active,
+    .slide-step.is-exiting {
+      height: auto;
+      max-height: none;
+      opacity: 1;
+      overflow: hidden !important;
     }
-    .slide-step.is-settled > .header { animation-delay: 0.02s; }
-    .slide-step.is-settled > .step-body > *:nth-child(1) { animation-delay: 0.04s; }
-    .slide-step.is-settled > .step-body > *:nth-child(2) { animation-delay: 0.06s; }
-    .slide-step.is-settled > .step-body > *:nth-child(3) { animation-delay: 0.08s; }
-    .slide-step.is-settled > .step-body > *:nth-child(4) { animation-delay: 0.1s; }
-    .slide-step.is-settled > .step-body > *:nth-child(5) { animation-delay: 0.12s; }
-    .slide-step.is-settled > .step-footer-fixed > *:nth-child(1) { animation-delay: 0.06s; }
-    .slide-step.is-settled > .step-footer-fixed > *:nth-child(2) { animation-delay: 0.08s; }
-    .slide-step.is-settled > .step-footer-fixed > *:nth-child(3) { animation-delay: 0.1s; }
 
-    @keyframes elementCascade {
-      from {
-        opacity: 0;
-        transform: translate3d(0, 8px, 0);
-      }
-      to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-      }
+    .slide-step.is-active {
+      pointer-events: auto;
     }
+
+    .slide-step.is-exiting {
+      pointer-events: none;
+      /* Isola layout/style senza size (size spezzerebbe lo scrollHeight) */
+      contain: layout style;
+    }
+
+    /* Niente stagger interno: i campi restano fermi sul foglio. */
 
     @media (prefers-reduced-motion: reduce) {
       .apple-card,
-      .slide-step.is-settled > .header,
-      .slide-step.is-settled > .step-body > *,
-      .slide-step.is-settled > .step-footer-fixed > *,
+      .card-sheen,
       .bg-inertia,
       .slider-viewport,
-      .step-dots span {
+      .slider-track,
+      .step-dots span,
+      .btn-canal,
+      .btn-ghost,
+      .apple-input {
         animation: none !important;
         transition: none !important;
       }
+      .apple-card { animation: none !important; }
     }
 
     .step-body {
@@ -515,9 +559,10 @@
       color: #000000;
       box-sizing: border-box;
       transition:
-        border-color 0.2s var(--ios-snap),
-        background-color 0.2s var(--ios-snap),
-        box-shadow 0.2s var(--ios-snap);
+        border-color 0.35s var(--ios-ease),
+        background-color 0.35s var(--ios-ease),
+        box-shadow 0.35s var(--ios-ease),
+        transform 0.28s var(--ios-ease);
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
@@ -530,8 +575,10 @@
       outline: none;
       border-color: var(--canal-petroleum);
       background: #FFFFFF;
+      transform: translate3d(0, -1px, 0);
       box-shadow:
         0 0 0 3.5px rgba(18, 68, 83, 0.11),
+        0 1px 0 rgba(255, 255, 255, 0.65),
         inset 0 0 0 rgba(0, 0, 0, 0);
     }
 
@@ -630,20 +677,30 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      /* Release: overshoot breve; press: override sotto */
       transition:
-        transform 0.2s var(--ios-snap),
-        background-color 0.2s var(--ios-snap),
-        box-shadow 0.2s var(--ios-snap);
+        transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
+        background-color 0.25s var(--ios-ease),
+        box-shadow 0.3s var(--ios-ease);
       box-shadow: 0 4px 12px rgba(18, 68, 83, 0.12);
     }
 
-    .btn-canal:hover:not(:disabled) {
-      background: var(--canal-petroleum-hover);
-      box-shadow: 0 8px 20px rgba(18, 68, 83, 0.35);
+    @media (hover: hover) and (pointer: fine) {
+      .btn-canal:hover:not(:disabled):not(.is-loading) {
+        background: var(--canal-petroleum-hover);
+        transform: translate3d(0, -1px, 0);
+        box-shadow: 0 10px 22px rgba(18, 68, 83, 0.32);
+      }
+
+      .btn-ghost:hover {
+        opacity: 1;
+      }
     }
 
     .btn-canal:active:not(:disabled):not(.is-loading) {
-      transform: scale(0.95) translate3d(0, 0, 0);
+      transform: scale(0.94);
+      transition-duration: 0.07s, 0.15s, 0.15s;
+      transition-timing-function: ease-out, var(--ios-ease), var(--ios-ease);
       background-color: var(--canal-petroleum-hover);
       box-shadow: 0 2px 5px rgba(18, 68, 83, 0.06);
     }
@@ -690,6 +747,16 @@
       font-weight: 600;
       cursor: pointer;
       opacity: 0.75;
+      transition:
+        opacity 0.25s var(--ios-ease),
+        transform 0.35s cubic-bezier(0.34, 1.45, 0.64, 1);
+    }
+
+    .btn-ghost:active {
+      opacity: 1;
+      transform: scale(0.97);
+      transition-duration: 0.07s, 0.07s;
+      transition-timing-function: ease-out, ease-out;
     }
 
     .welcome-gift {
@@ -818,30 +885,31 @@
       transform-origin: center center;
     }
 
-    #step3.is-active .receipt-badge:not(.is-collapsed),
-    #step3.is-settled .receipt-badge:not(.is-collapsed) {
-      animation: badgeInflate 0.65s 0.12s var(--ios-ease) both;
+    #step3.is-active .receipt-badge:not(.is-collapsed) {
+      animation: badgeInflate 0.45s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     @keyframes badgeInflate {
-      0% { opacity: 0; transform: scale(0.86); }
-      55% { opacity: 1; transform: scale(1.04); }
-      100% { opacity: 1; transform: scale(1); }
+      0% { opacity: 0; transform: scale(0.86) translate3d(0, 10px, 0); }
+      70% { opacity: 1; transform: scale(1.04) translate3d(0, -1px, 0); }
+      100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
     }
 
-    /* Foto step 2: dissolvenza al submit OK */
+    /* Successo: fumo su hero + strip (ID reali del DOM vivo) */
+    #step2.is-dissolving .restaurant-hero-card,
+    #step2.is-dissolving #restHeroImg,
     #step2.is-dissolving .rest-strip figure {
-      animation: photoSmoke 0.45s var(--ios-ease) both;
+      animation: photoSmoke 250ms var(--ios-ease) both;
     }
     #step2.is-dissolving .rest-strip figure:nth-child(1) { animation-delay: 0s; }
-    #step2.is-dissolving .rest-strip figure:nth-child(2) { animation-delay: 0.05s; }
-    #step2.is-dissolving .rest-strip figure:nth-child(3) { animation-delay: 0.1s; }
+    #step2.is-dissolving .rest-strip figure:nth-child(2) { animation-delay: 0.03s; }
+    #step2.is-dissolving .rest-strip figure:nth-child(3) { animation-delay: 0.06s; }
 
     @keyframes photoSmoke {
       to {
         opacity: 0;
-        transform: scale(0.92) translate3d(0, -6px, 0);
-        filter: blur(4px);
+        filter: blur(8px);
+        transform: scale(0.94) translate3d(0, -15px, 0);
       }
     }
 
@@ -875,16 +943,17 @@
   </div>
 
   <div class="apple-card" id="card">
+    <div class="card-sheen" aria-hidden="true"></div>
     <div class="step-dots" id="stepDots" aria-hidden="true">
       <span class="active"></span><span></span><span></span>
     </div>
 
     <div class="error" id="error" role="alert"></div>
 
-    <div class="slider-viewport" id="sliderViewport">
+    <div class="slider-viewport" id="sliderViewport" style="height: 380px;">
     <div class="slider-track" id="sliderTrack">
       <!-- STEP 1: griglia unica allineata + privacy/CTA subito sotto -->
-      <section class="slide-step" id="step1">
+      <section class="slide-step is-active" id="step1">
         <div class="header">
           <span class="hotel-title">Hotel Canal</span>
           <span class="hotel-subtitle">Venice Experience</span>
@@ -1320,11 +1389,11 @@
     let formMode = true;
     let submitting = false;
 
-    /* Molla bella originale (fluida), solo un filo più reattiva della prima versione lenta */
+    /* Slide CSS 350ms — niente RAF mid-frame, niente height in parallelo */
     let slideX = 0;
     let parallaxX = 0;
-    let springRaf = 0;
     let heightGoTimer = 0;
+    let ambientUnlockTimer = 0;
     let ambientRaf = 0;
     let ambX = 0;
     let ambY = 0;
@@ -1332,6 +1401,8 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
+    const SLIDE_MS = 380;
+    let exitClearTimer = 0;
 
     function applyTrack(xPercent) {
       slideX = xPercent;
@@ -1370,62 +1441,25 @@
       return el.scrollHeight;
     }
 
-    function syncViewportHeight(step = currentStep) {
+    /** Scrive height destinazione subito — CSS anima in parallelo allo slide. */
+    function syncViewportHeight(step = currentStep, instant = false) {
       if (!viewport) return;
       const h = measureStepHeight(step);
-      if (h > 0) viewport.style.height = `${h}px`;
-    }
-
-    function springPair(toSlide, toParallax, toScale, onRest) {
-      cancelAnimationFrame(springRaf);
-      if (reduceMotion) {
-        applyTrack(toSlide);
-        applyParallax(toParallax, toScale);
-        freezeAmbient(false);
-        onRest?.();
+      if (h <= 0) return;
+      if (instant || reduceMotion) {
+        const prev = viewport.style.transition;
+        viewport.style.transition = 'none';
+        viewport.style.height = `${h}px`;
+        void viewport.offsetHeight;
+        viewport.style.transition = prev;
         return;
       }
+      viewport.style.height = `${h}px`;
+    }
 
-      /*
-       * Parametri “poesia” originali (era ~210/24/1, troppo pigra).
-       * Ora: un filo più reattiva, stesso overshoot morbido.
-       * ζ ≈ 0.85 → rimbalzo leggero, non nervoso.
-       */
-      const stiffness = 280;
-      const damping = 28;
-      const mass = 1.0;
-      let vSlide = 0;
-      let vPara = 0;
-      let last = performance.now();
-      freezeAmbient(true);
-
-      function frame(now) {
-        const dt = Math.min(0.033, (now - last) / 1000);
-        last = now;
-
-        const fS = -stiffness * (slideX - toSlide);
-        const fP = -stiffness * (parallaxX - toParallax);
-        vSlide += ((fS - damping * vSlide) / mass) * dt;
-        vPara += ((fP - damping * vPara) / mass) * dt;
-        applyTrack(slideX + vSlide * dt);
-        applyParallax(parallaxX + vPara * dt, toScale);
-
-        const settled =
-          Math.abs(slideX - toSlide) < 0.05 &&
-          Math.abs(vSlide) < 0.45 &&
-          Math.abs(parallaxX - toParallax) < 0.05 &&
-          Math.abs(vPara) < 0.45;
-
-        if (settled) {
-          applyTrack(toSlide);
-          applyParallax(toParallax, toScale);
-          freezeAmbient(false);
-          onRest?.();
-          return;
-        }
-        springRaf = requestAnimationFrame(frame);
-      }
-      springRaf = requestAnimationFrame(frame);
+    function scheduleViewportHeight(step = currentStep) {
+      clearTimeout(heightGoTimer);
+      syncViewportHeight(step);
     }
 
     function startAmbientInertia() {
@@ -1435,8 +1469,8 @@
         'pointermove',
         (e) => {
           if (ambientFrozen) return;
-          targetAmbX = (e.clientX / window.innerWidth - 0.5) * 14;
-          targetAmbY = (e.clientY / window.innerHeight - 0.5) * 9;
+          targetAmbX = (e.clientX / window.innerWidth - 0.5) * 8;
+          targetAmbY = (e.clientY / window.innerHeight - 0.5) * 5;
         },
         { passive: true },
       );
@@ -1446,19 +1480,19 @@
         (e) => {
           if (ambientFrozen) return;
           if (e.gamma == null || e.beta == null) return;
-          targetAmbX = Math.max(-12, Math.min(12, e.gamma * 0.32));
-          targetAmbY = Math.max(-8, Math.min(8, (e.beta - 45) * 0.18));
+          targetAmbX = Math.max(-7, Math.min(7, e.gamma * 0.2));
+          targetAmbY = Math.max(-5, Math.min(5, (e.beta - 45) * 0.12));
         },
         { passive: true },
       );
 
       function ambientFrame(now) {
         if (!ambientFrozen) {
-          breathT = now * 0.00035;
-          const breathX = Math.sin(breathT) * 2.2;
-          const breathY = Math.cos(breathT * 0.85) * 1.4;
-          ambX += (targetAmbX + breathX - ambX) * 0.055;
-          ambY += (targetAmbY + breathY - ambY) * 0.055;
+          breathT = now * 0.00028;
+          const breathX = Math.sin(breathT) * 1.1;
+          const breathY = Math.cos(breathT * 0.85) * 0.7;
+          ambX += (targetAmbX + breathX - ambX) * 0.04;
+          ambY += (targetAmbY + breathY - ambY) * 0.04;
           applyAmbient(ambX, ambY);
         }
         ambientRaf = requestAnimationFrame(ambientFrame);
@@ -1477,43 +1511,28 @@
       return translations[nav] ? nav : 'en';
     }
 
-    function markStepClasses(step) {
+    function markStepClasses(step, exitingStep = null) {
       for (let i = 1; i <= TOTAL_STEPS; i++) {
         const el = document.getElementById(`step${i}`);
         if (!el) continue;
         el.classList.toggle('is-active', i === step);
-        el.classList.remove('is-settled', 'is-exiting');
+        el.classList.toggle('is-exiting', exitingStep != null && i === exitingStep);
         if (i !== 2 || step !== TOTAL_STEPS) {
           el.classList.remove('is-dissolving');
         }
       }
     }
 
-    function triggerSettledStagger(step) {
-      for (let i = 1; i <= TOTAL_STEPS; i++) {
-        const el = document.getElementById(`step${i}`);
-        if (!el) continue;
-        if (i === step) {
-          el.classList.remove('is-settled');
-          void el.offsetWidth;
-          el.classList.add('is-settled');
-        } else {
-          el.classList.remove('is-settled');
-        }
-      }
-    }
-
     /**
-     * Sync rigida:
-     * 1) pallini subito
-     * 2) pre-misura altezza → expand verticale
-     * 3) poi molla orizzontale (ambient freezato)
-     * 4) onRest → stagger
+     * Slide + height nello stesso istante (CSS).
+     * Niente setTimeout sull'altezza: Back non aspetta fine corsa.
+     * is-exiting tiene il testo intero durante i 380ms.
      */
     function setStep(step) {
+      const fromStep = currentStep;
+      const isTransit = fromStep !== step;
       currentStep = step;
       document.body.dataset.step = String(step);
-      clearTimeout(heightGoTimer);
 
       if (dots) {
         dots.classList.toggle('hidden', step === TOTAL_STEPS);
@@ -1522,44 +1541,60 @@
         });
       }
 
-      markStepClasses(step);
+      markStepClasses(step, isTransit ? fromStep : null);
 
       const toSlide = -(step - 1) * 100;
-      const toParallax = -toSlide / 12;
-      const toScale = 1.08 + (step - 1) * 0.02;
+      const toParallax = -toSlide / 22;
+      const toScale = 1.05 + (step - 1) * 0.012;
 
-      const startSpring = () => {
-        springPair(toSlide, toParallax, toScale, () => {
-          triggerSettledStagger(step);
-          syncViewportHeight(step);
-        });
-      };
-
-      // Pre-misura altezza, breve respiro Y, poi molla X
-      syncViewportHeight(step);
-
-      if (reduceMotion) {
-        applyTrack(toSlide);
-        applyParallax(toParallax, toScale);
-        triggerSettledStagger(step);
-        return;
+      if (reduceMotion && track) {
+        track.style.transition = 'none';
       }
 
-      heightGoTimer = setTimeout(startSpring, 60);
+      freezeAmbient(true);
+      /* Height destinazione + slide: stesso frame → GPU sync */
+      syncViewportHeight(step, !isTransit);
+      applyTrack(toSlide);
+      applyParallax(toParallax, toScale);
+
+      clearTimeout(exitClearTimer);
+      clearTimeout(ambientUnlockTimer);
+      clearTimeout(heightGoTimer);
+      const unlockDelay = reduceMotion ? 0 : SLIDE_MS + 20;
+      exitClearTimer = setTimeout(() => {
+        markStepClasses(step, null);
+      }, unlockDelay);
+      ambientUnlockTimer = setTimeout(() => freezeAmbient(false), unlockDelay);
     }
 
+    /**
+     * Successo: 1) fumo foto → 2) rubber 280ms → 3) setStep(3) + badge CSS.
+     * Sequenza unica, niente parallelismo sullo stesso layer.
+     */
     function playSuccessKinetics(thenGo) {
       const step2 = document.getElementById('step2');
       if (step2 && currentStep === 2) {
         step2.classList.add('is-dissolving');
       }
-      card.classList.remove('is-rubber');
-      void card.offsetWidth;
-      card.classList.add('is-rubber');
-      setTimeout(() => {
+
+      const startRubber = () => {
         card.classList.remove('is-rubber');
+        void card.offsetWidth;
+        card.classList.add('is-rubber');
+        setTimeout(() => {
+          card.classList.remove('is-rubber');
+          if (step2) step2.classList.remove('is-dissolving');
+          thenGo();
+        }, 280);
+      };
+
+      if (reduceMotion) {
+        if (step2) step2.classList.remove('is-dissolving');
         thenGo();
-      }, 280);
+        return;
+      }
+
+      setTimeout(startRubber, 100);
     }
 
     function shakeCard() {
@@ -1744,7 +1779,7 @@
 
       if (!formMode) return;
       applyFormLabels();
-      requestAnimationFrame(syncViewportHeight);
+      requestAnimationFrame(() => syncViewportHeight(currentStep, true));
 
       if (currentStep === TOTAL_STEPS) {
         const dict = t();
@@ -2162,6 +2197,30 @@
       });
     });
 
+    /** Luce speculare sul vetro — solo pointer fine; niente tilt / magnete cursore */
+    function startCardSheen() {
+      if (reduceMotion || !card) return;
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+
+      card.addEventListener(
+        'pointermove',
+        (e) => {
+          const r = card.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          const x = ((e.clientX - r.left) / r.width) * 100;
+          const y = ((e.clientY - r.top) / r.height) * 100;
+          card.style.setProperty('--spot-x', `${x.toFixed(2)}%`);
+          card.style.setProperty('--spot-y', `${y.toFixed(2)}%`);
+          card.classList.add('is-lit');
+        },
+        { passive: true },
+      );
+
+      card.addEventListener('pointerleave', () => {
+        card.classList.remove('is-lit');
+      });
+    }
+
     // Init: lingua dal telefono (en / it / fr / de / es), altrimenti inglese
     currentLang = detectLanguage();
     clearRegistrationLock(); // sempre sblocca in fase di test
@@ -2169,10 +2228,16 @@
     setLanguage(currentLang);
     setStep(1);
     startAmbientInertia();
-    window.addEventListener('resize', syncViewportHeight);
-    document.getElementById('restHeroImg')?.addEventListener('load', syncViewportHeight);
+    startCardSheen();
+    /* Boot: riallinea i 380px inline senza animare l'altezza */
+    syncViewportHeight(1, true);
+    requestAnimationFrame(() => syncViewportHeight(1, true));
+    window.addEventListener('resize', () => syncViewportHeight(currentStep, true));
+    document.getElementById('restHeroImg')?.addEventListener('load', () => {
+      syncViewportHeight(currentStep, true);
+    });
     if (document.fonts?.ready) {
-      document.fonts.ready.then(syncViewportHeight).catch(() => {});
+      document.fonts.ready.then(() => syncViewportHeight(currentStep, true)).catch(() => {});
     }
     const bootParams = new URLSearchParams(location.search);
     const prefEmail = bootParams.get('email');
