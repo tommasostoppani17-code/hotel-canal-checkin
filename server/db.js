@@ -217,16 +217,31 @@ export function getCheckinById(id) {
     .get(Number(id));
 }
 
-/** Save dinner table preference (e.g. 20:15 or REQUESTED). Returns updated row or null. */
-export function setTableBooking(id, tableBooking) {
+/** Save dinner table preference (e.g. 20:15) and optional party size. */
+export function setTableBooking(id, tableBooking, guestsCount = null) {
   const time = String(tableBooking || '').trim().slice(0, 32).toUpperCase();
   if (!time || time === 'NO' || time === 'SKIP' || time === 'NONE') {
     return getCheckinById(id);
   }
-  const result = db
-    .prepare(`UPDATE checkins SET table_booking = ? WHERE id = ?`)
-    .run(time, Number(id));
-  if (!result.changes) return null;
+  let pax = null;
+  if (guestsCount != null && guestsCount !== '') {
+    pax = Number.parseInt(String(guestsCount), 10);
+    if (!Number.isFinite(pax) || pax < 1) pax = null;
+    if (pax > 20) pax = 20;
+  }
+  if (pax != null) {
+    const result = db
+      .prepare(
+        `UPDATE checkins SET table_booking = ?, guests_count = ? WHERE id = ?`,
+      )
+      .run(time, pax, Number(id));
+    if (!result.changes) return null;
+  } else {
+    const result = db
+      .prepare(`UPDATE checkins SET table_booking = ? WHERE id = ?`)
+      .run(time, Number(id));
+    if (!result.changes) return null;
+  }
   return getCheckinById(id);
 }
 

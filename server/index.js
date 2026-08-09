@@ -645,6 +645,8 @@ app.post('/api/table-booking', async (req, res) => {
       .trim()
       .toLowerCase()
       .slice(0, 5);
+    const guestsRaw =
+      req.body?.guestsCount ?? req.body?.guests_count ?? req.body?.pax ?? null;
     if (!Number.isFinite(id) || id < 1) {
       return res.status(400).json({ error: 'checkinId non valido' });
     }
@@ -658,7 +660,7 @@ app.post('/api/table-booking', async (req, res) => {
       return res.status(400).json({ error: 'Orario / richiesta non valida' });
     }
 
-    const row = setTableBooking(id, rawTime);
+    const row = setTableBooking(id, rawTime, guestsRaw);
     if (!row) {
       return res.status(404).json({ error: 'Check-in non trovato' });
     }

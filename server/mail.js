@@ -166,18 +166,18 @@ export async function sendTableBookingAlert(row) {
   const text = [
     `Ciao Payel — richiesta tavolo Trattoria alla Terrazza`,
     ``,
-    `AZIONE: richiama l'ospite e conferma tavolo + coupon −10%.`,
+        `AZIONE: richiama l'ospite e conferma tavolo + coupon −10%.`,
     ``,
     `Stanza: ${room}`,
     `Telefono ospite: ${phone}`,
     `Nome: ${name}`,
     `Persone: ${pax}`,
-    `Orario: ${timeLabel}`,
+    `Orario richiesto: ${timeLabel}`,
     `Receptionist check-in: ${staff}`,
     `Coupon 10%: ${hasCoupon ? 'SÌ (inviato / attivo)' : 'no'}`,
     `Lingua ospite: ${guestLang}`,
     ``,
-    `L'ospite ha premuto "Prenota un tavolo" al check-in Hotel Canal.`,
+    `L'ospite ha inviato una richiesta tavolo dal check-in Hotel Canal.`,
     ``,
     `— Front Desk ${hotelName}`,
   ].join('\n');
@@ -194,12 +194,12 @@ export async function sendTableBookingAlert(row) {
         <tr><td style="padding:6px 0;color:#6B7780;">Telefono</td><td style="padding:6px 0;font-weight:700;text-align:right;"><a href="tel:${String(phone).replace(/\s/g, '')}" style="color:#124453;text-decoration:none;">${phone}</a></td></tr>
         <tr><td style="padding:6px 0;color:#6B7780;">Ospite</td><td style="padding:6px 0;font-weight:700;text-align:right;">${name}</td></tr>
         <tr><td style="padding:6px 0;color:#6B7780;">Persone</td><td style="padding:6px 0;font-weight:700;text-align:right;">${pax}</td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Orario</td><td style="padding:6px 0;font-weight:700;text-align:right;">${timeLabel}</td></tr>
+        <tr><td style="padding:6px 0;color:#6B7780;">Orario richiesto</td><td style="padding:6px 0;font-weight:700;text-align:right;">${timeLabel}</td></tr>
         <tr><td style="padding:6px 0;color:#6B7780;">Receptionist</td><td style="padding:6px 0;font-weight:700;text-align:right;">${staff}</td></tr>
         <tr><td style="padding:6px 0;color:#6B7780;">Coupon 10%</td><td style="padding:6px 0;font-weight:700;text-align:right;">${hasCoupon ? 'SÌ' : 'no'}</td></tr>
         <tr><td style="padding:6px 0;color:#6B7780;">Lingua ospite</td><td style="padding:6px 0;font-weight:700;text-align:right;">${guestLang}</td></tr>
       </table>
-      <p style="margin:16px 0 0;font-size:12px;color:#6B7780;">Ha premuto “Prenota un tavolo” al check-in ${hotelName}.</p>
+      <p style="margin:16px 0 0;font-size:12px;color:#6B7780;">Richiesta inviata dal check-in ${hotelName}.</p>
     </div>
   `;
 

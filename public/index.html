@@ -22,8 +22,8 @@
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
       --card-h-2: min(658px, calc(100dvh - 12px));
-      --card-h-3: min(560px, calc(100dvh - 24px));
-      --card-h-3-booking: min(560px, calc(100dvh - 24px));
+      --card-h-3: min(600px, calc(100dvh - 16px));
+      --card-h-3-booking: min(640px, calc(100dvh - 12px));
       --card-h: var(--card-h-1);
     }
 
@@ -730,6 +730,92 @@
       display: block;
     }
 
+    .book-hint {
+      margin: 10px 0 10px;
+      font-size: 11.5px;
+      line-height: 1.4;
+      font-weight: 500;
+      color: #5C6670;
+    }
+
+    .book-fields {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .book-field label {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--canal-petroleum);
+      margin: 0 0 4px;
+    }
+
+    .book-field input,
+    .book-field select {
+      width: 100%;
+      height: 38px;
+      box-sizing: border-box;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 10px;
+      background: #fff;
+      padding: 0 10px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .book-field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23124453' d='M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+
+    .book-submit {
+      width: 100%;
+      height: 40px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--canal-petroleum);
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .book-submit:active {
+      transform: scale(0.98);
+    }
+
+    .book-submit:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    .book-done {
+      margin: 8px 0 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    .book-done[hidden] {
+      display: none !important;
+    }
+
     .guest-kv {
       display: flex;
       justify-content: space-between;
@@ -1412,18 +1498,37 @@
 
           <div class="guest-actions" id="guestActions" hidden>
             <div class="guest-action is-primary" id="actionTable">
-              <a
-                class="guest-action-btn"
-                id="trattoriaPhoneBtn"
-                href="tel:+393282464972"
-                aria-label="Chiama Trattoria alla Terrazza"
-              >
+              <button type="button" class="guest-action-btn" data-panel="tablePanel" id="btnTable">
                 <span class="ga-label">
                   <span class="ga-title" id="lbl-act-table">Prenota un tavolo per stasera</span>
-                  <span class="ga-sub" id="lbl-act-table-sub">Trattoria alla Terrazza · −10% · 328 246 4972</span>
+                  <span class="ga-sub" id="lbl-act-table-sub">Trattoria alla Terrazza · −10%</span>
                 </span>
-                <span class="ga-chevron" aria-hidden="true" style="transform: rotate(-45deg); border-width: 1.6px 1.6px 0 0;"></span>
-              </a>
+                <span class="ga-chevron" aria-hidden="true"></span>
+              </button>
+              <div class="guest-action-panel" id="tablePanel">
+                <p class="book-hint" id="lbl-book-hint">
+                  Inserisci l’orario e quante persone siete — vi ricontatteremo.
+                </p>
+                <div class="book-fields">
+                  <div class="book-field">
+                    <label id="lbl-book-time" for="bookTime">Orario</label>
+                    <select id="bookTime">
+                      <option value="19:00">19:00</option>
+                      <option value="19:30" selected>19:30</option>
+                      <option value="20:00">20:00</option>
+                      <option value="20:30">20:30</option>
+                      <option value="21:00">21:00</option>
+                      <option value="21:30">21:30</option>
+                    </select>
+                  </div>
+                  <div class="book-field">
+                    <label id="lbl-book-pax" for="bookPax">Persone</label>
+                    <input type="number" id="bookPax" inputmode="numeric" min="1" max="20" value="2">
+                  </div>
+                </div>
+                <button type="button" class="book-submit" id="btnBookSend">Invia richiesta</button>
+                <p class="book-done" id="bookDoneMsg" hidden></p>
+              </div>
             </div>
 
             <div class="guest-action" id="actionWifi">
@@ -1500,8 +1605,17 @@
         successSub: 'Ti abbiamo inviato le indicazioni via email. Qui i tasti rapidi.',
         successSubCoupon: 'Coupon −10% in arrivo via email. Prenota un tavolo, Wi‑Fi e codici porta qui sotto.',
         actTable: 'Prenota un tavolo per stasera',
-        actTableSub: 'Trattoria alla Terrazza · −10% · {phone}',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · {phone}',
+        actTableSub: 'Trattoria alla Terrazza · −10% · vi ricontattiamo',
+        actTableSubNoCoupon: 'Trattoria alla Terrazza · vi ricontattiamo',
+        bookHint: 'Inserisci l’orario e quante persone siete — vi ricontatteremo.',
+        bookTime: 'Orario',
+        bookPax: 'Persone',
+        bookSend: 'Invia richiesta',
+        bookSending: 'Invio…',
+        bookDone: 'Richiesta inviata — ti ricontatteremo al telefono.',
+        bookError: 'Non inviata. Riprova o chiedi in reception.',
+        bookNeedTime: 'Scegli un orario.',
+        bookNeedPax: 'Indica quante persone siete.',
         actWifi: 'Accedi al Wi‑Fi',
         actWifiSub: 'Rete hotel in tutta la struttura',
         actDoors: 'Codici della porta',
@@ -1567,8 +1681,17 @@
         successSub: 'We emailed your guide. Quick actions below.',
         successSubCoupon: 'Your −10% coupon is on the way. Book a table, Wi‑Fi and door codes below.',
         actTable: 'Book a table for tonight',
-        actTableSub: 'Trattoria alla Terrazza · −10% · {phone}',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · {phone}',
+        actTableSub: 'Trattoria alla Terrazza · −10% · we’ll call you back',
+        actTableSubNoCoupon: 'Trattoria alla Terrazza · we’ll call you back',
+        bookHint: 'Enter the time and how many people — we’ll contact you.',
+        bookTime: 'Time',
+        bookPax: 'Guests',
+        bookSend: 'Send request',
+        bookSending: 'Sending…',
+        bookDone: 'Request sent — we’ll call you back.',
+        bookError: 'Could not send. Try again or ask reception.',
+        bookNeedTime: 'Please choose a time.',
+        bookNeedPax: 'Please enter party size.',
         actWifi: 'Join the Wi‑Fi',
         actWifiSub: 'Hotel network throughout the property',
         actDoors: 'Door access codes',
@@ -1633,8 +1756,17 @@
         successSub: 'Nous vous avons envoyé le guide par e-mail. Actions rapides ci-dessous.',
         successSubCoupon: 'Coupon −10% en route. Réservez une table, Wi‑Fi et codes ci-dessous.',
         actTable: 'Réserver une table ce soir',
-        actTableSub: 'Trattoria alla Terrazza · −10% · {phone}',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · {phone}',
+        actTableSub: 'Trattoria alla Terrazza · −10% · on vous rappelle',
+        actTableSubNoCoupon: 'Trattoria alla Terrazza · on vous rappelle',
+        bookHint: 'Indiquez l’heure et le nombre de personnes — nous vous recontacterons.',
+        bookTime: 'Heure',
+        bookPax: 'Personnes',
+        bookSend: 'Envoyer la demande',
+        bookSending: 'Envoi…',
+        bookDone: 'Demande envoyée — nous vous rappellerons.',
+        bookError: 'Échec. Réessayez ou demandez à la réception.',
+        bookNeedTime: 'Choisissez une heure.',
+        bookNeedPax: 'Indiquez le nombre de personnes.',
         actWifi: 'Accéder au Wi‑Fi',
         actWifiSub: 'Réseau de l’hôtel partout',
         actDoors: 'Codes des portes',
@@ -1699,8 +1831,17 @@
         successSub: 'Wir haben den Guide per E-Mail geschickt. Schnellaktionen unten.',
         successSubCoupon: '−10%-Gutschein unterwegs. Tisch, Wi‑Fi und Türcodes unten.',
         actTable: 'Tisch für heute Abend reservieren',
-        actTableSub: 'Trattoria alla Terrazza · −10% · {phone}',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · {phone}',
+        actTableSub: 'Trattoria alla Terrazza · −10% · wir rufen zurück',
+        actTableSubNoCoupon: 'Trattoria alla Terrazza · wir rufen zurück',
+        bookHint: 'Uhrzeit und Personenanzahl angeben — wir melden uns.',
+        bookTime: 'Uhrzeit',
+        bookPax: 'Personen',
+        bookSend: 'Anfrage senden',
+        bookSending: 'Senden…',
+        bookDone: 'Anfrage gesendet — wir rufen Sie zurück.',
+        bookError: 'Nicht gesendet. Erneut versuchen oder Rezeption fragen.',
+        bookNeedTime: 'Bitte eine Uhrzeit wählen.',
+        bookNeedPax: 'Bitte Personenanzahl angeben.',
         actWifi: 'Wi‑Fi verbinden',
         actWifiSub: 'Hotelnetz im ganzen Haus',
         actDoors: 'Türcodes',
@@ -1765,8 +1906,17 @@
         successSub: 'Le enviamos la guía por email. Acciones rápidas abajo.',
         successSubCoupon: 'Cupón −10% en camino. Reserve mesa, Wi‑Fi y códigos abajo.',
         actTable: 'Reservar mesa esta noche',
-        actTableSub: 'Trattoria alla Terrazza · −10% · {phone}',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · {phone}',
+        actTableSub: 'Trattoria alla Terrazza · −10% · le llamamos',
+        actTableSubNoCoupon: 'Trattoria alla Terrazza · le llamamos',
+        bookHint: 'Indique la hora y cuántas personas son — le contactaremos.',
+        bookTime: 'Hora',
+        bookPax: 'Personas',
+        bookSend: 'Enviar solicitud',
+        bookSending: 'Enviando…',
+        bookDone: 'Solicitud enviada — le llamaremos.',
+        bookError: 'No enviada. Intente de nuevo o pregunte en recepción.',
+        bookNeedTime: 'Elija una hora.',
+        bookNeedPax: 'Indique cuántas personas.',
         actWifi: 'Conectarse al Wi‑Fi',
         actWifiSub: 'Red del hotel en toda la estructura',
         actDoors: 'Códigos de la puerta',
@@ -2420,11 +2570,31 @@
       const actions = document.getElementById('guestActions');
       const note = document.getElementById('lbl-reception-note');
       if (note) note.textContent = dict.receptionNote || '';
+      // Solo dopo check-in riuscito
       if (actions) {
         actions.hidden = Boolean(already);
         actions.querySelectorAll('.guest-action').forEach((el) => {
           el.classList.remove('is-open');
         });
+      }
+      const bookTime = document.getElementById('bookTime');
+      const bookPax = document.getElementById('bookPax');
+      const bookSend = document.getElementById('btnBookSend');
+      const bookDone = document.getElementById('bookDoneMsg');
+      if (bookTime) bookTime.disabled = false;
+      if (bookPax) {
+        bookPax.disabled = false;
+        const fromForm = document.getElementById('guests');
+        const n = Number.parseInt(String(fromForm?.value || bookPax.value || '2'), 10);
+        bookPax.value = Number.isFinite(n) && n >= 1 ? String(n) : '2';
+      }
+      if (bookSend) {
+        bookSend.disabled = false;
+        bookSend.textContent = dict.bookSend;
+      }
+      if (bookDone) {
+        bookDone.hidden = true;
+        bookDone.textContent = '';
       }
       void loadGuestServices(dict);
 
@@ -2442,19 +2612,16 @@
         const el = document.getElementById(id);
         if (el && value != null) el.textContent = value;
       };
-      const phone =
-        (guestServicesCache && guestServicesCache.trattoriaPhoneDisplay) ||
-        dict.trattoriaPhoneDefault ||
-        '328 246 4972';
-      const fillPhone = (tpl) =>
-        String(tpl || '').replace(/\{phone\}/g, phone);
       setTxt('lbl-act-table', dict.actTable);
       setTxt(
         'lbl-act-table-sub',
-        fillPhone(
-          couponSent ? dict.actTableSub : dict.actTableSubNoCoupon || dict.actTableSub,
-        ),
+        couponSent ? dict.actTableSub : dict.actTableSubNoCoupon || dict.actTableSub,
       );
+      setTxt('lbl-book-hint', dict.bookHint);
+      setTxt('lbl-book-time', dict.bookTime);
+      setTxt('lbl-book-pax', dict.bookPax);
+      const sendBtn = document.getElementById('btnBookSend');
+      if (sendBtn && !sendBtn.disabled) sendBtn.textContent = dict.bookSend;
       setTxt('lbl-act-wifi', dict.actWifi);
       setTxt('lbl-act-wifi-sub', dict.actWifiSub);
       setTxt('lbl-act-doors', dict.actDoors);
@@ -2464,13 +2631,6 @@
       setTxt('lbl-door-main', dict.doorMain);
       setTxt('lbl-door-inner', dict.doorInner);
       setTxt('lbl-reception-note', dict.receptionNote);
-      const phoneBtn = document.getElementById('trattoriaPhoneBtn');
-      if (phoneBtn) {
-        phoneBtn.setAttribute(
-          'aria-label',
-          dict.trattoriaPhoneAria || 'Chiama Trattoria alla Terrazza',
-        );
-      }
       const tableAction = document.getElementById('actionTable');
       if (tableAction) {
         tableAction.classList.toggle('is-primary', Boolean(couponSent));
@@ -2493,10 +2653,6 @@
         if (passEl) passEl.textContent = data.wifiPassword || ask;
         if (mainEl) mainEl.textContent = data.doorMain || ask;
         if (innerEl) innerEl.textContent = data.doorInner || ask;
-        const phoneBtn = document.getElementById('trattoriaPhoneBtn');
-        if (phoneBtn && data.trattoriaPhone) {
-          phoneBtn.href = `tel:${String(data.trattoriaPhone).replace(/\s/g, '')}`;
-        }
         applyGuestActionLabels(dict, lastCouponSent);
       } catch (_) {
         /* ignore — valori restano placeholder */
@@ -2504,31 +2660,6 @@
     }
 
     document.getElementById('guestActions')?.addEventListener('click', (e) => {
-      const tableLink = e.target.closest('#trattoriaPhoneBtn');
-      if (tableLink) {
-        // Notifica Payel (email + WhatsApp Twilio se attivo), poi apre la chiamata
-        if (lastCheckinId && !tableLink.dataset.notifying) {
-          e.preventDefault();
-          tableLink.dataset.notifying = '1';
-          const href = tableLink.getAttribute('href') || 'tel:+393282464972';
-          fetch('/api/table-booking', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              checkinId: lastCheckinId,
-              tableBooking: 'REQUESTED',
-              language: currentLang,
-            }),
-          })
-            .catch(() => {})
-            .finally(() => {
-              tableLink.dataset.notifying = '';
-              window.location.href = href;
-            });
-        }
-        return;
-      }
-
       const btn = e.target.closest('.guest-action-btn[data-panel]');
       if (!btn) return;
       e.preventDefault();
@@ -2536,11 +2667,81 @@
       if (!action) return;
       const willOpen = !action.classList.contains('is-open');
       document.querySelectorAll('#guestActions .guest-action').forEach((el) => {
-        if (el.id === 'actionTable') return;
         el.classList.remove('is-open');
       });
       if (willOpen) action.classList.add('is-open');
       syncCardHeight(3);
+    });
+
+    document.getElementById('btnBookSend')?.addEventListener('click', async () => {
+      const dict = t();
+      const sendBtn = document.getElementById('btnBookSend');
+      const done = document.getElementById('bookDoneMsg');
+      const timeEl = document.getElementById('bookTime');
+      const paxEl = document.getElementById('bookPax');
+      if (!lastCheckinId || !sendBtn) return;
+
+      const timeValue = String(timeEl?.value || '').trim();
+      let pax = Number.parseInt(String(paxEl?.value || '').trim(), 10);
+      if (!timeValue) {
+        if (done) {
+          done.hidden = false;
+          done.textContent = dict.bookNeedTime;
+        }
+        return;
+      }
+      if (!Number.isFinite(pax) || pax < 1) {
+        if (done) {
+          done.hidden = false;
+          done.textContent = dict.bookNeedPax;
+        }
+        return;
+      }
+      if (pax > 20) pax = 20;
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = dict.bookSending || '…';
+      if (done) {
+        done.hidden = true;
+        done.textContent = '';
+      }
+
+      try {
+        const res = await fetch('/api/table-booking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            checkinId: lastCheckinId,
+            tableBooking: timeValue,
+            guestsCount: pax,
+            language: currentLang,
+          }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok && !body.saved) {
+          sendBtn.disabled = false;
+          sendBtn.textContent = dict.bookSend;
+          if (done) {
+            done.hidden = false;
+            done.textContent = body.error || dict.bookError;
+          }
+          return;
+        }
+        if (done) {
+          done.hidden = false;
+          done.textContent = dict.bookDone;
+        }
+        sendBtn.textContent = dict.bookSend;
+        timeEl.disabled = true;
+        paxEl.disabled = true;
+      } catch (_) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = dict.bookSend;
+        if (done) {
+          done.hidden = false;
+          done.textContent = dict.bookError;
+        }
+      }
     });
 
     function fullGuestName() {
