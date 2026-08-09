@@ -2709,7 +2709,17 @@
     }
 
     function cleanPhone(value) {
-      return String(value || '').replace(/[\s\-\(\)\.]/g, '');
+      return String(value || '')
+        .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '')
+        .replace(/[\s\-\(\)\.\/]/g, '')
+        .replace(/^00/, '+');
+    }
+
+    function normalizeEmailInput(value) {
+      return String(value || '')
+        .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '')
+        .trim()
+        .toLowerCase();
     }
 
     function isReportToken(value) {
@@ -2976,11 +2986,10 @@
       clearError();
       const dict = t();
       const phoneRaw = phoneEl.value.trim();
-      const emailRaw = emailEl.value.trim();
+      const emailNormalized = normalizeEmailInput(emailEl.value);
       const firstName = firstNameEl.value.trim();
       const lastName = lastNameEl.value.trim();
       const cleaned = cleanPhone(phoneRaw);
-      const emailNormalized = emailRaw.toLowerCase();
       const magic = isReportTrigger(phoneRaw, firstName, lastName);
 
       if (!privacyEl.checked) {
@@ -2993,28 +3002,36 @@
 
       if (!firstName) {
         showFieldError(firstNameEl);
+        showServerToast(dict.nameRequired);
         return false;
       }
       if (!lastName) {
         showFieldError(lastNameEl);
+        showServerToast(dict.lastNameRequired);
         return false;
       }
       if (!emailNormalized) {
         showFieldError(emailEl);
+        showServerToast(dict.emailRequired);
         return false;
       }
       if (!EMAIL_REGEX.test(emailNormalized)) {
         showFieldError(emailEl);
+        showServerToast(dict.emailInvalid);
         return false;
       }
       if (!cleaned) {
         showFieldError(phoneEl);
+        showServerToast(dict.phoneRequired);
         return false;
       }
       if (!PHONE_REGEX.test(cleaned)) {
         showFieldError(phoneEl);
+        showServerToast(dict.phoneInvalid);
         return false;
       }
+      // Riscrivi email pulita nel campo (togli spazi invisibili da copia/incolla)
+      if (emailEl.value !== emailNormalized) emailEl.value = emailNormalized;
       return true;
     }
 
@@ -3126,6 +3143,12 @@
 
     btnNext.addEventListener('click', () => {
       if (submitting) return;
+      // Chiudi tastiera iOS: altrimenti Continua resta nascosto sotto
+      try {
+        document.activeElement?.blur?.();
+      } catch (_) {
+        /* ignore */
+      }
       if (!validateStep1()) {
         // Porta privacy/Continua in vista se il form è lungo o la tastiera è aperta
         try {
