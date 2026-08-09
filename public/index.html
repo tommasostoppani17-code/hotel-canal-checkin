@@ -54,12 +54,16 @@
     .background-overlay::before {
       content: "";
       position: absolute;
-      inset: -20px;
+      inset: -12%;
       background-image: url('/venice-bg.jpg');
       background-size: cover;
       background-position: center;
-      filter: blur(10px) brightness(0.82) saturate(1.08);
-      transform: scale(1.06);
+      filter: blur(10px) brightness(0.82) saturate(1.18);
+      transform: translate3d(0, 0, 0) scale(1.08);
+      will-change: transform, filter;
+      transition:
+        transform 0.65s var(--ios-ease),
+        filter 0.65s var(--ios-ease);
     }
 
     .background-overlay::after {
@@ -67,9 +71,24 @@
       position: absolute;
       inset: 0;
       background: linear-gradient(
-        rgba(18, 68, 83, 0.25),
-        rgba(10, 45, 55, 0.35)
+        rgba(18, 68, 83, 0.22),
+        rgba(10, 45, 55, 0.38)
       );
+      transition: opacity 0.65s var(--ios-ease);
+    }
+
+    /* Parallasse: lo sfondo si sposta in direzione opposta allo step */
+    body[data-step="1"] .background-overlay::before {
+      transform: translate3d(0, 0, 0) scale(1.08);
+      filter: blur(10px) brightness(0.82) saturate(1.12);
+    }
+    body[data-step="2"] .background-overlay::before {
+      transform: translate3d(3.5%, 0, 0) scale(1.1);
+      filter: blur(11px) brightness(0.8) saturate(1.28);
+    }
+    body[data-step="3"] .background-overlay::before {
+      transform: translate3d(7%, 0, 0) scale(1.12);
+      filter: blur(12px) brightness(0.78) saturate(1.35);
     }
 
     .apple-card {
@@ -81,21 +100,46 @@
       max-height: min(92dvh, 760px);
       display: flex;
       flex-direction: column;
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(40px) saturate(220%);
-      -webkit-backdrop-filter: blur(40px) saturate(220%);
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(42px) saturate(230%);
+      -webkit-backdrop-filter: blur(42px) saturate(230%);
       border: 1px solid rgba(255, 255, 255, 0.7);
       border-radius: 30px;
       padding: 28px 0 28px;
       box-sizing: border-box;
       box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.01),
-        0 30px 70px rgba(10, 45, 55, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+        0 32px 80px rgba(10, 45, 55, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.04);
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      transform: translate3d(0, 0, 0);
+      transition: transform 0.45s var(--ios-ease);
+      animation: cardIntro 0.75s var(--ios-ease) both;
+    }
+
+    @keyframes cardIntro {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translate3d(0, 18px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translate3d(0, 0, 0);
+      }
+    }
+
+    .apple-card.is-rubber {
+      animation: cardRubber 0.55s var(--ios-ease) both;
+    }
+
+    @keyframes cardRubber {
+      0% { transform: scale(1); }
+      35% { transform: scale(0.975); }
+      70% { transform: scale(1.012); }
+      100% { transform: scale(1); }
     }
 
     .step-dots {
@@ -146,8 +190,8 @@
       width: 100%;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      transition: transform 0.5s var(--ios-ease);
-      -webkit-transition: -webkit-transform 0.5s var(--ios-ease);
+      transition: transform 0.65s var(--ios-ease);
+      -webkit-transition: -webkit-transform 0.65s var(--ios-ease);
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -171,6 +215,43 @@
       -webkit-transform: translateZ(0);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+    }
+
+    /* Stagger: elementi dello step attivo entrano a cascata */
+    .slide-step.is-active > .header,
+    .slide-step.is-active > .step-body > *,
+    .slide-step.is-active > .step-footer-fixed > * {
+      animation: elementFadeIn 0.55s var(--ios-ease) both;
+    }
+    .slide-step.is-active > .header { animation-delay: 0.04s; }
+    .slide-step.is-active > .step-body > *:nth-child(1) { animation-delay: 0.1s; }
+    .slide-step.is-active > .step-body > *:nth-child(2) { animation-delay: 0.16s; }
+    .slide-step.is-active > .step-body > *:nth-child(3) { animation-delay: 0.22s; }
+    .slide-step.is-active > .step-body > *:nth-child(4) { animation-delay: 0.28s; }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(1) { animation-delay: 0.2s; }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(2) { animation-delay: 0.26s; }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(3) { animation-delay: 0.32s; }
+
+    @keyframes elementFadeIn {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 12px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .apple-card,
+      .slide-step.is-active > .header,
+      .slide-step.is-active > .step-body > *,
+      .slide-step.is-active > .step-footer-fixed > *,
+      .background-overlay::before {
+        animation: none !important;
+        transition: none !important;
+      }
     }
 
     .step-body {
@@ -401,7 +482,12 @@
       color: var(--canal-petroleum);
       margin-bottom: 8px;
       padding-left: 2px;
-      transition: color 0.2s ease;
+      transition: color 0.25s var(--ios-ease), transform 0.25s var(--ios-ease);
+    }
+
+    .form-group:focus-within label:not(.label-error-state) {
+      transform: translate3d(0, -2px, 0);
+      color: #0A2D37;
     }
 
     .form-group label.label-error-state,
@@ -722,7 +808,33 @@
       width: 100%;
       box-sizing: border-box;
       text-align: center;
-      animation: giftIn 0.55s 0.1s var(--ios-ease) both;
+      transform-origin: center center;
+    }
+
+    #step3.is-active .receipt-badge:not(.is-collapsed) {
+      animation: badgeInflate 0.65s 0.12s var(--ios-ease) both;
+    }
+
+    @keyframes badgeInflate {
+      0% { opacity: 0; transform: scale(0.86); }
+      55% { opacity: 1; transform: scale(1.04); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Foto step 2: dissolvenza al submit OK */
+    #step2.is-dissolving .rest-strip figure {
+      animation: photoSmoke 0.45s var(--ios-ease) both;
+    }
+    #step2.is-dissolving .rest-strip figure:nth-child(1) { animation-delay: 0s; }
+    #step2.is-dissolving .rest-strip figure:nth-child(2) { animation-delay: 0.05s; }
+    #step2.is-dissolving .rest-strip figure:nth-child(3) { animation-delay: 0.1s; }
+
+    @keyframes photoSmoke {
+      to {
+        opacity: 0;
+        transform: scale(0.92) translate3d(0, -6px, 0);
+        filter: blur(4px);
+      }
     }
 
     .receipt-badge .eyebrow {
@@ -1215,6 +1327,16 @@
 
     function setStep(step) {
       currentStep = step;
+      document.body.dataset.step = String(step);
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const el = document.getElementById(`step${i}`);
+        if (!el) continue;
+        const active = i === step;
+        el.classList.toggle('is-active', active);
+        if (i !== 2 || step !== TOTAL_STEPS) {
+          el.classList.remove('is-dissolving');
+        }
+      }
       // Solo GPU: translate3d (X, Y, Z) - niente top/left/margin
       const x = `translate3d(-${(step - 1) * 100}%, 0, 0)`;
       requestAnimationFrame(() => {
@@ -1229,6 +1351,20 @@
         // Altezza dopo il paint dello slide (evita reflow in mezzo all'animazione)
         requestAnimationFrame(syncViewportHeight);
       });
+    }
+
+    function playSuccessKinetics(thenGo) {
+      const step2 = document.getElementById('step2');
+      if (step2 && currentStep === 2) {
+        step2.classList.add('is-dissolving');
+      }
+      card.classList.remove('is-rubber');
+      void card.offsetWidth;
+      card.classList.add('is-rubber');
+      setTimeout(() => {
+        card.classList.remove('is-rubber');
+        thenGo();
+      }, 280);
     }
 
     function shakeCard() {
@@ -1493,12 +1629,13 @@
       document.getElementById('verificationCode').textContent = checkCode;
       document.getElementById('lbl-verified-time').textContent =
         `${dict.verifiedTxt} ${now}`;
-      document
-        .getElementById('receiptBadge')
-        .classList.toggle('is-collapsed', Boolean(already));
+      const badge = document.getElementById('receiptBadge');
+      badge.classList.toggle('is-collapsed', Boolean(already));
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setStep(TOTAL_STEPS));
+      playSuccessKinetics(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => setStep(TOTAL_STEPS));
+        });
       });
     }
 
@@ -1575,8 +1712,10 @@
         ? dict.reportSent(body.count, body.to || 'email')
         : dict.reportEmpty;
       document.getElementById('receiptBadge').classList.add('is-collapsed');
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setStep(TOTAL_STEPS));
+      playSuccessKinetics(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => setStep(TOTAL_STEPS));
+        });
       });
     }
 
