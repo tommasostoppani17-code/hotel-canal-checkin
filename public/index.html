@@ -51,19 +51,21 @@
       pointer-events: none;
     }
 
-    .background-overlay::before {
-      content: "";
+    /* Layer reale (non ::before): spring + inerzia ambient aggiornano CSS vars */
+    .bg-inertia {
       position: absolute;
-      inset: -12%;
+      inset: -14%;
       background-image: url('/venice-bg.jpg');
       background-size: cover;
       background-position: center;
       filter: blur(10px) brightness(0.82) saturate(1.18);
-      transform: translate3d(0, 0, 0) scale(1.08);
+      transform: translate3d(
+          calc(var(--parallax-x, 0%) + var(--ambient-x, 0px)),
+          calc(var(--ambient-y, 0px)),
+          0
+        )
+        scale(var(--parallax-scale, 1.08));
       will-change: transform, filter;
-      transition:
-        transform 0.65s var(--ios-ease),
-        filter 0.65s var(--ios-ease);
     }
 
     .background-overlay::after {
@@ -74,20 +76,15 @@
         rgba(18, 68, 83, 0.22),
         rgba(10, 45, 55, 0.38)
       );
-      transition: opacity 0.65s var(--ios-ease);
     }
 
-    /* Parallasse: lo sfondo si sposta in direzione opposta allo step */
-    body[data-step="1"] .background-overlay::before {
-      transform: translate3d(0, 0, 0) scale(1.08);
+    body[data-step="1"] .bg-inertia {
       filter: blur(10px) brightness(0.82) saturate(1.12);
     }
-    body[data-step="2"] .background-overlay::before {
-      transform: translate3d(3.5%, 0, 0) scale(1.1);
+    body[data-step="2"] .bg-inertia {
       filter: blur(11px) brightness(0.8) saturate(1.28);
     }
-    body[data-step="3"] .background-overlay::before {
-      transform: translate3d(7%, 0, 0) scale(1.12);
+    body[data-step="3"] .bg-inertia {
       filter: blur(12px) brightness(0.78) saturate(1.35);
     }
 
@@ -150,17 +147,23 @@
       padding: 0 32px;
     }
 
+    /* Page control iOS: la pillola attiva si allunga elasticamente */
     .step-dots span {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: rgba(18, 68, 83, 0.18);
-      transition: transform 0.35s var(--ios-ease), background 0.35s var(--ios-ease);
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(18, 68, 83, 0.2);
+      transition:
+        width 0.55s var(--ios-ease),
+        background-color 0.55s var(--ios-ease),
+        transform 0.55s var(--ios-ease);
+      will-change: width;
     }
 
     .step-dots span.active {
+      width: 18px;
       background: var(--canal-petroleum);
-      transform: scale(1.25);
+      transform: none;
     }
 
     .step-dots.hidden {
@@ -182,7 +185,7 @@
       -webkit-transform: translateZ(0);
     }
 
-    /* Binario GPU: solo translate3d + opacity (niente top/left/margin/width) */
+    /* Binario GPU: transform guidato da spring JS (niente transition CSS fissa) */
     .slider-track {
       display: flex;
       flex-wrap: nowrap;
@@ -190,8 +193,8 @@
       width: 100%;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      transition: transform 0.65s var(--ios-ease);
-      -webkit-transition: -webkit-transform 0.65s var(--ios-ease);
+      transition: none;
+      -webkit-transition: none;
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -248,7 +251,8 @@
       .slide-step.is-active > .header,
       .slide-step.is-active > .step-body > *,
       .slide-step.is-active > .step-footer-fixed > *,
-      .background-overlay::before {
+      .bg-inertia,
+      .step-dots span {
         animation: none !important;
         transition: none !important;
       }
@@ -637,9 +641,9 @@
     }
 
     .btn-canal:active:not(:disabled):not(.is-loading) {
-      transform: scale(0.96) translate3d(0, 0, 0);
+      transform: scale(0.95) translate3d(0, 0, 0);
       background-color: var(--canal-petroleum-hover);
-      box-shadow: 0 2px 6px rgba(18, 68, 83, 0.08);
+      box-shadow: 0 2px 5px rgba(18, 68, 83, 0.06);
     }
 
     .btn-canal:disabled {
@@ -863,7 +867,9 @@
   </style>
 </head>
 <body>
-  <div class="background-overlay" aria-hidden="true"></div>
+  <div class="background-overlay" aria-hidden="true">
+    <div class="bg-inertia" id="bgInertia"></div>
+  </div>
 
   <div class="apple-card" id="card">
     <div class="step-dots" id="stepDots" aria-hidden="true">
@@ -1287,6 +1293,7 @@
     const viewport = document.getElementById('sliderViewport');
     const track = document.getElementById('sliderTrack');
     const dots = document.getElementById('stepDots');
+    const bgInertia = document.getElementById('bgInertia');
     const errorEl = document.getElementById('error');
     const phoneEl = document.getElementById('phone');
     const emailEl = document.getElementById('email');
@@ -1303,11 +1310,125 @@
     const btnSubmit = document.getElementById('btnSubmit');
 
     const TOTAL_STEPS = 3;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let currentLang = 'en';
     let currentStep = 1;
     let formMode = true;
     let submitting = false;
+
+    /* --- Spring physics (massa / stiffness / damping), non tempi CSS fissi --- */
+    let slideX = 0;
+    let parallaxX = 0;
+    let springRaf = 0;
+    let ambientRaf = 0;
+    let ambX = 0;
+    let ambY = 0;
+    let targetAmbX = 0;
+    let targetAmbY = 0;
+    let breathT = 0;
+
+    function applyTrack(xPercent) {
+      slideX = xPercent;
+      const x = `translate3d(${xPercent}%, 0, 0)`;
+      track.style.webkitTransform = x;
+      track.style.transform = x;
+    }
+
+    function applyParallax(xPercent, scale) {
+      parallaxX = xPercent;
+      if (!bgInertia) return;
+      bgInertia.style.setProperty('--parallax-x', `${xPercent}%`);
+      if (scale != null) {
+        bgInertia.style.setProperty('--parallax-scale', String(scale));
+      }
+    }
+
+    function applyAmbient(ax, ay) {
+      if (!bgInertia) return;
+      bgInertia.style.setProperty('--ambient-x', `${ax.toFixed(2)}px`);
+      bgInertia.style.setProperty('--ambient-y', `${ay.toFixed(2)}px`);
+    }
+
+    /** Integratore a molla stile UIKit (overshoot naturale). */
+    function springPair(toSlide, toParallax, toScale, onRest) {
+      cancelAnimationFrame(springRaf);
+      if (reduceMotion) {
+        applyTrack(toSlide);
+        applyParallax(toParallax, toScale);
+        onRest?.();
+        return;
+      }
+
+      // Apple-ish: stiff enough to settle fast, damping leaves a micro-bounce
+      const stiffness = 210;
+      const damping = 24;
+      const mass = 1;
+      let vSlide = 0;
+      let vPara = 0;
+      let last = performance.now();
+
+      function frame(now) {
+        const dt = Math.min(0.033, (now - last) / 1000);
+        last = now;
+
+        const fS = -stiffness * (slideX - toSlide);
+        const fP = -stiffness * (parallaxX - toParallax);
+        vSlide += ((fS - damping * vSlide) / mass) * dt;
+        vPara += ((fP - damping * vPara) / mass) * dt;
+        applyTrack(slideX + vSlide * dt);
+        applyParallax(parallaxX + vPara * dt, toScale);
+
+        const settled =
+          Math.abs(slideX - toSlide) < 0.05 &&
+          Math.abs(vSlide) < 0.4 &&
+          Math.abs(parallaxX - toParallax) < 0.05 &&
+          Math.abs(vPara) < 0.4;
+
+        if (settled) {
+          applyTrack(toSlide);
+          applyParallax(toParallax, toScale);
+          onRest?.();
+          return;
+        }
+        springRaf = requestAnimationFrame(frame);
+      }
+      springRaf = requestAnimationFrame(frame);
+    }
+
+    function startAmbientInertia() {
+      if (reduceMotion || !bgInertia) return;
+
+      const onPointer = (e) => {
+        const nx = (e.clientX / window.innerWidth - 0.5) * 14;
+        const ny = (e.clientY / window.innerHeight - 0.5) * 9;
+        targetAmbX = nx;
+        targetAmbY = ny;
+      };
+      window.addEventListener('pointermove', onPointer, { passive: true });
+
+      // Gyro se disponibile (senza prompt permission aggressivo)
+      window.addEventListener(
+        'deviceorientation',
+        (e) => {
+          if (e.gamma == null || e.beta == null) return;
+          targetAmbX = Math.max(-12, Math.min(12, e.gamma * 0.32));
+          targetAmbY = Math.max(-8, Math.min(8, (e.beta - 45) * 0.18));
+        },
+        { passive: true },
+      );
+
+      function ambientFrame(now) {
+        breathT = now * 0.00035;
+        const breathX = Math.sin(breathT) * 2.2;
+        const breathY = Math.cos(breathT * 0.85) * 1.4;
+        ambX += (targetAmbX + breathX - ambX) * 0.055;
+        ambY += (targetAmbY + breathY - ambY) * 0.055;
+        applyAmbient(ambX, ambY);
+        ambientRaf = requestAnimationFrame(ambientFrame);
+      }
+      ambientRaf = requestAnimationFrame(ambientFrame);
+    }
 
     function t() {
       return translations[currentLang] || translations.en;
@@ -1338,20 +1459,25 @@
           el.classList.remove('is-dissolving');
         }
       }
-      // Solo GPU: translate3d (X, Y, Z) - niente top/left/margin
-      const x = `translate3d(-${(step - 1) * 100}%, 0, 0)`;
-      requestAnimationFrame(() => {
-        track.style.webkitTransform = x;
-        track.style.transform = x;
-        if (dots) {
-          dots.classList.toggle('hidden', step === TOTAL_STEPS);
-          [...dots.children].forEach((el, i) => {
-            el.classList.toggle('active', i === step - 1);
-          });
-        }
-        // Altezza dopo il paint dello slide (evita reflow in mezzo all'animazione)
+
+      // Pillole: si allungano SUBITO (prima che lo spring del binario finisca)
+      if (dots) {
+        dots.classList.toggle('hidden', step === TOTAL_STEPS);
+        [...dots.children].forEach((el, i) => {
+          el.classList.toggle('active', i === step - 1);
+        });
+      }
+
+      const toSlide = -(step - 1) * 100;
+      // Parallasse opposta ~1/12 + micro-scale per profondità
+      const toParallax = -toSlide / 12;
+      const toScale = 1.08 + (step - 1) * 0.02;
+
+      springPair(toSlide, toParallax, toScale, () => {
         requestAnimationFrame(syncViewportHeight);
       });
+      // Sync altezza mid-spring per evitare salti
+      requestAnimationFrame(syncViewportHeight);
     }
 
     function playSuccessKinetics(thenGo) {
@@ -1974,6 +2100,7 @@
 
     setLanguage(currentLang);
     setStep(1);
+    startAmbientInertia();
     window.addEventListener('resize', syncViewportHeight);
     document.getElementById('restHeroImg')?.addEventListener('load', syncViewportHeight);
     if (document.fonts?.ready) {
