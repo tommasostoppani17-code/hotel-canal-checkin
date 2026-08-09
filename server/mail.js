@@ -4,6 +4,7 @@ import {
   buildCsv,
   buildReportEmail,
   buildMonthlyStaffEmail,
+  buildTableBookingEmail,
   formatRomeDate,
 } from './report.js';
 import {
@@ -145,63 +146,11 @@ export async function sendTableBookingAlert(row) {
   }
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
+  const { subject, text, html, timeLabel, room, phone } = buildTableBookingEmail({
+    hotelName,
+    row,
+  });
   const rawTime = String(row.table_booking || '').trim();
-  const timeLabel =
-    !rawTime || /REQUESTED|CALL|TAVOLO/i.test(rawTime)
-      ? 'Da confermare (ospite ha chiesto di essere richiamato)'
-      : `Ore ${rawTime}`;
-  const room = row.room_number || '-';
-  const phone = row.phone || '-';
-  const name = row.guest_name || 'Ospite';
-  const pax = row.guests_count ?? 2;
-  const staff = row.receptionist || '-';
-  const hasCoupon = Boolean(row.coupon_sent_at || row.coupon_token);
-  const langMap = { it: 'IT', en: 'EN', fr: 'FR', de: 'DE', es: 'ES' };
-  const guestLang =
-    langMap[String(row.guest_lang || '').slice(0, 2).toLowerCase()] ||
-    String(row.guest_lang || '').toUpperCase() ||
-    '-';
-
-  const subject = `🍽️ TAVOLO · Stanza ${room} · ${phone} · ${hotelName}`;
-  const text = [
-    `Ciao Payel — richiesta tavolo Trattoria alla Terrazza`,
-    ``,
-        `AZIONE: richiama l'ospite e conferma tavolo + coupon −10%.`,
-    ``,
-    `Stanza: ${room}`,
-    `Telefono ospite: ${phone}`,
-    `Nome: ${name}`,
-    `Persone: ${pax}`,
-    `Orario richiesto: ${timeLabel}`,
-    `Receptionist check-in: ${staff}`,
-    `Coupon 10%: ${hasCoupon ? 'SÌ (inviato / attivo)' : 'no'}`,
-    `Lingua ospite: ${guestLang}`,
-    ``,
-    `L'ospite ha inviato una richiesta tavolo dal check-in Hotel Canal.`,
-    ``,
-    `— Front Desk ${hotelName}`,
-  ].join('\n');
-
-  const html = `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1D1D1F;line-height:1.5;max-width:520px;">
-      <p style="margin:0 0 4px;font-size:13px;color:#515154;">Ciao Payel</p>
-      <p style="margin:0 0 14px;font-size:18px;"><strong>Richiesta tavolo — Trattoria alla Terrazza</strong></p>
-      <p style="margin:0 0 16px;padding:12px 14px;background:#124453;color:#fff;border-radius:10px;font-size:14px;font-weight:600;">
-        Richiama l'ospite e conferma tavolo + coupon −10%.
-      </p>
-      <table style="width:100%;border-collapse:collapse;font-size:14px;">
-        <tr><td style="padding:6px 0;color:#6B7780;">Stanza</td><td style="padding:6px 0;font-weight:700;text-align:right;">${room}</td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Telefono</td><td style="padding:6px 0;font-weight:700;text-align:right;"><a href="tel:${String(phone).replace(/\s/g, '')}" style="color:#124453;text-decoration:none;">${phone}</a></td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Ospite</td><td style="padding:6px 0;font-weight:700;text-align:right;">${name}</td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Persone</td><td style="padding:6px 0;font-weight:700;text-align:right;">${pax}</td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Orario richiesto</td><td style="padding:6px 0;font-weight:700;text-align:right;">${timeLabel}</td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Receptionist</td><td style="padding:6px 0;font-weight:700;text-align:right;">${staff}</td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Coupon 10%</td><td style="padding:6px 0;font-weight:700;text-align:right;">${hasCoupon ? 'SÌ' : 'no'}</td></tr>
-        <tr><td style="padding:6px 0;color:#6B7780;">Lingua ospite</td><td style="padding:6px 0;font-weight:700;text-align:right;">${guestLang}</td></tr>
-      </table>
-      <p style="margin:16px 0 0;font-size:12px;color:#6B7780;">Richiesta inviata dal check-in ${hotelName}.</p>
-    </div>
-  `;
 
   const from =
     env('REPORT_FROM') ||
@@ -218,6 +167,9 @@ export async function sendTableBookingAlert(row) {
       subject,
       text,
       html,
+      headers: {
+        'X-Entity-Ref-ID': `table-${row.id || Date.now()}-${rawTime}`,
+      },
     });
     if (error) {
       throw new Error(
@@ -227,12 +179,21 @@ export async function sendTableBookingAlert(row) {
         ),
       );
     }
-    return { sent: true, channel: 'email', to, time: rawTime, room, phone, id: data?.id };
+    return {
+      sent: true,
+      channel: 'email',
+      to,
+      time: rawTime,
+      timeLabel,
+      room,
+      phone,
+      id: data?.id,
+    };
   }
 
   const transporter = createTransporter();
   await transporter.sendMail({ from, to, subject, text, html });
-  return { sent: true, channel: 'email', to, time: rawTime, room, phone };
+  return { sent: true, channel: 'email', to, time: rawTime, timeLabel, room, phone };
 }
 
 export async function runDailyReport({ force = false } = {}) {

@@ -444,3 +444,117 @@ export function buildMonthlyStaffEmail({
 
   return { subject, text, html, csv };
 }
+
+/**
+ * Alert immediato richiesta tavolo → Payel (stesso look del report notturno).
+ */
+export function buildTableBookingEmail({ hotelName, row }) {
+  const rawTime = String(row?.table_booking || '').trim();
+  const timeLabel =
+    !rawTime || /REQUESTED|CALL|TAVOLO/i.test(rawTime)
+      ? 'Da confermare (richiamare ospite)'
+      : `Ore ${rawTime}`;
+  const room = cleanCell(row?.room_number) || '-';
+  const phone = cleanCell(row?.phone) || '-';
+  const phoneTel = String(row?.phone || '').replace(/[\s\-()]/g, '');
+  const name = cleanCell(row?.guest_name) || 'Ospite';
+  const pax = row?.guests_count ?? 2;
+  const staff = cleanCell(row?.receptionist) || '-';
+  const hasCoupon = Boolean(row?.coupon_sent_at || row?.coupon_token);
+  const langMap = { it: 'IT', en: 'EN', fr: 'FR', de: 'DE', es: 'ES' };
+  const guestLang =
+    langMap[String(row?.guest_lang || '').slice(0, 2).toLowerCase()] ||
+    String(row?.guest_lang || '').toUpperCase() ||
+    '-';
+
+  const subject = `🛶 Tavolo · Stanza ${room} · ${timeLabel}`;
+  const preheader = `Richiesta tavolo Trattoria alla Terrazza — stanza ${room}, ${pax} persone, ${timeLabel}.`;
+
+  const text = [
+    `Ciao Payel,`,
+    ``,
+    `nuova richiesta tavolo per Trattoria alla Terrazza dal check-in ${hotelName}.`,
+    `Richiama l'ospite e conferma tavolo${hasCoupon ? ' + coupon −10%' : ''}.`,
+    ``,
+    `Stanza: ${room}`,
+    `Telefono: ${phone}`,
+    `Ospite: ${name}`,
+    `Persone: ${pax}`,
+    `Orario: ${timeLabel}`,
+    `Receptionist: ${staff}`,
+    `Coupon −10%: ${hasCoupon ? 'SÌ' : 'no'}`,
+    `Lingua: ${guestLang}`,
+    ``,
+    `Saluti,`,
+    `Front Desk — ${hotelName}`,
+  ].join('\n');
+
+  const detailRow = (label, valueHtml) => `
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #E8E4DC;${labelStyle};vertical-align:top;">
+                    ${label}
+                  </td>
+                  <td style="padding:10px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:14px;font-weight:700;color:${C} !important;text-align:right;vertical-align:top;">
+                    ${valueHtml}
+                  </td>
+                </tr>`;
+
+  const bodyHtml = `
+              <p style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 12px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
+                Ciao Payel,
+              </p>
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 10px;text-align:left;">
+                nuova richiesta tavolo per
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">Trattoria alla Terrazza</strong>
+                dal check-in Hotel Canal.
+              </p>
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 18px;text-align:left;">
+                Richiama l&rsquo;ospite e conferma il tavolo${
+                  hasCoupon ? ' con coupon &minus;10%' : ''
+                }.
+              </p>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;background-color:${C};border-radius:14px;">
+                <tr>
+                  <td style="padding:14px 16px;font-family:${SANS};font-size:13px;font-weight:600;color:#FFFFFF !important;line-height:1.45;text-align:center;">
+                    Azione: richiama ${escapeHtml(name)} · ${escapeHtml(phone)}
+                  </td>
+                </tr>
+              </table>
+
+              ${sectionTitle('Dettagli prenotazione')}
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 8px;border-top:1px solid #E8E4DC;">
+                ${detailRow('Stanza', escapeHtml(room))}
+                ${detailRow(
+                  'Telefono',
+                  phoneTel
+                    ? `<a href="tel:${escapeHtml(phoneTel)}" style="color:${C} !important;text-decoration:none;font-weight:700;">${escapeHtml(phone)}</a>`
+                    : escapeHtml(phone),
+                )}
+                ${detailRow('Ospite', escapeHtml(name))}
+                ${detailRow('Persone', escapeHtml(String(pax)))}
+                ${detailRow('Orario', escapeHtml(timeLabel))}
+                ${detailRow('Receptionist', escapeHtml(staff))}
+                ${detailRow('Coupon −10%', hasCoupon ? 'SÌ' : 'no')}
+                ${detailRow('Lingua ospite', escapeHtml(guestLang))}
+              </table>
+
+              ${closingFooter(
+                hotelName,
+                'Richiesta inviata automaticamente dal check-in ospite.',
+                'Front Desk',
+                veniceStickersRow(),
+              )}
+  `;
+
+  const html = reportShell({
+    title: subject,
+    hotelName,
+    eyebrow: 'Trattoria alla Terrazza · Partner',
+    preheader,
+    bodyHtml,
+  });
+
+  return { subject, text, html, timeLabel, room, phone };
+}
+
