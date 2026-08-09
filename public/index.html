@@ -28,12 +28,14 @@
       --ios-6: 24px;
       --ios-touch: 44px;
       --ios-inset: 20px;
-      /* Step heights */
-      --card-h-1: min(508px, calc(100dvh - 48px));
-      --card-h-2: min(620px, calc(100dvh - 12px));
-      --card-h-3: min(468px, calc(100dvh - 24px));
-      --card-h-3-booking: min(500px, calc(100dvh - 18px));
-      --card-h-3-open: min(580px, calc(100dvh - 12px));
+      /* Viewport stabile su mobile; JS scrive --vvh da visualViewport */
+      --app-vh: var(--vvh, 100svh);
+      /* Step heights — desktop/tablet; su phone vedi @media sotto */
+      --card-h-1: min(528px, calc(var(--app-vh) - 48px));
+      --card-h-2: min(640px, calc(var(--app-vh) - 24px));
+      --card-h-3: min(480px, calc(var(--app-vh) - 32px));
+      --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
+      --card-h-3-open: min(600px, calc(var(--app-vh) - 16px));
       --card-h: var(--card-h-1);
     }
 
@@ -42,8 +44,10 @@
       margin: 0;
       width: 100%;
       height: 100%;
+      height: 100svh;
       height: 100dvh;
-      height: -webkit-fill-available;
+      max-height: 100svh;
+      max-height: 100dvh;
       overflow: hidden !important;
       overscroll-behavior: none !important;
       touch-action: manipulation;
@@ -139,6 +143,36 @@
         height var(--slide-ms) var(--ios-ease),
         max-height var(--slide-ms) var(--ios-ease);
       animation: cardIntro 0.5s var(--ios-ease) both;
+    }
+
+    /* Smartphone: dopo .apple-card così non viene sovrascritto.
+     * Altezze “da contenuto” (non full-bleed): JS misura e aggiorna --card-h. */
+    @media (max-width: 480px) {
+      :root {
+        --card-h-1: min(548px, calc(var(--app-vh) - 36px));
+        --card-h-2: min(668px, calc(var(--app-vh) - 20px));
+        --card-h-3: min(500px, calc(var(--app-vh) - 28px));
+        --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
+        --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
+      }
+
+      html, body {
+        height: var(--app-vh);
+        max-height: var(--app-vh);
+      }
+
+      body {
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+      }
+
+      .apple-card {
+        max-height: calc(
+          var(--app-vh) - env(safe-area-inset-top, 0px) -
+            env(safe-area-inset-bottom, 0px) - 16px
+        );
+        padding: 14px 0 14px;
+      }
     }
 
     /* Specchio di luce sul vetro (desktop) — niente preserve-3d / tilt */
@@ -2783,8 +2817,8 @@
     }
 
     /**
-     * Slide + altezza fissa per step (niente scrollHeight).
-     * Step 2 è sempre più alto dello Step 1.
+     * Slide + altezza per step.
+     * Su telefono misura il contenuto reale (niente scroll interno, niente card gigante).
      */
     const CARD_HEIGHTS = {
       1: 'var(--card-h-1)',
@@ -2795,10 +2829,84 @@
     let lastCheckinId = null;
     let lastCouponSent = false;
     let guestAccessToken = null;
+    let measuredStep1Height = 0;
+
+    function isPhoneViewport() {
+      return window.matchMedia('(max-width: 480px)').matches;
+    }
+
+    function availableCardMax() {
+      const body = document.body;
+      const bs = getComputedStyle(body);
+      const pad =
+        (parseFloat(bs.paddingTop) || 0) + (parseFloat(bs.paddingBottom) || 0);
+      return Math.max(360, Math.round(window.innerHeight - pad - 8));
+    }
+
+    /** Altezza naturale del contenuto dello step (non dell’altezza forzata della card). */
+    function measureStepContentHeight(step) {
+      const stepEl = document.getElementById(`step${step}`);
+      const card = document.getElementById('card');
+      if (!stepEl || !card) return null;
+      const dots = document.getElementById('stepDots');
+      const cs = getComputedStyle(card);
+      const padY =
+        (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+      const dotsH =
+        dots && !dots.classList.contains('hidden')
+          ? Math.ceil(dots.getBoundingClientRect().height) + 16
+          : 0;
+
+      const body = stepEl.querySelector('.step-body');
+      const footer = stepEl.querySelector('.step-footer-fixed');
+      // scrollHeight resta legato al contenuto anche se il parent è più basso
+      let inner = 0;
+      if (body) inner += body.scrollHeight;
+      if (footer) {
+        const footStyle = getComputedStyle(footer);
+        inner += footer.scrollHeight;
+        inner += parseFloat(footStyle.marginTop) || 0;
+      }
+      if (!body && !footer) {
+        inner = [...stepEl.children].reduce((acc, el) => acc + el.scrollHeight, 0);
+      }
+      return Math.ceil(padY + dotsH + inner + 6);
+    }
 
     function syncCardHeight(step) {
       const card = document.getElementById('card');
       if (!card) return;
+
+      if (isPhoneViewport()) {
+        const maxH = availableCardMax();
+        let natural = measureStepContentHeight(step);
+        if (!Number.isFinite(natural) || natural < 280) {
+          // fallback CSS vars
+          card.style.setProperty(
+            '--card-h',
+            CARD_HEIGHTS[step] || CARD_HEIGHTS[1],
+          );
+          return;
+        }
+        if (step === 1) measuredStep1Height = natural;
+        if (step === 2 && measuredStep1Height > 0) {
+          // Step 2 sempre più alto dello Step 1
+          natural = Math.max(natural, measuredStep1Height + 28);
+        }
+        if (step === 3) {
+          const actions = document.getElementById('guestActions');
+          if (actions && !actions.hidden) {
+            const tableOpen = document
+              .getElementById('actionTable')
+              ?.classList.contains('is-open');
+            natural += tableOpen ? 36 : 12;
+          }
+        }
+        const h = Math.min(Math.max(natural, 400), maxH);
+        card.style.setProperty('--card-h', `${h}px`);
+        return;
+      }
+
       let h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
       const actions = document.getElementById('guestActions');
       if (step === 3 && actions && !actions.hidden) {
@@ -2810,6 +2918,15 @@
           : 'var(--card-h-3-booking)';
       }
       card.style.setProperty('--card-h', h);
+    }
+
+    /** Allinea --vvh all’altezza layout (Safari URL bar). */
+    function syncAppViewportHeight() {
+      const h = Math.round(window.innerHeight || 0);
+      if (h > 0) {
+        document.documentElement.style.setProperty('--vvh', `${h}px`);
+      }
+      syncCardHeight(currentStep);
     }
 
     function normalizeBookTime(value) {
@@ -2884,6 +3001,10 @@
       slideRevealTimer = setTimeout(() => {
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
+        // Remisura a layout stabilizzato (font/carousel) su telefono
+        if (isPhoneViewport()) {
+          requestAnimationFrame(() => syncCardHeight(step));
+        }
       }, reduceMotion || hardCut ? 0 : SLIDE_MS + 40);
     }
 
@@ -3832,9 +3953,14 @@
     clearRegistrationLock(); // sempre sblocca in fase di test
 
     setLanguage(currentLang);
+    syncAppViewportHeight();
     setStep(1);
     startAmbientInertia();
     startCardSheen();
+    window.addEventListener('resize', syncAppViewportHeight, { passive: true });
+    window.addEventListener('orientationchange', () => {
+      setTimeout(syncAppViewportHeight, 120);
+    });
     const prefEmail = bootParams.get('email');
     if (prefEmail && emailEl) emailEl.value = prefEmail;
   </script>
