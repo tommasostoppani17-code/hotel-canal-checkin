@@ -17,6 +17,7 @@
       --text-muted: #515154;
       --radius-ios: 18px;
       --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ios-snap: cubic-bezier(0.1, 1, 0.1, 1);
     }
 
     /* Blocca rimbalzo/overscroll del browser - effetto app a schermo fisso */
@@ -33,7 +34,7 @@
 
     body {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
       box-sizing: border-box;
       display: flex;
       justify-content: center;
@@ -92,35 +93,34 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 390px;
+      max-width: 360px;
       height: auto;
-      max-height: min(92dvh, 760px);
+      max-height: min(94dvh, 780px);
       display: flex;
       flex-direction: column;
-      background: rgba(255, 255, 255, 0.68);
-      backdrop-filter: blur(40px) saturate(240%);
-      -webkit-backdrop-filter: blur(40px) saturate(240%);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 32px;
-      padding: 28px 0 28px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(40px) saturate(220%);
+      -webkit-backdrop-filter: blur(40px) saturate(220%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 28px;
+      padding: 22px 20px 20px;
       box-sizing: border-box;
       box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.01),
-        0 35px 90px rgba(5, 11, 13, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.7),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+        0 30px 80px rgba(5, 11, 13, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       transform: translate3d(0, 0, 0);
-      transition: transform 0.45s var(--ios-ease);
-      animation: cardIntro 0.75s var(--ios-ease) both;
+      transition: transform 0.25s var(--ios-snap);
+      animation: cardIntro 0.4s var(--ios-snap) both;
     }
 
     @keyframes cardIntro {
       from {
         opacity: 0;
-        transform: scale(0.96) translate3d(0, 18px, 0);
+        transform: scale(0.97) translate3d(0, 12px, 0);
       }
       to {
         opacity: 1;
@@ -143,25 +143,25 @@
       display: flex;
       justify-content: center;
       gap: 6px;
-      margin: 0 0 10px;
-      padding: 0 32px;
+      margin: 0 0 16px;
+      padding: 0;
     }
 
-    /* Page control iOS: la pillola attiva si allunga elasticamente */
+    /* Page control iOS: la pillola attiva si allunga */
     .step-dots span {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 999px;
-      background: rgba(18, 68, 83, 0.2);
+      background: rgba(18, 68, 83, 0.15);
       transition:
-        width 0.55s var(--ios-ease),
-        background-color 0.55s var(--ios-ease),
-        transform 0.55s var(--ios-ease);
+        width 0.3s var(--ios-snap),
+        background-color 0.3s var(--ios-snap);
       will-change: width;
     }
 
     .step-dots span.active {
-      width: 18px;
+      width: 14px;
+      border-radius: 3px;
       background: var(--canal-petroleum);
       transform: none;
     }
@@ -175,82 +175,39 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .slider-viewport {
+    /* Stack fisso: niente carosello / nastro orizzontale */
+    .steps-stack {
       width: 100%;
-      overflow: hidden !important;
       position: relative;
-      flex: 0 0 auto;
-      /* Altezza sync via JS - niente transition height (evita reflow/jank) */
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
-    }
-
-    /* Binario GPU: transform guidato da spring JS (niente transition CSS fissa) */
-    .slider-track {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: flex-start;
-      width: 100%;
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
-      transition: none;
-      -webkit-transition: none;
-      will-change: transform;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      perspective: 1000px;
-      -webkit-perspective: 1000px;
     }
 
     .slide-step {
-      flex: 0 0 100%;
+      display: none;
       width: 100%;
-      max-width: 100%;
-      min-width: 100%;
       box-sizing: border-box;
-      display: flex;
       flex-direction: column;
-      height: auto;
-      overflow: visible;
-      padding: 0 32px;
-      /* Layer compositing per testo stabile durante lo slide */
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
+      padding: 0;
     }
 
-    /* Stagger: elementi dello step attivo entrano a cascata */
-    .slide-step.is-active > .header,
-    .slide-step.is-active > .step-body > *,
-    .slide-step.is-active > .step-footer-fixed > * {
-      animation: elementFadeIn 0.55s var(--ios-ease) both;
+    .slide-step.is-active {
+      display: flex;
+      animation: iosStepSnap 0.2s var(--ios-snap) both;
     }
-    .slide-step.is-active > .header { animation-delay: 0.04s; }
-    .slide-step.is-active > .step-body > *:nth-child(1) { animation-delay: 0.1s; }
-    .slide-step.is-active > .step-body > *:nth-child(2) { animation-delay: 0.16s; }
-    .slide-step.is-active > .step-body > *:nth-child(3) { animation-delay: 0.22s; }
-    .slide-step.is-active > .step-body > *:nth-child(4) { animation-delay: 0.28s; }
-    .slide-step.is-active > .step-footer-fixed > *:nth-child(1) { animation-delay: 0.2s; }
-    .slide-step.is-active > .step-footer-fixed > *:nth-child(2) { animation-delay: 0.26s; }
-    .slide-step.is-active > .step-footer-fixed > *:nth-child(3) { animation-delay: 0.32s; }
 
-    @keyframes elementFadeIn {
+    @keyframes iosStepSnap {
       from {
         opacity: 0;
-        transform: translate3d(0, 12px, 0);
+        transform: scale(0.99) translate3d(0, 4px, 0);
       }
       to {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: scale(1) translate3d(0, 0, 0);
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
       .apple-card,
-      .slide-step.is-active > .header,
-      .slide-step.is-active > .step-body > *,
-      .slide-step.is-active > .step-footer-fixed > *,
+      .slide-step.is-active,
       .bg-inertia,
       .step-dots span {
         animation: none !important;
@@ -310,21 +267,21 @@
       pointer-events: none;
     }
 
-    /* Vetrina Step 2: hero + striscia piatti */
+    /* Vetrina Step 2: compatta per schermi stretti */
     .restaurant-showcase {
-      margin: 0 0 14px;
+      margin: 0 0 10px;
       flex-shrink: 0;
     }
 
     .restaurant-hero-card {
       position: relative;
       width: 100%;
-      height: 188px;
-      border-radius: 18px;
+      height: 112px;
+      border-radius: 14px;
       overflow: hidden;
       margin: 0;
       flex-shrink: 0;
-      box-shadow: 0 8px 24px rgba(18, 68, 83, 0.14);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.1);
       background: #124453;
     }
 
@@ -346,7 +303,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 36px 16px 14px;
+      padding: 24px 12px 10px;
       box-sizing: border-box;
       background: linear-gradient(transparent, rgba(18, 68, 83, 0.92));
       display: flex;
@@ -356,7 +313,7 @@
 
     .restaurant-hero-card h4 {
       font-family: "Cinzel", Georgia, serif;
-      font-size: 17px;
+      font-size: 14px;
       font-weight: 700;
       color: #FFFFFF;
       margin: 0 0 2px;
@@ -365,12 +322,12 @@
     }
 
     .restaurant-hero-card p {
-      font-size: 11px;
+      font-size: 9px;
       color: #A0C2CB;
       margin: 0;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
     }
 
     .rest-strip {
@@ -382,11 +339,11 @@
 
     .rest-strip figure {
       margin: 0;
-      border-radius: 14px;
+      border-radius: 8px;
       overflow: hidden;
       background: #124453;
-      aspect-ratio: 1 / 1;
-      box-shadow: 0 4px 14px rgba(18, 68, 83, 0.1);
+      height: 38px;
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.08);
     }
 
     .rest-strip img {
@@ -403,52 +360,52 @@
     }
 
     .rest-desc-hero {
-      font-size: 12.5px;
-      line-height: 1.5;
+      font-size: 11.5px;
+      line-height: 1.4;
       color: var(--text-muted);
       text-align: center;
-      margin: 0 0 16px;
-      padding: 0 4px;
+      margin: 0 0 10px;
+      padding: 0;
       font-weight: 500;
     }
 
     #step2 .form-grid-container {
-      gap: 12px;
+      gap: 10px;
     }
 
     #step2 .form-group.span-2 {
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     #step2 .step-footer-fixed {
-      margin-top: 20px;
+      margin-top: 12px;
     }
 
     .header {
       text-align: center;
       padding: 0;
       flex-shrink: 0;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
 
     .header .hotel-title {
       font-family: "Cinzel", Georgia, serif;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       letter-spacing: 0.06em;
       color: var(--canal-petroleum);
-      margin: 0 0 4px;
+      margin: 0 0 2px;
       display: block;
     }
 
     .header .hotel-subtitle {
       font-family: "Cinzel", Georgia, serif;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.2em;
       color: #5C7A82;
-      margin: 0 0 16px;
+      margin: 0 0 10px;
       display: block;
     }
 
@@ -473,20 +430,20 @@
     }
 
     .form-group {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       position: relative;
     }
 
     .form-group label {
       display: block;
-      font-size: 10.5px;
+      font-size: 9.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       color: var(--canal-petroleum);
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       padding-left: 2px;
-      transition: color 0.25s var(--ios-ease), transform 0.25s var(--ios-ease);
+      transition: color 0.2s var(--ios-snap), transform 0.2s var(--ios-snap);
     }
 
     .form-group:focus-within label:not(.label-error-state) {
@@ -501,22 +458,21 @@
 
     .apple-input {
       width: 100%;
-      height: 46px;
+      height: 40px;
       font-family: "Montserrat", sans-serif;
       font-weight: 500;
-      background: rgba(245, 248, 250, 0.8);
-      border: 1px solid rgba(0, 0, 0, 0.11);
+      background: rgba(245, 248, 250, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.1);
       border-radius: var(--radius-ios);
-      padding: 0 16px;
-      font-size: 14px;
+      padding: 0 12px;
+      font-size: 13.5px;
       color: #000000;
       box-sizing: border-box;
       transition:
-        border-color 0.35s var(--ios-ease),
-        background-color 0.35s var(--ios-ease),
-        box-shadow 0.35s var(--ios-ease);
-      /* Ombra interna “incavata”: al focus collassa (pressione fisica) */
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        border-color 0.2s var(--ios-snap),
+        background-color 0.2s var(--ios-snap),
+        box-shadow 0.2s var(--ios-snap);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .apple-input::placeholder {
@@ -614,25 +570,25 @@
 
     .btn-canal {
       width: 100%;
-      height: 48px;
+      height: 44px;
       font-family: "Montserrat", sans-serif;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       background: var(--canal-petroleum);
       color: #FFFFFF;
       border: none;
       border-radius: var(--radius-ios);
-      font-size: 13.5px;
+      font-size: 12.5px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       transition:
-        transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
-      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.2);
+        transform 0.2s var(--ios-snap),
+        background-color 0.2s var(--ios-snap),
+        box-shadow 0.2s var(--ios-snap);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.12);
     }
 
     .btn-canal:hover:not(:disabled) {
@@ -878,8 +834,7 @@
 
     <div class="error" id="error" role="alert"></div>
 
-    <div class="slider-viewport" id="sliderViewport">
-    <div class="slider-track" id="sliderTrack">
+    <div class="steps-stack" id="stepsStack">
       <!-- STEP 1: griglia unica allineata + privacy/CTA subito sotto -->
       <section class="slide-step" id="step1">
         <div class="header">
@@ -989,7 +944,6 @@
           </div>
         </div>
       </section>
-    </div>
     </div>
   </div>
 
@@ -1290,8 +1244,6 @@
     }
 
     const card = document.getElementById('card');
-    const viewport = document.getElementById('sliderViewport');
-    const track = document.getElementById('sliderTrack');
     const dots = document.getElementById('stepDots');
     const bgInertia = document.getElementById('bgInertia');
     const errorEl = document.getElementById('error');
@@ -1317,10 +1269,6 @@
     let formMode = true;
     let submitting = false;
 
-    /* --- Spring physics (massa / stiffness / damping), non tempi CSS fissi --- */
-    let slideX = 0;
-    let parallaxX = 0;
-    let springRaf = 0;
     let ambientRaf = 0;
     let ambX = 0;
     let ambY = 0;
@@ -1328,15 +1276,7 @@
     let targetAmbY = 0;
     let breathT = 0;
 
-    function applyTrack(xPercent) {
-      slideX = xPercent;
-      const x = `translate3d(${xPercent}%, 0, 0)`;
-      track.style.webkitTransform = x;
-      track.style.transform = x;
-    }
-
     function applyParallax(xPercent, scale) {
-      parallaxX = xPercent;
       if (!bgInertia) return;
       bgInertia.style.setProperty('--parallax-x', `${xPercent}%`);
       if (scale != null) {
@@ -1350,64 +1290,18 @@
       bgInertia.style.setProperty('--ambient-y', `${ay.toFixed(2)}px`);
     }
 
-    /** Integratore a molla stile UIKit (overshoot naturale). */
-    function springPair(toSlide, toParallax, toScale, onRest) {
-      cancelAnimationFrame(springRaf);
-      if (reduceMotion) {
-        applyTrack(toSlide);
-        applyParallax(toParallax, toScale);
-        onRest?.();
-        return;
-      }
-
-      // Apple-ish: stiff enough to settle fast, damping leaves a micro-bounce
-      const stiffness = 210;
-      const damping = 24;
-      const mass = 1;
-      let vSlide = 0;
-      let vPara = 0;
-      let last = performance.now();
-
-      function frame(now) {
-        const dt = Math.min(0.033, (now - last) / 1000);
-        last = now;
-
-        const fS = -stiffness * (slideX - toSlide);
-        const fP = -stiffness * (parallaxX - toParallax);
-        vSlide += ((fS - damping * vSlide) / mass) * dt;
-        vPara += ((fP - damping * vPara) / mass) * dt;
-        applyTrack(slideX + vSlide * dt);
-        applyParallax(parallaxX + vPara * dt, toScale);
-
-        const settled =
-          Math.abs(slideX - toSlide) < 0.05 &&
-          Math.abs(vSlide) < 0.4 &&
-          Math.abs(parallaxX - toParallax) < 0.05 &&
-          Math.abs(vPara) < 0.4;
-
-        if (settled) {
-          applyTrack(toSlide);
-          applyParallax(toParallax, toScale);
-          onRest?.();
-          return;
-        }
-        springRaf = requestAnimationFrame(frame);
-      }
-      springRaf = requestAnimationFrame(frame);
-    }
-
     function startAmbientInertia() {
       if (reduceMotion || !bgInertia) return;
 
-      const onPointer = (e) => {
-        const nx = (e.clientX / window.innerWidth - 0.5) * 14;
-        const ny = (e.clientY / window.innerHeight - 0.5) * 9;
-        targetAmbX = nx;
-        targetAmbY = ny;
-      };
-      window.addEventListener('pointermove', onPointer, { passive: true });
+      window.addEventListener(
+        'pointermove',
+        (e) => {
+          targetAmbX = (e.clientX / window.innerWidth - 0.5) * 14;
+          targetAmbY = (e.clientY / window.innerHeight - 0.5) * 9;
+        },
+        { passive: true },
+      );
 
-      // Gyro se disponibile (senza prompt permission aggressivo)
       window.addEventListener(
         'deviceorientation',
         (e) => {
@@ -1442,25 +1336,30 @@
     }
 
     function syncViewportHeight() {
-      const active = document.getElementById(`step${currentStep}`);
-      if (!active || !viewport) return;
-      viewport.style.height = `${active.scrollHeight}px`;
+      /* no-op: card height follows active step (no carousel viewport) */
     }
 
+    /** Snap sul posto: niente carosello orizzontale. */
     function setStep(step) {
       currentStep = step;
       document.body.dataset.step = String(step);
+
       for (let i = 1; i <= TOTAL_STEPS; i++) {
         const el = document.getElementById(`step${i}`);
         if (!el) continue;
         const active = i === step;
-        el.classList.toggle('is-active', active);
+        if (active) {
+          el.classList.remove('is-active');
+          void el.offsetWidth;
+          el.classList.add('is-active');
+        } else {
+          el.classList.remove('is-active');
+        }
         if (i !== 2 || step !== TOTAL_STEPS) {
           el.classList.remove('is-dissolving');
         }
       }
 
-      // Pillole: si allungano SUBITO (prima che lo spring del binario finisca)
       if (dots) {
         dots.classList.toggle('hidden', step === TOTAL_STEPS);
         [...dots.children].forEach((el, i) => {
@@ -1468,16 +1367,7 @@
         });
       }
 
-      const toSlide = -(step - 1) * 100;
-      // Parallasse opposta ~1/12 + micro-scale per profondità
-      const toParallax = -toSlide / 12;
-      const toScale = 1.08 + (step - 1) * 0.02;
-
-      springPair(toSlide, toParallax, toScale, () => {
-        requestAnimationFrame(syncViewportHeight);
-      });
-      // Sync altezza mid-spring per evitare salti
-      requestAnimationFrame(syncViewportHeight);
+      applyParallax((step - 1) * (100 / 12), 1.08 + (step - 1) * 0.02);
     }
 
     function playSuccessKinetics(thenGo) {
