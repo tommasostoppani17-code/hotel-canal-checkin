@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="/venice-bg.jpg">
-  <link rel="preload" as="image" href="/restaurant/12-tavolo-terrazza-pasta.jpg">
+  <link rel="preload" as="image" href="/restaurant/13-sala-interna.jpg">
   <style>
     :root {
       color-scheme: light only;
@@ -900,6 +900,75 @@
       line-height: 1.25;
       text-transform: uppercase;
       color: var(--canal-petroleum);
+    }
+
+    #step2 .rest-rating {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 2px 0 0;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(18, 68, 83, 0.06);
+      border: 1px solid rgba(18, 68, 83, 0.1);
+    }
+
+    #step2 .rest-stars {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      line-height: 0;
+    }
+
+    #step2 .rest-star {
+      position: relative;
+      width: 11px;
+      height: 11px;
+      display: block;
+      background: rgba(18, 68, 83, 0.18);
+      clip-path: polygon(
+        50% 0%,
+        61% 35%,
+        98% 35%,
+        68% 57%,
+        79% 91%,
+        50% 70%,
+        21% 91%,
+        32% 57%,
+        2% 35%,
+        39% 35%
+      );
+    }
+
+    #step2 .rest-star.is-full {
+      background: #B79A63;
+    }
+
+    #step2 .rest-star.is-half {
+      background: linear-gradient(
+        90deg,
+        #B79A63 0 50%,
+        rgba(18, 68, 83, 0.18) 50% 100%
+      );
+    }
+
+    #step2 .rest-score {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--canal-petroleum);
+      line-height: 1;
+    }
+
+    #step2 .rest-reviews {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #7A8791;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     #step2 .step2-copy .step2-tag {
@@ -2468,13 +2537,13 @@
                 <div class="carousel-viewport" id="restCarouselViewport">
                   <div class="carousel-track" id="restCarouselTrack">
                     <figure class="carousel-slide">
-                      <img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="768" height="1024" decoding="async">
+                      <img src="/restaurant/13-sala-interna.jpg" alt="" width="664" height="373" decoding="async">
+                    </figure>
+                    <figure class="carousel-slide">
+                      <img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="768" height="1024" loading="lazy" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
                       <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="1020" height="682" loading="lazy" decoding="async">
-                    </figure>
-                    <figure class="carousel-slide">
-                      <img src="/restaurant/13-sala-interna.jpg" alt="" width="664" height="373" loading="lazy" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
                       <img src="/restaurant/14-pesce-grigliato.jpg" alt="" width="1024" height="1024" loading="lazy" decoding="async">
@@ -2500,6 +2569,17 @@
 
             <div class="step2-copy">
               <h4>Trattoria alla Terrazza</h4>
+              <div class="rest-rating" id="restRating" aria-label="4.5 su 5">
+                <span class="rest-stars" aria-hidden="true">
+                  <span class="rest-star is-full"></span>
+                  <span class="rest-star is-full"></span>
+                  <span class="rest-star is-full"></span>
+                  <span class="rest-star is-full"></span>
+                  <span class="rest-star is-half"></span>
+                </span>
+                <strong class="rest-score">4,5</strong>
+                <span class="rest-reviews" id="lbl-rest-reviews">128 recensioni</span>
+              </div>
               <p class="step2-tag" id="lbl-rest-tag">Il nostro regalo per te</p>
               <p class="rest-blurb" id="lbl-rest-blurb">
                 Un tavolo sulla terrazza, sapori di Venezia e il tuo −10% di benvenuto. Conferma sotto e te lo mandiamo subito via email.
@@ -2717,6 +2797,7 @@
         restDescShort: 'Lascia stanza e receptionist: ti arriva il −10% in email, pronto per stasera.',
         restBlurb: 'Un tavolo sulla terrazza, sapori di Venezia e il tuo −10% di benvenuto. Conferma sotto e te lo mandiamo subito via email.',
         restTag: 'Il nostro regalo per te',
+        restReviews: '128 recensioni',
         restDiscount: '−10%',
         nextBtn: 'Continua',
         restSub: 'Cena tipica sulla terrazza del canale, pensata per gli ospiti Hotel Canal.',
@@ -2799,6 +2880,7 @@
         restDescShort: 'Add your room and receptionist: your −10% lands in your inbox, ready for tonight.',
         restBlurb: 'A table on the terrace, real Venetian flavours, and your welcome −10%. Confirm below and we send it to you by email right away.',
         restTag: 'A gift just for you',
+        restReviews: '128 reviews',
         restDiscount: '−10%',
         nextBtn: 'Continue',
         restSub: 'A canal-terrace dinner made for Hotel Canal guests.',
@@ -2884,6 +2966,7 @@
         restTitle: 'Votre −10% à la Terrazza',
         restDesc: 'Vue canal et cuisine vénitienne. Confirmez chambre et réceptionniste: la réduction arrive tout de suite par e-mail.',
         restTag: 'Un cadeau pour vous',
+        restReviews: '128 avis',
         restDiscount: '−10%',
         staff: 'Nom du réceptionniste *',
         staffNone: 'Choisir…',
