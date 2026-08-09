@@ -625,8 +625,49 @@
       padding-left: 34px;
     }
 
+    /* Step 2: tre zone (top / form / footer) — respiro senza altezza fissa da mockup */
+    #step2.slide-step {
+      justify-content: space-between;
+    }
+
+    #step2 .step-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      justify-content: flex-start;
+    }
+
+    #step2 .step2-top {
+      flex-shrink: 0;
+      margin-bottom: 10px;
+    }
+
+    #step2 .carousel-viewport {
+      height: 148px;
+    }
+
+    #step2 .carousel-caption {
+      margin-top: 6px;
+    }
+
+    #step2 .rest-offer-blurb {
+      margin: 8px 0 0;
+    }
+
+    #step2 .rest-offer-blurb .rest-sub {
+      margin: 0 0 6px;
+      line-height: 1.4;
+    }
+
+    #step2 .rest-offer-blurb .rest-desc-hero {
+      line-height: 1.4;
+    }
+
     #step2 .form-grid-container {
-      gap: 8px;
+      margin-top: auto;
+      gap: 10px;
+      padding-bottom: 2px;
     }
 
     #step2 .form-group.span-2 {
@@ -638,19 +679,25 @@
     }
 
     #step2 .step-footer-fixed {
-      margin-top: 6px;
-      padding-top: 2px;
+      margin-top: 14px;
+      padding-top: 4px;
+      padding-bottom: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
     #step2 .step-footer-fixed .btn-canal {
-      margin-top: 2px;
-    }
-
-    #step2 .carousel-caption {
-      margin-top: 6px;
+      margin-top: 0;
     }
 
     #step2 .step-footer-fixed .btn-ghost {
+      margin-top: 0;
+    }
+
+    #step2 .step-footer-fixed .btn-ghost:first-of-type {
       margin-top: 2px;
     }
 
@@ -1686,51 +1733,53 @@
         </div>
       </section>
 
-      <!-- STEP 2: vetrina ristorante + campi; receptionist a testo libero -->
+      <!-- STEP 2: top (foto+copy) · form · footer (CTA+link) -->
       <section class="slide-step" id="step2" aria-hidden="true">
         <div class="step-body">
-          <div class="restaurant-showcase" aria-label="Trattoria alla Terrazza">
-            <div class="rest-carousel" id="restCarousel">
-              <div class="carousel-viewport" id="restCarouselViewport">
-                <div class="carousel-track" id="restCarouselTrack">
-                  <figure class="carousel-slide">
-                    <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="900" height="600" decoding="async" style="object-position: center 38%;">
-                  </figure>
-                  <figure class="carousel-slide">
-                    <img src="/restaurant/02-gondola-ingresso.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 40%;">
-                  </figure>
-                  <figure class="carousel-slide">
-                    <img src="/restaurant/05-pesce-al-forno.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 30%;">
-                  </figure>
-                  <figure class="carousel-slide">
-                    <img src="/restaurant/08-risotto.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 35%;">
-                  </figure>
+          <div class="step2-top">
+            <div class="restaurant-showcase" aria-label="Trattoria alla Terrazza">
+              <div class="rest-carousel" id="restCarousel">
+                <div class="carousel-viewport" id="restCarouselViewport">
+                  <div class="carousel-track" id="restCarouselTrack">
+                    <figure class="carousel-slide">
+                      <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="900" height="600" decoding="async" style="object-position: center 38%;">
+                    </figure>
+                    <figure class="carousel-slide">
+                      <img src="/restaurant/02-gondola-ingresso.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 40%;">
+                    </figure>
+                    <figure class="carousel-slide">
+                      <img src="/restaurant/05-pesce-al-forno.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 30%;">
+                    </figure>
+                    <figure class="carousel-slide">
+                      <img src="/restaurant/08-risotto.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 35%;">
+                    </figure>
+                  </div>
+                  <button type="button" class="carousel-arrow left" id="restCarouselPrev" aria-label="Foto precedente">
+                    <span class="arrow-bracket left" aria-hidden="true"></span>
+                  </button>
+                  <button type="button" class="carousel-arrow right" id="restCarouselNext" aria-label="Foto successiva">
+                    <span class="arrow-bracket right" aria-hidden="true"></span>
+                  </button>
+                  <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
                 </div>
-                <button type="button" class="carousel-arrow left" id="restCarouselPrev" aria-label="Foto precedente">
-                  <span class="arrow-bracket left" aria-hidden="true"></span>
-                </button>
-                <button type="button" class="carousel-arrow right" id="restCarouselNext" aria-label="Foto successiva">
-                  <span class="arrow-bracket right" aria-hidden="true"></span>
-                </button>
-                <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
-              </div>
-              <div class="carousel-caption">
-                <h4>Trattoria alla Terrazza</h4>
-                <p id="lbl-rest-tag">−10% per gli ospiti hotel</p>
+                <div class="carousel-caption">
+                  <h4>Trattoria alla Terrazza</h4>
+                  <p id="lbl-rest-tag">−10% per gli ospiti hotel</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="rest-offer-blurb">
-            <p class="rest-sub" id="lbl-rest-sub">
-              Che ne dici di una cena tipica e abbondante per due stasera, sulla terrazza del canale?
-            </p>
-            <p id="lbl-rest-desc" class="rest-desc-hero">
-              Hotel Canal è partner di Trattoria alla Terrazza: conferma sotto e richiedi lo sconto esclusivo (−10% via email).
-            </p>
+            <div class="rest-offer-blurb">
+              <p class="rest-sub" id="lbl-rest-sub">
+                Che ne dici di una cena tipica e abbondante per due stasera, sulla terrazza del canale?
+              </p>
+              <p id="lbl-rest-desc" class="rest-desc-hero">
+                Hotel Canal è partner di Trattoria alla Terrazza: conferma sotto e richiedi lo sconto esclusivo (−10% via email).
+              </p>
+            </div>
+            <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
+            <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
           </div>
-          <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
-          <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
 
           <div class="form-grid-container">
             <div class="form-group">
