@@ -3888,6 +3888,7 @@
     function playSuccessKinetics(thenGo) {
       const step2 = document.getElementById('step2');
       if (step2) step2.classList.remove('is-dissolving');
+      playConfirmChime();
 
       if (reduceMotion) {
         thenGo();
@@ -3910,6 +3911,47 @@
       void card.offsetWidth;
       card.classList.add('ios-shake');
       setTimeout(() => card.classList.remove('ios-shake'), 400);
+    }
+
+    /** Suono notifica: soft = tap UI; pieno = conferma/successo */
+    function playConfirmChime({ soft = false } = {}) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        const ctx = new AC();
+        const now = ctx.currentTime;
+        const notes = soft
+          ? [{ f: 1046.5, t: 0, d: 0.09 }]
+          : [
+              { f: 880, t: 0, d: 0.16 },
+              { f: 1174.66, t: 0.1, d: 0.22 },
+            ];
+        notes.forEach(({ f, t, d }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = f;
+          gain.gain.setValueAtTime(0.0001, now + t);
+          gain.gain.exponentialRampToValueAtTime(
+            soft ? 0.07 : 0.11,
+            now + t + 0.015,
+          );
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + t + d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + t);
+          osc.stop(now + t + d + 0.02);
+        });
+        window.setTimeout(() => {
+          try {
+            ctx.close();
+          } catch (_) {
+            /* ignore */
+          }
+        }, soft ? 350 : 700);
+      } catch (_) {
+        /* ignore — autoplay / unsupported */
+      }
     }
 
     /** Bottone iOS: testo sparisce, spinner al centro, card immobile. */
@@ -4389,11 +4431,13 @@
       const btn = e.target.closest('.guest-action-btn[data-sheet]');
       if (!btn) return;
       e.preventDefault();
+      playConfirmChime({ soft: true });
       openGuestSheet(btn.getAttribute('data-sheet'), btn);
     });
 
     document.getElementById('guestSheetClose')?.addEventListener('click', (e) => {
       e.preventDefault();
+      playConfirmChime({ soft: true });
       closeGuestSheet();
     });
 
@@ -4457,41 +4501,6 @@
         },
         reduceMotion ? 0 : SLIDE_MS + 20,
       );
-    }
-
-    function playConfirmChime() {
-      try {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return;
-        const ctx = new AC();
-        const now = ctx.currentTime;
-        const notes = [
-          { f: 880, t: 0, d: 0.16 },
-          { f: 1174.66, t: 0.1, d: 0.22 },
-        ];
-        notes.forEach(({ f, t, d }) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = f;
-          gain.gain.setValueAtTime(0.0001, now + t);
-          gain.gain.exponentialRampToValueAtTime(0.11, now + t + 0.018);
-          gain.gain.exponentialRampToValueAtTime(0.0001, now + t + d);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now + t);
-          osc.stop(now + t + d + 0.02);
-        });
-        window.setTimeout(() => {
-          try {
-            ctx.close();
-          } catch (_) {
-            /* ignore */
-          }
-        }, 700);
-      } catch (_) {
-        /* ignore — autoplay / unsupported */
-      }
     }
 
     function showBookSuccessFlash() {
@@ -4759,6 +4768,7 @@
       pinCardInView();
       if (!validateStep1()) return;
       clearError();
+      playConfirmChime({ soft: true });
       if (
         isReportTrigger(
           phoneEl.value.trim(),
@@ -4802,6 +4812,7 @@
     btnBack.addEventListener('click', () => {
       if (submitting) return;
       clearError();
+      playConfirmChime({ soft: true });
       setStep(1);
     });
 
