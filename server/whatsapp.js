@@ -175,16 +175,18 @@ export async function sendTableBookingWhatsApp(row) {
   const lang = String(row.guest_lang || '').slice(0, 2).toUpperCase() || '-';
 
   const body = [
-    `Nuova prenotazione ristorante · ${hotelName}`,
-    `Ciao Payel, ti passo una nuova richiesta di tavolo${coupon === 'SÌ' ? ' (coupon −10% già inviato)' : ''}.`,
-    `Richiama l'ospite e conferma.`,
-    ``,
-    `Stanza ${room} · ${pax} pax · ${timeLabel}`,
+    `Buongiorno Payel,`,
+    `hai una nuova richiesta di prenotazione dalla stanza ${room}.`,
+    `Orario ${timeLabel} · ${pax} pers. · ${name}`,
     `Tel ${phone}`,
-    `Nome ${name}`,
-    `Reception ${staff}`,
-    `Coupon ${coupon} · Lingua ${lang}`,
-  ].join('\n');
+    coupon === 'SÌ' ? `Coupon −10% già inviato.` : null,
+    staff && staff !== '-' ? `Reception ${staff}` : null,
+    ``,
+    `Saluti,`,
+    `il front desk`,
+  ]
+    .filter((line) => line != null)
+    .join('\n');
 
   const client = twilio(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
   const from = toWhatsAppAddress(env('TWILIO_WHATSAPP_FROM'));

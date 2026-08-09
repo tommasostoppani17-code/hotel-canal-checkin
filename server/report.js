@@ -471,34 +471,26 @@ export function buildTableBookingEmail({ hotelName, row }) {
     String(row?.guest_lang || '').toUpperCase() ||
     '-';
 
-  const subject = `Nuova prenotazione ristorante · Stanza ${room} · ${timeDisplay}`;
-  const preheader = `Payel, hai una nuova richiesta di tavolo per Trattoria alla Terrazza. Stanza ${room}, ${pax} persone, ${timeDisplay}.`;
+  const subject = `Nuova prenotazione · Stanza ${room} · ${timeDisplay}`;
+  const preheader = `Buongiorno Payel, hai una nuova richiesta di prenotazione dalla stanza ${room}.`;
 
   const text = [
-    `Ciao Payel,`,
+    `Buongiorno Payel,`,
     ``,
-    `ti passo una nuova richiesta di prenotazione per Trattoria alla Terrazza.`,
-    `L'ospite l'ha lasciata dal check-in ${hotelName}: ti chiedo di richiamarlo e confermare il tavolo.`,
-    hasCoupon
-      ? `Nota: ha già ricevuto il coupon −10% via email, ricordaglielo in chiamata.`
-      : null,
-    ``,
-    `Stanza: ${room}`,
+    `hai una nuova richiesta di prenotazione dalla stanza ${room}.`,
+    `Orario: ${timeDisplay} · ${pax} persone · ospite ${name}.`,
+    hasCoupon ? `Ha già ricevuto il coupon −10% via email.` : null,
     `Telefono: ${phone}`,
-    `Ospite: ${name}`,
-    `Persone: ${pax}`,
-    `Orario: ${timeDisplay}`,
-    `Receptionist: ${staff}`,
-    `Coupon −10%: ${hasCoupon ? 'SÌ' : 'no'}`,
-    `Lingua: ${guestLang}`,
+    staff && staff !== '-' ? `Receptionist: ${staff}` : null,
     ``,
-    `Grazie,`,
-    `Check-in digitale — ${hotelName}`,
+    `Saluti,`,
+    `il front desk`,
+    hotelName,
   ]
     .filter((line) => line != null)
     .join('\n');
 
-  /* Tipografia = welcome ospite (coupon.js) */
+  /* Tipografia + colori = welcome ospite (niente oro/giallino) */
   const FS = {
     section: '12px',
     body: '13px',
@@ -507,7 +499,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
     button: '11.5px',
     legal: '9px',
   };
-  const brass = '#B79A63';
+  const brass = '#6E868F';
   const hero = escapeHtml(publicAssetUrl('email', 'postcard-tavolo.jpg'));
   const dish = escapeHtml(publicAssetUrl('email', 'postcard-dish.jpg'));
   const gallery = escapeHtml(publicAssetUrl('email', 'postcard-ingresso.jpg'));
@@ -520,10 +512,10 @@ export function buildTableBookingEmail({ hotelName, row }) {
 
   const detailRow = (label, valueHtml) => `
                 <tr>
-                  <td style="padding:11px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:${FS.label};font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;vertical-align:top;">
+                  <td style="padding:11px 0;border-bottom:1px solid #E2E6E8;font-family:${SANS};font-size:${FS.label};font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;vertical-align:top;">
                     ${label}
                   </td>
-                  <td style="padding:11px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:13px;font-weight:700;color:${C} !important;text-align:right;vertical-align:top;letter-spacing:0.02em;">
+                  <td style="padding:11px 0;border-bottom:1px solid #E2E6E8;font-family:${SANS};font-size:13px;font-weight:700;color:${C} !important;text-align:right;vertical-align:top;letter-spacing:0.02em;">
                     ${valueHtml}
                   </td>
                 </tr>`;
@@ -602,13 +594,10 @@ export function buildTableBookingEmail({ hotelName, row }) {
               </table>
 
               <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
-                Ciao Payel,
-              </p>
-              <p style="font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.5;font-weight:400;color:#4A5560 !important;margin:0 0 8px;text-align:left;">
-                ti passo una <strong style="font-style:italic;font-weight:600;color:${C} !important;">nuova richiesta di prenotazione</strong> per il ristorante.
+                Buongiorno Payel,
               </p>
               <p style="font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.5;font-weight:400;color:#4A5560 !important;margin:0 0 22px;text-align:left;">
-                L&rsquo;ospite l&rsquo;ha lasciata dal check-in: puoi richiamarlo e confermare il tavolo quando ti &egrave; comodo.
+                hai una nuova richiesta di prenotazione dalla <strong style="font-style:italic;font-weight:600;color:${C} !important;">stanza ${escapeHtml(room)}</strong>.
               </p>
 
               <table role="presentation" class="room-badge" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;background-color:${BOX} !important;border-radius:16px;">
@@ -659,7 +648,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
               }
 
               ${sectionTitle('Dettagli richiesta')}
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 8px;border-top:1px solid #E8E4DC;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 8px;border-top:1px solid #E2E6E8;">
                 ${detailRow('Ospite', escapeHtml(name))}
                 ${detailRow('Stanza', escapeHtml(room))}
                 ${detailRow(
@@ -696,18 +685,15 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 </tr>
               </table>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #E8E4DC;margin-top:4px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #E2E6E8;margin-top:4px;">
                 <tr>
                   <td align="center" style="padding:28px 0 0;text-align:center;">
-                    <p style="font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.45;font-weight:400;color:#5C6670 !important;margin:0 0 16px;">
-                      Messaggio automatico dal check-in digitale, per tenerti aggiornata sulle richieste tavolo.
-                    </p>
                     <div style="width:28px;height:1px;line-height:1px;font-size:1px;background-color:${brass};margin:0 auto 14px;">&nbsp;</div>
                     <div style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;margin:0 0 6px;">
-                      A presto,
+                      Saluti,
                     </div>
                     <div style="font-family:${BODY};font-style:italic;font-size:15px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.4;margin:0 0 6px;">
-                      il check-in digitale
+                      il front desk
                     </div>
                     <div style="font-family:${SERIF};font-style:italic;font-size:13px;font-weight:600;color:${brass} !important;letter-spacing:0.06em;line-height:1.4;">
                       ${escapeHtml(hotelName)}
