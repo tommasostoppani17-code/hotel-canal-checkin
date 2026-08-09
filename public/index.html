@@ -51,7 +51,7 @@
       --app-vh: var(--vvh, 100svh);
       /* Step heights — desktop/tablet; su phone vedi @media sotto */
       --card-h-1: min(548px, calc(var(--app-vh) - 40px));
-      --card-h-2: min(680px, calc(var(--app-vh) - 16px));
+      --card-h-2: min(740px, calc(var(--app-vh) - 12px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
       --card-h-3-open: min(600px, calc(var(--app-vh) - 16px));
@@ -188,7 +188,7 @@
     @media (max-width: 480px) {
       :root {
         --card-h-1: min(568px, calc(var(--app-vh) - 28px));
-        --card-h-2: min(700px, calc(var(--app-vh) - 12px));
+        --card-h-2: min(760px, calc(var(--app-vh) - 8px));
         --card-h-3: min(500px, calc(var(--app-vh) - 28px));
         --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
         --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
@@ -1009,10 +1009,10 @@
     }
 
     #step2 .step2-copy .rest-blurb {
-      margin: 2px 0 0;
-      max-width: none;
-      font-size: 12px;
-      line-height: 1.3;
+      margin: 4px 0 0;
+      max-width: 34ch;
+      font-size: 12.5px;
+      line-height: 1.4;
       font-weight: 500;
       color: var(--text-muted);
       letter-spacing: -0.01em;
@@ -2667,7 +2667,9 @@
 
             <div class="step2-copy">
               <h4>Trattoria alla Terrazza</h4>
-              <p class="rest-blurb" id="lbl-rest-blurb">−10% di benvenuto via email</p>
+              <p class="rest-blurb" id="lbl-rest-blurb">
+                Che ne dici di una cena vista canale al nostro ristorante partner? Cibo veneziano, porzioni abbondanti, e uno sconto perché sei ospite del nostro hotel.
+              </p>
             </div>
             <div class="carousel-caption" hidden>
               <h4>Trattoria alla Terrazza</h4>
@@ -2894,7 +2896,7 @@
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
         restDescShort: 'Lascia stanza e receptionist: ti arriva il −10% in email, pronto per stasera.',
-        restBlurb: '−10% di benvenuto via email',
+        restBlurb: 'Che ne dici di una cena vista canale al nostro ristorante partner? Cibo veneziano, porzioni abbondanti, e uno sconto perché sei ospite del nostro hotel.',
         restTag: 'Il nostro regalo per te',
         restReviews: '128 recensioni',
         restDiscount: '−10%',
@@ -2979,7 +2981,7 @@
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
         restDescShort: 'Add your room and receptionist: your −10% lands in your inbox, ready for tonight.',
-        restBlurb: '−10% welcome offer by email',
+        restBlurb: 'How about dinner with a canal view at our partner restaurant? Venetian food, generous portions, and a discount because you’re a guest at our hotel.',
         restTag: 'A gift just for you',
         restReviews: '128 reviews',
         restDiscount: '−10%',
@@ -3063,7 +3065,7 @@
         staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
         restDescShort: 'Indiquez chambre et réceptionniste: le −10% arrive dans votre boîte mail, prêt pour ce soir.',
-        restBlurb: '−10% de bienvenue par e-mail',
+        restBlurb: 'Et si vous dîniez face au canal dans notre restaurant partenaire? Cuisine vénitienne, généreuses portions, et une réduction parce que vous êtes client de notre hôtel.',
         nextBtn: 'Continuer',
         restSub: 'Un dîner sur la terrasse du canal, pensé pour les clients Hotel Canal.',
         restTitle: 'Votre −10% à la Terrazza',
