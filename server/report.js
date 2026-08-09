@@ -218,8 +218,8 @@ function buildDailyTableRows(rows) {
           <td align="center" style="padding:12px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:10.5px;font-weight:700;color:#64748B !important;text-transform:uppercase;letter-spacing:0.04em;vertical-align:top;">
             ${escapeHtml(staff)}
           </td>
-          <td align="center" style="padding:12px 8px;font-size:14px;line-height:1;vertical-align:top;">
-            ${haVoucher ? '&#10003;' : '&#10007;'}
+          <td align="center" style="padding:12px 8px;font-size:15px;line-height:1;vertical-align:top;">
+            ${haVoucher ? '✅' : '❌'}
           </td>
         </tr>
       `;
