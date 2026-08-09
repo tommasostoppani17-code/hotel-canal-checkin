@@ -607,7 +607,7 @@
       background: #FFFFFF;
     }
 
-    /* Toast solo per errori di rete/server - fuori flusso, non sposta la griglia */
+    /* Toast SOLO rete/server — mai per campi non validi (label+bordo+shake) */
     .error {
       display: none;
       position: absolute;
@@ -738,25 +738,25 @@
           <div class="form-grid-container">
             <div class="form-group">
               <label id="lbl-firstname" for="firstname">Nome *</label>
-              <input type="text" id="firstname" name="firstname" class="apple-input" required autocomplete="given-name" placeholder="Mario">
+              <input type="text" id="firstname" name="firstname" class="apple-input" autocomplete="given-name" placeholder="Mario">
             </div>
             <div class="form-group">
               <label id="lbl-lastname" for="lastname">Cognome *</label>
-              <input type="text" id="lastname" name="lastname" class="apple-input" required autocomplete="family-name" placeholder="Rossi">
+              <input type="text" id="lastname" name="lastname" class="apple-input" autocomplete="family-name" placeholder="Rossi">
             </div>
             <div class="form-group span-2" style="margin-top: 4px;">
               <label id="lbl-phone" for="phone">Numero di Telefono *</label>
-              <input type="tel" id="phone" name="phone" class="apple-input" required autocomplete="tel" inputmode="tel" placeholder="+39 333 1234567">
+              <input type="tel" id="phone" name="phone" class="apple-input" autocomplete="tel" inputmode="tel" placeholder="+39 333 1234567">
             </div>
             <div class="form-group span-2" style="margin-top: 4px;">
               <label id="lbl-email" for="email">Email *</label>
-              <input type="email" id="email" name="email" class="apple-input" required autocomplete="email" inputmode="email" placeholder="name@email.com">
+              <input type="email" id="email" name="email" class="apple-input" autocomplete="email" inputmode="email" placeholder="name@email.com">
             </div>
           </div>
 
           <div class="step-footer-fixed">
             <label class="privacy-box" id="privacyBox">
-              <input type="checkbox" id="privacy" name="privacy" required>
+              <input type="checkbox" id="privacy" name="privacy">
               <span id="lbl-privacy" class="privacy-text">
                 Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.
               </span>
@@ -1203,41 +1203,116 @@
       setTimeout(() => card.classList.remove('ios-shake'), 400);
     }
 
+    function hideToast() {
+      errorEl.textContent = '';
+      errorEl.classList.remove('visible');
+    }
+
     function markFieldError(el) {
       if (!el) return;
       el.classList.add('is-invalid');
       const group = el.closest('.form-group');
-      const label = group?.querySelector('label') || document.querySelector(`label[for="${el.id}"]`);
+      const label =
+        group?.querySelector('label') ||
+        document.querySelector(`label[for="${el.id}"]`);
       if (label) label.classList.add('label-error-state');
     }
 
-    /** Campo: solo colore (label + bordo) + shake. Toast solo per errori server/rete. */
-    function showError(message, fieldEl) {
-      if (fieldEl) {
-        errorEl.textContent = '';
-        errorEl.classList.remove('visible');
-        markFieldError(fieldEl);
-        try {
-          fieldEl.focus({ preventScroll: true });
-        } catch (_) {
-          fieldEl.focus();
-        }
+    /**
+     * Validazione campo: SOLO label rossa (#C62828) + bordo + shake.
+     * Nessun testo, nessun banner, nessun toast.
+     */
+    function showFieldError(fieldEl) {
+      hideToast();
+      if (!fieldEl) {
         shakeCard();
         return;
       }
-      if (message) {
-        errorEl.textContent = message;
-        errorEl.classList.add('visible');
-        errorEl.style.animation = 'none';
-        void errorEl.offsetWidth;
-        errorEl.style.animation = '';
+      markFieldError(fieldEl);
+      try {
+        fieldEl.focus({ preventScroll: true });
+      } catch (_) {
+        fieldEl.focus();
       }
       shakeCard();
     }
 
+    /** Privacy non spuntata: label + checkbox + shake (stesso linguaggio cromatico). */
+    function showPrivacyError() {
+      hideToast();
+      document.getElementById('lbl-privacy')?.classList.add('label-error-state');
+      privacyBox.classList.add('is-invalid');
+      shakeCard();
+    }
+
+    /** Toast SOLO rete/server generici — mai per campi non validi. */
+    function showServerToast(message) {
+      if (!message) {
+        shakeCard();
+        return;
+      }
+      errorEl.textContent = message;
+      errorEl.classList.add('visible');
+      errorEl.style.animation = 'none';
+      void errorEl.offsetWidth;
+      errorEl.style.animation = '';
+      shakeCard();
+    }
+
+    /** Mappa errori API di validazione → stesso UX campo (niente toast). */
+    function applyApiValidationError(message) {
+      const msg = String(message || '').toLowerCase();
+      if (!msg) return false;
+      if (/privacy|consenso|gdpr/.test(msg)) {
+        setStep(1);
+        showPrivacyError();
+        return true;
+      }
+      if (/nome|first\s*name|prénom|vorname|nombre/.test(msg) && !/cognome|last|nom de famille|nachname|apellido/.test(msg)) {
+        setStep(1);
+        showFieldError(firstNameEl);
+        return true;
+      }
+      if (/cognome|last\s*name|nom de famille|nachname|apellido/.test(msg)) {
+        setStep(1);
+        showFieldError(lastNameEl);
+        return true;
+      }
+      if (/email|e-mail|mail/.test(msg)) {
+        setStep(1);
+        showFieldError(emailEl);
+        return true;
+      }
+      if (/telefon|phone|numero|mobile/.test(msg)) {
+        setStep(1);
+        showFieldError(phoneEl);
+        return true;
+      }
+      if (/stanz|room|chambre|zimmer|habitaci/.test(msg)) {
+        setStep(2);
+        showFieldError(roomEl);
+        return true;
+      }
+      if (/reception|staff|impiegat/.test(msg)) {
+        setStep(2);
+        showFieldError(staffEl);
+        return true;
+      }
+      return false;
+    }
+
+    /** @deprecated alias — non usare per toast di validazione */
+    function showError(message, fieldEl) {
+      if (fieldEl) {
+        showFieldError(fieldEl);
+        return;
+      }
+      if (applyApiValidationError(message)) return;
+      showServerToast(message);
+    }
+
     function clearError() {
-      errorEl.textContent = '';
-      errorEl.classList.remove('visible');
+      hideToast();
       phoneEl.classList.remove('is-invalid');
       emailEl.classList.remove('is-invalid');
       firstNameEl.classList.remove('is-invalid');
@@ -1392,37 +1467,34 @@
 
       if (!privacyEl.checked) {
         clearError();
-        const privacyLbl = document.getElementById('lbl-privacy');
-        privacyLbl?.classList.add('label-error-state');
-        privacyBox.classList.add('is-invalid');
-        shakeCard();
+        showPrivacyError();
         return false;
       }
 
       if (magic) return true;
 
       if (!firstName) {
-        showError(null, firstNameEl);
+        showFieldError(firstNameEl);
         return false;
       }
       if (!lastName) {
-        showError(null, lastNameEl);
+        showFieldError(lastNameEl);
         return false;
       }
       if (!emailNormalized) {
-        showError(null, emailEl);
+        showFieldError(emailEl);
         return false;
       }
       if (!EMAIL_REGEX.test(emailNormalized)) {
-        showError(null, emailEl);
+        showFieldError(emailEl);
         return false;
       }
       if (!cleaned) {
-        showError(null, phoneEl);
+        showFieldError(phoneEl);
         return false;
       }
       if (!PHONE_REGEX.test(cleaned)) {
-        showError(null, phoneEl);
+        showFieldError(phoneEl);
         return false;
       }
       return true;
@@ -1431,15 +1503,14 @@
     /** Coupon: stanza + nome receptionist obbligatori */
     function validateCouponFields() {
       clearError();
-      const dict = t();
       const roomRaw = roomEl.value.trim();
       const staffRaw = staffEl.value.trim();
       if (!roomRaw) {
-        showError(dict.roomInvalid, roomEl);
+        showFieldError(roomEl);
         return false;
       }
       if (!normalizeReceptionist(staffRaw)) {
-        showError(dict.staffInvalid, staffEl);
+        showFieldError(staffEl);
         return false;
       }
       return true;
@@ -1498,7 +1569,9 @@
             showNetworkErrorScreen();
             return;
           }
-          showError(body.error || dict.submitError);
+          if (!applyApiValidationError(body.error)) {
+            showServerToast(body.error || dict.submitError);
+          }
           return;
         }
 
@@ -1513,7 +1586,7 @@
         btnSubmit.disabled = false;
         if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
-        showError(dict.submitError);
+        showServerToast(dict.submitError);
       } catch (err) {
         submitting = false;
         btnNext.disabled = false;
@@ -1528,7 +1601,7 @@
           showNetworkErrorScreen();
           return;
         }
-        showError(err.message || dict.networkError);
+        showServerToast(err.message || dict.networkError);
       }
     }
 
@@ -1663,7 +1736,9 @@
             showNetworkErrorScreen();
             return;
           }
-          showError(body.error || dict.submitError);
+          if (!applyApiValidationError(body.error)) {
+            showServerToast(body.error || dict.submitError);
+          }
           return;
         }
 
@@ -1696,7 +1771,7 @@
           showNetworkErrorScreen();
           return;
         }
-        showError(err.message || dict.networkError);
+        showServerToast(err.message || dict.networkError);
       }
     }
 
