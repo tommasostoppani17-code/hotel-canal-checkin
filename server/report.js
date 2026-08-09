@@ -180,12 +180,12 @@ export function formatRomeDate(date = new Date()) {
   }).format(date);
 }
 
-/** Mobile-first guest rows (no 5-col table — headers never split on phone). */
-function buildDailyGuestRows(rows) {
+/** Mobile-first guest cards (no 5-col table that breaks on phones). */
+function buildDailyGuestCards(rows) {
   if (!rows.length) {
     return `
       <tr>
-        <td style="padding:20px 0;border-bottom:1px solid #E5E5EA;color:#8E8E93;text-align:center;font-size:12.5px;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
+        <td style="padding:20px 0;border-bottom:1px solid #E5E5EA;color:#8E8E93;text-align:center;font-size:13px;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
           No registrations for this period
         </td>
       </tr>
@@ -201,33 +201,47 @@ function buildDailyGuestRows(rows) {
       const staff = cleanCell(row.receptionist) || '-';
       const pax = cleanCell(row.guests_count ?? '2') || '2';
       const haVoucher = hasRestaurantCoupon(row);
-      const offer = haVoucher
-        ? `<span style="color:#124453 !important;font-weight:700;">YES&nbsp;·&nbsp;${escapeHtml(pax)}&nbsp;pax</span>`
-        : `<span style="color:#B4B4B4 !important;font-weight:600;">NO</span>`;
+      const offerLabel = haVoucher
+        ? `OFFER YES · ${escapeHtml(pax)} PAX`
+        : 'OFFER NO';
+      const offerColor = haVoucher ? '#124453' : '#8E8E93';
 
       return `
         <tr>
-          <td style="padding:16px 0;border-bottom:1px solid #E5E5EA;vertical-align:top;">
-            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+          <td style="padding:0 0 12px 0;">
+            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;border:1px solid #E5E5EA;border-radius:10px;background-color:#FFFFFF !important;">
               <tr>
-                <td width="58" valign="top" style="width:58px;padding:0 12px 0 0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#124453 !important;line-height:1.1;white-space:nowrap;">
-                  ${escapeHtml(room || '-')}
+                <td style="padding:14px 14px 10px 14px;border-bottom:1px solid #F0F2F4;">
+                  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td valign="middle" style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#124453 !important;line-height:1;white-space:nowrap;">
+                        ${escapeHtml(room || '-')}
+                      </td>
+                      <td align="right" valign="middle" style="font-family:'DM Sans',Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${offerColor} !important;white-space:nowrap;padding-left:10px;">
+                        ${offerLabel}
+                      </td>
+                    </tr>
+                  </table>
                 </td>
-                <td valign="top" style="padding:0;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
-                  <div style="font-weight:700;font-size:12.5px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.03em;line-height:1.3;">
+              </tr>
+              <tr>
+                <td style="padding:12px 14px 14px 14px;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
+                  <div style="font-weight:700;font-size:13px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.03em;line-height:1.35;margin:0 0 4px 0;">
                     ${escapeHtml(name || 'UNSPECIFIED')}
                   </div>
-                  <div style="font-size:11px;color:#8E8E93 !important;margin-top:4px;line-height:1.35;word-break:break-all;">
+                  <div style="font-size:11px;color:#8E8E93 !important;line-height:1.4;margin:0 0 10px 0;word-break:break-all;">
                     ${escapeHtml(email || '-')}
                   </div>
-                  <div style="font-size:13px;font-weight:600;color:#1D1D1F !important;margin-top:8px;letter-spacing:0.01em;white-space:nowrap;">
-                    ${escapeHtml(phone)}
-                  </div>
-                  <div style="font-size:10.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-top:8px;line-height:1.4;white-space:nowrap;">
-                    <span style="color:#124453 !important;">${escapeHtml(staff)}</span>
-                    <span style="color:#C5C5C7 !important;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-                    <span style="color:#8E8E93 !important;">Offer&nbsp;</span>${offer}
-                  </div>
+                  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td valign="middle" style="font-family:'DM Sans',Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#1D1D1F !important;white-space:nowrap;line-height:1.3;">
+                        ${escapeHtml(phone || '-')}
+                      </td>
+                      <td align="right" valign="middle" style="font-family:'DM Sans',Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#124453 !important;white-space:nowrap;padding-left:10px;">
+                        ${escapeHtml(staff)}
+                      </td>
+                    </tr>
+                  </table>
                 </td>
               </tr>
             </table>
@@ -303,10 +317,10 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#FFFFFF;">
     ${escapeHtml(`Daily Front Office Audit — ${count} registrations — ${dateLabel}`)}
   </div>
-  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:40px 16px;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:28px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:620px;background-color:#FFFFFF !important;table-layout:fixed;">
+        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:520px;background-color:#FFFFFF !important;">
 
           <tr>
             <td align="center" style="padding:0 0 36px 0;">
@@ -354,13 +368,8 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
 
           <tr>
             <td style="padding-top:8px;">
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;">
-                <tr>
-                  <td style="font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#8E8E93 !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.12em;padding:0 0 10px 0;border-bottom:1px solid #1D1D1F;white-space:nowrap;">
-                    Guest register
-                  </td>
-                </tr>
-                ${buildDailyGuestRows(rows)}
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                ${buildDailyGuestCards(rows)}
               </table>
             </td>
           </tr>
