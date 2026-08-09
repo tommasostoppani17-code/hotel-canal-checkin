@@ -21,7 +21,7 @@
       --slide-ms: 350ms;
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
-      --card-h-2: min(612px, calc(100dvh - 20px));
+      --card-h-2: min(600px, calc(100dvh - 20px));
       --card-h-3: min(420px, calc(100dvh - 80px));
       --card-h-3-booking: min(480px, calc(100dvh - 48px));
       --card-h: var(--card-h-1);
@@ -481,27 +481,56 @@
     }
 
     .carousel-dots {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 10px;
+      z-index: 8;
       display: flex;
       justify-content: center;
-      gap: 5px;
-      margin: 5px 0 0;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      pointer-events: none;
     }
 
     .carousel-dots button {
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
       padding: 0;
       border: 0;
       border-radius: 50%;
-      background: rgba(18, 68, 83, 0.2);
+      background: rgba(255, 255, 255, 0.48);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
       cursor: pointer;
+      pointer-events: auto;
       -webkit-tap-highlight-color: transparent;
+      transition:
+        width 280ms var(--ios-ease),
+        background-color 280ms var(--ios-ease),
+        transform 280ms var(--ios-ease),
+        opacity 280ms var(--ios-ease);
+      transform: scale(1);
+      opacity: 0.85;
     }
 
     .carousel-dots button.is-active {
-      background: var(--canal-petroleum);
-      width: 12px;
+      width: 16px;
       border-radius: 999px;
+      background: #FFFFFF;
+      opacity: 1;
+      transform: scale(1.05);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+    }
+
+    .carousel-dots button.is-pulse {
+      animation: dotPulse 320ms var(--ios-ease);
+    }
+
+    @keyframes dotPulse {
+      0% { transform: scale(0.86); }
+      55% { transform: scale(1.12); }
+      100% { transform: scale(1.05); }
     }
 
     .rest-desc-hero {
@@ -1195,12 +1224,12 @@
                 <button type="button" class="carousel-arrow right" id="restCarouselNext" aria-label="Foto successiva">
                   <span class="arrow-bracket right" aria-hidden="true"></span>
                 </button>
+                <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
               </div>
               <div class="carousel-caption">
                 <h4>Trattoria alla Terrazza</h4>
                 <p id="lbl-rest-tag">Offerta ospiti</p>
               </div>
-              <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
             </div>
           </div>
 
@@ -1667,7 +1696,15 @@
         trackEl.style.transform = `translate3d(${-idx * 100}%, 0, 0)`;
         if (dotsEl) {
           [...dotsEl.children].forEach((dot, i) => {
-            dot.classList.toggle('is-active', i === idx);
+            const wasActive = dot.classList.contains('is-active');
+            const nowActive = i === idx;
+            dot.classList.toggle('is-active', nowActive);
+            if (nowActive && !wasActive) {
+              dot.classList.remove('is-pulse');
+              // restart CSS animation
+              void dot.offsetWidth;
+              dot.classList.add('is-pulse');
+            }
           });
         }
       }
