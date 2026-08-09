@@ -548,6 +548,9 @@ function buildWelcomeHtml({
               ${photoGrid(thumbs.slice(0, 4), 8)}
               ${postcard(dish, 'Cucina della Trattoria alla Terrazza', 8)}
 
+              ${veniceGuideBlock}
+              ${venicePdfFooter}
+
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:28px auto 0;">
                 <tr>
                   ${['palazzo', 'mooring', 'basilica', 'campanile']
@@ -559,9 +562,6 @@ function buildWelcomeHtml({
                     .join('')}
                 </tr>
               </table>
-
-              ${veniceGuideBlock}
-              ${venicePdfFooter}
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0 0;">
                 <tr>
