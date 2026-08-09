@@ -16,11 +16,14 @@
       --text-main: #1D1D1F;
       --text-muted: #515154;
       --radius-ios: 18px;
-      /* Solo slide orizzontale — card alta abbastanza per Step 2 (foto+form+CTA) */
+      /* Altezze fisse per step: 2 > 1, niente scroll interno */
       --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
       --slide-ms: 350ms;
-      --card-h: min(640px, calc(100dvh - 16px));
+      --card-h-1: min(580px, calc(100dvh - 36px));
+      --card-h-2: min(720px, calc(100dvh - 12px));
+      --card-h-3: min(360px, calc(100dvh - 80px));
+      --card-h: var(--card-h-1);
     }
 
     /* Blocca rimbalzo/overscroll del browser - effetto app a schermo fisso */
@@ -101,7 +104,7 @@
       z-index: 1;
       width: 100%;
       max-width: 350px;
-      /* Chassis fisso: zero CLS, zero height JS, Back senza lag */
+      /* Altezza per-step (JS setta --card-h), sync con lo slide */
       height: var(--card-h);
       max-height: var(--card-h);
       display: flex;
@@ -120,7 +123,10 @@
       isolation: isolate;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      will-change: transform;
+      will-change: transform, height;
+      transition:
+        height var(--slide-ms) var(--ios-ease),
+        max-height var(--slide-ms) var(--ios-ease);
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
@@ -232,10 +238,8 @@
     }
 
     /*
-     * Scatole rigide: ogni step = 100% del viewport fisso.
-     * Niente height diverse per step (evita di nuovo la diagonale 440→510).
-     * MAI pointer-events: none sugli step: spegne i campi su iOS
-     * (e con selettori #stepN batteva .is-active).
+     * Scatole per-step: riempiono l'altezza della card (diversa per step).
+     * Contenuto deve stare dentro — niente scroll interno.
      */
     .slide-step {
       flex: 0 0 33.333%;
@@ -300,9 +304,7 @@
       flex-direction: column;
       flex: 1 1 auto;
       min-height: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
     }
 
     .step-footer-fixed {
@@ -352,14 +354,14 @@
 
     /* Vetrina ristorante: foto che si vedono, non fettine */
     .restaurant-showcase {
-      margin: 0 0 12px;
+      margin: 0 0 8px;
       flex-shrink: 0;
     }
 
     .restaurant-hero-card {
       position: relative;
       width: 100%;
-      height: 132px;
+      height: 124px;
       border-radius: 12px;
       overflow: hidden;
       margin: 0;
@@ -447,10 +449,10 @@
 
     .rest-desc-hero {
       font-size: 11.5px;
-      line-height: 1.4;
+      line-height: 1.35;
       color: var(--text-muted);
       text-align: center;
-      margin: 0 0 10px;
+      margin: 0 0 8px;
       padding: 0;
       font-weight: 500;
     }
@@ -1497,8 +1499,22 @@
     }
 
     /**
-     * Solo slide GPU. Card altezza fissa CSS — zero scrollHeight / height JS.
+     * Slide + altezza fissa per step (niente scrollHeight).
+     * Step 2 è sempre più alto dello Step 1.
      */
+    const CARD_HEIGHTS = {
+      1: 'var(--card-h-1)',
+      2: 'var(--card-h-2)',
+      3: 'var(--card-h-3)',
+    };
+
+    function syncCardHeight(step) {
+      const card = document.getElementById('card');
+      if (!card) return;
+      const h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
+      card.style.setProperty('--card-h', h);
+    }
+
     function setStep(step) {
       currentStep = step;
       document.body.dataset.step = String(step);
@@ -1521,6 +1537,7 @@
       }
 
       freezeAmbient(true);
+      syncCardHeight(step);
       applyTrack(toSlide);
       applyParallax(toParallax, toScale);
 
