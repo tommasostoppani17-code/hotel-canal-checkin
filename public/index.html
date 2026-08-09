@@ -3191,7 +3191,6 @@
 
     function validateStep1() {
       clearError();
-      const dict = t();
       const phoneRaw = phoneEl.value.trim();
       const emailNormalized = normalizeEmailInput(emailEl.value);
       const firstName = firstNameEl.value.trim();
@@ -3209,32 +3208,26 @@
 
       if (!firstName) {
         showFieldError(firstNameEl);
-        showServerToast(dict.nameRequired);
         return false;
       }
       if (!lastName) {
         showFieldError(lastNameEl);
-        showServerToast(dict.lastNameRequired);
         return false;
       }
       if (!emailNormalized) {
         showFieldError(emailEl);
-        showServerToast(dict.emailRequired);
         return false;
       }
       if (!EMAIL_REGEX.test(emailNormalized)) {
         showFieldError(emailEl);
-        showServerToast(dict.emailInvalid);
         return false;
       }
       if (!cleaned) {
         showFieldError(phoneEl);
-        showServerToast(dict.phoneRequired);
         return false;
       }
       if (!PHONE_REGEX.test(cleaned)) {
         showFieldError(phoneEl);
-        showServerToast(dict.phoneInvalid);
         return false;
       }
       // Riscrivi email pulita nel campo (togli spazi invisibili da copia/incolla)
