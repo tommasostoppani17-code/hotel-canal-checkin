@@ -502,6 +502,27 @@
       transform: rotate(45deg) translate(-1.5px, 1px);
     }
 
+    .carousel-discount-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 9;
+      margin: 0;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(18, 68, 83, 0.88);
+      -webkit-backdrop-filter: blur(8px) saturate(140%);
+      backdrop-filter: blur(8px) saturate(140%);
+      color: #FFFFFF;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+      pointer-events: none;
+    }
+
     .carousel-dots {
       position: absolute;
       left: 0;
@@ -1489,8 +1510,9 @@
     }
 
     .apple-input::placeholder {
-      color: #929296;
-      font-weight: 400;
+      color: #5C6368;
+      font-weight: 500;
+      opacity: 1;
     }
 
     .apple-input:focus {
@@ -1933,6 +1955,7 @@
                       <img src="/restaurant/17-astice-sera.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 48%;">
                     </figure>
                   </div>
+                  <p class="carousel-discount-badge" id="lbl-rest-discount" aria-hidden="true">−10%</p>
                   <button type="button" class="carousel-arrow left" id="restCarouselPrev" aria-label="Foto precedente">
                     <span class="arrow-bracket left" aria-hidden="true"></span>
                   </button>
@@ -1943,7 +1966,7 @@
                 </div>
                 <div class="carousel-caption">
                   <h4>Trattoria alla Terrazza</h4>
-                  <p id="lbl-rest-tag">−10% per gli ospiti hotel</p>
+                  <p id="lbl-rest-tag">Per gli ospiti hotel</p>
                 </div>
               </div>
             </div>
@@ -2106,7 +2129,8 @@
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
         restDescShort: 'Conferma sotto e ricevi lo sconto esclusivo (−10%) via email.',
-        restTag: '−10% per gli ospiti hotel',
+        restTag: 'Per gli ospiti hotel',
+        restDiscount: '−10%',
         nextBtn: 'Continua',
         restSub: 'Cena tipica veneziana per due, stasera sulla terrazza del canale.',
         restTitle: 'Sconto 10% di benvenuto',
@@ -2185,7 +2209,8 @@
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
         restDescShort: 'Confirm below for your exclusive −10% by email.',
-        restTag: '−10% for hotel guests',
+        restTag: 'For hotel guests',
+        restDiscount: '−10%',
         nextBtn: 'Continue',
         restSub: 'A hearty Venetian dinner for two tonight, on the canal terrace.',
         restTitle: '10% Welcome Discount',
@@ -2267,7 +2292,8 @@
         restSub: 'Dîner vénitien généreux pour deux, ce soir sur la terrasse du canal.',
         restTitle: 'Réduction de bienvenue 10%',
         restDesc: 'Dîner vénitien pour deux. Confirmez chambre et réceptionniste pour le −10% exclusif par e-mail.',
-        restTag: '−10% pour les clients de l’hôtel',
+        restTag: 'Pour les clients de l’hôtel',
+        restDiscount: '−10%',
         staff: 'Nom du réceptionniste *',
         staffNone: 'Choisir…',
         staffInvalid: 'Entrez le réceptionniste qui fait le check-in.',
@@ -2345,7 +2371,8 @@
         restSub: 'Herzhaftes venezianisches Abendessen für zwei, heute Abend auf der Kanalterrasse.',
         restTitle: '10% Willkommensrabatt',
         restDesc: 'Herzhaftes Abendessen für zwei. Zimmer und Empfang bestätigen für den exklusiven −10% per E-Mail.',
-        restTag: '−10% für Hotelgäste',
+        restTag: 'Für Hotelgäste',
+        restDiscount: '−10%',
         staff: 'Name Empfang *',
         staffNone: 'Auswählen…',
         staffInvalid: 'Bitte den Empfangsnamen beim Check-in eingeben.',
@@ -2423,7 +2450,8 @@
         restSub: 'Cena típica veneciana para dos, esta noche en la terraza del canal.',
         restTitle: 'Descuento de bienvenida 10%',
         restDesc: 'Cena típica para dos. Confirme habitación y recepcionista para el descuento exclusivo por email.',
-        restTag: '−10% para huéspedes del hotel',
+        restTag: 'Para huéspedes del hotel',
+        restDiscount: '−10%',
         staff: 'Nombre del recepcionista *',
         staffNone: 'Seleccionar…',
         staffInvalid: 'Escriba el recepcionista que hace el check-in.',
@@ -2766,6 +2794,7 @@
 
     let lastCheckinId = null;
     let lastCouponSent = false;
+    let guestAccessToken = null;
 
     function syncCardHeight(step) {
       const card = document.getElementById('card');
@@ -3078,6 +3107,8 @@
       document.getElementById('lbl-rest-desc').textContent = dict.restDescShort || dict.restDesc;
       const restTag = document.getElementById('lbl-rest-tag');
       if (restTag) restTag.textContent = dict.restTag || dict.restTitle;
+      const restDiscount = document.getElementById('lbl-rest-discount');
+      if (restDiscount) restDiscount.textContent = dict.restDiscount || '−10%';
       document.getElementById('lbl-staff').textContent = dict.staffShort || dict.staff;
       if (staffEl) staffEl.placeholder = dict.staffPlaceholder || 'Nome';
       const guestsLbl = document.getElementById('lbl-guests');
@@ -3169,7 +3200,13 @@
       return 'HC-' + Math.floor(1000 + Math.random() * 9000);
     }
 
-    function showSuccessStep({ id, verifiedAt, couponSent, already = false }) {
+    function showSuccessStep({
+      id,
+      verifiedAt,
+      couponSent,
+      already = false,
+      guestAccessToken: accessToken = null,
+    }) {
       const dict = t();
       const checkCode = formatCheckCode(id);
       const now = new Date(verifiedAt || Date.now()).toLocaleTimeString(
@@ -3179,6 +3216,8 @@
 
       lastCheckinId = id != null ? Number(id) : null;
       lastCouponSent = Boolean(couponSent);
+      guestAccessToken = accessToken || null;
+      guestServicesCache = null;
 
       // Solo testi (niente display:none / flex recalc). Poi slide → successo.
       document.getElementById('lbl-succ-title').textContent = already
@@ -3296,8 +3335,23 @@
 
     async function loadGuestServices(dict) {
       try {
+        if (!guestAccessToken) {
+          applyTrattoriaPhone({}, dict);
+          return;
+        }
         if (!guestServicesCache) {
-          const res = await fetch('/api/guest-services');
+          const res = await fetch('/api/guest-services', {
+            headers: {
+              Authorization: `Bearer ${guestAccessToken}`,
+              Accept: 'application/json',
+            },
+            cache: 'no-store',
+          });
+          if (!res.ok) {
+            guestServicesCache = null;
+            applyTrattoriaPhone({}, dict);
+            return;
+          }
           guestServicesCache = await res.json().catch(() => ({}));
         }
         const data = guestServicesCache || {};
@@ -3717,6 +3771,7 @@
           id: body.id,
           verifiedAt: body.createdAt,
           couponSent: Boolean(body.couponSent),
+          guestAccessToken: body.guestAccessToken || null,
         });
       } catch (err) {
         submitting = false;
@@ -3780,7 +3835,6 @@
     setStep(1);
     startAmbientInertia();
     startCardSheen();
-    void loadGuestServices(t());
     const prefEmail = bootParams.get('email');
     if (prefEmail && emailEl) emailEl.value = prefEmail;
   </script>

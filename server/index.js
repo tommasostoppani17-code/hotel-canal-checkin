@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
 import express from 'express';
 import cron from 'node-cron';
 import dotenv from 'dotenv';
@@ -16,6 +17,7 @@ import {
   importCheckinsIfEmpty,
   countCheckins,
   setTableBooking,
+  getCheckinById,
 } from './db.js';
 import {
   runDailyReport,
@@ -85,8 +87,44 @@ async function restoreCheckinsBackupIfNeeded() {
 }
 
 const app = express();
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+
+/** Header di sicurezza (CSP tollera inline perché public/index.html è monolitico). */
+app.use((req, res, next) => {
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), payment=()',
+  );
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com data:",
+      "img-src 'self' data: blob:",
+      "connect-src 'self'",
+      "object-src 'none'",
+    ].join('; '),
+  );
+  const proto = String(req.get('x-forwarded-proto') || req.protocol || '');
+  if (proto === 'https') {
+    res.setHeader(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains',
+    );
+  }
+  next();
+});
 
 // Cache lunga su asset email: i proxy Gmail/Apple rifetchano spesso
 app.use(
@@ -107,6 +145,80 @@ app.use(express.static(path.join(rootDir, 'public')));
 const REPORT_TRIGGER_TOKEN = 'grandcanalhotel';
 const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const GUEST_ACCESS_TTL_SEC = 60 * 60 * 72; // 72h dopo check-in
+
+function guestAccessSecret() {
+  return (
+    String(process.env.GUEST_ACCESS_SECRET || '').trim() ||
+    String(process.env.CRON_SECRET || '').trim() ||
+    String(process.env.RESEND_API_KEY || '').trim() ||
+    String(process.env.SMTP_PASS || '').trim() ||
+    'dev-only-change-me'
+  );
+}
+
+function timingSafeEqualStr(a, b) {
+  const left = Buffer.from(String(a || ''), 'utf8');
+  const right = Buffer.from(String(b || ''), 'utf8');
+  if (left.length !== right.length) return false;
+  return crypto.timingSafeEqual(left, right);
+}
+
+/** Token HMAC legato al check-in: sblocca Wi-Fi / codici porta. */
+function issueGuestAccessToken(checkinId) {
+  const id = Number(checkinId);
+  if (!Number.isFinite(id) || id < 1) return null;
+  const exp = Math.floor(Date.now() / 1000) + GUEST_ACCESS_TTL_SEC;
+  const body = `v1.${id}.${exp}`;
+  const sig = crypto
+    .createHmac('sha256', guestAccessSecret())
+    .update(body)
+    .digest('base64url');
+  return `${body}.${sig}`;
+}
+
+function verifyGuestAccessToken(rawToken) {
+  const token = String(rawToken || '').trim();
+  const parts = token.split('.');
+  if (parts.length !== 4 || parts[0] !== 'v1') return null;
+  const id = Number(parts[1]);
+  const exp = Number(parts[2]);
+  const sig = parts[3];
+  if (!Number.isFinite(id) || id < 1 || !Number.isFinite(exp)) return null;
+  if (exp < Math.floor(Date.now() / 1000)) return null;
+  const body = `v1.${id}.${exp}`;
+  const expected = crypto
+    .createHmac('sha256', guestAccessSecret())
+    .update(body)
+    .digest('base64url');
+  if (!timingSafeEqualStr(sig, expected)) return null;
+  if (!getCheckinById(id)) return null;
+  return { checkinId: id, exp };
+}
+
+function readGuestAccessToken(req) {
+  const header = req.get('authorization') || '';
+  if (header.toLowerCase().startsWith('bearer ')) {
+    return header.slice(7).trim();
+  }
+  return String(req.query.token || req.get('x-guest-token') || '').trim();
+}
+
+function buildGuestServicesPayload() {
+  let doorMain = String(process.env.DOOR_CODE_WALTER || '5358#').trim() || '5358#';
+  if (!doorMain.endsWith('#')) doorMain = `${doorMain}#`;
+  const doorInner = String(process.env.DOOR_CODE_AIRONE || '532E').trim() || '532E';
+  return {
+    wifiSsid: String(process.env.WIFI_SSID || 'hotel canal').trim() || 'hotel canal',
+    wifiPassword: String(process.env.WIFI_PASSWORD || '').trim(),
+    doorMain,
+    doorInner,
+    trattoriaPhone: String(process.env.TRATTORIA_PHONE || '+393282464972').trim(),
+    trattoriaPhoneDisplay: String(
+      process.env.TRATTORIA_PHONE_DISPLAY || '328 246 4972',
+    ).trim(),
+  };
+}
 
 /** Nome receptionist a testo libero (maiuscolo, spazi normalizzati). */
 function normalizeReceptionist(raw) {
@@ -171,20 +283,18 @@ app.get('/health', (_req, res) => {
   });
 });
 
-/** Wi-Fi + codici porta per lo Step 3 (stessi valori della welcome email). */
-app.get('/api/guest-services', (_req, res) => {
-  let doorMain = String(process.env.DOOR_CODE_WALTER || '5358#').trim() || '5358#';
-  if (!doorMain.endsWith('#')) doorMain = `${doorMain}#`;
-  const doorInner = String(process.env.DOOR_CODE_AIRONE || '532E').trim() || '532E';
-  res.json({
-    wifiSsid: String(process.env.WIFI_SSID || 'hotel canal').trim() || 'hotel canal',
-    wifiPassword: String(process.env.WIFI_PASSWORD || '').trim(),
-    doorMain,
-    doorInner,
-    trattoriaPhone: String(process.env.TRATTORIA_PHONE || '+393282464972').trim(),
-    trattoriaPhoneDisplay: String(
-      process.env.TRATTORIA_PHONE_DISPLAY || '328 246 4972',
-    ).trim(),
+/** Wi-Fi + codici porta: solo con token emesso al check-in riuscito. */
+app.get('/api/guest-services', (req, res) => {
+  const access = verifyGuestAccessToken(readGuestAccessToken(req));
+  if (!access) {
+    return res.status(401).json({
+      error: 'Accesso non autorizzato',
+    });
+  }
+  res.setHeader('Cache-Control', 'no-store');
+  return res.json({
+    ...buildGuestServicesPayload(),
+    checkinId: access.checkinId,
   });
 });
 
@@ -614,6 +724,7 @@ async function handleCheckin(req, res) {
     return res.status(201).json({
       success: true,
       id,
+      guestAccessToken: issueGuestAccessToken(id),
       checkCode: `HC-${String(id).padStart(4, '0')}`,
       createdAt: new Date().toISOString(),
       welcomeSent,
