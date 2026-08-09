@@ -43,7 +43,7 @@
       --app-vh: var(--vvh, 100svh);
       /* Step heights — desktop/tablet; su phone vedi @media sotto */
       --card-h-1: min(528px, calc(var(--app-vh) - 48px));
-      --card-h-2: min(900px, calc(var(--app-vh) - 8px));
+      --card-h-2: min(780px, calc(var(--app-vh) - 12px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
       --card-h-3-open: min(600px, calc(var(--app-vh) - 16px));
@@ -168,7 +168,7 @@
     @media (max-width: 480px) {
       :root {
         --card-h-1: min(548px, calc(var(--app-vh) - 36px));
-        --card-h-2: min(920px, calc(var(--app-vh) - 4px));
+        --card-h-2: min(800px, calc(var(--app-vh) - 8px));
         --card-h-3: min(500px, calc(var(--app-vh) - 28px));
         --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
         --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
@@ -229,10 +229,10 @@
 
       #step2 .carousel-viewport {
         border-radius: 0;
-        /* 3:4 = foto più alta (768×1024): crop sui lati, non sopra/sotto */
+        /* Compromesso: quadrate — né striscia né torre 3:4 */
         height: auto;
-        aspect-ratio: 3 / 4;
-        max-height: none;
+        aspect-ratio: 1 / 1;
+        max-height: min(340px, 40svh);
         width: 100%;
       }
 
@@ -507,8 +507,8 @@
       position: relative;
       width: 100%;
       height: auto;
-      aspect-ratio: 3 / 4;
-      max-height: none;
+      aspect-ratio: 1 / 1;
+      max-height: 320px;
       border-radius: 16px;
       overflow: hidden;
       background: #124453;
@@ -811,8 +811,8 @@
 
     #step2 .carousel-viewport {
       height: auto;
-      aspect-ratio: 3 / 4;
-      max-height: none;
+      aspect-ratio: 1 / 1;
+      max-height: 300px;
       border-radius: var(--radius-ios);
     }
 
