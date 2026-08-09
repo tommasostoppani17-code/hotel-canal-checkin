@@ -16,11 +16,10 @@ export const WELCOME_I18N = {
     roomFallback: 'DA ASSEGNARE',
     greeting: (name) => `Gentile ${name},`,
     welcome:
-      'Benvenuto all&rsquo;Hotel Canal. Qui sotto trovate gli accessi essenziali e lo sconto 10% per la Terrazza.',
-    essentialsTitle: 'I tuoi accessi',
-    roomLabel: 'STANZA',
+      'Benvenuto a Venezia. L&rsquo;acqua, la luce e il silenzio di Santa Croce vi aspettano all&rsquo;Hotel Canal. Qui sotto trovate tutto per sentirvi subito a casa: orari, Wi-Fi, codici porta, il percorso a piedi alla Terrazza e il vostro pass di benvenuto.',
+    roomLabel: 'STANZA ASSEGNATA',
     roomPrefix: 'CAMERA',
-    hoursTitle: 'Orari',
+    hoursTitle: 'Orari della struttura',
     checkInLabel: 'Check-in:',
     checkInValue: 'dalle ore 14:00',
     checkOutLabel: 'Check-out:',
@@ -43,6 +42,42 @@ export const WELCOME_I18N = {
     step4Line:
       'Cinquanta passi: Trattoria alla Terrazza sull&rsquo;acqua.',
     mapsBtn: 'Apri Google Maps',
+    guideTitle: 'Venezia da vivere',
+    guideIntro:
+      'Dalla reception di Santa Croce: come muoversi e cosa non perdere.',
+    guideTransitTitle: 'Come muoversi',
+    guideTransitBody:
+      'Il vaporetto &egrave; il mezzo principale. Fermate utili vicino all&rsquo;hotel: San Tom&agrave; e Rialto. Biglietto ACTV o Venezia Unica. A piedi &egrave; lento ma magico: segui le frecce gialle.',
+    guidePlaces: [
+      {
+        title: 'San Marco',
+        line: 'Basilica, Campanile e Palazzo Ducale. Vaporetto linea 1 o 2 verso San Marco, oppure 25-30 minuti a piedi passando da Rialto.',
+      },
+      {
+        title: 'Rialto',
+        line: 'Ponte e mercato del pesce al mattino. Circa 12-15 minuti a piedi da Santa Croce, oppure vaporetto fino a Rialto.',
+      },
+      {
+        title: 'Casinò di Venezia',
+        line: 'Ca&rsquo; Vendramin Calergi. Vaporetto fino a San Marcuola, poi pochi minuti a piedi. Serata elegante: abbigliamento curato.',
+      },
+      {
+        title: 'Murano',
+        line: 'Isola del vetro soffiato. Da Fondamente Nove: vaporetto 4.1 / 4.2 (circa 10-15 minuti). Visita una fornace e i negozi lungo il canale.',
+      },
+      {
+        title: 'Burano',
+        line: 'Case colorate e merletti. Da Fondamente Nove: linea 12 (circa 40-45 minuti). Ideale mezza giornata, magari dopo Murano.',
+      },
+    ],
+    guideDoTitle: 'Cosa fare',
+    guideDoItems: [
+      'Tramonto sul Canal Grande da un ponte o da una fondamenta',
+      'Cicchetto e ombra in un bacaro tipico',
+      'Passeggiata senza mappa nei sestieri: perdersi fa parte del viaggio',
+      'Serata in Terrazza con il vostro sconto ospiti',
+    ],
+    textGuideHeader: 'Guida Venezia (mezzi e luoghi):',
     discountTitle: 'Sconto di benvenuto',
     discountBefore: 'Presentando questo pass al cameriere ',
     discountBold1: 'prima di ordinare',
@@ -82,11 +117,10 @@ export const WELCOME_I18N = {
     roomFallback: 'TO ASSIGN',
     greeting: (name) => `Dear ${name},`,
     welcome:
-      'Welcome to Hotel Canal. Below you will find your essential access details and the 10% Terrazza discount.',
-    essentialsTitle: 'Your access',
-    roomLabel: 'ROOM',
+      'Welcome to Venice. The water, the light and the quiet of Santa Croce await you at Hotel Canal. Below you&rsquo;ll find everything to feel at home: hours, Wi-Fi, door codes, the walk to the Terrazza and your welcome pass.',
+    roomLabel: 'ASSIGNED ROOM',
     roomPrefix: 'ROOM',
-    hoursTitle: 'Hours',
+    hoursTitle: 'Hotel hours',
     checkInLabel: 'Check-in:',
     checkInValue: 'from 2:00 PM',
     checkOutLabel: 'Check-out:',
@@ -108,6 +142,42 @@ export const WELCOME_I18N = {
     step4Title: 'Arrival',
     step4Line: 'Fifty steps: Trattoria alla Terrazza on the water.',
     mapsBtn: 'Open Google Maps',
+    guideTitle: 'Venice to explore',
+    guideIntro:
+      'From Santa Croce reception: how to get around and what not to miss.',
+    guideTransitTitle: 'Getting around',
+    guideTransitBody:
+      'The vaporetto is the main way to move. Handy stops near the hotel: San Tomà and Rialto. Use an ACTV or Venezia Unica ticket. Walking is slower but magical - follow the yellow signs.',
+    guidePlaces: [
+      {
+        title: 'St Mark\'s',
+        line: 'Basilica, Campanile and Doge\'s Palace. Vaporetto line 1 or 2 to San Marco, or a 25-30 minute walk via Rialto.',
+      },
+      {
+        title: 'Rialto',
+        line: 'Bridge and morning fish market. About 12-15 minutes on foot from Santa Croce, or vaporetto to Rialto.',
+      },
+      {
+        title: 'Venice Casino',
+        line: 'Ca\' Vendramin Calergi. Vaporetto to San Marcuola, then a short walk. Smart dress for the evening.',
+      },
+      {
+        title: 'Murano',
+        line: 'Glassblowing island. From Fondamente Nove: vaporetto 4.1 / 4.2 (about 10-15 minutes). Visit a furnace and the canal-side shops.',
+      },
+      {
+        title: 'Burano',
+        line: 'Coloured houses and lace. From Fondamente Nove: line 12 (about 40-45 minutes). Perfect half-day, often after Murano.',
+      },
+    ],
+    guideDoTitle: 'What to do',
+    guideDoItems: [
+      'Sunset on the Grand Canal from a bridge or fondamenta',
+      'Cicchetti and a spritz in a classic bacaro',
+      'Wander the sestieri without a map - getting lost is part of it',
+      'Evening at the Terrazza with your guest discount',
+    ],
+    textGuideHeader: 'Venice guide (transport & places):',
     discountTitle: 'Welcome discount',
     discountBefore: 'Show this pass to your waiter ',
     discountBold1: 'before ordering',
@@ -146,11 +216,10 @@ export const WELCOME_I18N = {
     roomFallback: 'À ASSIGNER',
     greeting: (name) => `Cher/Chère ${name},`,
     welcome:
-      'Bienvenue à l&rsquo;Hotel Canal. Ci-dessous : accès essentiels et réduction 10% Terrazza.',
-    essentialsTitle: 'Vos accès',
-    roomLabel: 'CHAMBRE',
+      'Bienvenue à Venise. Nous sommes ravis de vous accueillir à l&rsquo;Hotel Canal. Horaires, accès, itinéraire à pied vers notre restaurant partenaire et votre pass de bienvenue sont ci-dessous.',
+    roomLabel: 'CHAMBRE ASSIGNÉE',
     roomPrefix: 'CHAMBRE',
-    hoursTitle: 'Horaires',
+    hoursTitle: 'Horaires de la structure',
     checkInLabel: 'Check-in :',
     checkInValue: 'à partir de 14h00',
     checkOutLabel: 'Check-out :',
@@ -172,6 +241,42 @@ export const WELCOME_I18N = {
     step4Title: 'Arrivée',
     step4Line: 'Cinquante pas : Trattoria alla Terrazza sur l&rsquo;eau.',
     mapsBtn: 'Ouvrir Google Maps',
+    guideTitle: 'Venise à découvrir',
+    guideIntro:
+      'Depuis Santa Croce : comment vous déplacer et quoi ne pas manquer.',
+    guideTransitTitle: 'Se déplacer',
+    guideTransitBody:
+      'Le vaporetto est le moyen principal. Arrêts utiles près de l&rsquo;hôtel : San Tomà et Rialto. Ticket ACTV ou Venezia Unica. À pied c&rsquo;est plus lent mais magique - suivez les flèches jaunes.',
+    guidePlaces: [
+      {
+        title: 'Saint-Marc',
+        line: 'Basilique, Campanile et Palais des Doges. Vaporetto ligne 1 ou 2 vers San Marco, ou 25-30 minutes à pied via Rialto.',
+      },
+      {
+        title: 'Rialto',
+        line: 'Pont et marché du poisson le matin. Environ 12-15 minutes à pied depuis Santa Croce, ou vaporetto jusqu&rsquo;à Rialto.',
+      },
+      {
+        title: 'Casino de Venise',
+        line: 'Ca&rsquo; Vendramin Calergi. Vaporetto jusqu&rsquo;à San Marcuola, puis quelques minutes à pied. Tenue soignée le soir.',
+      },
+      {
+        title: 'Murano',
+        line: 'Île du verre soufflé. Depuis Fondamente Nove : vaporetto 4.1 / 4.2 (environ 10-15 minutes). Visitez une fournaise et les boutiques.',
+      },
+      {
+        title: 'Burano',
+        line: 'Maisons colorées et dentelle. Depuis Fondamente Nove : ligne 12 (environ 40-45 minutes). Idéal en demi-journée, souvent après Murano.',
+      },
+    ],
+    guideDoTitle: 'Que faire',
+    guideDoItems: [
+      'Coucher de soleil sur le Grand Canal depuis un pont',
+      'Cicchetti et spritz dans un bacaro typique',
+      'Se perdre dans les sestieri sans carte',
+      'Soirée à la Terrazza avec votre réduction hôtes',
+    ],
+    textGuideHeader: 'Guide Venise (transports et lieux) :',
     discountTitle: 'Offre de bienvenue',
     discountBefore: 'Présentez ce pass au serveur ',
     discountBold1: 'avant de commander',
@@ -193,7 +298,7 @@ export const WELCOME_I18N = {
     textHours: 'Check-in : à partir de 14h00 · Check-out : avant 10h30',
     textRouteHeader: 'Comment rejoindre Trattoria alla Terrazza à pied :',
     textVoucher:
-      'Bon de réduction 10% : montrez le QR de cet e-mail au serveur.',
+      'Bon de réduction 5 % : montrez le QR de cet e-mail au serveur.',
     textSignature: 'La Direction - Hotel Canal Venise',
   },
   de: {
@@ -211,11 +316,10 @@ export const WELCOME_I18N = {
     roomFallback: 'OFFEN',
     greeting: (name) => `Sehr geehrte/r ${name},`,
     welcome:
-      'Willkommen im Hotel Canal. Unten finden Sie Ihre Zugangsdaten und den 10% Terrazza-Rabatt.',
-    essentialsTitle: 'Ihr Zugang',
-    roomLabel: 'ZIMMER',
+      'Willkommen in Venedig. Wir freuen uns, Sie im Hotel Canal begrüßen zu dürfen. Zeiten, Zugang, Fußweg zu unserem Partnerrestaurant und Ihr Willkommenspass finden Sie unten.',
+    roomLabel: 'ZUGEWIESENES ZIMMER',
     roomPrefix: 'ZIMMER',
-    hoursTitle: 'Zeiten',
+    hoursTitle: 'Zeiten der Struktur',
     checkInLabel: 'Check-in:',
     checkInValue: 'ab 14:00 Uhr',
     checkOutLabel: 'Check-out:',
@@ -237,11 +341,47 @@ export const WELCOME_I18N = {
     step4Title: 'Ankunft',
     step4Line: 'Fünfzig Schritte: Trattoria alla Terrazza am Wasser.',
     mapsBtn: 'Google Maps öffnen',
+    guideTitle: 'Venedig entdecken',
+    guideIntro:
+      'Ab Santa Croce: so kommen Sie weiter und das sollten Sie nicht verpassen.',
+    guideTransitTitle: 'Unterwegs',
+    guideTransitBody:
+      'Der Vaporetto ist das wichtigste Verkehrsmittel. Praktische Haltestellen nahe dem Hotel: San Tomà und Rialto. ACTV- oder Venezia-Unica-Ticket. Zu Fuß ist langsamer, aber magisch - folgen Sie den gelben Schildern.',
+    guidePlaces: [
+      {
+        title: 'Markusplatz',
+        line: 'Basilika, Campanile und Dogenpalast. Vaporetto Linie 1 oder 2 nach San Marco, oder 25-30 Minuten zu Fuß über Rialto.',
+      },
+      {
+        title: 'Rialto',
+        line: 'Brücke und Fischmarkt am Morgen. Etwa 12-15 Minuten zu Fuß von Santa Croce, oder Vaporetto nach Rialto.',
+      },
+      {
+        title: 'Casino Venedig',
+        line: 'Ca\' Vendramin Calergi. Vaporetto nach San Marcuola, dann kurze Fußstrecke. Abends elegante Kleidung.',
+      },
+      {
+        title: 'Murano',
+        line: 'Glasbläserinsel. Ab Fondamente Nove: Vaporetto 4.1 / 4.2 (ca. 10-15 Minuten). Ofen und Läden entlang des Kanals.',
+      },
+      {
+        title: 'Burano',
+        line: 'Bunte Häuser und Spitze. Ab Fondamente Nove: Linie 12 (ca. 40-45 Minuten). Ideal als Halbtagesausflug, oft nach Murano.',
+      },
+    ],
+    guideDoTitle: 'Was tun',
+    guideDoItems: [
+      'Sonnenuntergang am Canal Grande von einer Brücke',
+      'Cicchetti und Spritz in einem typischen Bacaro',
+      'Ohne Karte durch die Sestieri schlendern',
+      'Abend auf der Terrazza mit Ihrem Gästerabatt',
+    ],
+    textGuideHeader: 'Venedig-Guide (Verkehr & Orte):',
     discountTitle: 'Willkommensrabatt',
     discountBefore: 'Zeigen Sie diesen Pass dem Kellner ',
     discountBold1: 'vor der Bestellung',
     discountMid: ', um ',
-    discountBold2: '10% Rabatt',
+    discountBold2: '5 % Rabatt',
     discountAfter:
       ' auf die Gesamtrechnung zu erhalten - gültig für alle Personen im Zimmer.',
     voucherTitle: '10% RABATTGUTSCHEIN',
@@ -276,11 +416,10 @@ export const WELCOME_I18N = {
     roomFallback: 'POR ASIGNAR',
     greeting: (name) => `Estimado/a ${name},`,
     welcome:
-      'Bienvenido al Hotel Canal. Abajo: accesos esenciales y el descuento 10% Terrazza.',
-    essentialsTitle: 'Sus accesos',
-    roomLabel: 'HABITACIÓN',
+      'Bienvenido a Venecia. Estamos encantados de alojarle en el Hotel Canal. Horarios, acceso, ruta a pie al restaurante asociado y su pase de bienvenida están más abajo.',
+    roomLabel: 'HABITACIÓN ASIGNADA',
     roomPrefix: 'HABITACIÓN',
-    hoursTitle: 'Horarios',
+    hoursTitle: 'Horarios de la estructura',
     checkInLabel: 'Check-in:',
     checkInValue: 'desde las 14:00',
     checkOutLabel: 'Check-out:',
@@ -302,6 +441,42 @@ export const WELCOME_I18N = {
     step4Title: 'Llegada',
     step4Line: 'Cincuenta pasos: Trattoria alla Terrazza sobre el agua.',
     mapsBtn: 'Abrir Google Maps',
+    guideTitle: 'Venecia para disfrutar',
+    guideIntro:
+      'Desde Santa Croce: cómo moverse y qué no perderse.',
+    guideTransitTitle: 'Cómo moverse',
+    guideTransitBody:
+      'El vaporetto es el medio principal. Paradas útiles cerca del hotel: San Tomà y Rialto. Billete ACTV o Venezia Unica. A pie es más lento pero mágico: siga las flechas amarillas.',
+    guidePlaces: [
+      {
+        title: 'San Marcos',
+        line: 'Basílica, Campanile y Palacio Ducal. Vaporetto línea 1 o 2 hacia San Marcos, o 25-30 minutos a pie pasando por Rialto.',
+      },
+      {
+        title: 'Rialto',
+        line: 'Puente y mercado de pescado por la mañana. Unos 12-15 minutos a pie desde Santa Croce, o vaporetto hasta Rialto.',
+      },
+      {
+        title: 'Casino de Venecia',
+        line: 'Ca\' Vendramin Calergi. Vaporetto hasta San Marcuola y unos minutos a pie. Vestimenta elegante por la noche.',
+      },
+      {
+        title: 'Murano',
+        line: 'Isla del cristal soplado. Desde Fondamente Nove: vaporetto 4.1 / 4.2 (unos 10-15 minutos). Visite un horno y las tiendas del canal.',
+      },
+      {
+        title: 'Burano',
+        line: 'Casas de colores y encaje. Desde Fondamente Nove: línea 12 (unos 40-45 minutos). Ideal media jornada, a menudo después de Murano.',
+      },
+    ],
+    guideDoTitle: 'Qué hacer',
+    guideDoItems: [
+      'Atardecer en el Canal Grande desde un puente',
+      'Cicchetti y spritz en un bacaro típico',
+      'Perderse por los sestieri sin mapa',
+      'Noche en la Terrazza con su descuento de huéspedes',
+    ],
+    textGuideHeader: 'Guía Venecia (transporte y lugares):',
     discountTitle: 'Descuento de bienvenida',
     discountBefore: 'Presente este pase al camarero ',
     discountBold1: 'antes de pedir',

@@ -132,6 +132,11 @@ function buildWelcomeHtml({
   mapsUrl,
   heroSrc,
   restaurantSrc,
+  gallerySrc,
+  dishSrc,
+  thumbs = [],
+  icons = {},
+  stickers = {},
   wifiSsid,
   wifiPassword,
   doorWalter,
@@ -147,8 +152,7 @@ function buildWelcomeHtml({
   const BRASS = '#B79A63';
   const SERIF = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
   const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
-  const SANS =
-    "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  const SANS = "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
   const bodyStyle = `font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;font-weight:400`;
   const labelStyle = `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
 
@@ -160,6 +164,8 @@ function buildWelcomeHtml({
   const claim = escapeHtml(claimUrl);
   const hero = escapeHtml(heroSrc);
   const resto = escapeHtml(restaurantSrc);
+  const gallery = escapeHtml(gallerySrc || restaurantSrc);
+  const dish = escapeHtml(dishSrc || restaurantSrc);
   const wifiSsidSafe = escapeHtml(wifiSsid || 'hotel canal');
   const wifiPasswordSafe = escapeHtml(wifiPassword || '-');
   const doorWalterSafe = escapeHtml(doorWalter || '5358#');
@@ -168,211 +174,422 @@ function buildWelcomeHtml({
     includeCoupon ? lp.preheader(roomNumber) : lp.preheaderNoCoupon,
   );
 
-  const sectionHead = (label) => `
-              <div style="font-family:${SERIF};font-size:13px;font-weight:700;color:${C} !important;letter-spacing:0.14em;text-transform:uppercase;margin:0 0 14px;padding:0 0 10px;border-bottom:1px solid #1D1D1F;">
-                ${label}
-              </div>`;
+  const iconCell = (src, alt, size = 28) =>
+    src
+      ? `<img src="${escapeHtml(src)}" width="${size}" height="${size}" alt="${escapeHtml(alt)}" style="display:block;width:${size}px;height:${size}px;border:0;">`
+      : '';
 
-  const routeSteps = [
-    { n: '01', title: lp.step1Title, line: lp.step1Line },
-    { n: '02', title: lp.step2Title, line: lp.step2Line },
-    { n: '03', title: lp.step3Title, line: lp.step3Line },
-    { n: '04', title: lp.step4Title, line: lp.step4Line },
-  ];
-  const stepRows = routeSteps
-    .map(
-      (step, i) => `
-        <tr>
-          <td width="36" valign="top" style="padding:12px 10px 12px 0;font-family:${SERIF};font-size:16px;font-weight:700;color:${C} !important;border-bottom:${i === routeSteps.length - 1 ? '0' : '1px solid #E8E4DC'};">
-            ${step.n}
-          </td>
-          <td valign="top" style="padding:12px 0;border-bottom:${i === routeSteps.length - 1 ? '0' : '1px solid #E8E4DC'};">
-            <div style="font-family:${SANS};font-size:13px;font-weight:700;color:#1D1D1F !important;letter-spacing:0.02em;line-height:1.3;margin:0 0 3px;">${step.title}</div>
-            <div style="font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.4;color:#5C6670 !important;">${step.line}</div>
-          </td>
-        </tr>`,
-    )
-    .join('');
+  const stickerImg = (src, size = 48) => {
+    if (!src) return '';
+    return `<img src="${escapeHtml(src)}" width="${size}" height="${size}" alt="" style="display:inline-block;width:${size}px;height:${size}px;border:0;">`;
+  };
 
-  const voucherBlock = includeCoupon
-    ? `
-              ${sectionHead(lp.discountTitle)}
-              <p style="${bodyStyle};color:#4A5560 !important;margin:0 0 16px;">
-                ${lp.discountBefore}<strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.discountBold1}</strong>${lp.discountMid}
-                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.discountBold2}</strong>${lp.discountAfter}
-              </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:18px;overflow:hidden;margin:0 0 36px;background-color:#FFFFFF;">
+  const sectionTitle = (label, iconSrc, iconAlt) => `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 12px;border-bottom:1px solid rgba(22,78,91,0.14);">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
-                    <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  <td width="28" valign="middle" style="padding:0 8px 8px 0;line-height:0;font-size:0;">
+                    ${iconCell(iconSrc, iconAlt || label, 22)}
                   </td>
-                </tr>
-                <tr>
-                  <td align="center" style="padding:22px 18px 24px;background-color:#FFFFFF !important;">
-                    <div style="font-family:${SERIF};font-size:18px;font-weight:700;color:${C} !important;letter-spacing:0.06em;text-transform:uppercase;">${lp.voucherTitle}</div>
-                    <div style="font-family:${SANS};font-size:10px;color:#8E8E93 !important;font-weight:600;margin:6px 0 16px;text-transform:uppercase;letter-spacing:0.08em;">${lp.voucherSub}</div>
-                    <img src="${escapeHtml(qrSrc)}" width="148" height="148" alt="Discount QR" style="display:block;width:148px;height:148px;margin:0 auto 14px;border:0;">
-                    <div style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;">
-                      ${lp.metaCamera} ${room} · ${lp.metaCheckin} ${staff} · ${lp.metaPax} ${guests}
-                    </div>
-                  </td>
-                </tr>
-              </table>`
-    : `
-              ${sectionHead(lp.claimTitle)}
-              <p style="${bodyStyle};color:#4A5560 !important;margin:0 0 14px;text-align:left;">
-                ${lp.claimDesc}
-              </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:18px;overflow:hidden;margin:0 0 36px;background-color:#FFFFFF;">
-                <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
-                    <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
-                  </td>
-                </tr>
-                <tr>
-                  <td align="center" style="padding:22px 18px 24px;background-color:#FFFFFF !important;">
-                    <a href="${claim}" target="_blank" style="display:inline-block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:14px 22px;border-radius:10px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;">
-                      ${lp.claimBtn}
-                    </a>
+                  <td valign="middle" style="padding:0 0 8px 0;">
+                    <div class="brand-title" style="font-family:${SERIF};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
                   </td>
                 </tr>
               </table>`;
 
+  const postcard = (src, alt, bottom = 20) => `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;border-radius:20px;overflow:hidden;border:1px solid #E2E6E8;">
+                <tr>
+                  <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
+                    <img src="${src}" width="436" alt="${alt}" style="display:block;width:100%;max-width:436px;height:auto;border:0;">
+                  </td>
+                </tr>
+              </table>`;
+
+  const photoCell = (src, alt, pad) => `
+                    <td width="50%" valign="top" style="${pad}">
+                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:14px;overflow:hidden;border:1px solid #E2E6E8;">
+                        <tr>
+                          <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
+                            <img src="${src}" width="210" alt="${alt}" style="display:block;width:100%;max-width:210px;height:auto;border:0;">
+                          </td>
+                        </tr>
+                      </table>
+                    </td>`;
+
+  const photoGrid = (items, bottom = 28) => {
+    const list = (items || [])
+      .filter((p) => p && p.src)
+      .slice(0, 4)
+      .map((p) => ({ src: escapeHtml(p.src), alt: escapeHtml(p.alt || '') }));
+    if (!list.length) return '';
+    const rows = [];
+    for (let i = 0; i < list.length; i += 2) {
+      const a = list[i];
+      const b = list[i + 1];
+      rows.push(`
+                <tr>
+                  ${photoCell(a.src, a.alt, 'padding:0 5px 10px 0;')}
+                  ${
+                    b
+                      ? photoCell(b.src, b.alt, 'padding:0 0 10px 5px;')
+                      : '<td width="50%" style="padding:0 0 10px 5px;">&nbsp;</td>'
+                  }
+                </tr>`);
+    }
+    return `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;">
+                ${rows.join('')}
+              </table>`;
+  };
+
+  // Percorso: icone brand + frasi brevi (copy da i18n)
+  const routeSteps = [
+    { icon: icons.gondola, alt: '1', title: lp.step1Title, line: lp.step1Line },
+    { icon: icons.path, alt: '2', title: lp.step2Title, line: lp.step2Line },
+    { icon: icons.bridge, alt: '3', title: lp.step3Title, line: lp.step3Line },
+    { icon: icons.wine, alt: '4', title: lp.step4Title, line: lp.step4Line },
+  ];
+  const stepRows = routeSteps
+    .map(
+      (step, i) => `
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === routeSteps.length - 1 ? '0' : '1px solid #E8E4DC'};">
+          <tr>
+            <td width="34" valign="top" style="padding:10px 8px 10px 0;line-height:0;font-size:0;">
+              ${iconCell(step.icon, step.alt, 28)}
+            </td>
+            <td valign="middle" style="padding:10px 0;">
+              <div class="brand-title" style="font-family:${SERIF};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 2px;">${step.title}</div>
+              <div style="font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.4;color:#5C6670 !important;font-weight:400;">${step.line}</div>
+            </td>
+          </tr>
+        </table>`,
+    )
+    .join('');
+
   return `<!DOCTYPE html>
-<html lang="${escapeHtml(lang)}" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="it" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
   <title>${escapeHtml(lp.htmlTitle)}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
   <style type="text/css">
-    :root { color-scheme: light only; }
-    img { display: block; max-width: 100%; height: auto; border: 0; }
+    :root { color-scheme: light only; supported-color-schemes: light only; }
+    img { display: block; max-width: 100%; height: auto; border: 0; outline: none; }
+    .meta-row { width: 100% !important; max-width: 100% !important; }
+    .meta-chip { width: 33.33% !important; }
+    .meta-chip-inner {
+      font-size: clamp(9px, 2.6vw, 11.5px) !important;
+      letter-spacing: 0.04em !important;
+      white-space: nowrap !important;
+    }
+    @media only screen and (max-width: 420px) {
+      .meta-chip {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 3px 0 !important;
+      }
+      .meta-chip-inner {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+      }
+    }
     @media (prefers-color-scheme: dark) {
-      .email-bg, .email-card, .email-content, .room-badge, .access-card { background-color: #FFFFFF !important; }
-      td, p, div, strong, span { color: #1D1D1F !important; }
+      .email-bg { background-color: ${WHITE} !important; }
+      .email-card, .email-content, .room-badge, .route-card, .voucher-body, .access-card {
+        background-color: #FFFFFF !important;
+      }
+      .text-main, .text-muted, .email-content, .email-content p, .email-content td, .email-content div, .email-content strong {
+        color: #1D1D1F !important;
+      }
       .brand-title { color: ${C} !important; }
+      .route-card, .room-badge, .access-card { background-color: ${BOX} !important; }
+      .brass { color: ${BRASS} !important; }
     }
   </style>
 </head>
 <body class="email-bg" style="margin:0;padding:0;background-color:${WHITE} !important;color:#1D1D1F !important;">
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">${preheader}</div>
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">
+    ${preheader}
+  </div>
+  <!-- ref univoco: evita "contenuto nascosto" Gmail nelle conversazioni -->
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">${escapeHtml(String(claimUrl || qrSrc || Date.now()).slice(-24))}</div>
   <table role="presentation" class="email-bg" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
     <tr>
-      <td align="center" style="padding:24px 12px;background-color:${WHITE} !important;">
-        <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;">
-
-          <!-- 1. HERO + BRAND -->
+      <td align="center" style="padding:20px 10px;background-color:${WHITE} !important;">
+        <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
           <tr>
-            <td style="padding:0 0 28px;">
-              <img src="${hero}" width="500" alt="Hotel Canal Venice" style="display:block;width:100%;max-width:500px;height:auto;border:0;border-radius:12px;">
-              <div style="text-align:center;padding:22px 0 0;border-bottom:1px solid #1D1D1F;padding-bottom:20px;margin-top:4px;">
-                <div class="brand-title" style="font-family:${SERIF};font-size:26px;font-weight:700;letter-spacing:0.14em;color:${C} !important;text-transform:uppercase;line-height:1;">HOTEL CANAL</div>
-                <div style="font-family:${SANS};font-size:9px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">SANTA CROCE 553 · VENICE</div>
-              </div>
-            </td>
-          </tr>
-
-          <!-- 2. INTRO + ROOM KPI -->
-          <tr>
-            <td class="email-content" style="padding:0 4px 28px;">
-              <p style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;margin:0 0 8px;">${lp.greeting(name)}</p>
-              <p style="${bodyStyle};color:#4A5560 !important;margin:0 0 20px;">${lp.welcome}</p>
-              <table role="presentation" class="room-badge" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${BOX} !important;border-radius:12px;">
+            <td class="email-content" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
+              <!-- TOP: foto + brand + saluto + stanza -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;border-radius:16px;overflow:hidden;">
                 <tr>
-                  <td align="center" style="padding:20px 14px;">
-                    <div style="${labelStyle};margin:0 0 8px;">${lp.roomLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:32px;font-weight:700;color:${C} !important;letter-spacing:0.08em;line-height:1;text-transform:uppercase;">${lp.roomPrefix} ${room}</div>
+                  <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};border-radius:16px;">
+                    <img src="${hero}" width="452" alt="Hotel Canal - Venezia" style="display:block;width:100%;max-width:452px;height:auto;border:0;border-radius:16px;">
                   </td>
                 </tr>
               </table>
-            </td>
-          </tr>
 
-          <!-- 3. ACCESS BLOCK (wifi + doors + hours) -->
-          <tr>
-            <td style="padding:0 4px 8px;">
-              ${sectionHead(lp.essentialsTitle || 'Your access')}
-              <div style="${labelStyle};margin:0 0 8px;">${lp.wifiTitle}</div>
-              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 16px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:12px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
                 <tr>
-                  <td width="50%" align="center" style="padding:16px 10px;border-right:1px solid #E8E4DC;">
-                    <div style="${labelStyle};margin:0 0 6px;">${lp.networkLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:17px;font-weight:700;color:${C} !important;letter-spacing:0.03em;">${wifiSsidSafe}</div>
-                  </td>
-                  <td width="50%" align="center" style="padding:16px 10px;">
-                    <div style="${labelStyle};margin:0 0 6px;">${lp.passwordLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:17px;font-weight:700;color:${C} !important;letter-spacing:0.08em;">${wifiPasswordSafe}</div>
+                  <td align="center" style="padding:2px 0 16px 0;border-bottom:1px solid #E8E4DC;">
+                    ${stickers.mask ? `<div style="margin:0 0 8px;line-height:0;font-size:0;">${stickerImg(stickers.mask, 40)}</div>` : ''}
+                    <div style="font-family:${SERIF};font-size:24px;font-weight:700;letter-spacing:0.12em;color:${C} !important;text-transform:uppercase;line-height:1.15;mso-line-height-rule:exactly;">HOTEL CANAL</div>
+                    <div class="brass" style="font-family:${SANS};font-size:9.5px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">SANTA CROCE 553 · VENEZIA</div>
                   </td>
                 </tr>
               </table>
-              <div style="${labelStyle};margin:0 0 8px;">${lp.doorsTitle}</div>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 14px;">
-                <tr>
-                  <td width="50%" valign="top" style="padding:0 5px 0 0;">
-                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:12px;">
-                      <tr>
-                        <td align="center" style="padding:14px 8px;">
-                          <div style="${labelStyle};margin:0 0 6px;">Walter</div>
-                          <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;">${doorWalterSafe}</div>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="50%" valign="top" style="padding:0 0 0 5px;">
-                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:12px;">
-                      <tr>
-                        <td align="center" style="padding:14px 8px;">
-                          <div style="${labelStyle};margin:0 0 6px;">Airone</div>
-                          <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;">${doorAironeSafe}</div>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-              <p style="font-family:${SANS};font-size:12px;color:#8A949C !important;margin:0 0 36px;line-height:1.5;">
-                <strong style="color:${C} !important;font-weight:600;">${lp.hoursTitle}</strong>
-                &nbsp;·&nbsp; ${lp.checkInLabel} ${lp.checkInValue}
-                &nbsp;·&nbsp; ${lp.checkOutLabel} ${lp.checkOutValue}
+
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 8px;letter-spacing:0.01em;text-align:left;">${lp.greeting(name)}</p>
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 22px;text-align:left;">
+                ${lp.welcome}
               </p>
-            </td>
-          </tr>
 
-          <!-- 4. DISCOUNT -->
-          <tr>
-            <td style="padding:0 4px;">
-              ${voucherBlock}
-            </td>
-          </tr>
-
-          <!-- 5. WALK -->
-          <tr>
-            <td style="padding:0 4px 8px;">
-              ${sectionHead(lp.routeTitle)}
-              <p style="${bodyStyle};color:#5C6670 !important;margin:0 0 12px;">${lp.routeDesc}</p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 16px;">
-                ${stepRows}
+              <table role="presentation" class="room-badge" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;background-color:${BOX} !important;border-radius:16px;">
+                <tr>
+                  <td align="center" style="padding:18px 14px;">
+                    ${iconCell(icons.door, 'Camera', 28)}
+                    <div style="height:6px;line-height:6px;font-size:1px;">&nbsp;</div>
+                    <span style="font-family:${SANS};font-size:10px;font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.14em;display:block;margin-bottom:6px;">${lp.roomLabel}</span>
+                    <strong class="brand-title" style="font-family:${SERIF};font-size:26px;color:${C} !important;font-weight:700;letter-spacing:0.06em;line-height:1;text-transform:uppercase;">${lp.roomPrefix} ${room}</strong>
+                  </td>
+                </tr>
               </table>
-              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:14px;border-radius:10px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 36px;">
+
+              ${sectionTitle(lp.hoursTitle, icons.calendar, 'Orari')}
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 36px;">
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.checkInLabel}</strong> ${lp.checkInValue}<br>
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.checkOutLabel}</strong> ${lp.checkOutValue}
+              </p>
+
+              ${sectionTitle(lp.wifiTitle, icons.bricola, 'Wi-Fi')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+                ${lp.wifiDesc}
+              </p>
+              <!-- Credenziali Wi-Fi: card pass -->
+              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
+                <tr>
+                  <td align="center" style="padding:20px 18px;">
+                    <div style="${labelStyle};margin:0 0 6px;">${lp.networkLabel}</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 14px;">${wifiSsidSafe}</div>
+                    <div style="height:1px;line-height:1px;font-size:1px;background-color:#E8E4DC;margin:0 auto 14px;max-width:200px;">&nbsp;</div>
+                    <div style="${labelStyle};margin:0 0 6px;">${lp.passwordLabel}</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1.2;">${wifiPasswordSafe}</div>
+                  </td>
+                </tr>
+              </table>
+
+              ${sectionTitle(lp.doorsTitle, icons.door, 'Porte')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+                ${lp.doorsDesc}
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;">
+                <tr>
+                  <td width="50%" valign="top" style="padding:0 6px 0 0;">
+                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:16px;">
+                      <tr>
+                        <td align="center" style="padding:16px 10px;">
+                          <div style="${labelStyle};margin:0 0 8px;">Walter</div>
+                          <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;line-height:1;">${doorWalterSafe}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td width="50%" valign="top" style="padding:0 0 0 6px;">
+                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:16px;">
+                      <tr>
+                        <td align="center" style="padding:16px 10px;">
+                          <div style="${labelStyle};margin:0 0 8px;">Airone</div>
+                          <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;line-height:1;">${doorAironeSafe}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              ${sectionTitle(lp.routeTitle, icons.path, 'Percorso')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+                ${lp.routeDesc}
+              </p>
+
+              ${postcard(gallery, 'Trattoria alla Terrazza', 16)}
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;border-top:1px solid #E8E4DC;">
+                <tr>
+                  <td style="padding:0;">
+                    ${stepRows}
+                  </td>
+                </tr>
+              </table>
+              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 44px;">
                 ${lp.mapsBtn}
               </a>
-            </td>
-          </tr>
 
-          <!-- 6. FOOTER -->
-          <tr>
-            <td align="center" style="padding:8px 4px 8px;border-top:1px solid #E5E5EA;">
-              <p style="font-family:${BODY};font-style:italic;font-size:15px;color:${C} !important;margin:16px 0 8px;">${lp.wishes}</p>
-              <div style="font-family:${SANS};font-size:10px;font-weight:600;color:${BRASS} !important;text-transform:uppercase;letter-spacing:0.16em;line-height:1.6;">
-                ${lp.signatureLine1}<br>${lp.signatureLine2}
+              ${sectionTitle(lp.guideTitle, icons.gondola || icons.path, 'Venezia')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 18px;text-align:center;">
+                ${lp.guideIntro}
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;background-color:${BOX} !important;border-radius:16px;">
+                <tr>
+                  <td style="padding:16px 16px 14px 16px;">
+                    <div style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${C} !important;margin:0 0 8px;">
+                      ${lp.guideTransitTitle}
+                    </div>
+                    <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0;text-align:left;font-size:15px;">
+                      ${lp.guideTransitBody}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 16px;border-top:1px solid #E8E4DC;">
+                <tr>
+                  <td style="padding:0;">
+                    ${(lp.guidePlaces || [])
+                      .map(
+                        (place, i, arr) => `
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === arr.length - 1 ? '0' : '1px solid #E8E4DC'};">
+                      <tr>
+                        <td valign="top" style="padding:12px 0;">
+                          <div style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 4px;">
+                            ${place.title}
+                          </div>
+                          <div class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0;text-align:left;font-size:14.5px;">
+                            ${place.line}
+                          </div>
+                        </td>
+                      </tr>
+                    </table>`,
+                      )
+                      .join('')}
+                  </td>
+                </tr>
+              </table>
+              <div style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${C} !important;margin:0 0 10px;">
+                ${lp.guideDoTitle}
               </div>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 40px;">
+                ${(lp.guideDoItems || [])
+                  .map(
+                    (item) => `
+                <tr>
+                  <td width="14" valign="top" style="padding:0 0 8px 0;font-family:${SERIF};font-size:14px;color:${BRASS} !important;line-height:1.5;">·</td>
+                  <td valign="top" style="padding:0 0 8px 0;font-family:${BODY};font-style:italic;font-size:15px;line-height:1.5;color:#4A5560 !important;">
+                    ${item}
+                  </td>
+                </tr>`,
+                  )
+                  .join('')}
+              </table>
+
+              ${
+                includeCoupon
+                  ? `
+              ${sectionTitle(lp.discountTitle, icons.key, 'Sconto')}
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 22px;">
+                ${lp.discountBefore}<strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.discountBold1}</strong>${lp.discountMid}
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.discountBold2}</strong>${lp.discountAfter}
+              </p>
+
+              <!-- VOUCHER SCONTO -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
+                <tr>
+                  <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
+                    <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="voucher-body" align="center" style="padding:22px 20px 24px;background-color:#FFFFFF !important;">
+                    <div class="brand-title" style="font-family:${SERIF};font-size:18px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;text-transform:uppercase;">${lp.voucherTitle}</div>
+                    <div style="font-family:${SANS};font-size:10px;color:#8E8E93 !important;font-weight:600;margin-top:6px;text-transform:uppercase;letter-spacing:0.08em;">${lp.voucherSub}</div>
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:18px auto 16px;">
+                      <tr>
+                        <td align="center" style="background:#FFFFFF;padding:0;line-height:0;font-size:0;">
+                          <img src="${escapeHtml(qrSrc)}" width="140" height="140" alt="Voucher QR Code" style="display:block;width:140px;height:140px;margin:0 auto;border:0;">
+                        </td>
+                      </tr>
+                    </table>
+                    <table role="presentation" class="meta-row" width="100%" cellspacing="0" cellpadding="0" border="0" align="center" style="width:100%;max-width:100%;margin:0 auto;">
+                      <tr>
+                        <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                            ${lp.metaCamera}: ${room}
+                          </div>
+                        </td>
+                        <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                            ${lp.metaCheckin}: ${staff}
+                          </div>
+                        </td>
+                        <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                            ${lp.metaPax}: ${guests}
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              `
+                  : `
+              ${sectionTitle(lp.claimTitle, icons.key, 'Sconto')}
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 18px;text-align:center;">
+                ${lp.claimDesc}
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:22px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
+                <tr>
+                  <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
+                    <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding:26px 22px 28px;background-color:#FFFFFF !important;">
+                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px 18px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;">
+                      ${lp.claimBtn}
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              `
+              }
+
+              ${sectionTitle(lp.tastesTitle, icons.cloche, 'Cucina')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+                ${lp.tastesDesc}
+              </p>
+              ${photoGrid(thumbs.slice(0, 4), 8)}
+              ${postcard(dish, 'Cucina della Trattoria alla Terrazza', 8)}
+
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:28px auto 0;">
+                <tr>
+                  ${['palazzo', 'mooring', 'basilica', 'campanile']
+                    .map((k) =>
+                      stickers[k]
+                        ? `<td align="center" style="padding:0 4px;">${stickerImg(stickers[k], 40)}</td>`
+                        : '',
+                    )
+                    .join('')}
+                </tr>
+              </table>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0 0;">
+                <tr>
+                  <td align="center" style="text-align:center;padding:0;">
+                    ${stickers.lion ? `<div style="margin:0 0 14px;line-height:0;font-size:0;">${stickerImg(stickers.lion, 52)}</div>` : ''}
+                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.55;text-align:center;">
+                      ${lp.wishes}
+                    </div>
+                    <div class="brass" style="font-family:${SANS};font-size:11.5px;font-weight:600;color:${BRASS} !important;text-transform:uppercase;letter-spacing:0.14em;margin-top:12px;text-align:center;">
+                      ${lp.signatureLine1}<br>${lp.signatureLine2}
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
-
         </table>
       </td>
     </tr>
@@ -559,10 +776,17 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Solo hero + 1 foto ristorante via PUBLIC_URL (HTML leggero, gerarchia pulita).
+  // Foto/icone/sticker/QR via URL pubblico su PUBLIC_URL (HTML ~35KB, 0 allegati → niente "Testo troncato" Gmail).
+  // Mai base64/CID pesanti: Gmail taglia sopra ~102KB di payload.
   const requiredRemote = [
     ['email', 'hero-venice.jpg'],
     ['email', 'postcard-tavolo.jpg'],
+    ['email', 'postcard-ingresso.jpg'],
+    ['email', 'postcard-dish.jpg'],
+    ['email', 'thumb-ingresso.jpg'],
+    ['email', 'thumb-pesce.jpg'],
+    ['email', 'thumb-risotto.jpg'],
+    ['email', 'thumb-linguine.jpg'],
   ];
   for (const parts of requiredRemote) {
     if (!readEmailAsset(...parts)) {
@@ -572,6 +796,57 @@ export async function sendWelcomeEmail({
 
   const heroSrc = publicAssetUrl('email', 'hero-venice.jpg');
   const restaurantSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
+  const gallerySrc = publicAssetUrl('email', 'postcard-ingresso.jpg');
+  const dishSrc = publicAssetUrl('email', 'postcard-dish.jpg');
+  const thumbs = [
+    {
+      src: publicAssetUrl('email', 'thumb-ingresso.jpg'),
+      alt: 'Ingresso sulla fondamenta',
+    },
+    {
+      src: publicAssetUrl('email', 'thumb-pesce.jpg'),
+      alt: 'Pesce al forno',
+    },
+    {
+      src: publicAssetUrl('email', 'thumb-risotto.jpg'),
+      alt: 'Risotto',
+    },
+    {
+      src: publicAssetUrl('email', 'thumb-linguine.jpg'),
+      alt: 'Linguine',
+    },
+  ];
+
+  const iconDefs = [
+    { key: 'gondola', file: 'gondola.png' },
+    { key: 'path', file: 'map.png' },
+    { key: 'bridge', file: 'bridge.png' },
+    { key: 'wine', file: 'wine.png' },
+    { key: 'door', file: 'door.png' },
+    { key: 'calendar', file: 'calendar.png' },
+    { key: 'key', file: 'key-discount.png' },
+    { key: 'cloche', file: 'cloche.png' },
+    { key: 'bricola', file: 'bricola.png' },
+  ];
+  const icons = {};
+  for (const def of iconDefs) {
+    if (!readEmailAsset('email', 'icons', def.file)) continue;
+    icons[def.key] = publicAssetUrl('email', 'icons', def.file);
+  }
+
+  const stickerDefs = [
+    { key: 'mask', file: 'mask.png' },
+    { key: 'basilica', file: 'basilica.png' },
+    { key: 'campanile', file: 'campanile.png' },
+    { key: 'palazzo', file: 'palazzo.png' },
+    { key: 'mooring', file: 'mooring.png' },
+    { key: 'lion', file: 'lion.png' },
+  ];
+  const stickers = {};
+  for (const def of stickerDefs) {
+    if (!readEmailAsset('email', 'stickers', def.file)) continue;
+    stickers[def.key] = publicAssetUrl('email', 'stickers', def.file);
+  }
 
   const wifiSsid = env('WIFI_SSID', 'hotel canal');
   const wifiPassword = env('WIFI_PASSWORD', '');
@@ -590,6 +865,11 @@ export async function sendWelcomeEmail({
     mapsUrl,
     heroSrc,
     restaurantSrc,
+    gallerySrc,
+    dishSrc,
+    thumbs,
+    icons,
+    stickers,
     wifiSsid,
     wifiPassword,
     doorWalter,
@@ -645,6 +925,15 @@ export async function sendWelcomeEmail({
       `3) ${lp.step3Title} - ${lp.step3Line.replace(/&rsquo;/g, "'")}`,
       `4) ${lp.step4Title} - ${lp.step4Line.replace(/&rsquo;/g, "'")}`,
       `Maps: ${mapsUrl}`,
+      '',
+      lp.textGuideHeader,
+      `${lp.guideTransitTitle}: ${String(lp.guideTransitBody || '').replace(/&rsquo;/g, "'").replace(/&egrave;/g, 'e')}`,
+      ...(lp.guidePlaces || []).map(
+        (p) =>
+          `- ${p.title}: ${String(p.line || '').replace(/&rsquo;/g, "'")}`,
+      ),
+      `${lp.guideDoTitle}:`,
+      ...(lp.guideDoItems || []).map((item) => `- ${item}`),
       '',
       ...textTail,
       '',
