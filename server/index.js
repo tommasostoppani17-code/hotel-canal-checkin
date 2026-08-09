@@ -9,8 +9,9 @@ import {
   insertCheckin,
   createCouponToken,
   markCouponSent,
-  getCheckinByCouponToken,
+  resolveCouponFromToken,
   updateCheckinCouponDetails,
+  updateCheckinCouponToken,
 } from './db.js';
 import { runDailyReport, runMonthlyStaffReport } from './mail.js';
 import {
@@ -104,12 +105,19 @@ app.get('/health', (_req, res) => {
   });
 });
 
+function couponLinkGonePage() {
+  return `<!DOCTYPE html><html lang="it"><body style="font-family:sans-serif;padding:40px;text-align:center;max-width:420px;margin:40px auto;">
+    <h1 style="color:#124453;">Link non valido</h1>
+    <p>Questo coupon non e riconosciuto. Rifai il check-in dall'app Hotel Canal per ricevere un nuovo link.</p>
+    <p><a href="/" style="color:#124453;">Torna al check-in</a></p>
+  </body></html>`;
+}
+
 app.get('/coupon/:token/qr.png', async (req, res) => {
   try {
-    // Genera sempre il PNG dal token (niente lookup DB):
-    // su Render free il SQLite si azzera ai redeploy e Gmail vedrebbe un QR rotto.
+    // PNG dal token firmato (niente lookup DB): Gmail puo scaricarlo anche dopo un redeploy.
     const token = String(req.params.token || '').trim();
-    if (!token || token.length < 8) return res.status(404).end();
+    if (!token || token.length < 12) return res.status(404).end();
     const png = await buildCouponQrPng(token);
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=86400');
@@ -121,38 +129,31 @@ app.get('/coupon/:token/qr.png', async (req, res) => {
 });
 
 app.get('/coupon/claim/:token', (req, res) => {
-  const row = getCheckinByCouponToken(req.params.token);
-  if (!row) {
-    return res
-      .status(404)
-      .type('html')
-      .send(
-        `<!DOCTYPE html><html lang="it"><body style="font-family:sans-serif;padding:40px;text-align:center;"><h1>Link non valido</h1><p>Questo coupon non esiste o è scaduto.</p></body></html>`,
-      );
+  const token = String(req.params.token || '').trim();
+  const resolved = resolveCouponFromToken(token);
+  if (!resolved) {
+    return res.status(404).type('html').send(couponLinkGonePage());
   }
-  // Già attivato con stanza → vai al pass
+  const { row } = resolved;
   if (row.room_number && row.receptionist) {
-    return res.redirect(302, `/coupon/${req.params.token}`);
+    return res.redirect(302, `/coupon/${encodeURIComponent(token)}`);
   }
   return res.type('html').send(
     buildCouponClaimPage({
-      token: req.params.token,
+      token,
       guestName: row.guest_name,
     }),
   );
 });
 
 app.post('/coupon/claim/:token', (req, res) => {
-  const row = getCheckinByCouponToken(req.params.token);
-  if (!row) {
-    return res
-      .status(404)
-      .type('html')
-      .send(
-        `<!DOCTYPE html><html lang="it"><body style="font-family:sans-serif;padding:40px;text-align:center;"><h1>Link non valido</h1></body></html>`,
-      );
+  const token = String(req.params.token || '').trim();
+  const resolved = resolveCouponFromToken(token);
+  if (!resolved) {
+    return res.status(404).type('html').send(couponLinkGonePage());
   }
 
+  const { row, payload } = resolved;
   const roomNumber = toUpperOrNull(req.body?.roomNumber || req.body?.room || '');
   const receptionist =
     normalizeReceptionist(req.body?.receptionist || req.body?.staff || '') ||
@@ -161,32 +162,56 @@ app.post('/coupon/claim/:token', (req, res) => {
   if (!roomNumber) {
     return res.status(400).type('html').send(
       buildCouponClaimPage({
-        token: req.params.token,
+        token,
         guestName: row.guest_name,
         error: 'Inserisci il numero di stanza.',
       }),
     );
   }
 
-  updateCheckinCouponDetails(row.id, { roomNumber, receptionist });
-  markCouponSent(row.id);
-  return res.redirect(302, `/coupon/${req.params.token}`);
+  const redeemToken = createCouponToken({
+    id: payload?.id,
+    email: row.email || payload?.e || '',
+    guestName: row.guest_name || payload?.g || '',
+    phone: row.phone || payload?.p || '',
+    guestsCount: row.guests_count ?? payload?.n ?? 2,
+    roomNumber,
+    receptionist,
+  });
+
+  if (row.id) {
+    updateCheckinCouponDetails(row.id, { roomNumber, receptionist });
+    updateCheckinCouponToken(row.id, redeemToken);
+    markCouponSent(row.id);
+  } else {
+    const phone = row.phone || payload?.p;
+    if (phone) {
+      const id = insertCheckin({
+        phone,
+        email: row.email || payload?.e || null,
+        guestName: row.guest_name || payload?.g || null,
+        roomNumber,
+        receptionist,
+        guestsCount: row.guests_count ?? payload?.n ?? 2,
+        couponToken: redeemToken,
+      });
+      markCouponSent(id);
+    }
+  }
+
+  return res.redirect(302, `/coupon/${encodeURIComponent(redeemToken)}`);
 });
 
 app.get('/coupon/:token', (req, res) => {
-  const row = getCheckinByCouponToken(req.params.token);
-  if (!row) {
-    return res
-      .status(404)
-      .type('html')
-      .send(
-        `<!DOCTYPE html><html lang="it"><body style="font-family:sans-serif;padding:40px;text-align:center;"><h1>Coupon non trovato</h1><p>Questo codice non è valido o è scaduto.</p></body></html>`,
-      );
+  const token = String(req.params.token || '').trim();
+  const resolved = resolveCouponFromToken(token);
+  if (!resolved) {
+    return res.status(404).type('html').send(couponLinkGonePage());
   }
 
-  // Nessuna stanza ancora → form claim (receptionist default TOMMASO)
+  const { row } = resolved;
   if (!row.room_number || !row.receptionist) {
-    return res.redirect(302, `/coupon/claim/${req.params.token}`);
+    return res.redirect(302, `/coupon/claim/${encodeURIComponent(token)}`);
   }
 
   return res.type('html').send(
@@ -305,7 +330,14 @@ async function handleCheckin(req, res) {
       receptionist = null;
     }
 
-    const couponToken = createCouponToken();
+    const couponToken = createCouponToken({
+      email,
+      guestName,
+      phone,
+      guestsCount,
+      roomNumber: includeCoupon ? roomNumber : null,
+      receptionist: includeCoupon ? receptionist : null,
+    });
 
     const id = insertCheckin({
       phone,
@@ -332,7 +364,7 @@ async function handleCheckin(req, res) {
       if (includeCoupon) markCouponSent(id);
       welcomeSent = true;
       console.log(
-        `[welcome] Concierge email → ${email} · lang ${String(languageRaw || 'en').slice(0, 2)} · coupon ${includeCoupon ? 'yes' : 'claim-link'} · room ${roomNumber || '—'} · staff ${receptionist || '—'} · guests ${guestsCount}`,
+        `[welcome] Concierge email → ${email} · lang ${String(languageRaw || 'en').slice(0, 2)} · coupon ${includeCoupon ? 'yes' : 'claim-link'} · room ${roomNumber || '-'} · staff ${receptionist || '-'} · guests ${guestsCount}`,
       );
     } catch (mailErr) {
       console.error('[welcome] Errore invio:', mailErr.message || mailErr);
@@ -345,6 +377,10 @@ async function handleCheckin(req, res) {
       createdAt: new Date().toISOString(),
       welcomeSent,
       couponSent: includeCoupon && welcomeSent,
+      couponToken,
+      claimUrl: includeCoupon
+        ? null
+        : `${(process.env.PUBLIC_URL || '').replace(/\/$/, '')}/coupon/claim/${encodeURIComponent(couponToken)}`,
       receptionist: receptionist || null,
       guestsCount,
     });

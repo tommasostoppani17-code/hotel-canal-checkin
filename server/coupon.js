@@ -85,11 +85,11 @@ function assertInlineImages(html, attachments) {
 }
 
 export function couponRedeemUrl(token) {
-  return `${publicBaseUrl()}/coupon/${token}`;
+  return `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}`;
 }
 
 export function couponClaimUrl(token) {
-  return `${publicBaseUrl()}/coupon/claim/${token}`;
+  return `${publicBaseUrl()}/coupon/claim/${encodeURIComponent(token)}`;
 }
 
 export async function buildCouponQrPng(token) {
@@ -886,7 +886,8 @@ export async function sendWelcomeEmail({
 export function buildCouponClaimPage({ token, guestName, error = '' }) {
   const guest = guestName ? escapeHtml(guestName) : '';
   const err = error ? escapeHtml(error) : '';
-  const action = escapeHtml(couponClaimUrl(token));
+  // Action relativa: evita POST rotti se PUBLIC_URL in env non coincide
+  const action = escapeHtml(`/coupon/claim/${encodeURIComponent(token)}`);
 
   return `<!DOCTYPE html>
 <html lang="it">

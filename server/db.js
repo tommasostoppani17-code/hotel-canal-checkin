@@ -56,8 +56,111 @@ export function initDb(databasePath) {
   return db;
 }
 
-export function createCouponToken() {
-  return crypto.randomBytes(16).toString('hex');
+function couponSecret() {
+  return (
+    process.env.COUPON_SECRET ||
+    process.env.CRON_SECRET ||
+    process.env.RESEND_API_KEY ||
+    'hotel-canal-dev-coupon'
+  );
+}
+
+function timingSafeEqualStr(a, b) {
+  const ba = Buffer.from(String(a));
+  const bb = Buffer.from(String(b));
+  if (ba.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ba, bb);
+}
+
+/**
+ * Token firmato (sopravvive al wipe del SQLite su Render free).
+ * Payload: guest + optional room/staff per redeem diretto.
+ */
+export function createCouponToken({
+  id = '',
+  email = '',
+  guestName = '',
+  phone = '',
+  guestsCount = 2,
+  roomNumber = null,
+  receptionist = null,
+} = {}) {
+  const body = {
+    v: 1,
+    id: id || crypto.randomBytes(8).toString('hex'),
+    e: String(email || '').trim().slice(0, 120),
+    g: String(guestName || '').trim().slice(0, 80),
+    p: String(phone || '').trim().slice(0, 32),
+    n: Number(guestsCount) > 0 ? Number(guestsCount) : 2,
+  };
+  const room = String(roomNumber || '').trim().slice(0, 20);
+  const staff = String(receptionist || '').trim().slice(0, 40);
+  if (room) body.r = room;
+  if (staff) body.s = staff;
+
+  const json = Buffer.from(JSON.stringify(body), 'utf8').toString('base64url');
+  const sig = crypto
+    .createHmac('sha256', couponSecret())
+    .update(json)
+    .digest('base64url');
+  return `${json}.${sig}`;
+}
+
+export function parseCouponToken(token) {
+  const raw = String(token || '').trim();
+  const i = raw.lastIndexOf('.');
+  if (i <= 0) return null;
+  const json = raw.slice(0, i);
+  const sig = raw.slice(i + 1);
+  if (!json || !sig) return null;
+  const expect = crypto
+    .createHmac('sha256', couponSecret())
+    .update(json)
+    .digest('base64url');
+  if (!timingSafeEqualStr(sig, expect)) return null;
+  try {
+    const body = JSON.parse(Buffer.from(json, 'base64url').toString('utf8'));
+    if (!body || body.v !== 1 || !body.id) return null;
+    return body;
+  } catch {
+    return null;
+  }
+}
+
+/** Riga DB se c'è, altrimenti riga sintetica dal token firmato. */
+export function resolveCouponFromToken(token) {
+  const raw = String(token || '').trim();
+  if (!raw) return null;
+
+  const row = getCheckinByCouponToken(raw);
+  const payload = parseCouponToken(raw);
+
+  if (row) {
+    return {
+      row,
+      payload,
+      token: raw,
+    };
+  }
+
+  if (!payload) return null;
+
+  return {
+    row: {
+      id: null,
+      phone: payload.p || '',
+      email: payload.e || null,
+      guest_name: payload.g || null,
+      room_number: payload.r || null,
+      receptionist: payload.s || null,
+      guests_count: payload.n ?? 2,
+      coupon_token: raw,
+      coupon_sent_at: null,
+      created_at: null,
+    },
+    payload,
+    token: raw,
+  };
 }
 
 export function insertCheckin({
@@ -127,6 +230,13 @@ export function updateCheckinCouponDetails(id, { roomNumber, receptionist }) {
       roomNumber: roomNumber || null,
       receptionist: receptionist || null,
     }).changes;
+}
+
+export function updateCheckinCouponToken(id, couponToken) {
+  if (!id || !couponToken) return 0;
+  return db
+    .prepare(`UPDATE checkins SET coupon_token = @couponToken WHERE id = @id`)
+    .run({ id, couponToken }).changes;
 }
 
 export function getUnreportedCheckins() {
