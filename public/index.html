@@ -883,7 +883,7 @@
       margin-top: var(--ios-1);
     }
 
-    /* Contatti / servizi rapidi dopo check-in */
+    /* Contatti / servizi rapidi dopo check-in — stessa palette crema/petrolio */
     .guest-actions {
       width: 100%;
       margin-top: 12px;
@@ -902,62 +902,66 @@
       margin: 0;
       padding: 0;
       border: 1px solid rgba(18, 68, 83, 0.12);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.72);
+      border-radius: 14px;
+      background: var(--input-white);
       overflow: hidden;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     .guest-action.is-primary {
-      border-color: rgba(18, 68, 83, 0.28);
-      background: rgba(18, 68, 83, 0.06);
+      border-color: rgba(18, 68, 83, 0.22);
+      background: rgba(18, 68, 83, 0.04);
     }
 
-    /* Tendina prenotazione: tono caldo, diverso da call/Wi‑Fi/porte */
+    /* Book: stessa famiglia degli altri accordion (niente marrone “altro tema”) */
     .guest-action.is-book {
-      border-color: rgba(138, 106, 69, 0.32);
-      background: #F3EEE6;
+      border-color: rgba(18, 68, 83, 0.16);
+      background: var(--input-white);
     }
 
     .guest-action.is-book .guest-action-btn {
-      color: #5C4A36;
+      color: var(--canal-petroleum);
     }
 
     .guest-action.is-book .guest-action-btn:active {
-      background: rgba(138, 106, 69, 0.1);
+      background: rgba(18, 68, 83, 0.06);
     }
 
     .guest-action.is-book .ga-sub {
-      color: #8A7A68;
+      color: #7A8791;
     }
 
     .guest-action.is-book .ga-chevron {
-      border-color: #8A6A45;
-      opacity: 0.75;
+      border-color: var(--canal-petroleum);
+      opacity: 0.55;
     }
 
     .guest-action.is-book .guest-action-panel {
-      border-top-color: rgba(138, 106, 69, 0.16);
+      border-top-color: rgba(18, 68, 83, 0.08);
     }
 
     .guest-action.is-book .book-field label {
-      color: #8A6A45;
+      color: var(--canal-petroleum);
     }
 
     .guest-action.is-book .book-field input {
-      border-color: rgba(138, 106, 69, 0.22);
-      color: #5C4A36;
+      border-color: rgba(18, 68, 83, 0.12);
+      color: var(--canal-petroleum);
+      background: #FFFFFF;
     }
 
     .guest-action.is-book .book-submit {
-      background: #8A6A45;
+      background: var(--canal-petroleum);
     }
 
     .guest-action.is-book .book-submit:active {
-      background: #734F2F;
+      background: var(--canal-petroleum-hover);
     }
 
     .guest-action.is-book .book-done {
-      color: #5C4A36;
+      color: var(--canal-petroleum);
+      background: rgba(18, 68, 83, 0.06);
+      border-color: rgba(18, 68, 83, 0.12);
     }
 
     /* Call CTA dentro la tendina Book */
@@ -967,38 +971,38 @@
       gap: 10px;
       padding: 10px;
       border-radius: 12px;
-      border-color: rgba(138, 106, 69, 0.28);
-      background: rgba(255, 255, 255, 0.72);
-      color: #5C4A36;
+      border-color: rgba(18, 68, 83, 0.12);
+      background: rgba(18, 68, 83, 0.04);
+      color: var(--canal-petroleum);
       box-shadow: none;
     }
 
     .guest-action.is-book .guest-call:active {
       transform: scale(0.985);
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(18, 68, 83, 0.08);
     }
 
     .guest-action.is-book .guest-call .ga-call-icon {
       width: 34px;
       height: 34px;
-      background: #8A6A45;
-      box-shadow: 0 2px 8px rgba(138, 106, 69, 0.28);
+      background: var(--canal-petroleum);
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.22);
     }
 
     .guest-action.is-book .guest-call .ga-title {
-      color: #5C4A36;
+      color: var(--canal-petroleum);
       font-size: 12px;
     }
 
     .guest-action.is-book .guest-call .ga-sub {
-      color: #8A7A68;
+      color: #7A8791;
       letter-spacing: 0.05em;
     }
 
     .guest-action.is-book .guest-call .ga-phone {
-      color: #5C4A36;
-      background: rgba(138, 106, 69, 0.1);
-      border-color: rgba(138, 106, 69, 0.18);
+      color: var(--canal-petroleum);
+      background: rgba(18, 68, 83, 0.08);
+      border-color: rgba(18, 68, 83, 0.12);
       padding: 6px 10px;
       font-size: 12px;
     }
@@ -1185,10 +1189,16 @@
       align-items: center;
       flex: 0 0 auto;
       width: 100%;
-      margin: 0;
+      margin: 0 0 var(--ios-3);
       padding: 0;
       text-align: center;
       gap: 0;
+    }
+
+    #step3 .step3-body {
+      width: 100%;
+      flex: 0 1 auto;
+      min-height: 0;
     }
 
     #step3 .header {
@@ -1198,51 +1208,68 @@
     }
 
     #step3 .success-check {
-      width: 28px;
-      height: 28px;
-      margin: 0 auto 8px;
-      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.2);
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 10px;
+      box-shadow: 0 3px 10px rgba(18, 68, 83, 0.22);
     }
 
     #step3 .success-check::after {
-      left: 10px;
-      top: 7px;
-      width: 6px;
-      height: 10px;
-      border-width: 0 2px 2px 0;
+      left: 13px;
+      top: 9px;
+      width: 7px;
+      height: 12px;
+      border-width: 0 2.2px 2.2px 0;
     }
 
     #step3 #lbl-succ-title {
+      font-family: "Cinzel", Georgia, serif !important;
       font-size: 22px !important;
       line-height: 1.2 !important;
       margin: 0 !important;
-      letter-spacing: -0.02em !important;
+      letter-spacing: 0.02em !important;
       font-weight: 700 !important;
+      color: var(--canal-petroleum) !important;
+      text-transform: none !important;
     }
 
     #step3 #lbl-succ-sub {
-      font-size: 15px !important;
-      margin: var(--ios-2) 0 var(--ios-3) !important;
-      line-height: 1.38 !important;
-      max-width: 32ch;
+      display: block !important;
+      font-size: 12px !important;
+      margin: 6px 0 12px !important;
+      line-height: 1.4 !important;
+      max-width: 34ch;
       letter-spacing: -0.01em !important;
-      font-weight: 400 !important;
+      font-weight: 500 !important;
+      color: var(--text-muted) !important;
     }
 
     #step3 .receipt-badge {
-      padding: 6px 10px 7px;
-      margin-top: 0;
-      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 0;
+      width: 100%;
+      border-radius: 14px;
+      background: var(--input-white);
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     #step3 .receipt-badge .eyebrow {
-      font-size: 8.5px;
+      font-size: 10px;
       letter-spacing: 0.08em;
+      color: var(--canal-petroleum);
+      font-weight: 700;
     }
 
     #step3 .receipt-badge .code {
-      font-size: 15px;
-      margin: 2px 0 1px;
+      font-size: 20px;
+      margin: 4px 0 2px;
+      color: var(--canal-petroleum);
+    }
+
+    #step3 .receipt-badge .time {
+      font-size: 11px;
+      color: var(--text-muted);
     }
 
     #step3 .guest-call {
@@ -1257,7 +1284,7 @@
     #step3 .guest-call .ga-call-icon {
       width: 32px;
       height: 32px;
-      box-shadow: 0 2px 6px rgba(138, 106, 69, 0.22);
+      box-shadow: 0 2px 6px rgba(18, 68, 83, 0.2);
     }
 
     #step3 .guest-call .ga-call-icon svg {
@@ -1280,21 +1307,24 @@
     }
 
     #step3 .guest-action {
-      border-radius: 10px;
+      border-radius: 14px;
     }
 
     #step3 .guest-action-btn {
-      min-height: 42px;
-      padding: 9px 12px;
+      min-height: 44px;
+      padding: 10px 12px;
       gap: 8px;
     }
 
     #step3 .guest-action-btn .ga-title {
-      font-size: 12.5px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--canal-petroleum);
     }
 
     #step3 .guest-action-btn .ga-sub {
-      font-size: 10px;
+      font-size: 10.5px;
+      color: #7A8791;
     }
 
     #step3 .guest-action-panel {
@@ -1308,6 +1338,27 @@
 
     #step3 .guest-kv .v {
       font-size: 12px;
+    }
+
+    #step3 .book-field label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    #step3 .book-submit {
+      border-radius: 12px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    #step3 .reception-note {
+      margin-top: var(--ios-4);
+      font-size: 11.5px;
+      line-height: 1.4;
+      color: var(--text-muted);
+      text-align: center;
     }
 
     .guest-action.is-static .guest-action-head .ga-title {
@@ -1956,14 +2007,15 @@
     }
 
     .receipt-badge {
-      background: rgba(18, 68, 83, 0.06);
-      border: 1px dashed #124453;
-      border-radius: 12px;
+      background: var(--input-white);
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 14px;
       padding: 14px;
       width: 100%;
       box-sizing: border-box;
       text-align: center;
       transform-origin: center center;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     #step3.is-active .receipt-badge:not(.is-collapsed) {
@@ -2164,12 +2216,12 @@
         </div>
       </section>
 
-      <!-- STEP 3 SUCCESS — azioni rapide ospite -->
+      <!-- STEP 3 SUCCESS — stesso linguaggio visivo di Step 1/2 -->
       <section class="slide-step" id="step3" aria-hidden="true">
         <div class="header step3-head">
           <div class="success-check" aria-hidden="true"></div>
-          <h1 id="lbl-succ-title" style="font-size: 18px; text-transform: none; letter-spacing: 0.02em; color: var(--canal-petroleum); margin: 0;">Registrato!</h1>
-          <p id="lbl-succ-sub" style="display: block; font-size: 10.5px; color: var(--text-muted); margin: 4px 0 8px; line-height: 1.35; font-weight: 500;">
+          <h1 id="lbl-succ-title">Registrato!</h1>
+          <p id="lbl-succ-sub">
             Indicazioni via email. Azioni rapide qui sotto.
           </p>
           <div class="receipt-badge" id="receiptBadge">
@@ -2177,7 +2229,9 @@
             <strong class="code" id="verificationCode">HC-0000</strong>
             <span class="time" id="lbl-verified-time"></span>
           </div>
+        </div>
 
+        <div class="step-body step3-body">
           <div class="guest-actions" id="guestActions" hidden>
             <div class="guest-action is-book" id="actionTable">
               <button type="button" class="guest-action-btn" data-panel="tablePanel" id="btnTable">
