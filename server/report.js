@@ -362,7 +362,7 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
                     <th width="40%" align="left" style="width:40%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:left;padding:12px 6px;border-bottom:1px solid #1D1D1F;">Guest / Parameters</th>
                     <th width="24%" align="left" style="width:24%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:left;padding:12px 6px;border-bottom:1px solid #1D1D1F;">Telephone</th>
                     <th width="12%" align="center" style="width:12%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:center;padding:12px 2px;border-bottom:1px solid #1D1D1F;">Staff</th>
-                    <th width="12%" align="right" style="width:12%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:right;padding:12px 2px;border-bottom:1px solid #1D1D1F;">Privilege</th>
+                    <th width="12%" align="right" style="width:12%;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;text-align:right;padding:12px 2px;border-bottom:1px solid #1D1D1F;">Sconto</th>
                   </tr>
                 </thead>
                 <tbody>
