@@ -106,9 +106,11 @@ app.get('/health', (_req, res) => {
 
 app.get('/coupon/:token/qr.png', async (req, res) => {
   try {
-    const row = getCheckinByCouponToken(req.params.token);
-    if (!row) return res.status(404).end();
-    const png = await buildCouponQrPng(req.params.token);
+    // Genera sempre il PNG dal token (niente lookup DB):
+    // su Render free il SQLite si azzera ai redeploy e Gmail vedrebbe un QR rotto.
+    const token = String(req.params.token || '').trim();
+    if (!token || token.length < 8) return res.status(404).end();
+    const png = await buildCouponQrPng(token);
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=86400');
     return res.send(png);
