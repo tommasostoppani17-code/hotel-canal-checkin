@@ -89,19 +89,19 @@
     /* Layer reale (non ::before): spring + inerzia ambient aggiornano CSS vars */
     .bg-inertia {
       position: absolute;
-      inset: -14%;
+      inset: -10%;
       background-image: url('/venice-bg.jpg');
       background-size: cover;
       background-position: center;
-      /* Fisso: niente shift colore per step (niente grigio/marrone random) */
-      /* Rosa/blu Venezia: meno scurimento, più satura — niente fanghiglia arancio */
-      filter: blur(12px) brightness(0.98) saturate(1.28) contrast(1.06);
+      /* Azzurro leggibile, poca sfocatura */
+      filter: blur(5px) brightness(1.02) saturate(1.15) contrast(1.04)
+        hue-rotate(-8deg);
       transform: translate3d(
           calc(var(--parallax-x, 0%) + var(--ambient-x, 0px)),
           calc(var(--ambient-y, 0px)),
           0
         )
-        scale(var(--parallax-scale, 1.08));
+        scale(var(--parallax-scale, 1.06));
       will-change: transform;
       transition: none;
     }
@@ -110,19 +110,20 @@
       content: "";
       position: absolute;
       inset: 0;
-      /* Velo leggero rosa→petrolio, non brown-out */
+      /* Velo azzurro/laguna, meno rosa */
       background: linear-gradient(
         165deg,
-        rgba(90, 70, 110, 0.14) 0%,
-        rgba(18, 68, 83, 0.22) 48%,
-        rgba(10, 40, 58, 0.34) 100%
+        rgba(70, 140, 175, 0.22) 0%,
+        rgba(18, 90, 120, 0.28) 42%,
+        rgba(8, 48, 72, 0.42) 100%
       );
     }
 
     body[data-step="1"] .bg-inertia,
     body[data-step="2"] .bg-inertia,
     body[data-step="3"] .bg-inertia {
-      filter: blur(12px) brightness(0.98) saturate(1.28) contrast(1.06);
+      filter: blur(5px) brightness(1.02) saturate(1.15) contrast(1.04)
+        hue-rotate(-8deg);
     }
 
     .apple-card {
@@ -131,7 +132,7 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 390px;
+      max-width: 360px;
       /* Altezza per-step (JS setta --card-h), sync con lo slide */
       height: var(--card-h);
       max-height: var(--card-h);
@@ -164,7 +165,7 @@
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
-    /* Smartphone: card più larga + stessi colori dello screenshot */
+    /* Smartphone: card un filo più stretta + margini laterali */
     @media (max-width: 480px) {
       :root {
         --card-h-1: min(548px, calc(var(--app-vh) - 36px));
@@ -180,21 +181,23 @@
       }
 
       body {
-        padding-top: max(6px, env(safe-area-inset-top));
-        padding-bottom: max(6px, env(safe-area-inset-bottom));
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+        padding-left: 16px;
+        padding-right: 16px;
       }
 
       .apple-card {
-        max-width: none;
+        max-width: 348px;
         width: 100%;
+        margin-left: auto;
+        margin-right: auto;
         max-height: calc(
           var(--app-vh) - env(safe-area-inset-top, 0px) -
-            env(safe-area-inset-bottom, 0px) - 12px
+            env(safe-area-inset-bottom, 0px) - 16px
         );
         padding: 14px 0 14px;
-        border-radius: 26px;
+        border-radius: 24px;
         background-color: var(--card-cream);
         background-image: linear-gradient(
           180deg,
@@ -206,8 +209,8 @@
       }
 
       .slide-step {
-        padding-left: 18px;
-        padding-right: 18px;
+        padding-left: 16px;
+        padding-right: 16px;
       }
 
       #step3.slide-step {
@@ -217,14 +220,14 @@
 
       #step3 .step3-home,
       #step3 .guest-sheet {
-        padding-left: 18px;
-        padding-right: 18px;
+        padding-left: 16px;
+        padding-right: 16px;
       }
 
       /* Foto ristorante: landscape full-bleed, basse */
       #step2 .restaurant-showcase {
-        margin-left: -18px;
-        margin-right: -18px;
+        margin-left: -16px;
+        margin-right: -16px;
       }
 
       #step2 .carousel-viewport {
@@ -241,8 +244,8 @@
       }
 
       #step2 .carousel-caption {
-        padding-left: 18px;
-        padding-right: 18px;
+        padding-left: 16px;
+        padding-right: 16px;
       }
 
       .apple-input {
