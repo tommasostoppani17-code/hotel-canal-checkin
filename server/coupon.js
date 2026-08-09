@@ -903,19 +903,19 @@ export async function sendWelcomeEmail({
   const thumbs = [
     {
       src: publicAssetUrl('email', 'thumb-ingresso.jpg'),
-      alt: 'Ingresso sulla fondamenta',
+      alt: 'Sala della Terrazza',
     },
     {
       src: publicAssetUrl('email', 'thumb-pesce.jpg'),
-      alt: 'Pesce al forno',
+      alt: 'Pesce grigliato',
     },
     {
       src: publicAssetUrl('email', 'thumb-risotto.jpg'),
-      alt: 'Risotto',
+      alt: 'Guazzetto di mare',
     },
     {
       src: publicAssetUrl('email', 'thumb-linguine.jpg'),
-      alt: 'Linguine',
+      alt: 'Linguine all’astice',
     },
   ];
 

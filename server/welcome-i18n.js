@@ -65,7 +65,7 @@ export const WELCOME_I18N = {
     metaCheckin: 'STAFF',
     metaPax: 'OSPITI',
     tastesTitle: 'Assaggi dalla Terrazza',
-    tastesDesc: 'Pesce, risotto e sapori veneziani.',
+    tastesDesc: 'Pesce, pasta e sapori veneziani.',
     veniceTitle: 'Come muoversi a Venezia',
     veniceIntro:
       'Dalla reception sei vicino a Piazzale Roma e alla stazione. A piedi segui i cartelli gialli (il GPS nelle calli spesso sbaglia).',
@@ -169,7 +169,7 @@ export const WELCOME_I18N = {
     metaCheckin: 'STAFF',
     metaPax: 'GUESTS',
     tastesTitle: 'Tastes from the Terrazza',
-    tastesDesc: 'Fish, risotto and Venetian flavours.',
+    tastesDesc: 'Fish, pasta and Venetian flavours.',
     veniceTitle: 'Getting around Venice',
     veniceIntro:
       'From reception you are close to Piazzale Roma and the station. On foot, follow the yellow signs (GPS often misleads in the alleys).',
@@ -274,7 +274,7 @@ export const WELCOME_I18N = {
     metaCheckin: 'CHECK-IN',
     metaPax: 'PAX',
     tastesTitle: 'Saveurs de la Terrazza',
-    tastesDesc: 'Poisson, risotto et saveurs vénitiennes.',
+    tastesDesc: 'Poisson, pâtes et saveurs vénitiennes.',
     veniceTitle: 'Se d&eacute;placer &agrave; Venise',
     veniceIntro:
       'Depuis la r&eacute;ception, Piazzale Roma et la gare Santa Lucia sont &agrave; quelques minutes. Voici l&rsquo;essentiel ; le guide PDF d&eacute;taille le reste.',
@@ -379,7 +379,7 @@ export const WELCOME_I18N = {
     metaCheckin: 'CHECK-IN',
     metaPax: 'PAX',
     tastesTitle: 'Kostproben von der Terrazza',
-    tastesDesc: 'Fisch, Risotto und venezianische Aromen.',
+    tastesDesc: 'Fisch, Pasta und venezianische Aromen.',
     veniceTitle: 'Unterwegs in Venedig',
     veniceIntro:
       'Von der Rezeption sind Piazzale Roma und der Bahnhof Santa Lucia nur wenige Minuten entfernt. Hier das Wichtigste; im PDF-Guide finden Sie mehr.',
@@ -484,7 +484,7 @@ export const WELCOME_I18N = {
     metaCheckin: 'CHECK-IN',
     metaPax: 'PAX',
     tastesTitle: 'Sabores de la Terrazza',
-    tastesDesc: 'Pescado, risotto y sabores venecianos.',
+    tastesDesc: 'Pescado, pasta y sabores venecianos.',
     veniceTitle: 'Moverse por Venecia',
     veniceIntro:
       'Desde recepci&oacute;n est&aacute; a pocos minutos de Piazzale Roma y la estaci&oacute;n Santa Lucia. Aqu&iacute; lo esencial; la gu&iacute;a PDF tiene m&aacute;s detalle.',
