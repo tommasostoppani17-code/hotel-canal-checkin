@@ -175,8 +175,8 @@ export async function sendTableBookingWhatsApp(row) {
   const lang = String(row.guest_lang || '').slice(0, 2).toUpperCase() || '-';
 
   const body = [
-    `🛶 Tavolo — ${hotelName}`,
-    `Ciao Payel — ti passo una nuova richiesta di tavolo${coupon === 'SÌ' ? ' (coupon −10% già inviato)' : ''}.`,
+    `Nuova prenotazione ristorante · ${hotelName}`,
+    `Ciao Payel, ti passo una nuova richiesta di tavolo${coupon === 'SÌ' ? ' (coupon −10% già inviato)' : ''}.`,
     `Richiama l'ospite e conferma.`,
     ``,
     `Stanza ${room} · ${pax} pax · ${timeLabel}`,
