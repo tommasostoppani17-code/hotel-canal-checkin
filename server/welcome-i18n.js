@@ -56,16 +56,19 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Assaggi dalla Terrazza',
     tastesDesc: 'Pesce, risotto e sapori veneziani.',
-    veniceTitle: 'Get around',
+    veniceTitle: 'Get Around',
     veniceIntro:
-      'Mezzi e percorsi essenziali. Tutti i dettagli (San Marco, Rialto, Casino, Murano, Burano) sono nel PDF.',
-    veniceLines: [
-      '<strong>Vaporetto ACTV</strong> - biglietti in app o alle biglietterie; obliterare prima di salire.',
-      '<strong>Linea 1 / 2</strong> - Canal Grande verso Rialto e San Marco.',
-      '<strong>Murano</strong> - 4.1 / 4.2 · <strong>Burano</strong> - linea 12 da Fondamente Nove.',
-      '<strong>A piedi</strong> - Rialto 15-25 min dall&rsquo;hotel; San Marco 25-40 min.',
-    ],
-    venicePdfBtn: 'Scarica guida completa (PDF)',
+      'Note essenziali sui trasporti. I dettagli per San Marco, Rialto, Lido, Murano e Burano sono nella guida concierge.',
+    veniceActvTitle: 'ACTV Vaporetto',
+    veniceActvBody:
+      'Biglietti via app o alle biglietterie ufficiali. Obliterate sempre il titolo prima di salire.<br><strong style="color:#124453 !important;">Linee 1 / 2</strong> - Canal Grande verso Rialto e San Marco (imbarco vicino a Piazzale Roma / Ferrovia).',
+    veniceIslandsTitle: 'Murano &amp; Burano',
+    veniceIslandsBody:
+      '<strong style="color:#124453 !important;">Murano:</strong> Linee 4.1 / 4.2 dai moli della stazione.<br><strong style="color:#124453 !important;">Burano:</strong> Linea 12 da Fondamente Nove.',
+    veniceWalkTitle: 'A piedi',
+    veniceWalkBody:
+      'Camminare nel centro storico e\' il modo migliore per vivere la citta\'.<br><strong style="color:#124453 !important;">Ponte di Rialto:</strong> 15-25 minuti dalla lobby.<br><strong style="color:#124453 !important;">Piazza San Marco:</strong> 25-40 minuti lungo i percorsi pedonali principali.',
+    venicePdfBtn: 'Scarica guida completa Venezia (PDF)',
     wishes: 'Le auguriamo un soggiorno indimenticabile.',
     signatureLine1: 'La Direzione',
     signatureLine2: 'Hotel Canal Venezia',
@@ -131,16 +134,19 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Tastes from the Terrazza',
     tastesDesc: 'Fish, risotto and Venetian flavours.',
-    veniceTitle: 'Get around',
+    veniceTitle: 'Get Around',
     veniceIntro:
-      'Essential transport notes. Full details for San Marco, Rialto, Casino, Murano and Burano are in the PDF.',
-    veniceLines: [
-      '<strong>ACTV vaporetto</strong> - tickets in the app or at offices; validate before boarding.',
-      '<strong>Lines 1 / 2</strong> - Grand Canal toward Rialto and San Marco.',
-      '<strong>Murano</strong> - 4.1 / 4.2 · <strong>Burano</strong> - line 12 from Fondamente Nove.',
-      '<strong>On foot</strong> - Rialto 15-25 min from the hotel; San Marco 25-40 min.',
-    ],
-    venicePdfBtn: 'Download full Venice guide (PDF)',
+      'Essential transport notes. Full details for San Marco, Rialto, Lido, Murano and Burano are available in our concierge guide.',
+    veniceActvTitle: 'ACTV Vaporetto',
+    veniceActvBody:
+      'Tickets can be purchased via app or at the official docks. Always validate your pass before boarding.<br><strong style="color:#124453 !important;">Lines 1 / 2</strong> - Grand Canal toward Rialto and San Marco (dock near Piazzale Roma / Santa Lucia).',
+    veniceIslandsTitle: 'Murano &amp; Burano Islands',
+    veniceIslandsBody:
+      '<strong style="color:#124453 !important;">Murano:</strong> Take Lines 4.1 / 4.2 from the station docks.<br><strong style="color:#124453 !important;">Burano:</strong> Take Line 12 from Fondamente Nove.',
+    veniceWalkTitle: 'On Foot',
+    veniceWalkBody:
+      'Walking inside the historic center is the best way to experience the city.<br><strong style="color:#124453 !important;">Rialto Bridge:</strong> 15-25 minutes from the hotel lobby.<br><strong style="color:#124453 !important;">San Marco Square:</strong> 25-40 minutes along the main pedestrian routes.',
+    venicePdfBtn: 'Download Full Venice Guide (PDF)',
     wishes: 'We wish you an unforgettable stay.',
     signatureLine1: 'The Management',
     signatureLine2: 'Hotel Canal Venice',
@@ -207,16 +213,19 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Saveurs de la Terrazza',
     tastesDesc: 'Poisson, risotto et saveurs vénitiennes.',
-    veniceTitle: 'Get around',
+    veniceTitle: 'Get Around',
     veniceIntro:
-      'Transports essentiels. Le détail San Marco, Rialto, Casino, Murano et Burano est dans le PDF.',
-    veniceLines: [
-      '<strong>Vaporetto ACTV</strong> - billets via appli ou guichets ; compostage avant embarquement.',
-      '<strong>Lignes 1 / 2</strong> - Grand Canal vers Rialto et San Marco.',
-      '<strong>Murano</strong> - 4.1 / 4.2 · <strong>Burano</strong> - ligne 12 depuis Fondamente Nove.',
-      '<strong>À pied</strong> - Rialto 15-25 min ; San Marco 25-40 min.',
-    ],
-    venicePdfBtn: 'Télécharger le guide complet (PDF)',
+      'Notes essentielles sur les transports. Les détails San Marco, Rialto, Lido, Murano et Burano sont dans le guide conciergerie.',
+    veniceActvTitle: 'ACTV Vaporetto',
+    veniceActvBody:
+      'Billets via appli ou aux guichets officiels. Compostez toujours avant l&rsquo;embarquement.<br><strong style="color:#124453 !important;">Lignes 1 / 2</strong> - Grand Canal vers Rialto et San Marco (débarcadère près de Piazzale Roma / Santa Lucia).',
+    veniceIslandsTitle: 'Îles Murano &amp; Burano',
+    veniceIslandsBody:
+      '<strong style="color:#124453 !important;">Murano :</strong> Lignes 4.1 / 4.2 depuis les quais de la gare.<br><strong style="color:#124453 !important;">Burano :</strong> Ligne 12 depuis Fondamente Nove.',
+    veniceWalkTitle: 'À pied',
+    veniceWalkBody:
+      'Marcher dans le centre historique est la meilleure façon de découvrir la ville.<br><strong style="color:#124453 !important;">Pont du Rialto :</strong> 15-25 minutes depuis le hall.<br><strong style="color:#124453 !important;">Place Saint-Marc :</strong> 25-40 minutes par les parcours piétons principaux.',
+    venicePdfBtn: 'Télécharger le guide Venise (PDF)',
     wishes: 'Nous vous souhaitons un séjour inoubliable.',
     signatureLine1: 'La Direction',
     signatureLine2: 'Hotel Canal Venise',
@@ -283,16 +292,19 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Kostproben von der Terrazza',
     tastesDesc: 'Fisch, Risotto und venezianische Aromen.',
-    veniceTitle: 'Get around',
+    veniceTitle: 'Get Around',
     veniceIntro:
-      'Wichtige Verkehrshinweise. Alle Details zu San Marco, Rialto, Casino, Murano und Burano im PDF.',
-    veniceLines: [
-      '<strong>ACTV-Vaporetto</strong> - Tickets in der App oder am Schalter; vor dem Einsteigen entwerten.',
-      '<strong>Linien 1 / 2</strong> - Canal Grande nach Rialto und San Marco.',
-      '<strong>Murano</strong> - 4.1 / 4.2 · <strong>Burano</strong> - Linie 12 ab Fondamente Nove.',
-      '<strong>Zu Fuß</strong> - Rialto 15-25 Min.; San Marco 25-40 Min.',
-    ],
-    venicePdfBtn: 'Vollständigen Guide laden (PDF)',
+      'Wichtige Verkehrshinweise. Details zu San Marco, Rialto, Lido, Murano und Burano finden Sie im Concierge-Guide.',
+    veniceActvTitle: 'ACTV Vaporetto',
+    veniceActvBody:
+      'Tickets in der App oder an offiziellen Schaltern. Vor dem Einsteigen entwerten.<br><strong style="color:#124453 !important;">Linien 1 / 2</strong> - Canal Grande nach Rialto und San Marco (Anleger nahe Piazzale Roma / Santa Lucia).',
+    veniceIslandsTitle: 'Murano &amp; Burano',
+    veniceIslandsBody:
+      '<strong style="color:#124453 !important;">Murano:</strong> Linien 4.1 / 4.2 von den Stationsanlegern.<br><strong style="color:#124453 !important;">Burano:</strong> Linie 12 ab Fondamente Nove.',
+    veniceWalkTitle: 'Zu Fuß',
+    veniceWalkBody:
+      'Zu Fuß durch die Altstadt ist der schönste Weg, Venedig zu erleben.<br><strong style="color:#124453 !important;">Rialtobrücke:</strong> 15-25 Minuten von der Lobby.<br><strong style="color:#124453 !important;">Markusplatz:</strong> 25-40 Minuten über die Hauptwege.',
+    venicePdfBtn: 'Venedig-Guide herunterladen (PDF)',
     wishes: 'Wir wünschen Ihnen einen unvergesslichen Aufenthalt.',
     signatureLine1: 'Die Direktion',
     signatureLine2: 'Hotel Canal Venedig',
@@ -359,16 +371,19 @@ export const WELCOME_I18N = {
     metaPax: 'PAX',
     tastesTitle: 'Sabores de la Terrazza',
     tastesDesc: 'Pescado, risotto y sabores venecianos.',
-    veniceTitle: 'Get around',
+    veniceTitle: 'Get Around',
     veniceIntro:
-      'Transporte esencial. El detalle de San Marco, Rialto, Casino, Murano y Burano está en el PDF.',
-    veniceLines: [
-      '<strong>Vaporetto ACTV</strong> - billetes en app o taquillas; valide antes de subir.',
-      '<strong>Líneas 1 / 2</strong> - Canal Grande hacia Rialto y San Marco.',
-      '<strong>Murano</strong> - 4.1 / 4.2 · <strong>Burano</strong> - línea 12 desde Fondamente Nove.',
-      '<strong>A pie</strong> - Rialto 15-25 min; San Marco 25-40 min.',
-    ],
-    venicePdfBtn: 'Descargar guía completa (PDF)',
+      'Notas esenciales de transporte. Los detalles de San Marco, Rialto, Lido, Murano y Burano están en la guía de conserjería.',
+    veniceActvTitle: 'ACTV Vaporetto',
+    veniceActvBody:
+      'Billetes en la app o en taquillas oficiales. Valide siempre antes de subir.<br><strong style="color:#124453 !important;">Líneas 1 / 2</strong> - Canal Grande hacia Rialto y San Marco (embarque cerca de Piazzale Roma / Santa Lucia).',
+    veniceIslandsTitle: 'Murano &amp; Burano',
+    veniceIslandsBody:
+      '<strong style="color:#124453 !important;">Murano:</strong> Líneas 4.1 / 4.2 desde los muelles de la estación.<br><strong style="color:#124453 !important;">Burano:</strong> Línea 12 desde Fondamente Nove.',
+    veniceWalkTitle: 'A pie',
+    veniceWalkBody:
+      'Caminar por el centro histórico es la mejor forma de vivir la ciudad.<br><strong style="color:#124453 !important;">Puente de Rialto:</strong> 15-25 minutos desde el hall.<br><strong style="color:#124453 !important;">Plaza San Marcos:</strong> 25-40 minutos por las rutas peatonales principales.',
+    venicePdfBtn: 'Descargar guía completa Venecia (PDF)',
     wishes: 'Le deseamos una estancia inolvidable.',
     signatureLine1: 'La Dirección',
     signatureLine2: 'Hotel Canal Venecia',

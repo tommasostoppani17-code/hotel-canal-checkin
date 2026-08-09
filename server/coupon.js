@@ -207,38 +207,56 @@ function buildWelcomeHtml({
                 </tr>
               </table>`;
 
-  const veniceLinesHtml = (Array.isArray(lp.veniceLines) ? lp.veniceLines : [])
-    .map(
-      (line) => `
-                    <tr>
-                      <td style="padding:0 0 8px 0;font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.5;color:#4A5560 !important;">
-                        ${line}
-                      </td>
-                    </tr>`,
-    )
-    .join('');
+  const CINZEL = "'Cinzel',Georgia,'Times New Roman',serif";
 
   const veniceGuideBlock = `
-              ${sectionTitle(lp.veniceTitle, icons.gondola || icons.path, 'Venice')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 14px;text-align:left;">
-                ${lp.veniceIntro}
-              </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;background-color:${BOX};border-radius:16px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:44px 0 0;">
                 <tr>
-                  <td style="padding:16px 18px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                      ${veniceLinesHtml}
-                    </table>
+                  <td style="padding:0 0 8px 0;border-bottom:1px solid rgba(18,68,83,0.12);">
+                    <div style="font-family:${CINZEL};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.06em;text-transform:uppercase;line-height:1.2;">
+                      ${lp.veniceTitle}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 0 24px 0;font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.6;color:#64748B !important;font-weight:400;">
+                    ${lp.veniceIntro}
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;margin:0 0 20px;background-color:#FFFFFF !important;">
+                <tr>
+                  <td style="padding:16px 0;border-bottom:1px solid #E5E5EA;font-family:${SANS};font-size:13.5px;line-height:1.6;color:#334155 !important;font-weight:400;background-color:#FFFFFF !important;">
+                    <div style="font-family:${CINZEL};font-size:11px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 6px 0;">
+                      ${lp.veniceActvTitle}
+                    </div>
+                    ${lp.veniceActvBody}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 0;border-bottom:1px solid #E5E5EA;font-family:${SANS};font-size:13.5px;line-height:1.6;color:#334155 !important;font-weight:400;background-color:#FFFFFF !important;">
+                    <div style="font-family:${CINZEL};font-size:11px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 6px 0;">
+                      ${lp.veniceIslandsTitle}
+                    </div>
+                    ${lp.veniceIslandsBody}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 0;font-family:${SANS};font-size:13.5px;line-height:1.6;color:#334155 !important;font-weight:400;background-color:#FFFFFF !important;">
+                    <div style="font-family:${CINZEL};font-size:11px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 6px 0;">
+                      ${lp.veniceWalkTitle}
+                    </div>
+                    ${lp.veniceWalkBody}
                   </td>
                 </tr>
               </table>`;
 
   const venicePdfFooter = guidePdf
     ? `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;">
                 <tr>
-                  <td align="center" style="border-top:1px solid #E8E4DC;padding-top:22px;">
-                    <a href="${guidePdf}" target="_blank" style="display:inline-block;text-align:center;background-color:#FFFFFF;color:${C} !important;text-decoration:none;padding:14px 22px;border-radius:14px;border:1.5px solid ${C};font-family:${SANS};font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;">
+                  <td align="center" style="padding:0;">
+                    <a href="${guidePdf}" target="_blank" style="display:block;text-align:center;border:1.5px solid ${C};color:${C} !important;text-decoration:none;padding:14px;border-radius:12px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.06em;background-color:#FFFFFF !important;">
                       ${lp.venicePdfBtn}
                     </a>
                   </td>
@@ -316,6 +334,9 @@ function buildWelcomeHtml({
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
   <title>${escapeHtml(lp.htmlTitle)}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
   <style type="text/css">
     :root { color-scheme: light only; supported-color-schemes: light only; }
     img { display: block; max-width: 100%; height: auto; border: 0; outline: none; }
