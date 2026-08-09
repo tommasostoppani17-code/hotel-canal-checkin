@@ -315,11 +315,6 @@ function buildWelcomeHtml({
   })();
 
   const venicePdfFooter = ''; // Guida PDF completa: ripristinare quando il file è pronto
-  /* was:
-  const venicePdfFooter = guidePdf
-    ? `...button...`
-    : '';
-  */
 
   const accessTicketBlock = `
               ${sectionTitle(lp.ticketTitle, icons.key || icons.door, 'Esenzione')}
