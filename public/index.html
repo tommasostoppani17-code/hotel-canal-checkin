@@ -23,7 +23,7 @@
       --card-cream-top: #F3EBE2;
       --card-cream-bottom: #E6DBCF;
       --input-white: #FFFFFF;
-      --placeholder: #6B7280;
+      --placeholder: #AEB3B8;
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -755,7 +755,7 @@
       margin-bottom: 0;
       display: flex;
       flex-direction: column;
-      gap: var(--ios-3);
+      gap: var(--ios-2);
     }
 
     #step2 .restaurant-showcase {
@@ -763,54 +763,56 @@
     }
 
     #step2 .carousel-viewport {
-      height: 136px;
+      height: 168px;
       border-radius: var(--radius-ios);
     }
 
+    #step2 .carousel-slide img {
+      object-fit: cover;
+      object-position: center 40%;
+    }
+
     #step2 .carousel-caption {
-      margin-top: var(--ios-2);
+      margin-top: var(--ios-1);
     }
 
     #step2 .carousel-caption h4 {
-      font-size: 15px;
+      font-size: 14px;
       letter-spacing: 0.02em;
-      margin: 0 0 var(--ios-1);
-      line-height: 1.2;
+      margin: 0 0 2px;
+      line-height: 1.15;
     }
 
     #step2 .carousel-caption p {
-      font-size: 11px;
+      font-size: 10px;
       letter-spacing: 0.06em;
-      line-height: 1.25;
+      line-height: 1.2;
       margin: 0;
       font-weight: 600;
     }
 
     #step2 .rest-offer-blurb {
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: var(--ios-2);
+      padding: 0 2px;
+      display: block;
     }
 
-    #step2 .rest-offer-blurb .rest-sub {
+    #step2 .rest-offer-blurb .rest-blurb {
       margin: 0;
-      font-size: 13px;
-      line-height: 1.38;
+      font-size: 10px;
+      line-height: 1.25;
       font-weight: 500;
-      color: var(--text-main);
-      letter-spacing: -0.01em;
-    }
-
-    #step2 .rest-offer-blurb .rest-desc-hero {
-      margin: 0;
-      font-size: 12px;
-      line-height: 1.38;
-      font-weight: 400;
       color: var(--text-muted);
       letter-spacing: -0.01em;
-      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+
+    #step2 .rest-offer-blurb .rest-sub,
+    #step2 .rest-offer-blurb .rest-desc-hero {
+      display: none;
     }
 
     #step2 .form-grid-container {
@@ -1630,7 +1632,19 @@
 
     .apple-input::placeholder {
       color: var(--placeholder);
-      font-weight: 500;
+      font-weight: 400;
+      opacity: 1;
+      -webkit-text-fill-color: var(--placeholder);
+    }
+
+    .apple-input::-webkit-input-placeholder {
+      color: var(--placeholder);
+      -webkit-text-fill-color: var(--placeholder);
+      opacity: 1;
+    }
+
+    .apple-input::-moz-placeholder {
+      color: var(--placeholder);
       opacity: 1;
     }
 
@@ -2096,10 +2110,13 @@
             </div>
 
             <div class="rest-offer-blurb">
-              <p class="rest-sub" id="lbl-rest-sub">
+              <p class="rest-blurb" id="lbl-rest-blurb">
+                Cena tipica veneziana per due · conferma sotto per il −10% via email.
+              </p>
+              <p class="rest-sub" id="lbl-rest-sub" hidden>
                 Cena tipica veneziana per due, stasera sulla terrazza del canale.
               </p>
-              <p id="lbl-rest-desc" class="rest-desc-hero">
+              <p id="lbl-rest-desc" class="rest-desc-hero" hidden>
                 Conferma sotto e ricevi lo sconto esclusivo (−10%) via email.
               </p>
             </div>
@@ -2123,7 +2140,7 @@
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M14.5 19c.4-2.2 2-3.6 4.5-3.6 1.2 0 2.2.3 3 .9"/></svg>
                 </span>
-                <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="2" placeholder="2">
+                <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="" placeholder="2">
               </div>
             </div>
             <div class="form-group span-2">
@@ -2252,6 +2269,7 @@
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
         restDescShort: 'Conferma sotto e ricevi lo sconto esclusivo (−10%) via email.',
+        restBlurb: 'Cena tipica veneziana per due · conferma sotto per il −10% via email.',
         restTag: 'Per gli ospiti hotel',
         restDiscount: '−10%',
         nextBtn: 'Continua',
@@ -2332,6 +2350,7 @@
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
         restDescShort: 'Confirm below for your exclusive −10% by email.',
+        restBlurb: 'Venetian dinner for two · confirm below for your exclusive −10% by email.',
         restTag: 'For hotel guests',
         restDiscount: '−10%',
         nextBtn: 'Continue',
@@ -2411,6 +2430,7 @@
         staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
         restDescShort: 'Confirmez ci-dessous pour le −10% exclusif par e-mail.',
+        restBlurb: 'Dîner vénitien pour deux · confirmez ci-dessous pour le −10% par e-mail.',
         nextBtn: 'Continuer',
         restSub: 'Dîner vénitien généreux pour deux, ce soir sur la terrasse du canal.',
         restTitle: 'Réduction de bienvenue 10%',
@@ -2490,6 +2510,7 @@
         staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
         restDescShort: 'Unten bestätigen für exklusiv −10% per E-Mail.',
+        restBlurb: 'Venezianisches Abendessen für zwei · unten bestätigen für −10% per E-Mail.',
         nextBtn: 'Weiter',
         restSub: 'Herzhaftes venezianisches Abendessen für zwei, heute Abend auf der Kanalterrasse.',
         restTitle: '10% Willkommensrabatt',
@@ -2569,6 +2590,7 @@
         staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
         restDescShort: 'Confirme abajo para el −10% exclusivo por email.',
+        restBlurb: 'Cena veneciana para dos · confirme abajo para el −10% por email.',
         nextBtn: 'Continuar',
         restSub: 'Cena típica veneciana para dos, esta noche en la terraza del canal.',
         restTitle: 'Descuento de bienvenida 10%',
@@ -3311,6 +3333,14 @@
       document.getElementById('lbl-lastname').textContent = dict.lastName;
       document.getElementById('lbl-room').textContent = dict.roomShort || dict.room;
       document.getElementById('lbl-privacy').textContent = dict.privacy;
+      const restBlurb = document.getElementById('lbl-rest-blurb');
+      if (restBlurb) {
+        restBlurb.textContent =
+          dict.restBlurb ||
+          [dict.restSub, dict.restDescShort || dict.restDesc]
+            .filter(Boolean)
+            .join(' · ');
+      }
       document.getElementById('lbl-rest-sub').textContent = dict.restSub;
       document.getElementById('lbl-rest-title').textContent = dict.restTitle;
       document.getElementById('lbl-rest-desc').textContent = dict.restDescShort || dict.restDesc;
