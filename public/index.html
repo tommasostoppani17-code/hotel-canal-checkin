@@ -23,7 +23,7 @@
       --card-h-1: min(508px, calc(100dvh - 48px));
       --card-h-2: min(628px, calc(100dvh - 16px));
       --card-h-3: min(420px, calc(100dvh - 80px));
-      --card-h-3-booking: min(480px, calc(100dvh - 48px));
+      --card-h-3-booking: min(460px, calc(100dvh - 48px));
       --card-h: var(--card-h-1);
     }
 
@@ -629,13 +629,14 @@
       margin-top: 2px;
     }
 
-    /* Prenotazione tavolo — solo sullo Step 3 dopo Confirm coupon */
+    /* Contatto Trattoria — solo sullo Step 3 dopo Confirm coupon */
     .booking-segment-container {
       width: 100%;
       margin-top: 14px;
       padding: 0 2px;
       box-sizing: border-box;
       flex-shrink: 0;
+      text-align: center;
     }
 
     .booking-segment-container[hidden] {
@@ -649,67 +650,55 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--canal-petroleum);
-      margin: 0 0 8px;
+      margin: 0 0 6px;
       text-align: center;
     }
 
-    .booking-grid-hours {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+    .booking-segment-hint {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #5C6670;
+      line-height: 1.35;
+      margin: 0 0 10px;
     }
 
-    .hour-pill-ios {
-      height: 34px;
-      margin: 0;
-      padding: 0;
-      background: rgba(245, 248, 250, 0.9);
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--canal-petroleum);
-      display: flex;
+    .trattoria-phone-btn {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.2s var(--ios-ease), color 0.2s, transform 0.12s, box-shadow 0.2s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .hour-pill-ios.is-skip {
-      font-size: 11px;
-      color: #8E8E93;
-    }
-
-    .hour-pill-ios:active {
-      transform: scale(0.95);
-    }
-
-    .hour-pill-ios.is-selected {
+      gap: 8px;
+      min-width: 220px;
+      height: 42px;
+      padding: 0 18px;
+      box-sizing: border-box;
+      border-radius: 12px;
       background: var(--canal-petroleum);
-      border-color: var(--canal-petroleum);
       color: #FFFFFF;
-      box-shadow: 0 4px 10px rgba(18, 68, 83, 0.18);
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 6px 16px rgba(18, 68, 83, 0.2);
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s var(--ios-ease), background-color 0.2s;
     }
 
-    .hour-pill-ios:disabled {
-      opacity: 0.55;
-      cursor: default;
+    .trattoria-phone-btn:active {
+      transform: scale(0.97);
+      background: #0e3743;
     }
 
-    .booking-confirm-msg {
-      margin: 10px 0 0;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--canal-petroleum);
-      text-align: center;
-      line-height: 1.4;
-    }
-
-    .booking-confirm-msg[hidden] {
-      display: none !important;
+    .trattoria-phone-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
     }
 
     .header {
@@ -1328,14 +1317,19 @@
           </div>
 
           <div class="booking-segment-container" id="tableBookingPanel" hidden>
-            <span class="booking-segment-label" id="lbl-table-booking">Prenota tavolo stasera? (10% incluso)</span>
-            <div class="booking-grid-hours" id="tableBookingHours" role="group" aria-labelledby="lbl-table-booking">
-              <button type="button" class="hour-pill-ios" data-time="19:30">19:30</button>
-              <button type="button" class="hour-pill-ios" data-time="20:15">20:15</button>
-              <button type="button" class="hour-pill-ios" data-time="21:00">21:00</button>
-              <button type="button" class="hour-pill-ios is-skip" data-time="SKIP" id="lbl-table-skip">No</button>
-            </div>
-            <p class="booking-confirm-msg" id="tableBookingDone" hidden></p>
+            <span class="booking-segment-label" id="lbl-table-booking">Prenota un tavolo</span>
+            <span class="booking-segment-hint" id="lbl-table-hint">Trattoria alla Terrazza · −10% con coupon</span>
+            <a
+              class="trattoria-phone-btn"
+              id="trattoriaPhoneBtn"
+              href="tel:+393282464972"
+              aria-label="Chiama Trattoria alla Terrazza"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span id="lbl-trattoria-phone">328 246 4972</span>
+            </a>
           </div>
         </div>
       </section>
@@ -1378,10 +1372,10 @@
         successTitle: 'Registrato!',
         successSub: 'I servizi digitali della stanza sono ora attivi sul tuo dispositivo.',
         successSubCoupon: 'Controlla la tua email: benvenuto, guida Venezia e coupon 10% Trattoria alla Terrazza.',
-        tableBookingLabel: 'Prenota tavolo stasera? (10% incluso)',
-        tableBookingSkip: 'No',
-        tableBookingDone: 'Perfetto — il ristorante ti contatterà al telefono.',
-        tableBookingError: 'Non riuscito. Riprova o chiedi in reception.',
+        tableBookingLabel: 'Prenota un tavolo',
+        tableBookingHint: 'Trattoria alla Terrazza · −10% con coupon',
+        trattoriaPhone: '328 246 4972',
+        trattoriaPhoneAria: 'Chiama Trattoria alla Terrazza',
         badgeTxt: 'Mostra alla Reception',
         verifiedTxt: 'Verificato alle ore',
         phoneRequired: 'Il numero di telefono è obbligatorio.',
@@ -1434,10 +1428,10 @@
         successTitle: 'Registered!',
         successSub: 'Digital room services are now active on your device.',
         successSubCoupon: 'Check your email: welcome guide, Venice tips and 10% Trattoria alla Terrazza coupon.',
-        tableBookingLabel: 'Reserve a table tonight? (10% included)',
-        tableBookingSkip: 'No',
-        tableBookingDone: 'Done — the restaurant will call you.',
-        tableBookingError: 'Could not save. Try again or ask reception.',
+        tableBookingLabel: 'Book a table',
+        tableBookingHint: 'Trattoria alla Terrazza · −10% with coupon',
+        trattoriaPhone: '328 246 4972',
+        trattoriaPhoneAria: 'Call Trattoria alla Terrazza',
         badgeTxt: 'Show to Reception',
         verifiedTxt: 'Verified at',
         phoneRequired: 'Phone number is required.',
@@ -1489,10 +1483,10 @@
         successTitle: 'Enregistré !',
         successSub: 'Les services numériques sont actifs sur votre appareil.',
         successSubCoupon: 'Vérifiez votre e-mail : bienvenue, guide Venise et coupon 10% Trattoria alla Terrazza.',
-        tableBookingLabel: 'Réserver une table ce soir ? (10% inclus)',
-        tableBookingSkip: 'Non',
-        tableBookingDone: 'Parfait — le restaurant vous appellera.',
-        tableBookingError: 'Échec. Réessayez ou demandez à la réception.',
+        tableBookingLabel: 'Réserver une table',
+        tableBookingHint: 'Trattoria alla Terrazza · −10% avec coupon',
+        trattoriaPhone: '328 246 4972',
+        trattoriaPhoneAria: 'Appeler Trattoria alla Terrazza',
         badgeTxt: 'Montrer à la réception',
         verifiedTxt: 'Vérifié à',
         phoneRequired: 'Le numéro de téléphone est obligatoire.',
@@ -1544,10 +1538,10 @@
         successTitle: 'Registriert!',
         successSub: 'Die digitalen Zimmerdienste sind jetzt aktiv.',
         successSubCoupon: 'E-Mail prüfen: Willkommen, Venedig-Tipps und 10%-Gutschein Trattoria alla Terrazza.',
-        tableBookingLabel: 'Tisch für heute Abend? (10% inklusive)',
-        tableBookingSkip: 'Nein',
-        tableBookingDone: 'Perfekt — das Restaurant ruft Sie an.',
-        tableBookingError: 'Nicht gespeichert. Erneut versuchen oder Rezeption fragen.',
+        tableBookingLabel: 'Tisch reservieren',
+        tableBookingHint: 'Trattoria alla Terrazza · −10% mit Gutschein',
+        trattoriaPhone: '328 246 4972',
+        trattoriaPhoneAria: 'Trattoria alla Terrazza anrufen',
         badgeTxt: 'An der Rezeption vorzeigen',
         verifiedTxt: 'Verifiziert um',
         phoneRequired: 'Telefonnummer ist erforderlich.',
@@ -1599,10 +1593,10 @@
         successTitle: '¡Registrado!',
         successSub: 'Los servicios digitales ya están activos en su dispositivo.',
         successSubCoupon: 'Revise su correo: bienvenida, guía de Venecia y cupón 10% Trattoria alla Terrazza.',
-        tableBookingLabel: '¿Reservar mesa esta noche? (10% incluido)',
-        tableBookingSkip: 'No',
-        tableBookingDone: 'Listo — el restaurante le llamará.',
-        tableBookingError: 'No se pudo guardar. Intente de nuevo o pregunte en recepción.',
+        tableBookingLabel: 'Reservar mesa',
+        tableBookingHint: 'Trattoria alla Terrazza · −10% con cupón',
+        trattoriaPhone: '328 246 4972',
+        trattoriaPhoneAria: 'Llamar a Trattoria alla Terrazza',
         badgeTxt: 'Mostrar en recepción',
         verifiedTxt: 'Verificado a las',
         phoneRequired: 'El número de teléfono es obligatorio.',
@@ -1891,7 +1885,6 @@
     };
 
     let lastCheckinId = null;
-    let tableBookingLocked = false;
 
     function syncCardHeight(step) {
       const card = document.getElementById('card');
@@ -2216,7 +2209,6 @@
       );
 
       lastCheckinId = id != null ? Number(id) : null;
-      tableBookingLocked = false;
 
       // Solo testi (niente display:none / flex recalc). Poi slide → successo.
       document.getElementById('lbl-succ-title').textContent = already
@@ -2235,23 +2227,23 @@
       badge.classList.toggle('is-collapsed', Boolean(already));
 
       const bookingPanel = document.getElementById('tableBookingPanel');
-      const bookingDone = document.getElementById('tableBookingDone');
       const bookingLabel = document.getElementById('lbl-table-booking');
-      const skipBtn = document.getElementById('lbl-table-skip');
+      const bookingHint = document.getElementById('lbl-table-hint');
+      const phoneBtn = document.getElementById('trattoriaPhoneBtn');
+      const phoneLbl = document.getElementById('lbl-trattoria-phone');
       if (bookingLabel) bookingLabel.textContent = dict.tableBookingLabel;
-      if (skipBtn) skipBtn.textContent = dict.tableBookingSkip || 'No';
-      if (bookingDone) {
-        bookingDone.hidden = true;
-        bookingDone.textContent = '';
+      if (bookingHint) bookingHint.textContent = dict.tableBookingHint;
+      if (phoneLbl) phoneLbl.textContent = dict.trattoriaPhone || '328 246 4972';
+      if (phoneBtn) {
+        phoneBtn.setAttribute(
+          'aria-label',
+          dict.trattoriaPhoneAria || 'Chiama Trattoria alla Terrazza',
+        );
       }
-      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
-        pill.classList.remove('is-selected');
-        pill.disabled = false;
-      });
 
       // Solo dopo Confirm & Get Coupon (non dopo Skip)
       if (bookingPanel) {
-        bookingPanel.hidden = !(couponSent && !already && lastCheckinId);
+        bookingPanel.hidden = !(couponSent && !already);
       }
 
       playSuccessKinetics(() => {
@@ -2260,72 +2252,6 @@
         });
       });
     }
-
-    async function submitTableBooking(timeValue) {
-      const dict = t();
-      const panel = document.getElementById('tableBookingPanel');
-      const done = document.getElementById('tableBookingDone');
-      if (!lastCheckinId || tableBookingLocked) return;
-
-      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
-        const match = pill.getAttribute('data-time') === timeValue;
-        pill.classList.toggle('is-selected', match);
-      });
-
-      if (/^(SKIP|NO|NONE)$/i.test(timeValue)) {
-        tableBookingLocked = true;
-        if (panel) panel.hidden = true;
-        syncCardHeight(3);
-        return;
-      }
-
-      tableBookingLocked = true;
-      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
-        pill.disabled = true;
-      });
-
-      try {
-        const res = await fetch('/api/table-booking', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            checkinId: lastCheckinId,
-            tableBooking: timeValue,
-          }),
-        });
-        const body = await res.json().catch(() => ({}));
-        if (!res.ok && !body.saved) {
-          tableBookingLocked = false;
-          document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
-            pill.disabled = false;
-          });
-          if (done) {
-            done.hidden = false;
-            done.textContent = body.error || dict.tableBookingError;
-          }
-          return;
-        }
-        if (done) {
-          done.hidden = false;
-          done.textContent = dict.tableBookingDone;
-        }
-      } catch (err) {
-        tableBookingLocked = false;
-        document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
-          pill.disabled = false;
-        });
-        if (done) {
-          done.hidden = false;
-          done.textContent = dict.tableBookingError;
-        }
-      }
-    }
-
-    document.getElementById('tableBookingHours')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('.hour-pill-ios');
-      if (!btn || btn.disabled) return;
-      submitTableBooking(btn.getAttribute('data-time') || 'SKIP');
-    });
 
     function fullGuestName() {
       return `${firstNameEl.value.trim()} ${lastNameEl.value.trim()}`.trim();
