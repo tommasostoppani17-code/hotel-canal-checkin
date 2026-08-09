@@ -23,8 +23,8 @@
       --card-h-1: min(508px, calc(100dvh - 48px));
       --card-h-2: min(658px, calc(100dvh - 12px));
       --card-h-3: min(560px, calc(100dvh - 16px));
-      --card-h-3-booking: min(640px, calc(100dvh - 10px));
-      --card-h-3-open: min(780px, calc(100dvh - 6px));
+      --card-h-3-booking: min(620px, calc(100dvh - 10px));
+      --card-h-3-open: min(700px, calc(100dvh - 8px));
       --card-h: var(--card-h-1);
     }
 
@@ -688,9 +688,9 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      min-height: 42px;
-      padding: 10px 12px;
-      margin: 0 0 8px;
+      min-height: 40px;
+      padding: 8px 12px;
+      margin: 0 0 6px;
       border: 1px solid rgba(18, 68, 83, 0.22);
       border-radius: 12px;
       background: rgba(18, 68, 83, 0.08);
@@ -732,14 +732,62 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .guest-action.is-static .guest-action-head {
+      padding: 8px 12px 0;
+    }
+
+    .guest-action.is-static .guest-action-head .ga-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      line-height: 1.2;
+    }
+
+    .guest-action.is-static .guest-action-head .ga-sub {
+      display: block;
+      margin-top: 1px;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: #6B7780;
+      line-height: 1.25;
+    }
+
     .guest-action.is-static .guest-action-panel {
       display: block;
       border-top: 0;
-      padding-top: 2px;
+      padding: 6px 12px 10px;
     }
 
-    .guest-action.is-static .guest-action-head {
-      padding: 10px 12px 0;
+    #step3 .book-fields {
+      margin-bottom: 8px;
+    }
+
+    #step3 .book-submit {
+      height: 38px;
+    }
+
+    #step3 .book-hint {
+      display: none;
+    }
+
+    #step3 .receipt-badge .time {
+      font-size: 10px;
+    }
+
+    #step3 .success-check {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 6px;
+    }
+
+    #step3 .guest-actions {
+      margin-top: 6px;
+      gap: 5px;
+    }
+
+    #step3 .reception-note {
+      margin-top: 6px;
+      font-size: 10px;
     }
 
     .guest-action.is-static .guest-action-head .ga-title {
@@ -1545,7 +1593,7 @@
       </section>
 
       <!-- STEP 2: vetrina ristorante + campi; receptionist a testo libero -->
-      <section class="slide-step" id="step2">
+      <section class="slide-step" id="step2" aria-hidden="true">
         <div class="step-body">
           <div class="restaurant-showcase" aria-label="Trattoria alla Terrazza">
             <div class="rest-carousel" id="restCarousel">
@@ -1629,11 +1677,11 @@
       </section>
 
       <!-- STEP 3 SUCCESS — azioni rapide ospite -->
-      <section class="slide-step" id="step3">
-        <div class="header" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: 4px 0 2px;">
+      <section class="slide-step" id="step3" aria-hidden="true">
+        <div class="header step3-head" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: 2px 0 0;">
           <div class="success-check" aria-hidden="true"></div>
-          <h1 id="lbl-succ-title" style="font-size: 22px; text-transform: none; letter-spacing: 0.02em; color: var(--canal-petroleum); margin: 0;">Registrato!</h1>
-          <p id="lbl-succ-sub" style="display: block; font-size: 12.5px; color: var(--text-muted); margin: 6px 0 8px; line-height: 1.45; font-weight: 500;">
+          <h1 id="lbl-succ-title" style="font-size: 21px; text-transform: none; letter-spacing: 0.02em; color: var(--canal-petroleum); margin: 0;">Registrato!</h1>
+          <p id="lbl-succ-sub" style="display: block; font-size: 11.5px; color: var(--text-muted); margin: 4px 0 6px; line-height: 1.35; font-weight: 500;">
             I servizi digitali della stanza sono ora attivi sul tuo dispositivo.
           </p>
           <div class="receipt-badge" id="receiptBadge">
@@ -1657,9 +1705,6 @@
                 <span class="ga-sub" id="lbl-act-table-sub">Orario a tua scelta · vi ricontattiamo</span>
               </div>
               <div class="guest-action-panel" id="tablePanel">
-                <p class="book-hint" id="lbl-book-hint">
-                  Scegli l’orario e quante persone siete — vi ricontatteremo.
-                </p>
                 <div class="book-fields">
                   <div class="book-field">
                     <label id="lbl-book-time" for="bookTime">Orario</label>
@@ -1746,8 +1791,8 @@
         back: 'Indietro',
         loading: 'Elaborazione…',
         successTitle: 'Registrato!',
-        successSub: 'Ti abbiamo inviato le indicazioni via email. Qui i tasti rapidi.',
-        successSubCoupon: 'Coupon −10% in arrivo via email. Prenota un tavolo, Wi‑Fi e codici porta qui sotto.',
+        successSub: 'Indicazioni via email. Azioni rapide qui sotto.',
+        successSubCoupon: 'Coupon −10% in arrivo. Prenota, Wi‑Fi e codici sotto.',
         actTable: 'Prenota un tavolo per stasera',
         actTableSub: 'Orario a tua scelta · vi ricontattiamo',
         actTableSubNoCoupon: 'Orario a tua scelta · vi ricontattiamo',
@@ -1824,8 +1869,8 @@
         back: 'Back',
         loading: 'Processing…',
         successTitle: 'Registered!',
-        successSub: 'We emailed your guide. Quick actions below.',
-        successSubCoupon: 'Your −10% coupon is on the way. Book a table, Wi‑Fi and door codes below.',
+        successSub: 'Guide emailed. Quick actions below.',
+        successSubCoupon: '−10% coupon on the way. Book, Wi‑Fi and door codes below.',
         actTable: 'Book a table for tonight',
         actTableSub: 'Pick your time · we’ll call you back',
         actTableSubNoCoupon: 'Pick your time · we’ll call you back',
@@ -2357,10 +2402,17 @@
         const el = document.getElementById(`step${i}`);
         if (!el) continue;
         const active = i === step;
+        const sliding = slidingFrom != null && i === slidingFrom;
         el.classList.toggle('is-active', active);
-        el.classList.toggle('is-sliding', slidingFrom != null && i === slidingFrom);
+        el.classList.toggle('is-sliding', sliding);
         el.classList.remove('is-exiting');
         el.setAttribute('aria-hidden', active ? 'false' : 'true');
+        // inert: resta nel flex (niente display:none) ma fuori da focus/a11y
+        try {
+          el.inert = !active && !sliding;
+        } catch (_) {
+          /* ignore older browsers */
+        }
         if (i !== 2 || step !== TOTAL_STEPS) {
           el.classList.remove('is-dissolving');
         }
@@ -2822,7 +2874,6 @@
         'lbl-act-table-sub',
         couponSent ? dict.actTableSub : dict.actTableSubNoCoupon || dict.actTableSub,
       );
-      setTxt('lbl-book-hint', dict.bookHint);
       setTxt('lbl-book-time', dict.bookTime);
       setTxt('lbl-book-pax', dict.bookPax);
       const sendBtn = document.getElementById('btnBookSend');
