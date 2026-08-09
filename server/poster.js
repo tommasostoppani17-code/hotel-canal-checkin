@@ -101,10 +101,10 @@ export function buildPosterEmailHtml({
                 <tr>
                   <td align="center" style="padding:44px 12px 28px 12px;">
                     <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:600;color:#124453 !important;line-height:1.4;margin:0 0 18px 0;letter-spacing:0.02em;text-transform:uppercase;text-align:center;">
-                      Fast Check-in &amp;<br>Sconto di Benvenuto
+                      Fast Check-in &amp;<br>Welcome Discount
                     </h1>
                     <p style="font-size:13.5px;line-height:1.65;color:#48484A !important;font-weight:500;margin:0;text-align:center;">
-                      Inquadra il codice per attivare all'istante i servizi digitali della tua camera e sbloccare l'esclusivo voucher di benvenuto per la tua esperienza a Venezia.
+                      Scan the code to activate your room's digital services instantly and unlock your exclusive welcome discount for your stay in Venice.
                     </p>
                   </td>
                 </tr>
@@ -137,7 +137,7 @@ export function buildPosterEmailHtml({
                 <tr>
                   <td align="center" style="border-top:1px solid #E5E5EA;padding-top:18px;">
                     <p style="font-size:11px;color:#8E8E93 !important;font-weight:500;letter-spacing:0.02em;margin:0;text-transform:uppercase;">
-                      Convenzione Lounge Esclusiva: Trattoria alla Terrazza Venezia
+                      Exclusive Partner Offer: Trattoria alla Terrazza Venezia
                     </p>
                   </td>
                 </tr>
