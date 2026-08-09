@@ -94,7 +94,8 @@
       background-size: cover;
       background-position: center;
       /* Fisso: niente shift colore per step (niente grigio/marrone random) */
-      filter: blur(10px) brightness(0.88) saturate(1.05);
+      /* Rosa/blu Venezia: meno scurimento, più satura — niente fanghiglia arancio */
+      filter: blur(12px) brightness(0.98) saturate(1.28) contrast(1.06);
       transform: translate3d(
           calc(var(--parallax-x, 0%) + var(--ambient-x, 0px)),
           calc(var(--ambient-y, 0px)),
@@ -109,16 +110,19 @@
       content: "";
       position: absolute;
       inset: 0;
+      /* Velo leggero rosa→petrolio, non brown-out */
       background: linear-gradient(
-        rgba(18, 68, 83, 0.18),
-        rgba(10, 45, 55, 0.32)
+        165deg,
+        rgba(90, 70, 110, 0.14) 0%,
+        rgba(18, 68, 83, 0.22) 48%,
+        rgba(10, 40, 58, 0.34) 100%
       );
     }
 
     body[data-step="1"] .bg-inertia,
     body[data-step="2"] .bg-inertia,
     body[data-step="3"] .bg-inertia {
-      filter: blur(10px) brightness(0.88) saturate(1.05);
+      filter: blur(12px) brightness(0.98) saturate(1.28) contrast(1.06);
     }
 
     .apple-card {
