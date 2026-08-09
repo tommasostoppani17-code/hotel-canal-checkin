@@ -22,9 +22,9 @@
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
       --card-h-2: min(640px, calc(100dvh - 14px));
-      --card-h-3: min(560px, calc(100dvh - 16px));
-      --card-h-3-booking: min(620px, calc(100dvh - 10px));
-      --card-h-3-open: min(700px, calc(100dvh - 8px));
+      --card-h-3: min(468px, calc(100dvh - 24px));
+      --card-h-3-booking: min(500px, calc(100dvh - 18px));
+      --card-h-3-open: min(580px, calc(100dvh - 12px));
       --card-h: var(--card-h-1);
     }
 
@@ -922,35 +922,179 @@
     }
 
     #step3 .book-fields {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      gap: 6px;
     }
 
     #step3 .book-submit {
-      height: 38px;
+      height: 34px;
+      font-size: 12px;
     }
 
     #step3 .book-hint {
       display: none;
     }
 
-    #step3 .receipt-badge .time {
-      font-size: 10px;
+    #step3 .book-field input {
+      height: 36px;
+      font-size: 14px;
     }
 
-    #step3 .success-check {
-      width: 32px;
-      height: 32px;
-      margin-bottom: 6px;
+    #step3 .receipt-badge .time {
+      font-size: 9.5px;
     }
 
     #step3 .guest-actions {
-      margin-top: 6px;
+      margin-top: 8px;
       gap: 5px;
+      width: 100%;
     }
 
     #step3 .reception-note {
-      margin-top: 6px;
-      font-size: 10px;
+      margin-top: 8px;
+      font-size: 9.5px;
+      line-height: 1.35;
+    }
+
+    #step3.slide-step {
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-top: 0;
+    }
+
+    #step3.slide-step::-webkit-scrollbar {
+      display: none;
+    }
+
+    #step3 .step3-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 0 0 auto;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    #step3 .header {
+      margin-bottom: 0;
+      justify-content: flex-start !important;
+      padding-top: 0 !important;
+    }
+
+    #step3 .success-check {
+      width: 28px;
+      height: 28px;
+      margin: 0 auto 6px;
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.2);
+    }
+
+    #step3 .success-check::after {
+      left: 10px;
+      top: 7px;
+      width: 6px;
+      height: 10px;
+      border-width: 0 2px 2px 0;
+    }
+
+    #step3 #lbl-succ-title {
+      font-size: 18px !important;
+      line-height: 1.2 !important;
+      margin: 0 !important;
+    }
+
+    #step3 #lbl-succ-sub {
+      font-size: 10.5px !important;
+      margin: 4px 0 8px !important;
+      line-height: 1.35 !important;
+      max-width: 28ch;
+    }
+
+    #step3 .receipt-badge {
+      padding: 6px 10px 7px;
+      margin-top: 0;
+      border-radius: 10px;
+    }
+
+    #step3 .receipt-badge .eyebrow {
+      font-size: 8.5px;
+      letter-spacing: 0.08em;
+    }
+
+    #step3 .receipt-badge .code {
+      font-size: 15px;
+      margin: 2px 0 1px;
+    }
+
+    #step3 .guest-call {
+      min-height: 44px;
+      gap: 9px;
+      padding: 8px 9px 8px 8px;
+      margin: 0;
+      border-radius: 12px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 4px 12px rgba(18, 68, 83, 0.06);
+    }
+
+    #step3 .guest-call .ga-call-icon {
+      width: 30px;
+      height: 30px;
+      box-shadow: 0 2px 6px rgba(18, 68, 83, 0.18);
+    }
+
+    #step3 .guest-call .ga-call-icon svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    #step3 .guest-call .ga-title {
+      font-size: 11.5px;
+    }
+
+    #step3 .guest-call .ga-sub {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+    }
+
+    #step3 .guest-call .ga-phone {
+      font-size: 11px;
+      padding: 5px 8px;
+    }
+
+    #step3 .guest-action {
+      border-radius: 10px;
+    }
+
+    #step3 .guest-action-btn {
+      min-height: 38px;
+      padding: 7px 10px;
+      gap: 8px;
+    }
+
+    #step3 .guest-action-btn .ga-title {
+      font-size: 12px;
+    }
+
+    #step3 .guest-action-btn .ga-sub {
+      font-size: 9.5px;
+    }
+
+    #step3 .guest-action-panel {
+      padding: 0 10px 10px;
+    }
+
+    #step3 .guest-kv {
+      padding-top: 7px;
+      font-size: 11px;
+    }
+
+    #step3 .guest-kv .v {
+      font-size: 12px;
     }
 
     .guest-action.is-static .guest-action-head .ga-title {
@@ -1164,78 +1308,6 @@
       font-weight: 500;
       color: #5C6670;
       text-align: center;
-    }
-
-    #step3.slide-step {
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-
-    #step3.slide-step::-webkit-scrollbar {
-      display: none;
-    }
-
-    #step3 .header {
-      margin-bottom: 0;
-      justify-content: flex-start !important;
-      padding-top: 2px !important;
-    }
-
-    #step3 .success-check {
-      width: 36px;
-      height: 36px;
-      margin-bottom: 8px;
-    }
-
-    #step3 .success-check::after {
-      left: 13px;
-      top: 9px;
-      width: 7px;
-      height: 12px;
-    }
-
-    #step3 #lbl-succ-title {
-      font-size: 20px !important;
-      line-height: 1.25 !important;
-    }
-
-    #step3 #lbl-succ-sub {
-      font-size: 11.5px !important;
-      margin: 4px 0 6px !important;
-      line-height: 1.4 !important;
-    }
-
-    #step3 .receipt-badge {
-      padding: 7px 10px;
-      margin-top: 0;
-    }
-
-    #step3 .receipt-badge .code {
-      font-size: 15px;
-      margin: 2px 0 1px;
-    }
-
-    #step3 .guest-actions {
-      margin-top: 8px;
-      gap: 6px;
-    }
-
-    #step3 .guest-action-btn {
-      min-height: 40px;
-      padding: 8px 11px;
-    }
-
-    #step3 .reception-note {
-      margin-top: 8px;
-      font-size: 10.5px;
-    }
-
-    #step3 .book-hint {
-      margin: 8px 0 8px;
-      font-size: 11px;
     }
 
     .header {
@@ -1843,11 +1915,11 @@
 
       <!-- STEP 3 SUCCESS — azioni rapide ospite -->
       <section class="slide-step" id="step3" aria-hidden="true">
-        <div class="header step3-head" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: 2px 0 0;">
+        <div class="header step3-head">
           <div class="success-check" aria-hidden="true"></div>
-          <h1 id="lbl-succ-title" style="font-size: 21px; text-transform: none; letter-spacing: 0.02em; color: var(--canal-petroleum); margin: 0;">Registrato!</h1>
-          <p id="lbl-succ-sub" style="display: block; font-size: 11.5px; color: var(--text-muted); margin: 4px 0 6px; line-height: 1.35; font-weight: 500;">
-            I servizi digitali della stanza sono ora attivi sul tuo dispositivo.
+          <h1 id="lbl-succ-title" style="font-size: 18px; text-transform: none; letter-spacing: 0.02em; color: var(--canal-petroleum); margin: 0;">Registrato!</h1>
+          <p id="lbl-succ-sub" style="display: block; font-size: 10.5px; color: var(--text-muted); margin: 4px 0 8px; line-height: 1.35; font-weight: 500;">
+            Indicazioni via email. Azioni rapide qui sotto.
           </p>
           <div class="receipt-badge" id="receiptBadge">
             <span class="eyebrow" id="lbl-badge">Mostra alla Reception</span>
@@ -1872,8 +1944,8 @@
             <div class="guest-action is-book" id="actionTable">
               <button type="button" class="guest-action-btn" data-panel="tablePanel" id="btnTable">
                 <span class="ga-label">
-                  <span class="ga-title" id="lbl-act-table">Prenota un tavolo per stasera</span>
-                  <span class="ga-sub" id="lbl-act-table-sub">Orario a tua scelta · vi ricontattiamo</span>
+                  <span class="ga-title" id="lbl-act-table">Prenota un tavolo</span>
+                  <span class="ga-sub" id="lbl-act-table-sub">Scegli orario · ti richiamiamo</span>
                 </span>
                 <span class="ga-chevron" aria-hidden="true"></span>
               </button>
@@ -1897,7 +1969,7 @@
               <button type="button" class="guest-action-btn" data-panel="doorsPanel" id="btnDoors">
                 <span class="ga-label">
                   <span class="ga-title" id="lbl-act-doors">Codici della porta</span>
-                  <span class="ga-sub" id="lbl-act-doors-sub">Entrata principale e porta interna</span>
+                  <span class="ga-sub" id="lbl-act-doors-sub">Entrata e porta interna</span>
                 </span>
                 <span class="ga-chevron" aria-hidden="true"></span>
               </button>
@@ -1911,7 +1983,7 @@
               <button type="button" class="guest-action-btn" data-panel="wifiPanel" id="btnWifi">
                 <span class="ga-label">
                   <span class="ga-title" id="lbl-act-wifi">Accedi al Wi‑Fi</span>
-                  <span class="ga-sub" id="lbl-act-wifi-sub">Rete hotel in tutta la struttura</span>
+                  <span class="ga-sub" id="lbl-act-wifi-sub">Rete in tutta la struttura</span>
                 </span>
                 <span class="ga-chevron" aria-hidden="true"></span>
               </button>
@@ -1923,7 +1995,7 @@
           </div>
 
           <p class="reception-note" id="lbl-reception-note">
-            Reception aperta 24h per il check-in. Passa quando vuoi.
+            Reception 24h. Passa quando vuoi.
           </p>
         </div>
       </section>
@@ -1965,10 +2037,10 @@
         loading: 'Elaborazione…',
         successTitle: 'Registrato!',
         successSub: 'Indicazioni via email. Azioni rapide qui sotto.',
-        successSubCoupon: 'Coupon −10% in arrivo. Prenota, Wi‑Fi e codici sotto.',
-        actTable: 'Prenota un tavolo per stasera',
-        actTableSub: 'Orario a tua scelta · vi ricontattiamo',
-        actTableSubNoCoupon: 'Orario a tua scelta · vi ricontattiamo',
+        successSubCoupon: 'Coupon −10% in arrivo. Azioni sotto.',
+        actTable: 'Prenota un tavolo',
+        actTableSub: 'Scegli orario · ti richiamiamo',
+        actTableSubNoCoupon: 'Scegli orario · ti richiamiamo',
         actCall: 'Chiama la trattoria',
         actCallSub: 'Trattoria alla Terrazza',
         bookHint: 'Scegli l’orario e quante persone siete. Vi ricontatteremo.',
@@ -1981,14 +2053,14 @@
         bookNeedTime: 'Scegli un orario.',
         bookNeedPax: 'Indica quante persone siete.',
         actWifi: 'Accedi al Wi‑Fi',
-        actWifiSub: 'Rete hotel in tutta la struttura',
+        actWifiSub: 'Rete in tutta la struttura',
         actDoors: 'Codici della porta',
-        actDoorsSub: 'Entrata principale e porta interna',
+        actDoorsSub: 'Entrata e porta interna',
         wifiNet: 'Rete',
         wifiPass: 'Password',
         doorMain: 'Entrata principale',
         doorInner: 'Porta interna',
-        receptionNote: 'Reception aperta 24h per il check-in. Passa quando vuoi.',
+        receptionNote: 'Reception 24h. Passa quando vuoi.',
         trattoriaPhoneAria: 'Chiama Trattoria alla Terrazza',
         askReception: 'Chiedi in reception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2042,11 +2114,11 @@
         back: 'Back',
         loading: 'Processing…',
         successTitle: 'Registered!',
-        successSub: 'Guide emailed. Quick actions below.',
-        successSubCoupon: '−10% coupon on the way. Book, Wi‑Fi and door codes below.',
-        actTable: 'Book a table for tonight',
-        actTableSub: 'Pick your time · we’ll call you back',
-        actTableSubNoCoupon: 'Pick your time · we’ll call you back',
+        successSub: 'Guide emailed. Actions below.',
+        successSubCoupon: '−10% coupon on the way. Actions below.',
+        actTable: 'Book a table',
+        actTableSub: 'Pick a time · we’ll call back',
+        actTableSubNoCoupon: 'Pick a time · we’ll call back',
         actCall: 'Call the restaurant',
         actCallSub: 'Trattoria alla Terrazza',
         bookHint: 'Choose your preferred time and party size. We’ll contact you.',
@@ -2059,14 +2131,14 @@
         bookNeedTime: 'Please choose a time.',
         bookNeedPax: 'Please enter party size.',
         actWifi: 'Join the Wi‑Fi',
-        actWifiSub: 'Hotel network throughout the property',
-        actDoors: 'Door access codes',
-        actDoorsSub: 'Main entrance and inner door',
+        actWifiSub: 'Hotel network on property',
+        actDoors: 'Door codes',
+        actDoorsSub: 'Main and inner door',
         wifiNet: 'Network',
         wifiPass: 'Password',
         doorMain: 'Main entrance',
         doorInner: 'Inner door',
-        receptionNote: 'Reception is open 24h for check-in. Come by anytime.',
+        receptionNote: 'Reception 24h. Come by anytime.',
         trattoriaPhoneAria: 'Call Trattoria alla Terrazza',
         askReception: 'Ask at reception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2119,9 +2191,9 @@
         back: 'Retour',
         loading: 'Traitement…',
         successTitle: 'Enregistré !',
-        successSub: 'Nous vous avons envoyé le guide par e-mail. Actions rapides ci-dessous.',
-        successSubCoupon: 'Coupon −10% en route. Réservez une table, Wi‑Fi et codes ci-dessous.',
-        actTable: 'Réserver une table ce soir',
+        successSub: 'Guide envoyé par e-mail. Actions ci-dessous.',
+        successSubCoupon: 'Coupon −10% en route. Actions ci-dessous.',
+        actTable: 'Réserver une table',
         actTableSub: 'Choisissez l’heure · on vous rappelle',
         actTableSubNoCoupon: 'Choisissez l’heure · on vous rappelle',
         actCall: 'Appeler le restaurant',
@@ -2143,7 +2215,7 @@
         wifiPass: 'Mot de passe',
         doorMain: 'Entrée principale',
         doorInner: 'Porte intérieure',
-        receptionNote: 'Réception ouverte 24h/24 pour le check-in. Passez quand vous voulez.',
+        receptionNote: 'Réception 24h. Passez quand vous voulez.',
         trattoriaPhoneAria: 'Appeler Trattoria alla Terrazza',
         askReception: 'Demandez à la réception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2196,9 +2268,9 @@
         back: 'Zurück',
         loading: 'Wird verarbeitet…',
         successTitle: 'Registriert!',
-        successSub: 'Wir haben den Guide per E-Mail geschickt. Schnellaktionen unten.',
-        successSubCoupon: '−10%-Gutschein unterwegs. Tisch, Wi‑Fi und Türcodes unten.',
-        actTable: 'Tisch für heute Abend reservieren',
+        successSub: 'Guide per E-Mail. Aktionen unten.',
+        successSubCoupon: '−10%-Gutschein unterwegs. Aktionen unten.',
+        actTable: 'Tisch reservieren',
         actTableSub: 'Wunschuhrzeit · wir rufen zurück',
         actTableSubNoCoupon: 'Wunschuhrzeit · wir rufen zurück',
         actCall: 'Restaurant anrufen',
@@ -2220,7 +2292,7 @@
         wifiPass: 'Passwort',
         doorMain: 'Haupteingang',
         doorInner: 'Innentür',
-        receptionNote: 'Rezeption 24h für Check-in geöffnet. Kommen Sie jederzeit vorbei.',
+        receptionNote: 'Rezeption 24h. Kommen Sie jederzeit vorbei.',
         trattoriaPhoneAria: 'Trattoria alla Terrazza anrufen',
         askReception: 'An der Rezeption fragen',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2273,9 +2345,9 @@
         back: 'Atrás',
         loading: 'Procesando…',
         successTitle: '¡Registrado!',
-        successSub: 'Le enviamos la guía por email. Acciones rápidas abajo.',
-        successSubCoupon: 'Cupón −10% en camino. Reserve mesa, Wi‑Fi y códigos abajo.',
-        actTable: 'Reservar mesa esta noche',
+        successSub: 'Guía por email. Acciones abajo.',
+        successSubCoupon: 'Cupón −10% en camino. Acciones abajo.',
+        actTable: 'Reservar mesa',
         actTableSub: 'Elija la hora · le llamamos',
         actTableSubNoCoupon: 'Elija la hora · le llamamos',
         actCall: 'Llamar al restaurante',
@@ -2297,7 +2369,7 @@
         wifiPass: 'Contraseña',
         doorMain: 'Entrada principal',
         doorInner: 'Puerta interior',
-        receptionNote: 'Recepción abierta 24h para el check-in. Pase cuando quiera.',
+        receptionNote: 'Recepción 24h. Pase cuando quiera.',
         trattoriaPhoneAria: 'Llamar a Trattoria alla Terrazza',
         askReception: 'Pregunte en recepción',
         trattoriaPhoneDefault: '328 246 4972',
