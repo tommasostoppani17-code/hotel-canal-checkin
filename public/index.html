@@ -21,7 +21,7 @@
       --slide-ms: 350ms;
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
-      --card-h-2: min(540px, calc(100dvh - 28px));
+      --card-h-2: min(568px, calc(100dvh - 28px));
       --card-h-3: min(420px, calc(100dvh - 80px));
       --card-h-3-booking: min(480px, calc(100dvh - 48px));
       --card-h: var(--card-h-1);
@@ -367,7 +367,7 @@
     .carousel-viewport {
       position: relative;
       width: 100%;
-      height: 148px;
+      height: 196px;
       border-radius: 16px;
       overflow: hidden;
       background: #124453;
@@ -395,59 +395,54 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
+      object-position: center 42%;
       border: 0;
       user-select: none;
       -webkit-user-drag: none;
       pointer-events: none;
     }
 
+    /* Titolo fuori dalla foto — niente gradient che la mangia */
     .carousel-caption {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 2;
-      padding: 28px 14px 12px;
-      box-sizing: border-box;
-      background: linear-gradient(transparent, rgba(18, 68, 83, 0.88));
+      margin: 8px 2px 0;
+      padding: 0;
+      text-align: center;
       pointer-events: none;
     }
 
     .carousel-caption h4 {
       font-family: "Cinzel", Georgia, serif;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
-      color: #FFFFFF;
+      color: var(--canal-petroleum);
       margin: 0 0 2px;
       letter-spacing: 0.02em;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
 
     .carousel-caption p {
-      font-size: 10px;
-      color: #A0C2CB;
+      font-size: 9.5px;
+      color: #7A8791;
       margin: 0;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
     }
 
-    /* Tondini avorio traslucidi — dentro la foto, a filo bordo */
+    /* Frecce discrete — non coprono il soggetto */
     .carousel-arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 30px;
-      height: 30px;
+      width: 26px;
+      height: 26px;
       padding: 0;
       margin: 0;
-      border: 1px solid rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.76);
-      -webkit-backdrop-filter: blur(12px) saturate(160%);
-      backdrop-filter: blur(12px) saturate(160%);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.55);
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
+      backdrop-filter: blur(10px) saturate(140%);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -459,12 +454,12 @@
 
     .carousel-arrow:active {
       transform: translateY(-50%) scale(0.92);
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(255, 255, 255, 0.88);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .carousel-arrow.left { left: 8px; }
-    .carousel-arrow.right { right: 8px; }
+    .carousel-arrow.left { left: 6px; }
+    .carousel-arrow.right { right: 6px; }
 
     .arrow-bracket {
       width: 7px;
@@ -489,7 +484,7 @@
       display: flex;
       justify-content: center;
       gap: 5px;
-      margin: 7px 0 0;
+      margin: 5px 0 0;
     }
 
     .carousel-dots button {
@@ -511,14 +506,14 @@
 
     .rest-desc-hero {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 11px;
+      font-size: 10.5px;
       line-height: 1.35;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #5C6670;
       text-align: center;
-      margin: 2px 0 12px;
+      margin: 4px 0 10px;
       padding: 0;
     }
 
@@ -1083,8 +1078,7 @@
     }
 
     /* Successo: fumo sul carosello */
-    #step2.is-dissolving .carousel-viewport,
-    #step2.is-dissolving .carousel-caption {
+    #step2.is-dissolving .carousel-viewport {
       animation: photoSmoke 250ms var(--ios-ease) both;
     }
 
@@ -1183,21 +1177,17 @@
               <div class="carousel-viewport" id="restCarouselViewport">
                 <div class="carousel-track" id="restCarouselTrack">
                   <figure class="carousel-slide">
-                    <img src="/restaurant/01-terrazza-canale.jpg" alt="Terrazza sul canale" width="900" height="600" decoding="async">
+                    <img src="/restaurant/01-terrazza-canale.jpg" alt="Terrazza sul canale" width="900" height="600" decoding="async" style="object-position: center 38%;">
                   </figure>
                   <figure class="carousel-slide">
-                    <img src="/restaurant/05-pesce-al-forno.jpg" alt="Pesce al forno" width="900" height="600" loading="lazy" decoding="async">
+                    <img src="/restaurant/02-gondola-ingresso.jpg" alt="Ingresso sul canale" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 40%;">
                   </figure>
                   <figure class="carousel-slide">
-                    <img src="/restaurant/08-risotto.jpg" alt="Risotto" width="900" height="600" loading="lazy" decoding="async">
+                    <img src="/restaurant/05-pesce-al-forno.jpg" alt="Pesce al forno" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 30%;">
                   </figure>
                   <figure class="carousel-slide">
-                    <img src="/restaurant/06-linguine-granchio.jpg" alt="Linguine al granchio" width="900" height="600" loading="lazy" decoding="async">
+                    <img src="/restaurant/08-risotto.jpg" alt="Risotto" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 35%;">
                   </figure>
-                </div>
-                <div class="carousel-caption">
-                  <h4>Trattoria alla Terrazza</h4>
-                  <p id="lbl-rest-tag">Offerta ospiti</p>
                 </div>
                 <button type="button" class="carousel-arrow left" id="restCarouselPrev" aria-label="Foto precedente">
                   <span class="arrow-bracket left" aria-hidden="true"></span>
@@ -1205,6 +1195,10 @@
                 <button type="button" class="carousel-arrow right" id="restCarouselNext" aria-label="Foto successiva">
                   <span class="arrow-bracket right" aria-hidden="true"></span>
                 </button>
+              </div>
+              <div class="carousel-caption">
+                <h4>Trattoria alla Terrazza</h4>
+                <p id="lbl-rest-tag">Offerta ospiti</p>
               </div>
               <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
             </div>
