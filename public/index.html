@@ -18,6 +18,8 @@
       --radius-ios: 18px;
       --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
       --ios-snap: cubic-bezier(0.1, 1, 0.1, 1);
+      --step-ms: 150ms;
+      --stagger-ms: 20ms;
     }
 
     /* Blocca rimbalzo/overscroll del browser - effetto app a schermo fisso */
@@ -67,6 +69,9 @@
         )
         scale(var(--parallax-scale, 1.08));
       will-change: transform, filter;
+      transition:
+        transform var(--step-ms) var(--ios-snap),
+        filter var(--step-ms) var(--ios-snap);
     }
 
     .background-overlay::after {
@@ -129,13 +134,13 @@
     }
 
     .apple-card.is-rubber {
-      animation: cardRubber 0.55s var(--ios-ease) both;
+      animation: cardRubber 280ms var(--ios-ease) both;
     }
 
+    /* Rubber-band accennato (non gomma esagerata) */
     @keyframes cardRubber {
       0% { transform: scale(1); }
-      35% { transform: scale(0.975); }
-      70% { transform: scale(1.012); }
+      40% { transform: scale(0.985); }
       100% { transform: scale(1); }
     }
 
@@ -147,15 +152,15 @@
       padding: 0;
     }
 
-    /* Page control iOS: la pillola attiva si allunga */
+    /* Pillola: feedback istantaneo (in anticipo sullo step) */
     .step-dots span {
       width: 6px;
       height: 6px;
       border-radius: 999px;
       background: rgba(18, 68, 83, 0.15);
       transition:
-        width 0.3s var(--ios-snap),
-        background-color 0.3s var(--ios-snap);
+        width 120ms var(--ios-snap),
+        background-color 120ms var(--ios-snap);
       will-change: width;
     }
 
@@ -175,7 +180,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Stack fisso: niente carosello / nastro orizzontale */
+    /* Fogli fissi sul posto: zero carosello orizzontale */
     .steps-stack {
       width: 100%;
       position: relative;
@@ -191,13 +196,27 @@
 
     .slide-step.is-active {
       display: flex;
-      animation: iosStepSnap 0.2s var(--ios-snap) both;
+      position: relative;
+      z-index: 2;
+      animation: iosStepIn var(--step-ms) var(--ios-snap) both;
     }
 
-    @keyframes iosStepSnap {
+    /* Uscita: dissolve sul posto mentre il nuovo entra */
+    .slide-step.is-exiting {
+      display: flex;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+      pointer-events: none;
+      animation: iosStepOut var(--step-ms) var(--ios-snap) both;
+    }
+
+    @keyframes iosStepIn {
       from {
         opacity: 0;
-        transform: scale(0.99) translate3d(0, 4px, 0);
+        transform: scale(0.98) translate3d(0, 8px, 0);
       }
       to {
         opacity: 1;
@@ -205,9 +224,51 @@
       }
     }
 
+    @keyframes iosStepOut {
+      from {
+        opacity: 1;
+        transform: scale(1) translate3d(0, 0, 0);
+      }
+      to {
+        opacity: 0;
+        transform: scale(0.99) translate3d(0, -4px, 0);
+      }
+    }
+
+    /* Stagger iper-compresso: 20ms tra elementi */
+    .slide-step.is-active > .header,
+    .slide-step.is-active > .step-body > *,
+    .slide-step.is-active > .step-footer-fixed > * {
+      animation: elementCascade 150ms var(--ios-snap) both;
+    }
+    .slide-step.is-active > .header { animation-delay: 0ms; }
+    .slide-step.is-active > .step-body > *:nth-child(1) { animation-delay: calc(var(--stagger-ms) * 1); }
+    .slide-step.is-active > .step-body > *:nth-child(2) { animation-delay: calc(var(--stagger-ms) * 2); }
+    .slide-step.is-active > .step-body > *:nth-child(3) { animation-delay: calc(var(--stagger-ms) * 3); }
+    .slide-step.is-active > .step-body > *:nth-child(4) { animation-delay: calc(var(--stagger-ms) * 4); }
+    .slide-step.is-active > .step-body > *:nth-child(5) { animation-delay: calc(var(--stagger-ms) * 5); }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(1) { animation-delay: calc(var(--stagger-ms) * 3); }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(2) { animation-delay: calc(var(--stagger-ms) * 4); }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(3) { animation-delay: calc(var(--stagger-ms) * 5); }
+
+    @keyframes elementCascade {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 6px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .apple-card,
       .slide-step.is-active,
+      .slide-step.is-exiting,
+      .slide-step.is-active > .header,
+      .slide-step.is-active > .step-body > *,
+      .slide-step.is-active > .step-footer-fixed > *,
       .bg-inertia,
       .step-dots span {
         animation: none !important;
@@ -1275,6 +1336,7 @@
     let targetAmbX = 0;
     let targetAmbY = 0;
     let breathT = 0;
+    let stepExitTimer = 0;
 
     function applyParallax(xPercent, scale) {
       if (!bgInertia) return;
@@ -1336,30 +1398,24 @@
     }
 
     function syncViewportHeight() {
-      /* no-op: card height follows active step (no carousel viewport) */
+      /* no-op: altezza card = foglio attivo */
     }
 
-    /** Snap sul posto: niente carosello orizzontale. */
+    /**
+     * Taratura balistica iOS Matrix:
+     * - fogli fissi (no carosello)
+     * - in/out 150ms + micro-scale
+     * - pallini subito
+     * - parallasse ±1/12 (anche Back, inverso)
+     */
     function setStep(step) {
+      const from = currentStep;
+      const goingBack = step < from;
       currentStep = step;
       document.body.dataset.step = String(step);
+      document.body.dataset.dir = goingBack ? 'back' : 'fwd';
 
-      for (let i = 1; i <= TOTAL_STEPS; i++) {
-        const el = document.getElementById(`step${i}`);
-        if (!el) continue;
-        const active = i === step;
-        if (active) {
-          el.classList.remove('is-active');
-          void el.offsetWidth;
-          el.classList.add('is-active');
-        } else {
-          el.classList.remove('is-active');
-        }
-        if (i !== 2 || step !== TOTAL_STEPS) {
-          el.classList.remove('is-dissolving');
-        }
-      }
-
+      // 1) Pallini ISTANTANEI (in anticipo sul foglio)
       if (dots) {
         dots.classList.toggle('hidden', step === TOTAL_STEPS);
         [...dots.children].forEach((el, i) => {
@@ -1367,7 +1423,37 @@
         });
       }
 
+      // 2) Parallasse sync (opposto allo step; Back = inverso automatico)
       applyParallax((step - 1) * (100 / 12), 1.08 + (step - 1) * 0.02);
+
+      clearTimeout(stepExitTimer);
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const el = document.getElementById(`step${i}`);
+        if (!el) continue;
+        el.classList.remove('is-exiting');
+
+        if (i === step) {
+          el.classList.remove('is-active');
+          void el.offsetWidth;
+          el.classList.add('is-active');
+        } else if (i === from && from !== step && !reduceMotion) {
+          el.classList.remove('is-active');
+          el.classList.add('is-exiting');
+        } else {
+          el.classList.remove('is-active');
+        }
+
+        if (i !== 2 || step !== TOTAL_STEPS) {
+          el.classList.remove('is-dissolving');
+        }
+      }
+
+      if (from !== step && !reduceMotion) {
+        stepExitTimer = setTimeout(() => {
+          const prev = document.getElementById(`step${from}`);
+          if (prev) prev.classList.remove('is-exiting');
+        }, 160);
+      }
     }
 
     function playSuccessKinetics(thenGo) {
