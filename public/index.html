@@ -210,6 +210,17 @@
         padding-right: 18px;
       }
 
+      #step3.slide-step {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      #step3 .step3-home,
+      #step3 .guest-sheet {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
       /* Foto ristorante: usano tutta la larghezza utile della card */
       #step2 .restaurant-showcase {
         margin-left: -18px;
@@ -1209,12 +1220,180 @@
 
     #step3.slide-step {
       justify-content: flex-start;
+      overflow: hidden;
+      padding-top: 0;
+      padding-left: 0;
+      padding-right: 0;
+      position: relative;
+    }
+
+    #step3 .step3-shell {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #step3 .step3-home {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      padding-left: var(--ios-inset);
+      padding-right: var(--ios-inset);
+      box-sizing: border-box;
+      transition:
+        transform var(--slide-ms) var(--slide-ease),
+        opacity calc(var(--slide-ms) * 0.85) var(--slide-ease);
+      will-change: transform, opacity;
+    }
+
+    #step3.sheet-open .step3-home {
+      transform: translate3d(-18%, 0, 0) scale(0.97);
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    /* Sheet full-bleed: copre la card, non la allunga */
+    .guest-sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      padding: 14px var(--ios-inset) 16px;
+      box-sizing: border-box;
+      background-color: var(--card-cream);
+      background-image: linear-gradient(
+        180deg,
+        var(--card-cream-top) 0%,
+        var(--card-cream-bottom) 100%
+      );
+      border-radius: 0;
+      transform: translate3d(104%, 0, 0);
+      opacity: 1;
+      pointer-events: none;
+      visibility: hidden;
+      transition:
+        transform var(--slide-ms) var(--slide-ease),
+        visibility 0s linear var(--slide-ms);
+      will-change: transform;
+      box-shadow: -12px 0 40px rgba(18, 68, 83, 0.12);
+    }
+
+    #step3.sheet-open .guest-sheet,
+    .guest-sheet.is-open {
+      transform: translate3d(0, 0, 0);
+      pointer-events: auto;
+      visibility: visible;
+      transition:
+        transform var(--slide-ms) var(--slide-ease),
+        visibility 0s linear 0s;
+    }
+
+    .guest-sheet-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      flex: 0 0 auto;
+      padding: 4px 2px 14px;
+      border-bottom: 1px solid rgba(18, 68, 83, 0.1);
+    }
+
+    .guest-sheet-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      margin: 0;
+      padding: 6px 2px;
+      border: 0;
+      background: transparent;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .guest-sheet-back:active {
+      opacity: 0.65;
+    }
+
+    .guest-sheet-back-icon {
+      width: 10px;
+      height: 10px;
+      border-style: solid;
+      border-color: var(--canal-petroleum);
+      border-width: 0 0 2px 2px;
+      transform: rotate(45deg);
+      margin-right: 2px;
+    }
+
+    .guest-sheet-title {
+      margin: 0;
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      color: var(--canal-petroleum);
+    }
+
+    .guest-sheet-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
       overflow-x: hidden;
       overflow-y: auto;
-      overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
-      padding-top: 0;
+      padding: 16px 2px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       scrollbar-width: none;
+    }
+
+    .guest-sheet-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .guest-sheet-panel {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      animation: sheetPanelIn 420ms var(--slide-ease) both;
+    }
+
+    .guest-sheet-panel.is-active {
+      display: flex;
+    }
+
+    @keyframes sheetPanelIn {
+      from {
+        opacity: 0;
+        transform: translate3d(12px, 0, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #step3 .step3-home,
+      .guest-sheet,
+      .guest-sheet-panel {
+        transition: none !important;
+        animation: none !important;
+      }
     }
 
     #step3.slide-step::-webkit-scrollbar {
@@ -1366,8 +1545,7 @@
     }
 
     #step3 .guest-action-panel {
-      padding: 12px;
-      gap: 10px;
+      display: none;
     }
 
     #step3 .guest-kv {
@@ -1468,28 +1646,17 @@
       border-color: var(--canal-petroleum);
       border-style: solid;
       border-width: 0 1.6px 1.6px 0;
-      transform: rotate(45deg);
+      transform: rotate(-45deg);
       flex-shrink: 0;
       opacity: 0.55;
-      transition: transform 0.2s var(--ios-ease);
+      transition: opacity 0.2s var(--ios-ease);
     }
 
-    .guest-action.is-open .ga-chevron {
-      transform: rotate(-135deg);
+    .guest-action-btn:active .ga-chevron {
+      opacity: 0.9;
     }
 
-    .guest-action-panel {
-      display: none;
-      padding: 12px;
-      border-top: 1px solid rgba(18, 68, 83, 0.1);
-      background: rgba(18, 68, 83, 0.03);
-    }
-
-    .guest-action.is-open .guest-action-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    /* Pannelli vivono nello sheet overlay, non più dentro le righe */
 
     .book-hint {
       margin: 10px 0 10px;
@@ -2301,30 +2468,71 @@
 
       <!-- STEP 3 SUCCESS — stesso linguaggio visivo di Step 1/2 -->
       <section class="slide-step" id="step3" aria-hidden="true">
-        <div class="header step3-head">
-          <div class="success-check" aria-hidden="true"></div>
-          <h1 id="lbl-succ-title">Registrato!</h1>
-          <p id="lbl-succ-sub">
-            Indicazioni via email. Azioni rapide qui sotto.
-          </p>
-          <div class="receipt-badge" id="receiptBadge">
-            <span class="eyebrow" id="lbl-badge">Mostra alla Reception</span>
-            <strong class="code" id="verificationCode">HC-0000</strong>
-            <span class="time" id="lbl-verified-time"></span>
-          </div>
-        </div>
+        <div class="step3-shell" id="step3Shell">
+          <div class="step3-home" id="step3Home">
+            <div class="header step3-head">
+              <div class="success-check" aria-hidden="true"></div>
+              <h1 id="lbl-succ-title">Registrato!</h1>
+              <p id="lbl-succ-sub">
+                Indicazioni via email. Azioni rapide qui sotto.
+              </p>
+              <div class="receipt-badge" id="receiptBadge">
+                <span class="eyebrow" id="lbl-badge">Mostra alla Reception</span>
+                <strong class="code" id="verificationCode">HC-0000</strong>
+                <span class="time" id="lbl-verified-time"></span>
+              </div>
+            </div>
 
-        <div class="step-body step3-body">
-          <div class="guest-actions" id="guestActions" hidden>
-            <div class="guest-action is-book" id="actionTable">
-          <button type="button" class="guest-action-btn" data-panel="tablePanel" id="btnTable" aria-expanded="false" aria-controls="tablePanel">
-                <span class="ga-label">
-                  <span class="ga-title" id="lbl-act-table">Prenota un tavolo</span>
-                  <span class="ga-sub" id="lbl-act-table-sub">Scegli orario · ti richiamiamo</span>
-                </span>
-                <span class="ga-chevron" aria-hidden="true"></span>
+            <div class="step-body step3-body">
+              <div class="guest-actions" id="guestActions" hidden>
+                <div class="guest-action is-book" id="actionTable">
+                  <button type="button" class="guest-action-btn" data-sheet="tablePanel" id="btnTable" aria-expanded="false" aria-controls="tablePanel">
+                    <span class="ga-label">
+                      <span class="ga-title" id="lbl-act-table">Prenota un tavolo</span>
+                      <span class="ga-sub" id="lbl-act-table-sub">Scegli orario · ti richiamiamo</span>
+                    </span>
+                    <span class="ga-chevron" aria-hidden="true"></span>
+                  </button>
+                </div>
+
+                <div class="guest-action" id="actionDoors">
+                  <button type="button" class="guest-action-btn" data-sheet="doorsPanel" id="btnDoors" aria-expanded="false" aria-controls="doorsPanel">
+                    <span class="ga-label">
+                      <span class="ga-title" id="lbl-act-doors">Codici della porta</span>
+                      <span class="ga-sub" id="lbl-act-doors-sub">Entrata e porta interna</span>
+                    </span>
+                    <span class="ga-chevron" aria-hidden="true"></span>
+                  </button>
+                </div>
+
+                <div class="guest-action" id="actionWifi">
+                  <button type="button" class="guest-action-btn" data-sheet="wifiPanel" id="btnWifi" aria-expanded="false" aria-controls="wifiPanel">
+                    <span class="ga-label">
+                      <span class="ga-title" id="lbl-act-wifi">Accedi al Wi‑Fi</span>
+                      <span class="ga-sub" id="lbl-act-wifi-sub">Rete in tutta la struttura</span>
+                    </span>
+                    <span class="ga-chevron" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+
+              <p class="reception-note" id="lbl-reception-note">
+                Reception 24h. Passa quando vuoi.
+              </p>
+            </div>
+          </div>
+
+          <!-- Overlay a tutta card: non allunga il contenitore -->
+          <div class="guest-sheet" id="guestSheet" aria-hidden="true">
+            <div class="guest-sheet-bar">
+              <button type="button" class="guest-sheet-back" id="guestSheetClose" aria-label="Indietro">
+                <span class="guest-sheet-back-icon" aria-hidden="true"></span>
+                <span id="lbl-sheet-back">Indietro</span>
               </button>
-              <div class="guest-action-panel" id="tablePanel">
+              <h2 class="guest-sheet-title" id="guestSheetTitle"></h2>
+            </div>
+            <div class="guest-sheet-scroll">
+              <div class="guest-sheet-panel" id="tablePanel" hidden>
                 <a class="guest-call" id="btnCallTrattoria" href="tel:+393282464972">
                   <span class="ga-call-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -2370,17 +2578,8 @@
                 <button type="button" class="book-submit" id="btnBookSend">Invia richiesta</button>
                 <p class="book-done" id="bookDoneMsg" hidden></p>
               </div>
-            </div>
 
-            <div class="guest-action" id="actionDoors">
-              <button type="button" class="guest-action-btn" data-panel="doorsPanel" id="btnDoors" aria-expanded="false" aria-controls="doorsPanel">
-                <span class="ga-label">
-                  <span class="ga-title" id="lbl-act-doors">Codici della porta</span>
-                  <span class="ga-sub" id="lbl-act-doors-sub">Entrata e porta interna</span>
-                </span>
-                <span class="ga-chevron" aria-hidden="true"></span>
-              </button>
-              <div class="guest-action-panel" id="doorsPanel">
+              <div class="guest-sheet-panel" id="doorsPanel" hidden>
                 <div class="guest-kv">
                   <span class="k" id="lbl-door-main">Entrata principale</span>
                   <span class="v" id="doorMain">-</span>
@@ -2390,17 +2589,8 @@
                   <span class="v" id="doorInner">-</span>
                 </div>
               </div>
-            </div>
 
-            <div class="guest-action" id="actionWifi">
-              <button type="button" class="guest-action-btn" data-panel="wifiPanel" id="btnWifi" aria-expanded="false" aria-controls="wifiPanel">
-                <span class="ga-label">
-                  <span class="ga-title" id="lbl-act-wifi">Accedi al Wi‑Fi</span>
-                  <span class="ga-sub" id="lbl-act-wifi-sub">Rete in tutta la struttura</span>
-                </span>
-                <span class="ga-chevron" aria-hidden="true"></span>
-              </button>
-              <div class="guest-action-panel" id="wifiPanel">
+              <div class="guest-sheet-panel" id="wifiPanel" hidden>
                 <div class="guest-kv">
                   <span class="k" id="lbl-wifi-net">Rete</span>
                   <span class="v" id="wifiSsid">-</span>
@@ -2412,10 +2602,6 @@
               </div>
             </div>
           </div>
-
-          <p class="reception-note" id="lbl-reception-note">
-            Reception 24h. Passa quando vuoi.
-          </p>
         </div>
       </section>
     </div>
@@ -3209,7 +3395,6 @@
       let h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
       const actions = document.getElementById('guestActions');
       if (step === 3 && actions && !actions.hidden) {
-        const anyOpen = actions.querySelector('.guest-action.is-open');
         const natural = measureStepContentHeight(3);
         if (Number.isFinite(natural) && natural > 280) {
           const maxH = availableCardMax();
@@ -3219,9 +3404,7 @@
           );
           return;
         }
-        h = anyOpen
-          ? 'var(--card-h-3-open)'
-          : 'var(--card-h-3-booking)';
+        h = 'var(--card-h-3-booking)';
       }
       card.style.setProperty('--card-h', h);
     }
@@ -3688,10 +3871,8 @@
       // Solo dopo check-in riuscito
       if (actions) {
         actions.hidden = Boolean(already);
-        actions.querySelectorAll('.guest-action').forEach((el) => {
-          el.classList.remove('is-open');
-        });
       }
+      closeGuestSheet();
       const bookTime = document.getElementById('bookTime');
       const bookPax = document.getElementById('bookPax');
       const bookSend = document.getElementById('btnBookSend');
@@ -3740,6 +3921,11 @@
       setTxt('lbl-book-time', dict.bookTime);
       setTxt('lbl-book-pax', dict.bookPax);
       setTxt('lbl-book-or', dict.bookOr);
+      setTxt('lbl-sheet-back', dict.back);
+      const sheetClose = document.getElementById('guestSheetClose');
+      if (sheetClose) {
+        sheetClose.setAttribute('aria-label', dict.back || 'Back');
+      }
       const sendBtn = document.getElementById('btnBookSend');
       if (sendBtn && !sendBtn.disabled) sendBtn.textContent = dict.bookSend;
       setTxt('lbl-act-wifi', dict.actWifi);
@@ -3820,26 +4006,78 @@
     }
 
     document.getElementById('guestActions')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('.guest-action-btn[data-panel]');
+      const btn = e.target.closest('.guest-action-btn[data-sheet]');
       if (!btn) return;
       e.preventDefault();
-      const action = btn.closest('.guest-action');
-      if (!action) return;
-      const willOpen = !action.classList.contains('is-open');
-      document.querySelectorAll('#guestActions .guest-action').forEach((el) => {
-        el.classList.remove('is-open');
-        el.querySelector('.guest-action-btn')?.setAttribute('aria-expanded', 'false');
-      });
-      if (willOpen) {
-        action.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-      }
-      // Due frame: layout della tendina, poi altezza card (niente scroll aggressivo)
-      requestAnimationFrame(() => {
-        syncCardHeight(3, { allowMicroAdjust: true });
-        requestAnimationFrame(() => syncCardHeight(3, { allowMicroAdjust: true }));
-      });
+      openGuestSheet(btn.getAttribute('data-sheet'), btn);
     });
+
+    document.getElementById('guestSheetClose')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeGuestSheet();
+    });
+
+    function openGuestSheet(panelId, triggerBtn) {
+      const step3 = document.getElementById('step3');
+      const sheet = document.getElementById('guestSheet');
+      const titleEl = document.getElementById('guestSheetTitle');
+      if (!step3 || !sheet || !panelId) return;
+
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
+
+      document.querySelectorAll('.guest-sheet-panel').forEach((el) => {
+        el.hidden = true;
+        el.classList.remove('is-active');
+      });
+      panel.hidden = false;
+      // retrigger enter animation
+      void panel.offsetWidth;
+      panel.classList.add('is-active');
+
+      const title =
+        triggerBtn?.querySelector('.ga-title')?.textContent?.trim() || '';
+      if (titleEl) titleEl.textContent = title;
+
+      document.querySelectorAll('#guestActions .guest-action-btn').forEach((b) => {
+        b.setAttribute('aria-expanded', b === triggerBtn ? 'true' : 'false');
+      });
+
+      sheet.classList.add('is-open');
+      sheet.setAttribute('aria-hidden', 'false');
+      step3.classList.add('sheet-open');
+
+      if (!reduceMotion) {
+        requestAnimationFrame(() => {
+          document.getElementById('guestSheetClose')?.focus({ preventScroll: true });
+        });
+      }
+    }
+
+    function closeGuestSheet() {
+      const step3 = document.getElementById('step3');
+      const sheet = document.getElementById('guestSheet');
+      if (!step3 || !sheet) return;
+
+      sheet.classList.remove('is-open');
+      sheet.setAttribute('aria-hidden', 'true');
+      step3.classList.remove('sheet-open');
+
+      document.querySelectorAll('#guestActions .guest-action-btn').forEach((b) => {
+        b.setAttribute('aria-expanded', 'false');
+      });
+
+      window.setTimeout(
+        () => {
+          if (sheet.classList.contains('is-open')) return;
+          document.querySelectorAll('.guest-sheet-panel').forEach((el) => {
+            el.hidden = true;
+            el.classList.remove('is-active');
+          });
+        },
+        reduceMotion ? 0 : SLIDE_MS + 20,
+      );
+    }
 
     document.getElementById('btnBookSend')?.addEventListener('click', async () => {
       const dict = t();
