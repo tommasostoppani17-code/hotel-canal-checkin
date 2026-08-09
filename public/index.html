@@ -27,9 +27,10 @@
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
-      --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --slide-ms: 380ms;
-      --height-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      /* iOS-like: accel morbida + decelerazione lunga (meno “scatto”) */
+      --slide-ease: cubic-bezier(0.22, 0.9, 0.28, 1);
+      --slide-ms: 440ms;
+      --height-ease: cubic-bezier(0.22, 0.9, 0.28, 1);
       /* Cupertino 8pt grid */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -164,11 +165,11 @@
         max-height var(--slide-ms) var(--height-ease);
     }
 
-    /* Torna indietro / card più bassa: shrink snappy, non dopo lo slide */
+    /* Shrink allineato allo slide (stessa curva/durata = più fluido) */
     .apple-card.is-height-shrink {
       transition:
-        height 200ms var(--slide-ease),
-        max-height 200ms var(--slide-ease);
+        height var(--slide-ms) var(--height-ease),
+        max-height var(--slide-ms) var(--height-ease);
     }
 
     /* Solo al primo load — mai dopo shake/rubber (altrimenti riparte da opacity 0) */
@@ -422,6 +423,10 @@
     .slide-step.is-sliding {
       visibility: visible;
       pointer-events: none;
+    }
+
+    .slide-step.is-active:not(.is-sliding) {
+      transition: opacity 180ms ease-out;
     }
 
     .apple-input,
