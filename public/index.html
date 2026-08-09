@@ -42,7 +42,7 @@
       /* Viewport stabile su mobile; JS scrive --vvh da visualViewport */
       --app-vh: var(--vvh, 100svh);
       /* Step heights — desktop/tablet; su phone vedi @media sotto */
-      --card-h-1: min(528px, calc(var(--app-vh) - 48px));
+      --card-h-1: min(548px, calc(var(--app-vh) - 40px));
       --card-h-2: min(640px, calc(var(--app-vh) - 20px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
@@ -179,7 +179,7 @@
     /* Smartphone: card un filo più stretta + margini laterali */
     @media (max-width: 480px) {
       :root {
-        --card-h-1: min(548px, calc(var(--app-vh) - 36px));
+        --card-h-1: min(568px, calc(var(--app-vh) - 28px));
         --card-h-2: min(660px, calc(var(--app-vh) - 16px));
         --card-h-3: min(500px, calc(var(--app-vh) - 28px));
         --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
@@ -3591,7 +3591,10 @@
         if (cached >= 280 && natural > cached + 40) {
           natural = cached;
         }
-        const h = Math.min(Math.max(natural, step === 2 ? 360 : 400), maxH);
+        const h = Math.min(
+          Math.max(natural + (step === 1 ? 28 : 0), step === 2 ? 360 : step === 1 ? 428 : 400),
+          maxH,
+        );
         if (step === 1) measuredStep1Height = h;
         return h;
       }
