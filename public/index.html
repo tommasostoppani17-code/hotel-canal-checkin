@@ -218,32 +218,30 @@
       will-change: height;
     }
 
-    /* Binario: stessa durata/curva del viewport */
+    /* Binario 3 pannelli: width 300%, ogni step 33.333% */
     .slider-track {
       display: flex;
       flex-wrap: nowrap;
       align-items: flex-start;
-      width: 100%;
+      width: 300%;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
       transition: transform var(--slide-ms) var(--ios-ease);
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      /* Isola il compositing — NO preserve-3d (rompe ombra Safari) */
       isolation: isolate;
     }
 
     /*
      * Anti-CLS: inattivi height 0.
-     * Durante lo slide lo step uscente resta .is-exiting (altezza piena)
-     * così il testo non viene “affettato” a metà animazione.
+     * Durante lo slide lo step uscente resta .is-exiting (altezza piena).
      */
     .slide-step {
-      flex: 0 0 100%;
-      width: 100%;
-      max-width: 100%;
-      min-width: 100%;
+      flex: 0 0 33.333%;
+      width: 33.333%;
+      max-width: 33.333%;
+      min-width: 33.333%;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -279,7 +277,6 @@
 
     .slide-step.is-exiting {
       pointer-events: none;
-      /* Isola layout/style senza size (size spezzerebbe lo scrollHeight) */
       contain: layout style;
     }
 
@@ -1543,8 +1540,9 @@
 
       markStepClasses(step, isTransit ? fromStep : null);
 
-      const toSlide = -(step - 1) * 100;
-      const toParallax = -toSlide / 22;
+      /* Track 300%: uno step = 100/3 % del binario (NON -100%) */
+      const toSlide = -((step - 1) * 100) / TOTAL_STEPS;
+      const toParallax = ((step - 1) * 100) / 22;
       const toScale = 1.05 + (step - 1) * 0.012;
 
       if (reduceMotion && track) {
