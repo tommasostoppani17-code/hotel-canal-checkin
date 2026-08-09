@@ -219,6 +219,9 @@
       overflow: hidden !important;
       position: relative;
       transition: none !important;
+      /* Forza clip su Safari (senza preserve-3d) */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
 
     /* Binario 300%: solo transform orizzontale */
@@ -235,8 +238,9 @@
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       isolation: isolate;
-      transform-style: preserve-3d;
-      -webkit-transform-style: preserve-3d;
+      /* flat: altrimenti iOS non clippa gli step vicini */
+      transform-style: flat;
+      -webkit-transform-style: flat;
     }
 
     /*
@@ -264,12 +268,20 @@
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       overflow: hidden;
-      pointer-events: auto;
+      pointer-events: none;
       opacity: 1;
+      visibility: hidden;
     }
 
     .slide-step.is-active {
       pointer-events: auto;
+      visibility: visible;
+    }
+
+    /* Durante lo slide entrambi gli step devono restare visibili */
+    .slide-step.is-sliding {
+      visibility: visible;
+      pointer-events: none;
     }
 
     .apple-input,
@@ -368,7 +380,7 @@
     .carousel-viewport {
       position: relative;
       width: 100%;
-      height: 196px;
+      height: 178px;
       border-radius: 16px;
       overflow: hidden;
       background: #124453;
@@ -536,26 +548,26 @@
 
     .rest-offer-blurb {
       text-align: center;
-      margin: 2px 0 10px;
-      padding: 0 4px;
+      margin: 0 0 8px;
+      padding: 0 2px;
     }
 
     .rest-offer-blurb .rest-sub {
       display: block;
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 11.5px;
-      line-height: 1.4;
+      font-size: 11px;
+      line-height: 1.35;
       font-weight: 500;
       text-transform: none;
       letter-spacing: 0.01em;
       color: #3D4A52;
-      margin: 0 0 5px;
+      margin: 0 0 4px;
     }
 
     .rest-offer-blurb .rest-desc-hero {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 10px;
-      line-height: 1.4;
+      line-height: 1.35;
       font-weight: 600;
       text-transform: none;
       letter-spacing: 0.01em;
@@ -614,16 +626,28 @@
     }
 
     #step2 .form-grid-container {
-      gap: 10px;
+      gap: 8px;
     }
 
     #step2 .form-group.span-2 {
-      margin-top: 2px;
+      margin-top: 0;
+    }
+
+    #step2 .apple-input {
+      height: 40px;
     }
 
     #step2 .step-footer-fixed {
-      margin-top: 8px;
+      margin-top: 6px;
       padding-top: 2px;
+    }
+
+    #step2 .step-footer-fixed .btn-canal {
+      margin-top: 2px;
+    }
+
+    #step2 .carousel-caption {
+      margin-top: 6px;
     }
 
     #step2 .step-footer-fixed .btn-ghost {
@@ -1528,16 +1552,16 @@
               <div class="carousel-viewport" id="restCarouselViewport">
                 <div class="carousel-track" id="restCarouselTrack">
                   <figure class="carousel-slide">
-                    <img src="/restaurant/01-terrazza-canale.jpg" alt="Terrazza sul canale" width="900" height="600" decoding="async" style="object-position: center 38%;">
+                    <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="900" height="600" decoding="async" style="object-position: center 38%;">
                   </figure>
                   <figure class="carousel-slide">
-                    <img src="/restaurant/02-gondola-ingresso.jpg" alt="Ingresso sul canale" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 40%;">
+                    <img src="/restaurant/02-gondola-ingresso.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 40%;">
                   </figure>
                   <figure class="carousel-slide">
-                    <img src="/restaurant/05-pesce-al-forno.jpg" alt="Pesce al forno" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 30%;">
+                    <img src="/restaurant/05-pesce-al-forno.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 30%;">
                   </figure>
                   <figure class="carousel-slide">
-                    <img src="/restaurant/08-risotto.jpg" alt="Risotto" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 35%;">
+                    <img src="/restaurant/08-risotto.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 35%;">
                   </figure>
                 </div>
                 <button type="button" class="carousel-arrow left" id="restCarouselPrev" aria-label="Foto precedente">
@@ -2326,12 +2350,17 @@
       return translations[nav] ? nav : 'en';
     }
 
-    function markStepClasses(step) {
+    let slideRevealTimer = 0;
+
+    function markStepClasses(step, { slidingFrom = null } = {}) {
       for (let i = 1; i <= TOTAL_STEPS; i++) {
         const el = document.getElementById(`step${i}`);
         if (!el) continue;
-        el.classList.toggle('is-active', i === step);
+        const active = i === step;
+        el.classList.toggle('is-active', active);
+        el.classList.toggle('is-sliding', slidingFrom != null && i === slidingFrom);
         el.classList.remove('is-exiting');
+        el.setAttribute('aria-hidden', active ? 'false' : 'true');
         if (i !== 2 || step !== TOTAL_STEPS) {
           el.classList.remove('is-dissolving');
         }
@@ -2375,6 +2404,7 @@
     }
 
     function setStep(step) {
+      const prev = currentStep;
       currentStep = step;
       document.body.dataset.step = String(step);
 
@@ -2385,7 +2415,8 @@
         });
       }
 
-      markStepClasses(step);
+      const sliding = prev !== step && !reduceMotion;
+      markStepClasses(step, { slidingFrom: sliding ? prev : null });
 
       const toSlide = -((step - 1) * 100) / TOTAL_STEPS;
       const toParallax = ((step - 1) * 100) / 22;
@@ -2405,6 +2436,11 @@
         () => freezeAmbient(false),
         reduceMotion ? 0 : SLIDE_MS + 20,
       );
+
+      clearTimeout(slideRevealTimer);
+      slideRevealTimer = setTimeout(() => {
+        markStepClasses(step, { slidingFrom: null });
+      }, reduceMotion ? 0 : SLIDE_MS + 40);
     }
 
     /**
