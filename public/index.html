@@ -683,6 +683,54 @@
       background: rgba(18, 68, 83, 0.06);
     }
 
+    /* Tendina prenotazione: tono caldo, diverso da call/Wi‑Fi/porte */
+    .guest-action.is-book {
+      border-color: rgba(138, 106, 69, 0.32);
+      background: #F3EEE6;
+    }
+
+    .guest-action.is-book .guest-action-btn {
+      color: #5C4A36;
+    }
+
+    .guest-action.is-book .guest-action-btn:active {
+      background: rgba(138, 106, 69, 0.1);
+    }
+
+    .guest-action.is-book .ga-sub {
+      color: #8A7A68;
+    }
+
+    .guest-action.is-book .ga-chevron {
+      border-color: #8A6A45;
+      opacity: 0.75;
+    }
+
+    .guest-action.is-book .guest-action-panel {
+      border-top-color: rgba(138, 106, 69, 0.16);
+    }
+
+    .guest-action.is-book .book-field label {
+      color: #8A6A45;
+    }
+
+    .guest-action.is-book .book-field input {
+      border-color: rgba(138, 106, 69, 0.22);
+      color: #5C4A36;
+    }
+
+    .guest-action.is-book .book-submit {
+      background: #8A6A45;
+    }
+
+    .guest-action.is-book .book-submit:active {
+      background: #734F2F;
+    }
+
+    .guest-action.is-book .book-done {
+      color: #5C4A36;
+    }
+
     .guest-call {
       display: flex;
       align-items: center;
@@ -1738,11 +1786,14 @@
               <span class="ga-phone" id="lbl-call-phone">328 246 4972</span>
             </a>
 
-            <div class="guest-action is-primary is-static" id="actionTable">
-              <div class="guest-action-head">
-                <span class="ga-title" id="lbl-act-table">Prenota un tavolo per stasera</span>
-                <span class="ga-sub" id="lbl-act-table-sub">Orario a tua scelta · vi ricontattiamo</span>
-              </div>
+            <div class="guest-action is-book" id="actionTable">
+              <button type="button" class="guest-action-btn" data-panel="tablePanel" id="btnTable">
+                <span class="ga-label">
+                  <span class="ga-title" id="lbl-act-table">Prenota un tavolo per stasera</span>
+                  <span class="ga-sub" id="lbl-act-table-sub">Orario a tua scelta · vi ricontattiamo</span>
+                </span>
+                <span class="ga-chevron" aria-hidden="true"></span>
+              </button>
               <div class="guest-action-panel" id="tablePanel">
                 <div class="book-fields">
                   <div class="book-field">
@@ -2477,8 +2528,12 @@
       let h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
       const actions = document.getElementById('guestActions');
       if (step === 3 && actions && !actions.hidden) {
-        // Form prenotazione sempre visibile → altezza open
-        h = 'var(--card-h-3-open)';
+        const tableOpen = document
+          .getElementById('actionTable')
+          ?.classList.contains('is-open');
+        h = tableOpen
+          ? 'var(--card-h-3-open)'
+          : 'var(--card-h-3-booking)';
       }
       card.style.setProperty('--card-h', h);
     }
@@ -2935,7 +2990,8 @@
       }
       const tableAction = document.getElementById('actionTable');
       if (tableAction) {
-        tableAction.classList.toggle('is-primary', Boolean(couponSent));
+        tableAction.classList.add('is-book');
+        tableAction.classList.remove('is-primary', 'is-static');
       }
     }
 
@@ -2986,7 +3042,6 @@
       if (!action) return;
       const willOpen = !action.classList.contains('is-open');
       document.querySelectorAll('#guestActions .guest-action').forEach((el) => {
-        if (el.classList.contains('is-static')) return;
         el.classList.remove('is-open');
       });
       if (willOpen) action.classList.add('is-open');
