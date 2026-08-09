@@ -183,7 +183,7 @@ function buildDailyTableRows(rows) {
   if (!rows.length) {
     return `
       <tr>
-        <td colspan="5" style="padding:18px 8px;border-bottom:1px solid #E5E5EA;color:#8A949C;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;">
+        <td colspan="5" style="padding:18px 10px;border-bottom:1px solid #E5E5EA;color:#8A949C;text-align:center;font-size:12.5px;">
           Nessuna registrazione in questa giornata
         </td>
       </tr>
@@ -197,29 +197,33 @@ function buildDailyTableRows(rows) {
       const email = cleanCell(row.email);
       const phone = cleanCell(row.phone);
       const staff = cleanCell(row.receptionist) || '-';
+      const pax = cleanCell(row.guests_count ?? '2') || '2';
       const haVoucher = hasRestaurantCoupon(row);
+      const couponCell = haVoucher
+        ? `<span style="color:#124453 !important;font-weight:700;font-size:10px;letter-spacing:0.04em;text-transform:uppercase;">EMESSO (Pax: ${escapeHtml(pax)})</span>`
+        : `<span style="color:#8E8E93 !important;font-weight:600;font-size:10px;letter-spacing:0.04em;text-transform:uppercase;">NON EMESSO</span>`;
 
       return `
-        <tr style="border-bottom:1px solid rgba(0,0,0,0.05);">
-          <td style="font-weight:700;color:#124453 !important;padding:12px 8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;vertical-align:top;">
+        <tr>
+          <td width="72" style="font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;color:#124453 !important;padding:14px 10px;border-bottom:1px solid #E5E5EA;vertical-align:top;">
             ${escapeHtml(room || '-')}
           </td>
-          <td style="padding:12px 8px;vertical-align:top;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+          <td style="padding:14px 10px;border-bottom:1px solid #E5E5EA;vertical-align:top;">
             <div style="font-weight:700;font-size:12px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.02em;">
               ${escapeHtml(name || 'NON SPECIFICATO')}
             </div>
-            <div style="font-size:11px;color:#64748B !important;margin-top:2px;">
+            <div style="font-size:11px;color:#64748B !important;margin-top:3px;">
               ${escapeHtml(email || '-')}
             </div>
           </td>
-          <td style="padding:12px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:600;color:#1D1D1F !important;vertical-align:top;">
+          <td width="120" style="padding:14px 10px;border-bottom:1px solid #E5E5EA;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:600;color:#1D1D1F !important;vertical-align:top;">
             ${escapeHtml(phone)}
           </td>
-          <td align="center" style="padding:12px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:10.5px;font-weight:700;color:#64748B !important;text-transform:uppercase;letter-spacing:0.04em;vertical-align:top;">
+          <td width="100" align="center" style="padding:14px 8px;border-bottom:1px solid #E5E5EA;font-size:10.5px;font-weight:700;color:#124453 !important;text-transform:uppercase;letter-spacing:0.05em;vertical-align:top;">
             ${escapeHtml(staff)}
           </td>
-          <td align="center" style="padding:12px 8px;font-size:15px;line-height:1;vertical-align:top;">
-            ${haVoucher ? '✅' : '❌'}
+          <td width="110" align="center" style="padding:14px 8px;border-bottom:1px solid #E5E5EA;vertical-align:top;">
+            ${couponCell}
           </td>
         </tr>
       `;
@@ -228,12 +232,13 @@ function buildDailyTableRows(rows) {
 }
 
 /**
- * Report notturno Payel: total-white leggero (<15KB, 0 immagini),
- * KPI + tabella + WhatsApp; master Excel nel CSV allegato.
+ * Report notturno Payel: hero Venezia remoto + tabella squadrata istituzionale.
+ * Zero emoji. CSV master in allegato. HTML leggero (<102KB).
  */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
-  const subject = `REPORT RECEPTION - ${count} Nuove Anagrafiche Camere - ${dateLabel}`;
+  const subject = `AUDIT RECEPTION - ${count} Registrazioni Camere - ${dateLabel}`;
   const couponCount = rows.filter(hasRestaurantCoupon).length;
+  const hero = escapeHtml(publicAssetUrl('email', 'hero-venice.jpg'));
 
   const listaSoloNumeri = rows
     .map((row) => row.phone)
@@ -243,16 +248,16 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   const text = [
     `Ciao Payel,`,
     ``,
-    `Resoconto Fast Check-in ${hotelName} - ${dateLabel}.`,
-    `Camere registrate: ${count}`,
-    `Voucher ristorante: ${couponCount}`,
+    `Registro giornaliero Fast Check-in ${hotelName} - ${dateLabel}.`,
+    `Camere totali: ${count}`,
+    `Coupon emessi: ${couponCount}`,
     ``,
-    `Copia rapida WhatsApp:`,
+    `Lista numeri broadcast:`,
     listaSoloNumeri || '-',
     ``,
-    `Archivio master .CSV allegato (Excel).`,
+    `Documento sorgente .CSV allegato.`,
     ``,
-    `Generato automaticamente - ${hotelName}`,
+    `${hotelName} Ledger`,
   ].join('\n');
 
   const html = `
@@ -266,72 +271,85 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   <title>${escapeHtml(subject)}</title>
   <style type="text/css">
     :root { color-scheme: light only; }
+    img { display: block; max-width: 100%; height: auto; border: 0; }
     html, body, table, td, th, p, div {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     html, body { background-color: #FFFFFF !important; color: #1D1D1F !important; }
     @media (prefers-color-mode: dark) {
-      body, table, td, .email-bg, .wrapper, .kpi-card, .utility-box {
-        background-color: #FFFFFF !important; color: #1D1D1F !important;
-      }
-      td, p, h2, div, th, span, strong { color: #1D1D1F !important; }
-      .kpi-card, .utility-box { border-color: #E5E5EA !important; }
-      .data-table th { background-color: #F4F7F9 !important; color: #124453 !important; }
+      body, table, td, .email-bg, .wrapper { background-color: #FFFFFF !important; color: #1D1D1F !important; }
+      td, p, h2, div, th, strong, span { color: #1D1D1F !important; }
+      .data-table th { background-color: #124453 !important; color: #FFFFFF !important; }
+      .data-table td { border-bottom: 1px solid #E5E5EA !important; }
+      .utility-box { background-color: #F4F7F9 !important; border-color: #E5E5EA !important; }
+      .meta-text { color: #124453 !important; }
     }
   </style>
 </head>
 <body style="margin:0;padding:0;background-color:#FFFFFF !important;color:#1D1D1F !important;">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#FFFFFF;">
-    ${escapeHtml(`${count} anagrafiche - ${couponCount} voucher - CSV allegato - ${dateLabel}`)}
+    ${escapeHtml(`Ciao Payel - ${count} registrazioni - ${couponCount} coupon - ${dateLabel}`)}
   </div>
-  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:32px 12px;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:28px 12px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:540px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E5E5EA;">
+        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background-color:#FFFFFF !important;">
 
           <tr>
-            <td align="center" style="padding:36px 24px;border-bottom:1px solid #E5E5EA;background-color:#FFFFFF !important;">
-              <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:700;letter-spacing:0.06em;color:#124453 !important;text-transform:uppercase;">
+            <td align="center" style="padding:0 0 24px 0;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:16px;overflow:hidden;">
+                <tr>
+                  <td style="padding:0;line-height:0;font-size:0;background-color:#E9EEF0;border-radius:16px;">
+                    <img src="${hero}" width="600" alt="Venezia - Hotel Canal" style="display:block;width:100%;max-width:600px;height:auto;border:0;border-radius:16px;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="padding:0 0 28px 0;border-bottom:1px solid #124453;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:700;letter-spacing:0.08em;color:#124453 !important;text-transform:uppercase;">
                 ${escapeHtml(hotelName)}
               </div>
-              <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.25em;color:#64748B !important;margin-top:6px;">
-                Venice Experience · Audit Notturno
+              <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.22em;color:#64748B !important;margin-top:6px;">
+                Venice Experience · Front Office Audit
               </div>
             </td>
           </tr>
 
           <tr>
-            <td style="padding:32px 24px;background-color:#FFFFFF !important;">
-              <p style="font-size:15px;line-height:1.5;color:#124453 !important;margin:0 0 8px;font-weight:600;">
+            <td style="padding:28px 0 0 0;">
+              <p style="font-size:14px;line-height:1.5;color:#124453 !important;margin:0 0 6px;font-weight:600;">
                 Ciao Payel,
               </p>
-              <p style="font-size:13.5px;line-height:1.5;color:#48484A !important;margin:0 0 24px;font-weight:500;">
-                Resoconto delle anagrafiche dei capigruppo raccolte in modalit&agrave; Fast Check-in
-                (<span style="white-space:nowrap;">${escapeHtml(dateLabel)}</span>).
+              <p style="font-size:13px;line-height:1.5;color:#48484A !important;margin:0 0 22px;font-weight:500;">
+                Registro delle anagrafiche Fast Check-in del
+                <span style="white-space:nowrap;">${escapeHtml(dateLabel)}</span>.
               </p>
 
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="kpi-card" style="background-color:#F4F7F9 !important;border-radius:14px;border:1px solid rgba(18,68,83,0.06);margin-bottom:32px;">
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0 0 16px;">
                 <tr>
-                  <td align="center" style="padding:20px;">
-                    <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B !important;letter-spacing:0.08em;display:block;margin-bottom:4px;">Totale Camere Registrate</span>
-                    <strong style="font-size:36px;color:#124453 !important;font-weight:700;line-height:1;">${count}</strong>
+                  <td valign="bottom">
+                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;color:#124453 !important;letter-spacing:0.06em;text-transform:uppercase;">
+                      Registro Giornaliero Presenze
+                    </div>
+                  </td>
+                  <td align="right" valign="bottom" style="font-size:13px;color:#48484A !important;font-weight:600;white-space:nowrap;">
+                    Camere totali: <span style="color:#124453 !important;font-weight:700;">${count}</span>
                   </td>
                 </tr>
               </table>
 
-              <h2 style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;font-weight:700;color:#124453 !important;border-bottom:1px solid rgba(18,68,83,0.15);padding-bottom:6px;margin:0 0 16px 0;letter-spacing:0.04em;text-transform:uppercase;">
-                Registro Giornaliero
-              </h2>
-
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;margin-bottom:32px;font-size:12.5px;">
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;margin:0 0 28px;font-size:12.5px;">
                 <thead>
-                  <tr style="background-color:#F4F7F9 !important;">
-                    <th align="left" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:left;padding:10px 8px;background-color:#F4F7F9 !important;">Stanza</th>
-                    <th align="left" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:left;padding:10px 8px;background-color:#F4F7F9 !important;">Ospite / Email</th>
-                    <th align="left" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:left;padding:10px 8px;background-color:#F4F7F9 !important;">Telefono</th>
-                    <th align="center" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:center;padding:10px 8px;background-color:#F4F7F9 !important;">Staff</th>
-                    <th align="center" style="color:#124453 !important;font-weight:700;text-transform:uppercase;font-size:9.5px;letter-spacing:0.05em;text-align:center;padding:10px 8px;background-color:#F4F7F9 !important;">Voucher</th>
+                  <tr>
+                    <th align="left" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:left;padding:12px 10px;">Stanza</th>
+                    <th align="left" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:left;padding:12px 10px;">Capogruppo / Contatti</th>
+                    <th align="left" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:left;padding:12px 10px;">Telefono</th>
+                    <th align="center" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:center;padding:12px 8px;">Staff</th>
+                    <th align="center" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:center;padding:12px 8px;">Coupon</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -339,22 +357,22 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
                 </tbody>
               </table>
 
-              <h2 style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;font-weight:700;color:#124453 !important;border-bottom:1px solid rgba(18,68,83,0.15);padding-bottom:6px;margin:0 0 12px 0;letter-spacing:0.04em;text-transform:uppercase;">
-                Copia Rapida WhatsApp
-              </h2>
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="utility-box" style="background-color:#F4F7F9 !important;border:1px solid #E5E5EA;border-radius:14px;margin-bottom:28px;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:700;color:#124453 !important;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 10px;">
+                Lista Numeri Broadcast
+              </div>
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="utility-box" style="background-color:#F4F7F9 !important;border:1px solid #E5E5EA;margin:0 0 24px;">
                 <tr>
-                  <td style="padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#1D1D1F !important;word-break:break-all;line-height:1.55;">
+                  <td style="padding:14px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#1D1D1F !important;word-break:break-all;line-height:1.55;">
                     ${escapeHtml(listaSoloNumeri || '-')}
                   </td>
                 </tr>
               </table>
 
-              <p style="font-size:12.5px;line-height:1.5;color:#48484A !important;margin:0 0 8px;">
-                L'archivio master in formato <strong style="color:#124453 !important;">.CSV</strong> (compatibile Excel) &egrave; allegato a questo messaggio.
+              <p style="font-size:12px;line-height:1.5;color:#48484A !important;margin:0 0 6px;">
+                Il documento sorgente in formato <strong style="color:#124453 !important;">.CSV</strong> &egrave; allegato a questo messaggio.
               </p>
-              <p style="font-size:11px;line-height:1.45;color:#8A949C !important;margin:0;">
-                Generato automaticamente dal motore ${escapeHtml(hotelName)} Core.
+              <p style="font-size:10.5px;line-height:1.45;color:#8A949C !important;margin:0;">
+                Generato da ${escapeHtml(hotelName)} Ledger · Audit notturno
               </p>
             </td>
           </tr>
