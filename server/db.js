@@ -318,3 +318,77 @@ export function getMonthlyStaffStats() {
 
   return { totals, ranking };
 }
+
+export function countCheckins() {
+  return db.prepare(`SELECT COUNT(*) AS n FROM checkins`).get()?.n || 0;
+}
+
+/** Snapshot completo per backup durable (Gist / disk). */
+export function exportAllCheckins() {
+  return db
+    .prepare(
+      `
+      SELECT
+        id,
+        phone,
+        email,
+        guest_name,
+        room_number,
+        receptionist,
+        guests_count,
+        coupon_token,
+        coupon_sent_at,
+        privacy_accepted_at,
+        created_at,
+        reported_at
+      FROM checkins
+      ORDER BY id ASC
+    `,
+    )
+    .all();
+}
+
+/**
+ * Ripristina check-in da backup se il DB locale è vuoto.
+ * Preserva gli id originali quando presenti.
+ */
+export function importCheckinsIfEmpty(rows) {
+  if (!Array.isArray(rows) || !rows.length) return 0;
+  if (countCheckins() > 0) return 0;
+
+  const stmt = db.prepare(`
+    INSERT INTO checkins (
+      id, phone, email, guest_name, room_number, receptionist, guests_count,
+      coupon_token, coupon_sent_at, privacy_accepted_at, created_at, reported_at
+    ) VALUES (
+      @id, @phone, @email, @guest_name, @room_number, @receptionist, @guests_count,
+      @coupon_token, @coupon_sent_at, @privacy_accepted_at, @created_at, @reported_at
+    )
+  `);
+
+  const tx = db.transaction((list) => {
+    let n = 0;
+    for (const row of list) {
+      if (!row?.phone) continue;
+      stmt.run({
+        id: row.id ?? null,
+        phone: row.phone,
+        email: row.email || null,
+        guest_name: row.guest_name || null,
+        room_number: row.room_number || null,
+        receptionist: row.receptionist || null,
+        guests_count: row.guests_count ?? null,
+        coupon_token: row.coupon_token || null,
+        coupon_sent_at: row.coupon_sent_at || null,
+        privacy_accepted_at:
+          row.privacy_accepted_at || row.created_at || new Date().toISOString(),
+        created_at: row.created_at || new Date().toISOString(),
+        reported_at: row.reported_at || null,
+      });
+      n += 1;
+    }
+    return n;
+  });
+
+  return tx(rows);
+}

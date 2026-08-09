@@ -163,6 +163,16 @@ export async function runDailyReport({ force = false } = {}) {
   const ids = rows.map((row) => row.id);
   markReported(ids);
 
+  try {
+    const { pushCheckinsBackup } = await import('./backup.js');
+    const { exportAllCheckins } = await import('./db.js');
+    if (process.env.CHECKIN_BACKUP_GIST_ID && process.env.CHECKIN_BACKUP_GITHUB_TOKEN) {
+      await pushCheckinsBackup(exportAllCheckins());
+    }
+  } catch (err) {
+    console.error('[backup] post-report sync failed:', err.message || err);
+  }
+
   return {
     sent: true,
     count: rows.length,

@@ -1,15 +1,18 @@
-# Hotel Canal Check-in — Blueprint Render
-# https://dashboard.render.com/blueprints
-
+# Keep Render free awake + blueprint for paid persistence
 services:
   - type: web
     name: hotel-canal-checkin
     runtime: node
-    plan: free
+    # starter = sempre acceso + disco persistente (richiede carta su Render)
+    plan: starter
     region: frankfurt
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
+    disk:
+      name: checkins-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "20"
@@ -18,7 +21,7 @@ services:
       - key: CRON_TZ
         value: Europe/Rome
       - key: DATABASE_PATH
-        value: ./data/checkins.db
+        value: /var/data/checkins.db
       - key: PUBLIC_URL
         sync: false
       - key: REPORT_EMAIL
@@ -39,7 +42,11 @@ services:
         sync: false
       - key: DOOR_CODE_AIRONE
         sync: false
+      - key: CHECKIN_BACKUP_GIST_ID
+        sync: false
+      - key: CHECKIN_BACKUP_GITHUB_TOKEN
+        sync: false
 
-  # I Cron Job Render non sono più sul piano free.
-  # Report automatici: GitHub Actions → .github/workflows/cron-reports.yml
-  # (secret CRON_SECRET + optional var PUBLIC_URL)
+  # Cron Job Render: piano a pagamento.
+  # Report automatici: .github/workflows/cron-reports.yml
+  # Keep-alive free tier: .github/workflows/keep-alive.yml

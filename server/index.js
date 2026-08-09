@@ -12,6 +12,9 @@ import {
   resolveCouponFromToken,
   updateCheckinCouponDetails,
   updateCheckinCouponToken,
+  exportAllCheckins,
+  importCheckinsIfEmpty,
+  countCheckins,
 } from './db.js';
 import { runDailyReport, runMonthlyStaffReport } from './mail.js';
 import {
@@ -26,6 +29,11 @@ import {
   sendPosterEmail,
 } from './poster.js';
 import { buildVeniceGuidePdfBuffer } from './venice-guide.js';
+import {
+  isBackupConfigured,
+  pullCheckinsBackup,
+  pushCheckinsBackup,
+} from './backup.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -40,6 +48,35 @@ const DATABASE_PATH =
   process.env.DATABASE_PATH || path.join(rootDir, 'data', 'checkins.db');
 
 initDb(DATABASE_PATH);
+
+async function syncCheckinsBackup(reason = 'update') {
+  if (!isBackupConfigured()) return;
+  try {
+    const rows = exportAllCheckins();
+    await pushCheckinsBackup(rows);
+    console.log(`[backup] synced ${rows.length} checkins (${reason})`);
+  } catch (err) {
+    console.error('[backup] sync failed:', err.message || err);
+  }
+}
+
+async function restoreCheckinsBackupIfNeeded() {
+  if (!isBackupConfigured()) {
+    console.log('[backup] non configurato (CHECKIN_BACKUP_GIST_ID / TOKEN)');
+    return;
+  }
+  try {
+    if (countCheckins() > 0) {
+      console.log(`[backup] db locale ok (${countCheckins()} checkins)`);
+      return;
+    }
+    const rows = await pullCheckinsBackup();
+    const n = importCheckinsIfEmpty(rows || []);
+    console.log(`[backup] ripristinati ${n} checkins da Gist`);
+  } catch (err) {
+    console.error('[backup] restore failed:', err.message || err);
+  }
+}
 
 const app = express();
 app.use(express.json({ limit: '32kb' }));
@@ -110,6 +147,45 @@ app.get('/health', (_req, res) => {
     ok: true,
     hotel: HOTEL_NAME,
     tz: CRON_TZ,
+  });
+});
+
+/** Checklist go-live (senza segreti). */
+app.get('/api/ready', (_req, res) => {
+  const from = String(process.env.SMTP_FROM || '');
+  const reportEmail = String(process.env.REPORT_EMAIL || '').trim();
+  const resendKey = Boolean(String(process.env.RESEND_API_KEY || '').trim());
+  const usingDevFrom = /onboarding@resend\.dev/i.test(from);
+  const dbPath = DATABASE_PATH;
+  const onPersistentDisk = dbPath.startsWith('/var/data');
+  const backupOk = isBackupConfigured();
+  const guestEmailReady = resendKey && !usingDevFrom;
+  const reportReady =
+    Boolean(reportEmail) && (guestEmailReady || /gmail\.com$/i.test(reportEmail));
+  const dataReady = onPersistentDisk || backupOk;
+  const blockers = [];
+  if (!guestEmailReady) {
+    blockers.push(
+      'Verifica dominio su Resend e imposta SMTP_FROM tipo Welcome <checkin@hotelcanal.com>',
+    );
+  }
+  if (!reportEmail) blockers.push('Imposta REPORT_EMAIL (mail Payel / hotel)');
+  if (!dataReady) {
+    blockers.push('Aggiungi disco Render su /var/data oppure backup Gist');
+  }
+  res.json({
+    ok: blockers.length === 0,
+    hotel: HOTEL_NAME,
+    publicUrl: process.env.PUBLIC_URL || null,
+    checkins: countCheckins(),
+    reportEmail: reportEmail || null,
+    smtpFromDev: usingDevFrom,
+    guestEmailReady,
+    reportReady,
+    dataReady,
+    backupConfigured: backupOk,
+    persistentDisk: onPersistentDisk,
+    blockers,
   });
 });
 
@@ -289,6 +365,7 @@ app.post('/coupon/claim/:token', (req, res) => {
         couponToken: redeemToken,
       });
       markCouponSent(id);
+      void syncCheckinsBackup('coupon-claim');
     }
   }
 
@@ -440,6 +517,7 @@ async function handleCheckin(req, res) {
       guestsCount,
       couponToken,
     });
+    void syncCheckinsBackup('checkin');
 
     let welcomeSent = false;
     try {
@@ -553,10 +631,11 @@ cron.schedule(
   { timezone: CRON_TZ },
 );
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`${HOTEL_NAME} check-in attivo su http://localhost:${PORT}`);
   console.log(
     `Cron report: 00:00 ${CRON_TZ} → ${process.env.REPORT_EMAIL || '(REPORT_EMAIL non impostata)'}`,
   );
   console.log(`Cron staff: 23:59 ultimo giorno del mese (${CRON_TZ})`);
+  await restoreCheckinsBackupIfNeeded();
 });
