@@ -180,11 +180,12 @@ export function formatRomeDate(date = new Date()) {
   }).format(date);
 }
 
-function buildDailyTableRows(rows) {
+/** Mobile-first guest rows (no 5-col table — headers never split on phone). */
+function buildDailyGuestRows(rows) {
   if (!rows.length) {
     return `
       <tr>
-        <td colspan="5" style="padding:20px 2px;border-bottom:1px solid #E5E5EA;color:#8E8E93;text-align:center;font-size:12.5px;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
+        <td style="padding:20px 0;border-bottom:1px solid #E5E5EA;color:#8E8E93;text-align:center;font-size:12.5px;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
           No registrations for this period
         </td>
       </tr>
@@ -200,31 +201,36 @@ function buildDailyTableRows(rows) {
       const staff = cleanCell(row.receptionist) || '-';
       const pax = cleanCell(row.guests_count ?? '2') || '2';
       const haVoucher = hasRestaurantCoupon(row);
-      const couponCell = haVoucher
-        ? `<span style="color:#124453 !important;font-weight:700;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;">YES (${escapeHtml(pax)})</span>`
-        : `<span style="color:#B4B4B4 !important;font-weight:500;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;">NO</span>`;
+      const offer = haVoucher
+        ? `<span style="color:#124453 !important;font-weight:700;">YES&nbsp;·&nbsp;${escapeHtml(pax)}&nbsp;pax</span>`
+        : `<span style="color:#B4B4B4 !important;font-weight:600;">NO</span>`;
 
       return `
         <tr>
-          <td width="10%" style="width:10%;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:18px;font-weight:700;color:#124453 !important;padding:14px 4px 14px 0;border-bottom:1px solid #E5E5EA;vertical-align:middle;word-break:break-word;">
-            ${escapeHtml(room || '-')}
-          </td>
-          <td width="36%" style="width:36%;padding:14px 8px;border-bottom:1px solid #E5E5EA;vertical-align:middle;word-break:break-word;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
-            <div style="font-weight:700;font-size:12px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.03em;line-height:1.35;">
-              ${escapeHtml(name || 'UNSPECIFIED')}
-            </div>
-            <div style="font-size:10.5px;color:#8E8E93 !important;margin-top:4px;line-height:1.35;word-break:break-all;">
-              ${escapeHtml(email || '-')}
-            </div>
-          </td>
-          <td class="phone-cell" width="30%" style="width:30%;padding:14px 6px;border-bottom:1px solid #E5E5EA;font-family:'DM Sans',Helvetica,Arial,sans-serif;font-size:12px;font-weight:600;color:#1D1D1F !important;vertical-align:middle;white-space:nowrap;word-break:keep-all;overflow:visible;">
-            <span style="white-space:nowrap;display:inline-block;">${escapeHtml(phone)}</span>
-          </td>
-          <td width="12%" align="center" style="width:12%;padding:14px 4px;border-bottom:1px solid #E5E5EA;font-family:'DM Sans',Helvetica,Arial,sans-serif;font-size:9.5px;font-weight:700;color:#124453 !important;text-transform:uppercase;letter-spacing:0.04em;vertical-align:middle;word-break:break-word;">
-            ${escapeHtml(staff)}
-          </td>
-          <td width="12%" align="right" style="width:12%;padding:14px 0 14px 4px;border-bottom:1px solid #E5E5EA;vertical-align:middle;font-family:'DM Sans',Helvetica,Arial,sans-serif;word-break:break-word;">
-            ${couponCell}
+          <td style="padding:16px 0;border-bottom:1px solid #E5E5EA;vertical-align:top;">
+            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+              <tr>
+                <td width="58" valign="top" style="width:58px;padding:0 12px 0 0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#124453 !important;line-height:1.1;white-space:nowrap;">
+                  ${escapeHtml(room || '-')}
+                </td>
+                <td valign="top" style="padding:0;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
+                  <div style="font-weight:700;font-size:12.5px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.03em;line-height:1.3;">
+                    ${escapeHtml(name || 'UNSPECIFIED')}
+                  </div>
+                  <div style="font-size:11px;color:#8E8E93 !important;margin-top:4px;line-height:1.35;word-break:break-all;">
+                    ${escapeHtml(email || '-')}
+                  </div>
+                  <div style="font-size:13px;font-weight:600;color:#1D1D1F !important;margin-top:8px;letter-spacing:0.01em;white-space:nowrap;">
+                    ${escapeHtml(phone)}
+                  </div>
+                  <div style="font-size:10.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-top:8px;line-height:1.4;white-space:nowrap;">
+                    <span style="color:#124453 !important;">${escapeHtml(staff)}</span>
+                    <span style="color:#C5C5C7 !important;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                    <span style="color:#8E8E93 !important;">Offer&nbsp;</span>${offer}
+                  </div>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
       `;
@@ -280,8 +286,6 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
       -webkit-font-smoothing: antialiased;
     }
     html, body { background-color: #FFFFFF !important; color: #1D1D1F !important; }
-    .data-table { table-layout: fixed !important; width: 100% !important; }
-    .phone-cell, .phone-cell span { white-space: nowrap !important; word-break: keep-all !important; }
     .utility-textarea {
       width: 100% !important;
       box-sizing: border-box !important;
@@ -291,8 +295,6 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
     @media (prefers-color-mode: dark) {
       body, table, td, .email-bg, .wrapper { background-color: #FFFFFF !important; color: #1D1D1F !important; }
       td, p, h2, div, th, strong, span, textarea { color: #1D1D1F !important; background-color: #FFFFFF !important; }
-      .data-table th { color: #8E8E93 !important; border-bottom: 1px solid #1D1D1F !important; background: #FFFFFF !important; }
-      .data-table td { border-bottom: 1px solid #E5E5EA !important; }
       .utility-textarea { background-color: #F4F7F9 !important; border: 1px solid #E5E5EA !important; color: #1D1D1F !important; }
     }
   </style>
@@ -352,26 +354,13 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
 
           <tr>
             <td style="padding-top:8px;">
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed;">
-                <colgroup>
-                  <col style="width:10%">
-                  <col style="width:36%">
-                  <col style="width:30%">
-                  <col style="width:12%">
-                  <col style="width:12%">
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th width="10%" align="left" style="width:10%;font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.1em;text-align:left;padding:12px 4px 12px 0;border-bottom:1px solid #1D1D1F;">Room</th>
-                    <th width="36%" align="left" style="width:36%;font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.1em;text-align:left;padding:12px 8px;border-bottom:1px solid #1D1D1F;">Guest</th>
-                    <th width="30%" align="left" style="width:30%;font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.1em;text-align:left;padding:12px 6px;border-bottom:1px solid #1D1D1F;">Telephone</th>
-                    <th width="12%" align="center" style="width:12%;font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.1em;text-align:center;padding:12px 4px;border-bottom:1px solid #1D1D1F;">Staff</th>
-                    <th width="12%" align="right" style="width:12%;font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.1em;text-align:right;padding:12px 0 12px 4px;border-bottom:1px solid #1D1D1F;">Discount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${buildDailyTableRows(rows)}
-                </tbody>
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;">
+                <tr>
+                  <td style="font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#8E8E93 !important;font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:0.12em;padding:0 0 10px 0;border-bottom:1px solid #1D1D1F;white-space:nowrap;">
+                    Guest register
+                  </td>
+                </tr>
+                ${buildDailyGuestRows(rows)}
               </table>
             </td>
           </tr>
