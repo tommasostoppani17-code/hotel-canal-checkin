@@ -299,7 +299,7 @@ function buildWelcomeHtml({
                     <p style="font-family:${SANS};font-size:10px;color:#8E8E93 !important;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;line-height:1.4;">
                       Hotel Canal<br>
                       Santa Croce 553, 30135 Venezia (VE) — Italy<br>
-                      P.IVA: 04711930273
+                      P.IVA / C.F.: 04711930273
                     </p>
                     <p style="font-family:${SANS};font-size:9.5px;color:#AEAEB2 !important;font-weight:400;margin:0;line-height:1.5;padding:0 16px;">
                       ${lp.legalText}
@@ -362,7 +362,7 @@ function buildWelcomeHtml({
             </td>
             <td valign="middle" style="padding:10px 0;">
               <div class="brand-title" style="font-family:${SERIF};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 2px;">${step.title}</div>
-              <div style="font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.4;color:#5C6670 !important;font-weight:400;">${step.line}</div>
+              <div style="font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.4;color:${i === 2 ? '#C62828' : '#5C6670'} !important;font-weight:${i === 2 ? '600' : '400'};">${step.line}</div>
             </td>
           </tr>
         </table>`,
@@ -494,7 +494,7 @@ function buildWelcomeHtml({
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;">
                 <tr>
                   <td width="50%" valign="top" style="padding:0 6px 0 0;">
-                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:16px;">
+                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;">
                       <tr>
                         <td align="center" style="padding:16px 10px;">
                           <div style="${labelStyle};margin:0 0 8px;">Walter</div>
@@ -504,7 +504,7 @@ function buildWelcomeHtml({
                     </table>
                   </td>
                   <td width="50%" valign="top" style="padding:0 0 0 6px;">
-                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FFFFFF !important;border:1px solid #E2E6E8;border-radius:16px;">
+                    <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;">
                       <tr>
                         <td align="center" style="padding:16px 10px;">
                           <div style="${labelStyle};margin:0 0 8px;">Airone</div>
@@ -544,7 +544,7 @@ function buildWelcomeHtml({
               </p>
 
               <!-- VOUCHER SCONTO -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px dashed ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
                 <tr>
                   <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
                     <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
