@@ -3048,6 +3048,7 @@
         restTitle: 'Ihr −10% an der Terrazza',
         restDesc: 'Kanalblick und venezianische Küche. Zimmer und Empfang bestätigen: der Rabatt kommt sofort per E-Mail.',
         restTag: 'Ein Geschenk für Sie',
+        restReviews: '128 Bewertungen',
         restDiscount: '−10%',
         staff: 'Name Empfang *',
         staffNone: 'Auswählen…',
@@ -3129,6 +3130,7 @@
         restTitle: 'Su −10% en la Terrazza',
         restDesc: 'Vistas al canal y cocina veneciana. Confirme habitación y recepcionista: el descuento llega al instante por email.',
         restTag: 'Un regalo para usted',
+        restReviews: '128 reseñas',
         restDiscount: '−10%',
         staff: 'Nombre del recepcionista *',
         staffNone: 'Seleccionar…',
@@ -3906,6 +3908,8 @@
       document.getElementById('lbl-rest-desc').textContent = dict.restDescShort || dict.restDesc;
       const restTag = document.getElementById('lbl-rest-tag');
       if (restTag) restTag.textContent = dict.restTag || dict.restTitle;
+      const restReviews = document.getElementById('lbl-rest-reviews');
+      if (restReviews) restReviews.textContent = dict.restReviews || '';
       const restDiscount = document.getElementById('lbl-rest-discount');
       if (restDiscount) restDiscount.textContent = dict.restDiscount || '−10%';
       document.getElementById('lbl-staff').textContent = dict.staffShort || dict.staff;
