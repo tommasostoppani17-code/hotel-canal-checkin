@@ -43,7 +43,7 @@
       --app-vh: var(--vvh, 100svh);
       /* Step heights — desktop/tablet; su phone vedi @media sotto */
       --card-h-1: min(528px, calc(var(--app-vh) - 48px));
-      --card-h-2: min(760px, calc(var(--app-vh) - 16px));
+      --card-h-2: min(900px, calc(var(--app-vh) - 8px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
       --card-h-3-open: min(600px, calc(var(--app-vh) - 16px));
@@ -168,7 +168,7 @@
     @media (max-width: 480px) {
       :root {
         --card-h-1: min(548px, calc(var(--app-vh) - 36px));
-        --card-h-2: min(820px, calc(var(--app-vh) - 12px));
+        --card-h-2: min(920px, calc(var(--app-vh) - 4px));
         --card-h-3: min(500px, calc(var(--app-vh) - 28px));
         --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
         --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
@@ -218,10 +218,16 @@
 
       #step2 .carousel-viewport {
         border-radius: 0;
-        /* Quasi quadrato: le foto landscape non restano strisce tagliate */
+        /* 3:4 = foto più alta (768×1024): crop sui lati, non sopra/sotto */
         height: auto;
-        aspect-ratio: 1 / 1;
-        max-height: min(360px, 46svh);
+        aspect-ratio: 3 / 4;
+        max-height: none;
+        width: 100%;
+      }
+
+      #step2 .carousel-slide img {
+        object-fit: cover;
+        object-position: center center;
       }
 
       #step2 .carousel-caption {
@@ -490,8 +496,8 @@
       position: relative;
       width: 100%;
       height: auto;
-      aspect-ratio: 5 / 4;
-      max-height: 340px;
+      aspect-ratio: 3 / 4;
+      max-height: none;
       border-radius: 16px;
       overflow: hidden;
       background: #124453;
@@ -519,7 +525,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 42%;
+      object-position: center center;
       border: 0;
       user-select: none;
       -webkit-user-drag: none;
@@ -761,8 +767,10 @@
     #step2.slide-step {
       justify-content: flex-start;
       overflow-x: hidden;
-      overflow-y: visible;
+      overflow-y: auto;
       overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
 
     #step2.slide-step::-webkit-scrollbar {
@@ -792,8 +800,8 @@
 
     #step2 .carousel-viewport {
       height: auto;
-      aspect-ratio: 5 / 4;
-      max-height: 320px;
+      aspect-ratio: 3 / 4;
+      max-height: none;
       border-radius: var(--radius-ios);
     }
 
@@ -2204,22 +2212,22 @@
                 <div class="carousel-viewport" id="restCarouselViewport">
                   <div class="carousel-track" id="restCarouselTrack">
                     <figure class="carousel-slide">
-                      <img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="900" height="600" decoding="async" style="object-position: center 42%;">
+                      <img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="768" height="1024" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
-                      <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 38%;">
+                      <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="1020" height="682" loading="lazy" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
-                      <img src="/restaurant/13-sala-interna.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 45%;">
+                      <img src="/restaurant/13-sala-interna.jpg" alt="" width="664" height="373" loading="lazy" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
-                      <img src="/restaurant/14-pesce-grigliato.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 40%;">
+                      <img src="/restaurant/14-pesce-grigliato.jpg" alt="" width="1024" height="1024" loading="lazy" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
-                      <img src="/restaurant/16-guazzetto-mare.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 40%;">
+                      <img src="/restaurant/16-guazzetto-mare.jpg" alt="" width="1024" height="1024" loading="lazy" decoding="async">
                     </figure>
                     <figure class="carousel-slide">
-                      <img src="/restaurant/17-astice-sera.jpg" alt="" width="900" height="600" loading="lazy" decoding="async" style="object-position: center 48%;">
+                      <img src="/restaurant/17-astice-sera.jpg" alt="" width="768" height="1024" loading="lazy" decoding="async">
                     </figure>
                   </div>
                   <p class="carousel-discount-badge" id="lbl-rest-discount" aria-hidden="true">−10%</p>
