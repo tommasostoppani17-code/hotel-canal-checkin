@@ -185,8 +185,21 @@ function buildWelcomeHtml({
   const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
   const SANS = "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
   const CINZEL = "'Cinzel',Georgia,'Times New Roman',serif";
-  const bodyStyle = `font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;font-weight:400`;
-  const labelStyle = `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
+  /* Scala tipografica ferrea (welcome email) */
+  const FS = {
+    section: '12px',
+    body: '13px',
+    bodySm: '12px',
+    itemTitle: '12.5px',
+    stepTitle: '13px',
+    stepLine: '12px',
+    label: '9.5px',
+    button: '11.5px',
+    legal: '9px',
+  };
+  const bodyStyle = `font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.45;font-weight:400`;
+  const bodySmStyle = `font-family:${BODY};font-style:italic;font-size:${FS.bodySm};line-height:1.4;font-weight:400`;
+  const labelStyle = `font-family:${SANS};font-size:${FS.label};font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
 
   const name = escapeHtml(guestName || lp.guestFallback);
   const firstNamePlain = String(guestName || lp.guestFallback)
@@ -234,7 +247,7 @@ function buildWelcomeHtml({
                     ${iconCell(iconSrc, iconAlt || label, 20)}
                   </td>
                   <td valign="middle" style="padding:0 0 12px 0;">
-                    <div class="brand-title" style="font-family:${CINZEL};font-size:13px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                    <div class="brand-title" style="font-family:${CINZEL};font-size:${FS.section};font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
                   </td>
                 </tr>
               </table>`;
@@ -276,12 +289,12 @@ function buildWelcomeHtml({
         (item, i) => `
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === items.length - 1 ? '0' : '1px solid #E8E4DC'};">
                       <tr>
-                        <td width="40" valign="top" style="padding:16px 12px 16px 0;line-height:0;font-size:0;">
-                          ${iconCell(item.icon, item.title, 32)}
+                        <td width="34" valign="top" style="padding:10px 10px 10px 0;line-height:0;font-size:0;">
+                          ${iconCell(item.icon, item.title, 26)}
                         </td>
-                        <td valign="middle" style="padding:16px 0;">
-                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 6px;">${item.title}</div>
-                          <div style="font-family:${BODY};font-style:italic;font-size:14px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${item.body}</div>
+                        <td valign="middle" style="padding:10px 0;">
+                          <div class="brand-title" style="font-family:${SERIF};font-size:${FS.itemTitle};font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.2;margin:0 0 3px;">${item.title}</div>
+                          <div style="${bodySmStyle};color:#5C6670 !important;">${item.body}</div>
                         </td>
                       </tr>
                     </table>`,
@@ -289,10 +302,10 @@ function buildWelcomeHtml({
       .join('');
     return `
               ${sectionTitle(lp.veniceTitle, icons.gondola || icons.path, 'Venezia')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 8px;text-align:center;">
+              <p class="text-muted" style="${bodySmStyle};color:#5C6670 !important;margin:0 0 6px;text-align:center;">
                 ${lp.veniceIntro}
               </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;">
                 <tr>
                   <td style="padding:0;">
                     ${rows}
@@ -395,12 +408,12 @@ function buildWelcomeHtml({
       (step, i) => `
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === routeSteps.length - 1 ? '0' : '1px solid #E8E4DC'};">
           <tr>
-            <td width="34" valign="top" style="padding:14px 10px 14px 0;line-height:0;font-size:0;">
-              ${iconCell(step.icon, step.alt, 28)}
+            <td width="32" valign="top" style="padding:10px 8px 10px 0;line-height:0;font-size:0;">
+              ${iconCell(step.icon, step.alt, 24)}
             </td>
-            <td valign="middle" style="padding:14px 0;">
-              <div class="brand-title" style="font-family:${SERIF};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 4px;">${step.title}</div>
-              <div style="font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.4;color:#5C6670 !important;font-weight:400;">${step.line}</div>
+            <td valign="middle" style="padding:10px 0;">
+              <div class="brand-title" style="font-family:${SERIF};font-size:${FS.stepTitle};font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.2;margin:0 0 2px;">${step.title}</div>
+              <div style="font-family:${BODY};font-style:italic;font-size:${FS.stepLine};line-height:1.35;color:#5C6670 !important;font-weight:400;">${step.line}</div>
             </td>
           </tr>
         </table>`,

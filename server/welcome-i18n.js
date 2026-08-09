@@ -71,13 +71,13 @@ export const WELCOME_I18N = {
       'Dalla reception sei vicino a Piazzale Roma e alla stazione. A piedi segui i cartelli gialli (il GPS nelle calli spesso sbaglia).',
     veniceActvTitle: 'Vaporetto ACTV',
     veniceActvBody:
-      'Biglietti sull&rsquo;app AVM Venezia / ACTV o alle biglietterie ufficiali. Oblitera sempre prima di salire.<br>Linee <strong style="color:#164E5B !important;font-style:italic;">1</strong> e <strong style="color:#164E5B !important;font-style:italic;">2</strong> lungo il Canal Grande (imbarco a Piazzale Roma o Ferrovia).',
+      'Biglietti sull&rsquo;app AVM Venezia / ACTV o alle biglietterie ufficiali; oblitera prima di salire. Linee <strong style="color:#164E5B !important;font-style:italic;">1</strong> e <strong style="color:#164E5B !important;font-style:italic;">2</strong> sul Canal Grande (Piazzale Roma o Ferrovia).',
     veniceIslandsTitle: 'Murano e Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> — linee 4.1 / 4.2 dai moli vicino alla stazione.<br><strong style="color:#164E5B !important;font-style:italic;">Burano</strong> — linea 12 da Fondamente Nove (~1 ora).',
+      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> — linee 4.1 / 4.2 dai moli della stazione. <strong style="color:#164E5B !important;font-style:italic;">Burano</strong> — linea 12 da Fondamente Nove (~1 ora).',
     veniceWalkTitle: 'A piedi in citt&agrave;',
     veniceWalkBody:
-      'Segui i cartelli gialli: il GPS nelle calli spesso sbaglia.<br><strong style="color:#164E5B !important;font-style:italic;">Rialto</strong> ~15–25 min &middot; <strong style="color:#164E5B !important;font-style:italic;">San Marco</strong> ~25–40 min.',
+      'Segui i cartelli gialli (il GPS nelle calli spesso sbaglia). <strong style="color:#164E5B !important;font-style:italic;">Rialto</strong> ~15–25 min &middot; <strong style="color:#164E5B !important;font-style:italic;">San Marco</strong> ~25–40 min.',
     veniceRialtoTitle: 'Ponte di Rialto',
     veniceRialtoBody: 'A piedi dalla lobby in circa 15–25 minuti lungo i percorsi principali.',
     veniceSanMarcoTitle: 'Piazza San Marco',
@@ -175,13 +175,13 @@ export const WELCOME_I18N = {
       'From reception you are close to Piazzale Roma and the station. On foot, follow the yellow signs (GPS often misleads in the alleys).',
     veniceActvTitle: 'ACTV vaporetto',
     veniceActvBody:
-      'Buy tickets on the AVM Venezia / ACTV app or at official ticket offices. Always validate before boarding.<br>Lines <strong style="color:#164E5B !important;font-style:italic;">1</strong> and <strong style="color:#164E5B !important;font-style:italic;">2</strong> along the Grand Canal (board at Piazzale Roma or Ferrovia).',
+      'Tickets on the AVM Venezia / ACTV app or at official offices; validate before boarding. Lines <strong style="color:#164E5B !important;font-style:italic;">1</strong> and <strong style="color:#164E5B !important;font-style:italic;">2</strong> on the Grand Canal (Piazzale Roma or Ferrovia).',
     veniceIslandsTitle: 'Murano &amp; Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> — lines 4.1 / 4.2 from the docks near the station.<br><strong style="color:#164E5B !important;font-style:italic;">Burano</strong> — line 12 from Fondamente Nove (~1 hour).',
+      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> — lines 4.1 / 4.2 from the station docks. <strong style="color:#164E5B !important;font-style:italic;">Burano</strong> — line 12 from Fondamente Nove (~1 hour).',
     veniceWalkTitle: 'On foot',
     veniceWalkBody:
-      'Follow the yellow signs — GPS often misleads in the alleys.<br><strong style="color:#164E5B !important;font-style:italic;">Rialto</strong> ~15–25 min &middot; <strong style="color:#164E5B !important;font-style:italic;">San Marco</strong> ~25–40 min.',
+      'Follow the yellow signs (GPS often misleads in the alleys). <strong style="color:#164E5B !important;font-style:italic;">Rialto</strong> ~15–25 min &middot; <strong style="color:#164E5B !important;font-style:italic;">San Marco</strong> ~25–40 min.',
     veniceRialtoTitle: 'Rialto Bridge',
     veniceRialtoBody: 'About 15–25 minutes on foot from the lobby along the main routes.',
     veniceSanMarcoTitle: 'St Mark&rsquo;s Square',
@@ -280,13 +280,13 @@ export const WELCOME_I18N = {
       'Depuis la r&eacute;ception, Piazzale Roma et la gare Santa Lucia sont &agrave; quelques minutes. Voici l&rsquo;essentiel ; le guide PDF d&eacute;taille le reste.',
     veniceActvTitle: 'Vaporetto (ACTV)',
     veniceActvBody:
-      'Achetez les billets sur l&rsquo;appli officielle AVM Venezia / ACTV ou aux guichets ACTV — pas aupr&egrave;s de vendeurs non autoris&eacute;s. Compostez toujours avant l&rsquo;embarquement.<br><strong style="color:#164E5B !important;">Lignes 1 et 2</strong> — Grand Canal vers Rialto et Saint-Marc. Arr&ecirc;ts les plus proches : <strong style="color:#164E5B !important;">Piazzale Roma</strong> ou <strong style="color:#164E5B !important;">Ferrovia</strong>.',
+      'Billets sur l&rsquo;appli AVM Venezia / ACTV ou aux guichets ; compostez avant l&rsquo;embarquement. <strong style="color:#164E5B !important;">Lignes 1 et 2</strong> sur le Grand Canal (Piazzale Roma ou Ferrovia).',
     veniceIslandsTitle: 'Murano et Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;">Murano</strong> (verre) : lignes 4.1 / 4.2 depuis les quais de la gare.<br><strong style="color:#164E5B !important;">Burano</strong> (maisons color&eacute;es) : ligne 12 depuis Fondamente Nove — comptez environ une heure de navigation.',
+      '<strong style="color:#164E5B !important;">Murano</strong> — lignes 4.1 / 4.2 depuis la gare. <strong style="color:#164E5B !important;">Burano</strong> — ligne 12 depuis Fondamente Nove (~1 h).',
     veniceWalkTitle: 'À pied',
     veniceWalkBody:
-      'Marcher est la meilleure fa&ccedil;on de d&eacute;couvrir Venise. Suivez les panneaux jaunes vers San Marco / Rialto — le GPS se trompe souvent dans les calli.<br><strong style="color:#164E5B !important;">Pont du Rialto :</strong> 15-25 minutes depuis le hall.<br><strong style="color:#164E5B !important;">Place Saint-Marc :</strong> 25-40 minutes par les parcours principaux.',
+      'Suivez les panneaux jaunes (le GPS se trompe souvent). <strong style="color:#164E5B !important;">Rialto</strong> ~15-25 min &middot; <strong style="color:#164E5B !important;">Saint-Marc</strong> ~25-40 min.',
     veniceRialtoTitle: 'Pont du Rialto',
     veniceRialtoBody: 'Environ 15-25 minutes &agrave; pied depuis le hall.',
     veniceSanMarcoTitle: 'Place Saint-Marc',
@@ -385,13 +385,13 @@ export const WELCOME_I18N = {
       'Von der Rezeption sind Piazzale Roma und der Bahnhof Santa Lucia nur wenige Minuten entfernt. Hier das Wichtigste; im PDF-Guide finden Sie mehr.',
     veniceActvTitle: 'Vaporetto (ACTV)',
     veniceActvBody:
-      'Tickets in der offiziellen App AVM Venezia / ACTV oder an ACTV-Schaltern — nicht bei unautorisierten Verk&auml;ufern. Vor dem Einsteigen entwerten.<br><strong style="color:#164E5B !important;">Linien 1 und 2</strong> — Canal Grande nach Rialto und San Marco. N&auml;chste Anleger: <strong style="color:#164E5B !important;">Piazzale Roma</strong> oder <strong style="color:#164E5B !important;">Ferrovia</strong>.',
+      'Tickets in der App AVM Venezia / ACTV oder an ACTV-Schaltern; vor dem Einsteigen entwerten. <strong style="color:#164E5B !important;">Linien 1 und 2</strong> am Canal Grande (Piazzale Roma oder Ferrovia).',
     veniceIslandsTitle: 'Murano und Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;">Murano</strong> (Glas): Linien 4.1 / 4.2 von den Stationsanlegern.<br><strong style="color:#164E5B !important;">Burano</strong> (bunte H&auml;user): Linie 12 ab Fondamente Nove — etwa eine Stunde Fahrt.',
+      '<strong style="color:#164E5B !important;">Murano</strong> — Linien 4.1 / 4.2 vom Bahnhof. <strong style="color:#164E5B !important;">Burano</strong> — Linie 12 ab Fondamente Nove (~1 Std.).',
     veniceWalkTitle: 'Zu Fuß',
     veniceWalkBody:
-      'Zu Fu&szlig; ist der sch&ouml;nste Weg, Venedig zu erleben. Folgen Sie den gelben Schildern nach San Marco / Rialto — GPS irrt oft in den Gassen.<br><strong style="color:#164E5B !important;">Rialtobr&uuml;cke:</strong> 15-25 Minuten von der Lobby.<br><strong style="color:#164E5B !important;">Markusplatz:</strong> 25-40 Minuten &uuml;ber die Hauptwege.',
+      'Gelben Schildern folgen (GPS irrt oft). <strong style="color:#164E5B !important;">Rialto</strong> ~15-25 Min. &middot; <strong style="color:#164E5B !important;">Markusplatz</strong> ~25-40 Min.',
     veniceRialtoTitle: 'Rialtobrücke',
     veniceRialtoBody: 'Etwa 15-25 Minuten zu Fu&szlig; von der Lobby.',
     veniceSanMarcoTitle: 'Markusplatz',
@@ -490,13 +490,13 @@ export const WELCOME_I18N = {
       'Desde recepci&oacute;n est&aacute; a pocos minutos de Piazzale Roma y la estaci&oacute;n Santa Lucia. Aqu&iacute; lo esencial; la gu&iacute;a PDF tiene m&aacute;s detalle.',
     veniceActvTitle: 'Vaporetto (ACTV)',
     veniceActvBody:
-      'Compre billetes en la app oficial AVM Venezia / ACTV o en taquillas ACTV — no a vendedores no autorizados. Valide siempre antes de subir.<br><strong style="color:#164E5B !important;">L&iacute;neas 1 y 2</strong> — Canal Grande hacia Rialto y San Marcos. Paradas m&aacute;s cercanas: <strong style="color:#164E5B !important;">Piazzale Roma</strong> o <strong style="color:#164E5B !important;">Ferrovia</strong>.',
+      'Billetes en la app AVM Venezia / ACTV o en taquillas; valide antes de subir. <strong style="color:#164E5B !important;">L&iacute;neas 1 y 2</strong> en el Canal Grande (Piazzale Roma o Ferrovia).',
     veniceIslandsTitle: 'Murano y Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;">Murano</strong> (vidrio): l&iacute;neas 4.1 / 4.2 desde los muelles de la estaci&oacute;n.<br><strong style="color:#164E5B !important;">Burano</strong> (casas de colores): l&iacute;nea 12 desde Fondamente Nove — cuenta cerca de una hora de navegaci&oacute;n.',
+      '<strong style="color:#164E5B !important;">Murano</strong> — l&iacute;neas 4.1 / 4.2 desde la estaci&oacute;n. <strong style="color:#164E5B !important;">Burano</strong> — l&iacute;nea 12 desde Fondamente Nove (~1 h).',
     veniceWalkTitle: 'A pie',
     veniceWalkBody:
-      'Caminar es la mejor forma de descubrir Venecia. Siga los carteles amarillos hacia San Marcos / Rialto — el GPS a menudo se equivoca en las calli.<br><strong style="color:#164E5B !important;">Puente de Rialto:</strong> 15-25 minutos desde el hall.<br><strong style="color:#164E5B !important;">Plaza San Marcos:</strong> 25-40 minutos por las rutas principales.',
+      'Siga los carteles amarillos (el GPS a menudo falla). <strong style="color:#164E5B !important;">Rialto</strong> ~15-25 min &middot; <strong style="color:#164E5B !important;">San Marcos</strong> ~25-40 min.',
     veniceRialtoTitle: 'Puente de Rialto',
     veniceRialtoBody: 'Unos 15-25 minutos a pie desde el hall.',
     veniceSanMarcoTitle: 'Plaza San Marcos',
