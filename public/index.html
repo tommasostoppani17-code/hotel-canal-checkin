@@ -18,7 +18,8 @@
       --radius-ios: 18px;
       --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
       --ios-snap: cubic-bezier(0.1, 1, 0.1, 1);
-      --step-ms: 150ms;
+      /* Overshoot elastico breve (~0.38s feel) */
+      --ios-spring-fast: cubic-bezier(0.25, 1.4, 0.5, 1);
       --stagger-ms: 20ms;
     }
 
@@ -69,9 +70,8 @@
         )
         scale(var(--parallax-scale, 1.08));
       will-change: transform, filter;
-      transition:
-        transform var(--step-ms) var(--ios-snap),
-        filter var(--step-ms) var(--ios-snap);
+      /* Parallasse: la molla JS guida --parallax-x; niente CSS transition che frena */
+      transition: filter 0.35s var(--ios-spring-fast);
     }
 
     .background-overlay::after {
@@ -152,20 +152,20 @@
       padding: 0;
     }
 
-    /* Pillola: feedback istantaneo (in anticipo sullo step) */
+    /* Pillola: schizza in anticipo (molla CSS rapida) */
     .step-dots span {
       width: 6px;
       height: 6px;
       border-radius: 999px;
       background: rgba(18, 68, 83, 0.15);
       transition:
-        width 120ms var(--ios-snap),
-        background-color 120ms var(--ios-snap);
+        width 0.3s var(--ios-spring-fast),
+        background-color 0.3s var(--ios-spring-fast);
       will-change: width;
     }
 
     .step-dots span.active {
-      width: 14px;
+      width: 16px;
       border-radius: 3px;
       background: var(--canal-petroleum);
       transform: none;
@@ -180,81 +180,62 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Fogli fissi sul posto: zero carosello orizzontale */
-    .steps-stack {
+    /* Binario carosello GPU: transform guidato dalla molla JS */
+    .slider-viewport {
       width: 100%;
+      overflow: hidden !important;
       position: relative;
+      flex: 0 0 auto;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+
+    .slider-track {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      width: 100%;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+      transition: none;
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     .slide-step {
-      display: none;
+      flex: 0 0 100%;
       width: 100%;
+      max-width: 100%;
+      min-width: 100%;
       box-sizing: border-box;
+      display: flex;
       flex-direction: column;
       padding: 0;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
-    .slide-step.is-active {
-      display: flex;
-      position: relative;
-      z-index: 2;
-      animation: iosStepIn var(--step-ms) var(--ios-snap) both;
-    }
-
-    /* Uscita: dissolve sul posto mentre il nuovo entra */
-    .slide-step.is-exiting {
-      display: flex;
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      z-index: 1;
-      pointer-events: none;
-      animation: iosStepOut var(--step-ms) var(--ios-snap) both;
-    }
-
-    @keyframes iosStepIn {
-      from {
-        opacity: 0;
-        transform: scale(0.98) translate3d(0, 8px, 0);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translate3d(0, 0, 0);
-      }
-    }
-
-    @keyframes iosStepOut {
-      from {
-        opacity: 1;
-        transform: scale(1) translate3d(0, 0, 0);
-      }
-      to {
-        opacity: 0;
-        transform: scale(0.99) translate3d(0, -4px, 0);
-      }
-    }
-
-    /* Stagger iper-compresso: 20ms tra elementi */
+    /* Stagger 20ms sullo step attivo */
     .slide-step.is-active > .header,
     .slide-step.is-active > .step-body > *,
     .slide-step.is-active > .step-footer-fixed > * {
-      animation: elementCascade 150ms var(--ios-snap) both;
+      animation: elementCascade 0.4s var(--ios-ease) both;
     }
-    .slide-step.is-active > .header { animation-delay: 0ms; }
-    .slide-step.is-active > .step-body > *:nth-child(1) { animation-delay: calc(var(--stagger-ms) * 1); }
-    .slide-step.is-active > .step-body > *:nth-child(2) { animation-delay: calc(var(--stagger-ms) * 2); }
-    .slide-step.is-active > .step-body > *:nth-child(3) { animation-delay: calc(var(--stagger-ms) * 3); }
-    .slide-step.is-active > .step-body > *:nth-child(4) { animation-delay: calc(var(--stagger-ms) * 4); }
-    .slide-step.is-active > .step-body > *:nth-child(5) { animation-delay: calc(var(--stagger-ms) * 5); }
-    .slide-step.is-active > .step-footer-fixed > *:nth-child(1) { animation-delay: calc(var(--stagger-ms) * 3); }
-    .slide-step.is-active > .step-footer-fixed > *:nth-child(2) { animation-delay: calc(var(--stagger-ms) * 4); }
-    .slide-step.is-active > .step-footer-fixed > *:nth-child(3) { animation-delay: calc(var(--stagger-ms) * 5); }
+    .slide-step.is-active > .header { animation-delay: 0.02s; }
+    .slide-step.is-active > .step-body > *:nth-child(1) { animation-delay: 0.04s; }
+    .slide-step.is-active > .step-body > *:nth-child(2) { animation-delay: 0.06s; }
+    .slide-step.is-active > .step-body > *:nth-child(3) { animation-delay: 0.08s; }
+    .slide-step.is-active > .step-body > *:nth-child(4) { animation-delay: 0.1s; }
+    .slide-step.is-active > .step-body > *:nth-child(5) { animation-delay: 0.12s; }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(1) { animation-delay: 0.06s; }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(2) { animation-delay: 0.08s; }
+    .slide-step.is-active > .step-footer-fixed > *:nth-child(3) { animation-delay: 0.1s; }
 
     @keyframes elementCascade {
       from {
         opacity: 0;
-        transform: translate3d(0, 6px, 0);
+        transform: translate3d(0, 10px, 0);
       }
       to {
         opacity: 1;
@@ -264,8 +245,6 @@
 
     @media (prefers-reduced-motion: reduce) {
       .apple-card,
-      .slide-step.is-active,
-      .slide-step.is-exiting,
       .slide-step.is-active > .header,
       .slide-step.is-active > .step-body > *,
       .slide-step.is-active > .step-footer-fixed > *,
@@ -895,7 +874,8 @@
 
     <div class="error" id="error" role="alert"></div>
 
-    <div class="steps-stack" id="stepsStack">
+    <div class="slider-viewport" id="sliderViewport">
+    <div class="slider-track" id="sliderTrack">
       <!-- STEP 1: griglia unica allineata + privacy/CTA subito sotto -->
       <section class="slide-step" id="step1">
         <div class="header">
@@ -1005,6 +985,7 @@
           </div>
         </div>
       </section>
+    </div>
     </div>
   </div>
 
@@ -1305,6 +1286,8 @@
     }
 
     const card = document.getElementById('card');
+    const viewport = document.getElementById('sliderViewport');
+    const track = document.getElementById('sliderTrack');
     const dots = document.getElementById('stepDots');
     const bgInertia = document.getElementById('bgInertia');
     const errorEl = document.getElementById('error');
@@ -1330,15 +1313,27 @@
     let formMode = true;
     let submitting = false;
 
+    /* Molla Cupertino iper-reattiva (~3x): stiff, nervoso, overshoot breve ~0.38s */
+    let slideX = 0;
+    let parallaxX = 0;
+    let springRaf = 0;
     let ambientRaf = 0;
     let ambX = 0;
     let ambY = 0;
     let targetAmbX = 0;
     let targetAmbY = 0;
     let breathT = 0;
-    let stepExitTimer = 0;
+
+    function applyTrack(xPercent) {
+      slideX = xPercent;
+      if (!track) return;
+      const x = `translate3d(${xPercent}%, 0, 0)`;
+      track.style.webkitTransform = x;
+      track.style.transform = x;
+    }
 
     function applyParallax(xPercent, scale) {
+      parallaxX = xPercent;
       if (!bgInertia) return;
       bgInertia.style.setProperty('--parallax-x', `${xPercent}%`);
       if (scale != null) {
@@ -1350,6 +1345,51 @@
       if (!bgInertia) return;
       bgInertia.style.setProperty('--ambient-x', `${ax.toFixed(2)}px`);
       bgInertia.style.setProperty('--ambient-y', `${ay.toFixed(2)}px`);
+    }
+
+    function springPair(toSlide, toParallax, toScale, onRest) {
+      cancelAnimationFrame(springRaf);
+      if (reduceMotion) {
+        applyTrack(toSlide);
+        applyParallax(toParallax, toScale);
+        onRest?.();
+        return;
+      }
+
+      // ~3x più reattivo della molla "pigra" (stiffness 210 → 640, mass più bassa)
+      const stiffness = 640;
+      const damping = 30;
+      const mass = 0.62;
+      let vSlide = 0;
+      let vPara = 0;
+      let last = performance.now();
+
+      function frame(now) {
+        const dt = Math.min(0.033, (now - last) / 1000);
+        last = now;
+
+        const fS = -stiffness * (slideX - toSlide);
+        const fP = -stiffness * (parallaxX - toParallax);
+        vSlide += ((fS - damping * vSlide) / mass) * dt;
+        vPara += ((fP - damping * vPara) / mass) * dt;
+        applyTrack(slideX + vSlide * dt);
+        applyParallax(parallaxX + vPara * dt, toScale);
+
+        const settled =
+          Math.abs(slideX - toSlide) < 0.08 &&
+          Math.abs(vSlide) < 0.9 &&
+          Math.abs(parallaxX - toParallax) < 0.08 &&
+          Math.abs(vPara) < 0.9;
+
+        if (settled) {
+          applyTrack(toSlide);
+          applyParallax(toParallax, toScale);
+          onRest?.();
+          return;
+        }
+        springRaf = requestAnimationFrame(frame);
+      }
+      springRaf = requestAnimationFrame(frame);
     }
 
     function startAmbientInertia() {
@@ -1398,24 +1438,33 @@
     }
 
     function syncViewportHeight() {
-      /* no-op: altezza card = foglio attivo */
+      const active = document.getElementById(`step${currentStep}`);
+      if (!active || !viewport) return;
+      viewport.style.height = `${active.scrollHeight}px`;
     }
 
-    /**
-     * Taratura balistica iOS Matrix:
-     * - fogli fissi (no carosello)
-     * - in/out 150ms + micro-scale
-     * - pallini subito
-     * - parallasse ±1/12 (anche Back, inverso)
-     */
+    /** Carosello a molla iper-veloce + parallasse 1/12 + overshoot. */
     function setStep(step) {
-      const from = currentStep;
-      const goingBack = step < from;
       currentStep = step;
       document.body.dataset.step = String(step);
-      document.body.dataset.dir = goingBack ? 'back' : 'fwd';
 
-      // 1) Pallini ISTANTANEI (in anticipo sul foglio)
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const el = document.getElementById(`step${i}`);
+        if (!el) continue;
+        const active = i === step;
+        if (active) {
+          el.classList.remove('is-active');
+          void el.offsetWidth;
+          el.classList.add('is-active');
+        } else {
+          el.classList.remove('is-active', 'is-exiting');
+        }
+        if (i !== 2 || step !== TOTAL_STEPS) {
+          el.classList.remove('is-dissolving');
+        }
+      }
+
+      // Pallini schizzano SUBITO
       if (dots) {
         dots.classList.toggle('hidden', step === TOTAL_STEPS);
         [...dots.children].forEach((el, i) => {
@@ -1423,37 +1472,14 @@
         });
       }
 
-      // 2) Parallasse sync (opposto allo step; Back = inverso automatico)
-      applyParallax((step - 1) * (100 / 12), 1.08 + (step - 1) * 0.02);
+      const toSlide = -(step - 1) * 100;
+      const toParallax = -toSlide / 12;
+      const toScale = 1.08 + (step - 1) * 0.02;
 
-      clearTimeout(stepExitTimer);
-      for (let i = 1; i <= TOTAL_STEPS; i++) {
-        const el = document.getElementById(`step${i}`);
-        if (!el) continue;
-        el.classList.remove('is-exiting');
-
-        if (i === step) {
-          el.classList.remove('is-active');
-          void el.offsetWidth;
-          el.classList.add('is-active');
-        } else if (i === from && from !== step && !reduceMotion) {
-          el.classList.remove('is-active');
-          el.classList.add('is-exiting');
-        } else {
-          el.classList.remove('is-active');
-        }
-
-        if (i !== 2 || step !== TOTAL_STEPS) {
-          el.classList.remove('is-dissolving');
-        }
-      }
-
-      if (from !== step && !reduceMotion) {
-        stepExitTimer = setTimeout(() => {
-          const prev = document.getElementById(`step${from}`);
-          if (prev) prev.classList.remove('is-exiting');
-        }, 160);
-      }
+      springPair(toSlide, toParallax, toScale, () => {
+        requestAnimationFrame(syncViewportHeight);
+      });
+      requestAnimationFrame(syncViewportHeight);
     }
 
     function playSuccessKinetics(thenGo) {
