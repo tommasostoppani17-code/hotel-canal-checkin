@@ -57,15 +57,16 @@ const SERIF = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
 const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
 const SANS =
   "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-const bodyStyle = `font-family:${BODY};font-style:italic;font-size:14px;line-height:1.6;font-weight:400`;
-const labelStyle = `font-family:${SANS};font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C !important`;
+const CINZEL = "'Cinzel',Georgia,'Times New Roman',serif";
+const bodyStyle = `font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;font-weight:400`;
+const labelStyle = `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
 
 function sectionTitle(label) {
   return `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 12px;border-bottom:1px solid rgba(22,78,91,0.12);">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 12px;border-bottom:1px solid rgba(22,78,91,0.14);">
                 <tr>
                   <td style="padding:0 0 10px 0;">
-                    <div style="font-family:${SANS};font-size:11px;font-weight:700;color:${C} !important;letter-spacing:0.12em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                    <div style="font-family:${CINZEL};font-size:13px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
                   </td>
                 </tr>
               </table>`;
@@ -84,7 +85,7 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
   <title>${escapeHtml(title)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
   <style type="text/css">
     :root { color-scheme: light only; }
     img { display: block; max-width: 100%; height: auto; border: 0; }
@@ -116,10 +117,10 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px;">
                 <tr>
                   <td align="center" style="padding:2px 0 18px 0;border-bottom:1px solid #E8E4DC;">
-                    <div style="font-family:${SERIF};font-size:20px;font-weight:700;letter-spacing:0.1em;color:${C} !important;text-transform:uppercase;line-height:1.2;">
+                    <div style="font-family:${SERIF};font-size:24px;font-weight:700;letter-spacing:0.12em;color:${C} !important;text-transform:uppercase;line-height:1.2;">
                       ${escapeHtml(hotelName)}
                     </div>
-                    <div style="font-family:${SANS};font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">
+                    <div style="font-family:${SANS};font-size:9.5px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">
                       ${escapeHtml(eyebrow)}
                     </div>
                   </td>
@@ -141,8 +142,9 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
   `.trim();
 }
 
-function closingFooter(hotelName, note) {
+function closingFooter(hotelName, note, signOff = 'La Direzione &amp; lo Staff', stickersHtml = '') {
   return `
+              ${stickersHtml}
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #E8E4DC;margin-top:12px;">
                 <tr>
                   <td align="center" style="padding:28px 0 0;text-align:center;">
@@ -150,13 +152,36 @@ function closingFooter(hotelName, note) {
                       ${note}
                     </p>
                     <div style="width:28px;height:1px;line-height:1px;font-size:1px;background-color:${BRASS};margin:0 auto 14px;">&nbsp;</div>
-                    <div style="font-family:${BODY};font-style:italic;font-size:14.5px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;margin:0 0 6px;">
-                      La Direzione &amp; lo Staff
+                    <div style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;margin:0 0 6px;">
+                      ${signOff}
                     </div>
-                    <div style="font-family:${SERIF};font-style:italic;font-size:12px;font-weight:600;color:${BRASS} !important;letter-spacing:0.05em;line-height:1.4;">
+                    <div style="font-family:${SERIF};font-style:italic;font-size:13px;font-weight:600;color:${BRASS} !important;letter-spacing:0.06em;line-height:1.4;">
                       ${escapeHtml(hotelName)}
                     </div>
                   </td>
+                </tr>
+              </table>`;
+}
+
+function veniceStickersRow() {
+  const assets = [
+    ['stickers', 'mask.png'],
+    ['icons', 'gondola.png'],
+    ['stickers', 'basilica.png'],
+    ['stickers', 'mooring.png'],
+  ];
+  const cells = assets
+    .map(([folder, file]) => {
+      const src = escapeHtml(publicAssetUrl('email', folder, file));
+      return `<td align="center" style="padding:0 6px;line-height:0;font-size:0;">
+                      <img src="${src}" width="36" height="36" alt="" style="display:block;width:36px;height:36px;border:0;">
+                    </td>`;
+    })
+    .join('');
+  return `
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:8px auto 24px;">
+                <tr>
+                  ${cells}
                 </tr>
               </table>`;
 }
@@ -254,12 +279,12 @@ function buildDailyGuestRows(rows) {
 }
 
 /**
- * Report notturno Payel: saluto professionale, lista a righe, CSV allegato.
+ * Report notturno Payel: chiaro, commerciale, un solo emoji Venezia.
  */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
-  const subject = `Hotel Canal · Report giornaliero · ${dateLabel}`;
+  const subject = `🛶 Report contatti · ${dateLabel}`;
   const couponCount = rows.filter(hasRestaurantCoupon).length;
-  const reportPreheader = `Gentile Payel, registro check-in del ${dateLabel}: ${count} registrazioni. CSV allegato.`;
+  const reportPreheader = `Report contatti del ${dateLabel}: ${count} registrazioni. CSV in allegato.`;
 
   const listaSoloNumeri = rows
     .map((row) => row.phone)
@@ -267,31 +292,34 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
     .join(', ');
 
   const text = [
-    `Gentile Payel,`,
+    `Ciao Payel,`,
     ``,
-    `in allegato il registro check-in di ${hotelName} del ${dateLabel}.`,
-    `Registrazioni: ${count}`,
-    `Voucher ristorante: ${couponCount}`,
+    `in allegato il report contatti di oggi (${dateLabel}).`,
+    `${count} registrazioni${couponCount ? `, ${couponCount} voucher ristorante` : ''}.`,
+    `Dagli un'occhiata quando puoi — il CSV è pronto per Excel.`,
     ``,
     `Numeri WhatsApp:`,
     listaSoloNumeri || '-',
     ``,
-    `Cordiali saluti,`,
-    `La Direzione — ${hotelName}`,
+    `Saluti,`,
+    `Front Desk — ${hotelName}`,
   ].join('\n');
 
   const bodyHtml = `
-              <p style="font-family:${BODY};font-style:italic;font-size:15px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
-                Gentile Payel,
+              <p style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 12px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
+                Ciao Payel,
+              </p>
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 10px;text-align:left;">
+                in allegato trovi il report contatti di oggi
+                (<strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(dateLabel)}</strong>).
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 8px;text-align:left;">
-                in allegato trovi il registro check-in del <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(dateLabel)}</strong>:
                 <strong style="color:${C} !important;font-weight:600;font-style:italic;">${count}</strong> registrazioni${
                   couponCount
-                    ? ` e <strong style="color:${C} !important;font-weight:600;font-style:italic;">${couponCount}</strong> voucher ristorante`
+                    ? `, <strong style="color:${C} !important;font-weight:600;font-style:italic;">${couponCount}</strong> voucher ristorante`
                     : ''
                 }.
-                Il file <strong style="color:${C} !important;font-weight:600;font-style:italic;">.CSV</strong> è pronto per Excel.
+                Dagli un&rsquo;occhiata quando puoi: il file CSV &egrave; pronto per Excel.
               </p>
 
               ${sectionTitle('Presenze')}
@@ -300,12 +328,17 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
               </table>
 
               ${sectionTitle('Numeri WhatsApp')}
-              <p style="font-family:${SANS};font-size:11px;font-weight:500;color:#8A949C !important;margin:0 0 10px;line-height:1.4;">
+              <p style="font-family:${SANS};font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C !important;margin:0 0 10px;line-height:1.4;">
                 Tieni premuto per copiare
               </p>
-              <textarea class="utility-textarea" readonly rows="3" style="display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 32px;padding:14px 14px;background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;font-family:${SANS};font-size:12px;line-height:1.55;color:#1D1D1F !important;-webkit-user-select:text;user-select:text;resize:none;">${escapeHtml(listaSoloNumeri || '-')}</textarea>
+              <textarea class="utility-textarea" readonly rows="3" style="display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 28px;padding:14px 14px;background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;font-family:${SANS};font-size:12px;line-height:1.55;color:#1D1D1F !important;-webkit-user-select:text;user-select:text;resize:none;">${escapeHtml(listaSoloNumeri || '-')}</textarea>
 
-              ${closingFooter(hotelName, 'Grazie per il controllo in reception.')}
+              ${closingFooter(
+                hotelName,
+                'Grazie e a presto.',
+                'Front Desk',
+                veniceStickersRow(),
+              )}
   `;
 
   const html = reportShell({
@@ -356,7 +389,7 @@ export function buildMonthlyStaffEmail({
     .join('\n')}\n`;
 
   const bodyHtml = `
-              <p style="font-family:${BODY};font-style:italic;font-size:15px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
+              <p style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
                 Gentile Payel,
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 8px;text-align:left;">

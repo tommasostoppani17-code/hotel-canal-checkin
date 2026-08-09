@@ -47,19 +47,21 @@ export function createTransporter() {
   });
 }
 
-async function sendViaResend({ to, subject, text, html, filename, csv }) {
+async function sendViaResend({ to, subject, text, html, filename, csv, from }) {
   const resend = getResendClient();
   if (!resend) {
     throw new Error('RESEND_API_KEY non configurata');
   }
 
-  const from = env(
-    'SMTP_FROM',
-    'Welcome to Hotel Canal <onboarding@resend.dev>',
-  );
+  const fromAddress =
+    from ||
+    env(
+      'SMTP_FROM',
+      'Welcome to Hotel Canal <onboarding@resend.dev>',
+    );
 
   const { data, error } = await resend.emails.send({
-    from,
+    from: fromAddress,
     to: [to],
     subject,
     text,
@@ -84,7 +86,7 @@ async function sendViaResend({ to, subject, text, html, filename, csv }) {
   return data;
 }
 
-async function sendViaSmtp({ to, subject, text, html, filename, csv }) {
+async function sendViaSmtp({ to, subject, text, html, filename, csv, from }) {
   const transporter = createTransporter();
   if (!transporter) {
     throw new Error(
@@ -93,7 +95,7 @@ async function sendViaSmtp({ to, subject, text, html, filename, csv }) {
   }
 
   await transporter.sendMail({
-    from: env('SMTP_FROM', env('SMTP_USER')),
+    from: from || env('SMTP_FROM', env('SMTP_USER')),
     to,
     subject,
     text,
@@ -109,10 +111,17 @@ async function sendViaSmtp({ to, subject, text, html, filename, csv }) {
 }
 
 async function sendReportMail(payload) {
+  const reportFrom =
+    env('REPORT_FROM') ||
+    env('SMTP_FROM', 'Hotel Canal Front Desk <onboarding@resend.dev>').replace(
+      /Welcome to Hotel Canal/i,
+      'Hotel Canal Front Desk',
+    );
+  const withFrom = { ...payload, from: reportFrom };
   if (resendConfigured()) {
-    return sendViaResend(payload);
+    return sendViaResend(withFrom);
   }
-  return sendViaSmtp(payload);
+  return sendViaSmtp(withFrom);
 }
 
 function assertEmailReady(reportEmail) {

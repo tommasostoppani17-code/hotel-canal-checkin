@@ -248,41 +248,58 @@ function buildWelcomeHtml({
                 </tr>
               </table>`;
 
-  const veniceGuideBlock = `
+  const veniceGuideBlock = (() => {
+    const items = [
+      {
+        icon: icons.gondola,
+        title: lp.veniceActvTitle,
+        body: lp.veniceActvBody,
+      },
+      {
+        icon: icons.bridge || icons.path,
+        title: lp.veniceRialtoTitle || 'Rialto',
+        body: lp.veniceRialtoBody || lp.veniceWalkBody,
+      },
+      {
+        icon: stickers.basilica || stickers.campanile || icons.path,
+        title: lp.veniceSanMarcoTitle || 'San Marco',
+        body: lp.veniceSanMarcoBody || lp.veniceWalkBody,
+      },
+      {
+        icon: stickers.mooring || icons.gondola || icons.bridge,
+        title: lp.veniceIslandsTitle,
+        body: lp.veniceIslandsBody,
+      },
+    ];
+    const rows = items
+      .map(
+        (item, i) => `
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${i === items.length - 1 ? '0' : '1px solid #E8E4DC'};">
+                      <tr>
+                        <td width="40" valign="top" style="padding:16px 12px 16px 0;line-height:0;font-size:0;">
+                          ${iconCell(item.icon, item.title, 32)}
+                        </td>
+                        <td valign="middle" style="padding:16px 0;">
+                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 6px;">${item.title}</div>
+                          <div style="font-family:${BODY};font-style:italic;font-size:14px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${item.body}</div>
+                        </td>
+                      </tr>
+                    </table>`,
+      )
+      .join('');
+    return `
               ${sectionTitle(lp.veniceTitle, icons.gondola || icons.path, 'Venezia')}
-              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 22px;text-align:center;">
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 8px;text-align:center;">
                 ${lp.veniceIntro}
               </p>
-              <table role="presentation" class="route-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;background-color:${BOX} !important;border-radius:16px;border:1px solid #E2E6E8;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;">
                 <tr>
-                  <td style="padding:10px 20px 14px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom:1px solid #E8E4DC;">
-                      <tr>
-                        <td style="padding:16px 0;">
-                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 8px;">${lp.veniceActvTitle}</div>
-                          <div style="font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${lp.veniceActvBody}</div>
-                        </td>
-                      </tr>
-                    </table>
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom:1px solid #E8E4DC;">
-                      <tr>
-                        <td style="padding:14px 0;">
-                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 8px;">${lp.veniceIslandsTitle}</div>
-                          <div style="font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${lp.veniceIslandsBody}</div>
-                        </td>
-                      </tr>
-                    </table>
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                      <tr>
-                        <td style="padding:14px 0 8px;">
-                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 8px;">${lp.veniceWalkTitle}</div>
-                          <div style="font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${lp.veniceWalkBody}</div>
-                        </td>
-                      </tr>
-                    </table>
+                  <td style="padding:0;">
+                    ${rows}
                   </td>
                 </tr>
               </table>`;
+  })();
 
   const venicePdfFooter = guidePdf
     ? `
@@ -383,7 +400,7 @@ function buildWelcomeHtml({
             </td>
             <td valign="middle" style="padding:14px 0;">
               <div class="brand-title" style="font-family:${SERIF};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 4px;">${step.title}</div>
-              <div style="font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.4;color:${i === 2 ? '#C62828' : '#5C6670'} !important;font-weight:${i === 2 ? '600' : '400'};">${step.line}</div>
+              <div style="font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.4;color:#5C6670 !important;font-weight:400;">${step.line}</div>
             </td>
           </tr>
         </table>`,
@@ -903,6 +920,7 @@ export async function sendWelcomeEmail({
   const iconDefs = [
     { key: 'gondola', file: 'gondola.png' },
     { key: 'path', file: 'map.png' },
+    { key: 'walk', file: 'path.png' },
     { key: 'bridge', file: 'bridge.png' },
     { key: 'wine', file: 'wine.png' },
     { key: 'door', file: 'door.png' },

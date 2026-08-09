@@ -71,13 +71,18 @@ export function buildWhatsAppDailyBody({ hotelName, dateLabel, count, rows = [] 
     .join(', ');
 
   return [
-    `*${hotelName} — Report giornaliero*`,
-    `Data: ${dateLabel} · Registrazioni: *${count}*`,
-    '',
-    '*Numeri WhatsApp (copia):*',
+    `Ciao Payel,`,
+    ``,
+    `in allegato il report contatti di oggi (${dateLabel}): *${count}* registrazioni.`,
+    `Dagli un'occhiata quando puoi.`,
+    ``,
+    `*Numeri:*`,
     lista || '—',
-    '',
-    '_CSV completo nel messaggio successivo._',
+    ``,
+    `CSV nel messaggio successivo.`,
+    ``,
+    `Saluti,`,
+    `Front Desk — ${hotelName}`,
   ].join('\n');
 }
 
@@ -116,7 +121,7 @@ export async function sendDailyWhatsAppReport({
   await client.messages.create({
     from,
     to,
-    body: `Allegato CSV — registro check-in ${dateLabel}`,
+    body: `CSV report contatti ${dateLabel} — Hotel Canal`,
     mediaUrl: [mediaUrl],
   });
 

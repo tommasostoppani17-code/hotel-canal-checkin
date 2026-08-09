@@ -39,17 +39,19 @@ export const WELCOME_I18N = {
     doorInnerLabel: 'Porta interna',
     routeTitle: 'A piedi verso la Terrazza',
     routeDesc:
-      'Dall&rsquo;hotel a Trattoria alla Terrazza in circa cinque minuti. Esci da Santa Croce 553 e segui questi passi:',
-    step1Title: 'Esci e gira a destra',
-    step1Line: 'Costeggia la fondamenta con il Canal Grande alla tua sinistra.',
-    step2Title: 'Centocinquanta metri dritto',
-    step2Line: 'Cammina dritto fino al primo ponte di pietra.',
-    step3Title: 'Non attraversare il ponte',
+      'Circa otto minuti dall&rsquo;hotel (Santa Croce 553) a Trattoria alla Terrazza, San Polo 2426. Meglio aprire anche Maps:',
+    step1Title: 'Esci e gira a sinistra',
+    step1Line:
+      'Lascia il Canal Grande alle spalle e prendi subito Fondamenta dei Tolentini.',
+    step2Title: 'Calle de le Case Nove',
+    step2Line:
+      'Dopo circa settanta metri entra in Calle de le Case Nove e prosegui dritto fino al campiello.',
+    step3Title: 'Verso Rio Marin',
     step3Line:
-      'Subito prima dei gradini, gira a destra nella calle stretta (sotoportego).',
+      'Dal Campiello de le Muneghe passa in Calle Sechera e Corte Canal, fino a Fondamenta Rio Marin.',
     step4Title: 'Sei arrivato',
     step4Line:
-      'Dopo circa cinquanta passi trovi Trattoria alla Terrazza sull&rsquo;acqua.',
+      'Segui Fondamenta Rio Marin: in Calle de l&rsquo;Ogio trovi Trattoria alla Terrazza.',
     mapsBtn: 'Apri in Google Maps',
     discountTitle: 'Privilegio di benvenuto',
     discountBefore: 'Ti abbiamo riservato una convenzione speciale: un ',
@@ -66,16 +68,20 @@ export const WELCOME_I18N = {
     tastesDesc: 'Pesce, risotto e sapori veneziani.',
     veniceTitle: 'Come muoversi a Venezia',
     veniceIntro:
-      'Dalla reception sei a pochi minuti da Piazzale Roma e dalla stazione Santa Lucia. Qui l&rsquo;essenziale; nella guida PDF trovi dettagli e consigli.',
-    veniceActvTitle: 'Vaporetto (ACTV)',
+      'Dalla reception sei vicino a Piazzale Roma e alla stazione. A piedi segui i cartelli gialli (il GPS nelle calli spesso sbaglia).',
+    veniceActvTitle: 'Vaporetto ACTV',
     veniceActvBody:
-      'Compra i biglietti sull&rsquo;app ufficiale AVM Venezia / ACTV o alle biglietterie ACTV — non da rivenditori non autorizzati. Oblitera sempre il titolo prima di salire a bordo.<br><strong style="color:#164E5B !important;font-style:italic;">Linee 1 e 2</strong> — percorrono il Canal Grande verso Rialto e San Marco. Imbarco pi&ugrave; comodo dall&rsquo;hotel: <strong style="color:#164E5B !important;font-style:italic;">Piazzale Roma</strong> o <strong style="color:#164E5B !important;font-style:italic;">Ferrovia</strong>.',
+      'Biglietti sull&rsquo;app AVM Venezia / ACTV o alle biglietterie ufficiali. Oblitera sempre prima di salire.<br>Linee <strong style="color:#164E5B !important;font-style:italic;">1</strong> e <strong style="color:#164E5B !important;font-style:italic;">2</strong> lungo il Canal Grande (imbarco a Piazzale Roma o Ferrovia).',
     veniceIslandsTitle: 'Murano e Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> (vetro): linee 4.1 / 4.2 dai moli vicino alla stazione.<br><strong style="color:#164E5B !important;font-style:italic;">Burano</strong> (case colorate): linea 12 da Fondamente Nove — conta circa un&rsquo;ora di navigazione.',
-    veniceWalkTitle: 'A piedi',
+      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> — linee 4.1 / 4.2 dai moli vicino alla stazione.<br><strong style="color:#164E5B !important;font-style:italic;">Burano</strong> — linea 12 da Fondamente Nove (~1 ora).',
+    veniceWalkTitle: 'A piedi in citt&agrave;',
     veniceWalkBody:
-      'Camminare &egrave; il modo migliore per scoprire Venezia. Segui i cartelli gialli verso San Marco / Rialto: il GPS a volte sbaglia tra le calli.<br><strong style="color:#164E5B !important;font-style:italic;">Ponte di Rialto:</strong> circa 15–25 minuti dalla lobby.<br><strong style="color:#164E5B !important;font-style:italic;">Piazza San Marco:</strong> circa 25–40 minuti sui percorsi principali.',
+      'Segui i cartelli gialli: il GPS nelle calli spesso sbaglia.<br><strong style="color:#164E5B !important;font-style:italic;">Rialto</strong> ~15–25 min &middot; <strong style="color:#164E5B !important;font-style:italic;">San Marco</strong> ~25–40 min.',
+    veniceRialtoTitle: 'Ponte di Rialto',
+    veniceRialtoBody: 'A piedi dalla lobby in circa 15–25 minuti lungo i percorsi principali.',
+    veniceSanMarcoTitle: 'Piazza San Marco',
+    veniceSanMarcoBody: 'Circa 25–40 minuti a piedi, oppure vaporetto linee 1 / 2.',
     venicePdfBtn: 'Scarica la guida completa (PDF)',
     ticketTitle: 'Esenzione contributo di accesso',
     ticketDesc:
@@ -137,16 +143,19 @@ export const WELCOME_I18N = {
     doorInnerLabel: 'Inner door',
     routeTitle: 'Walk to the Terrazza',
     routeDesc:
-      'About five minutes from the hotel to Trattoria alla Terrazza. Leave Santa Croce 553 and follow these steps:',
-    step1Title: 'Exit and turn right',
-    step1Line: 'Follow the fondamenta with the Grand Canal on your left.',
-    step2Title: 'Straight for 150 metres',
-    step2Line: 'Keep walking until the first stone bridge.',
-    step3Title: 'Do not cross the bridge',
+      'About eight minutes from the hotel (Santa Croce 553) to Trattoria alla Terrazza, San Polo 2426. Open Maps too:',
+    step1Title: 'Exit and turn left',
+    step1Line:
+      'Leave the Grand Canal behind you and take Fondamenta dei Tolentini straight away.',
+    step2Title: 'Calle de le Case Nove',
+    step2Line:
+      'After about seventy metres enter Calle de le Case Nove and continue straight to the little square.',
+    step3Title: 'Toward Rio Marin',
     step3Line:
-      'Just before the steps, turn right into the narrow alley (sotoportego).',
+      'From Campiello de le Muneghe continue via Calle Sechera and Corte Canal to Fondamenta Rio Marin.',
     step4Title: 'You have arrived',
-    step4Line: 'After about fifty steps you reach Trattoria alla Terrazza on the water.',
+    step4Line:
+      'Follow Fondamenta Rio Marin: on Calle de l&rsquo;Ogio you will find Trattoria alla Terrazza.',
     mapsBtn: 'Open in Google Maps',
     discountTitle: 'Welcome privilege',
     discountBefore: 'We reserved a special partnership for you: an ',
@@ -163,16 +172,20 @@ export const WELCOME_I18N = {
     tastesDesc: 'Fish, risotto and Venetian flavours.',
     veniceTitle: 'Getting around Venice',
     veniceIntro:
-      'From reception you are a short walk from Piazzale Roma and Santa Lucia station. Here is the essentials; the PDF guide has more detail.',
-    veniceActvTitle: 'Vaporetto (ACTV)',
+      'From reception you are close to Piazzale Roma and the station. On foot, follow the yellow signs (GPS often misleads in the alleys).',
+    veniceActvTitle: 'ACTV vaporetto',
     veniceActvBody:
-      'Buy tickets on the official AVM Venezia / ACTV app or at ACTV ticket offices — not from unofficial sellers. Always validate before boarding.<br><strong style="color:#164E5B !important;font-style:italic;">Lines 1 and 2</strong> — along the Grand Canal to Rialto and San Marco. Closest stops from the hotel: <strong style="color:#164E5B !important;font-style:italic;">Piazzale Roma</strong> or <strong style="color:#164E5B !important;font-style:italic;">Ferrovia</strong>.',
+      'Buy tickets on the AVM Venezia / ACTV app or at official ticket offices. Always validate before boarding.<br>Lines <strong style="color:#164E5B !important;font-style:italic;">1</strong> and <strong style="color:#164E5B !important;font-style:italic;">2</strong> along the Grand Canal (board at Piazzale Roma or Ferrovia).',
     veniceIslandsTitle: 'Murano &amp; Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> (glass): lines 4.1 / 4.2 from the station docks.<br><strong style="color:#164E5B !important;font-style:italic;">Burano</strong> (coloured houses): line 12 from Fondamente Nove — allow about one hour on the water.',
+      '<strong style="color:#164E5B !important;font-style:italic;">Murano</strong> — lines 4.1 / 4.2 from the docks near the station.<br><strong style="color:#164E5B !important;font-style:italic;">Burano</strong> — line 12 from Fondamente Nove (~1 hour).',
     veniceWalkTitle: 'On foot',
     veniceWalkBody:
-      'Walking is the best way to see Venice. Follow the yellow signs to San Marco / Rialto — GPS often misleads in the alleys.<br><strong style="color:#164E5B !important;font-style:italic;">Rialto Bridge:</strong> about 15–25 minutes from the lobby.<br><strong style="color:#164E5B !important;font-style:italic;">St Mark&rsquo;s Square:</strong> about 25–40 minutes on the main routes.',
+      'Follow the yellow signs — GPS often misleads in the alleys.<br><strong style="color:#164E5B !important;font-style:italic;">Rialto</strong> ~15–25 min &middot; <strong style="color:#164E5B !important;font-style:italic;">San Marco</strong> ~25–40 min.',
+    veniceRialtoTitle: 'Rialto Bridge',
+    veniceRialtoBody: 'About 15–25 minutes on foot from the lobby along the main routes.',
+    veniceSanMarcoTitle: 'St Mark&rsquo;s Square',
+    veniceSanMarcoBody: 'About 25–40 minutes on foot, or vaporetto lines 1 / 2.',
     venicePdfBtn: 'Download the full guide (PDF)',
     ticketTitle: 'Access fee exemption',
     ticketDesc:
@@ -233,15 +246,20 @@ export const WELCOME_I18N = {
     doorMainLabel: 'Entr&eacute;e principale',
     doorInnerLabel: 'Porte int&eacute;rieure',
     routeTitle: 'À pied vers la Terrazza',
-    routeDesc: 'Environ cinq minutes depuis Santa Croce 553. Suivez ces &eacute;tapes :',
-    step1Title: 'Sortez et tournez à droite',
-    step1Line: 'Le long de la Fondamenta, Grand Canal à gauche.',
-    step2Title: 'Cent cinquante mètres',
-    step2Line: 'Tout droit jusqu&rsquo;au premier pont en pierre.',
-    step3Title: 'Ne traversez pas',
-    step3Line: 'Avant les marches, à droite dans le sotoportego.',
+    routeDesc:
+      'Environ huit minutes de l&rsquo;h&ocirc;tel (Santa Croce 553) &agrave; Trattoria alla Terrazza, San Polo 2426. Ouvrez aussi Maps :',
+    step1Title: 'Sortez et tournez à gauche',
+    step1Line:
+      'Laissez le Grand Canal derri&egrave;re vous et prenez aussit&ocirc;t Fondamenta dei Tolentini.',
+    step2Title: 'Calle de le Case Nove',
+    step2Line:
+      'Apr&egrave;s environ soixante-dix m&egrave;tres, entrez dans Calle de le Case Nove jusqu&rsquo;au petit square.',
+    step3Title: 'Vers Rio Marin',
+    step3Line:
+      'Du Campiello de le Muneghe, continuez par Calle Sechera et Corte Canal jusqu&rsquo;&agrave; Fondamenta Rio Marin.',
     step4Title: 'Arrivée',
-    step4Line: 'Cinquante pas : Trattoria alla Terrazza sur l&rsquo;eau.',
+    step4Line:
+      'Suivez Fondamenta Rio Marin : Calle de l&rsquo;Ogio m&egrave;ne &agrave; Trattoria alla Terrazza.',
     mapsBtn: 'Ouvrir Google Maps',
     discountTitle: 'Offre de bienvenue',
     discountBefore: 'Présentez ce pass au serveur ',
@@ -269,12 +287,16 @@ export const WELCOME_I18N = {
     veniceWalkTitle: 'À pied',
     veniceWalkBody:
       'Marcher est la meilleure fa&ccedil;on de d&eacute;couvrir Venise. Suivez les panneaux jaunes vers San Marco / Rialto — le GPS se trompe souvent dans les calli.<br><strong style="color:#164E5B !important;">Pont du Rialto :</strong> 15-25 minutes depuis le hall.<br><strong style="color:#164E5B !important;">Place Saint-Marc :</strong> 25-40 minutes par les parcours principaux.',
+    veniceRialtoTitle: 'Pont du Rialto',
+    veniceRialtoBody: 'Environ 15-25 minutes &agrave; pied depuis le hall.',
+    veniceSanMarcoTitle: 'Place Saint-Marc',
+    veniceSanMarcoBody: 'Environ 25-40 minutes &agrave; pied, ou vaporetto lignes 1 / 2.',
     venicePdfBtn: 'Télécharger le guide complet (PDF)',
     ticketTitle: 'Exemption du ticket d&rsquo;accès à Venise',
     ticketDesc:
       'En tant qu&rsquo;hôte de l&rsquo;<strong>Hotel Canal</strong>, vous êtes totalement exonéré du droit d&rsquo;accès journalier à Venise. Il vous suffit d&rsquo;enregistrer votre séjour pour obtenir le QR Code officiel de la municipalité.',
     ticketBox:
-      '<strong>Données à saisir sur le site de la municipalité :</strong><br>&bull; Motif d&rsquo;exonération : Client d&rsquo;un établissement d&rsquo;hébergement à Venise<br>&bull; Nom de la structure : Hotel Canal (Santa Croce 553)<br>&bull; Référence : Chambre ',
+      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Donn&eacute;es pour le site municipal</span>Motif : client d&rsquo;un &eacute;tablissement d&rsquo;h&eacute;bergement &agrave; Venise<br>Structure : Hotel Canal (Santa Croce 553)<br>R&eacute;f&eacute;rence : Chambre ',
     ticketBtn: 'Obtenir le QR Code d&rsquo;exonération',
     legalText:
       'Cet e-mail a été envoyé automatiquement par le système de check-in de l&rsquo;Hotel Canal. Vos données sont traitées conformément au Règlement UE 2016/679 (RGPD) pour les finalités liées à votre séjour. Vous pouvez consulter notre politique de confidentialité à la réception ou sur hotelcanal.com.',
@@ -329,15 +351,20 @@ export const WELCOME_I18N = {
     doorMainLabel: 'Haupteingang',
     doorInnerLabel: 'Innent&uuml;r',
     routeTitle: 'Zu Fuß zur Terrazza',
-    routeDesc: 'Etwa f&uuml;nf Minuten von Santa Croce 553. Folgen Sie diesen Schritten:',
-    step1Title: 'Hinaus und rechts abbiegen',
-    step1Line: 'Entlang der Fondamenta, Canal Grande links.',
-    step2Title: 'Hundertfünfzig Meter',
-    step2Line: 'Geradeaus bis zur ersten Steinbrücke.',
-    step3Title: 'Nicht überqueren',
-    step3Line: 'Vor den Stufen rechts in den Sotoportego.',
+    routeDesc:
+      'Etwa acht Minuten vom Hotel (Santa Croce 553) zur Trattoria alla Terrazza, San Polo 2426. Am besten auch Maps &ouml;ffnen:',
+    step1Title: 'Hinaus und links abbiegen',
+    step1Line:
+      'Lassen Sie den Canal Grande hinter sich und nehmen Sie sofort Fondamenta dei Tolentini.',
+    step2Title: 'Calle de le Case Nove',
+    step2Line:
+      'Nach etwa siebzig Metern in die Calle de le Case Nove bis zum kleinen Platz.',
+    step3Title: 'Richtung Rio Marin',
+    step3Line:
+      'Vom Campiello de le Muneghe &uuml;ber Calle Sechera und Corte Canal zur Fondamenta Rio Marin.',
     step4Title: 'Ankunft',
-    step4Line: 'Fünfzig Schritte: Trattoria alla Terrazza am Wasser.',
+    step4Line:
+      'Der Fondamenta Rio Marin folgen: in der Calle de l&rsquo;Ogio liegt Trattoria alla Terrazza.',
     mapsBtn: 'Google Maps öffnen',
     discountTitle: 'Willkommensrabatt',
     discountBefore: 'Zeigen Sie diesen Pass dem Kellner ',
@@ -365,12 +392,16 @@ export const WELCOME_I18N = {
     veniceWalkTitle: 'Zu Fuß',
     veniceWalkBody:
       'Zu Fu&szlig; ist der sch&ouml;nste Weg, Venedig zu erleben. Folgen Sie den gelben Schildern nach San Marco / Rialto — GPS irrt oft in den Gassen.<br><strong style="color:#164E5B !important;">Rialtobr&uuml;cke:</strong> 15-25 Minuten von der Lobby.<br><strong style="color:#164E5B !important;">Markusplatz:</strong> 25-40 Minuten &uuml;ber die Hauptwege.',
+    veniceRialtoTitle: 'Rialtobrücke',
+    veniceRialtoBody: 'Etwa 15-25 Minuten zu Fu&szlig; von der Lobby.',
+    veniceSanMarcoTitle: 'Markusplatz',
+    veniceSanMarcoBody: 'Etwa 25-40 Minuten zu Fu&szlig; oder Vaporetto Linien 1 / 2.',
     venicePdfBtn: 'Vollständigen Guide herunterladen (PDF)',
     ticketTitle: 'Befreiung von der Venedig-Zutrittsgebühr',
     ticketDesc:
       'Als Gast des <strong>Hotel Canal</strong> sind Sie vollständig von der täglichen Zutrittsgebühr für Venedig befreit. Sie müssen Ihren Aufenthalt nur registrieren, um den offiziellen QR-Code der Stadt zu erhalten.',
     ticketBox:
-      '<strong>Angaben für die Website der Stadt:</strong><br>&bull; Grund der Befreiung: Gast in einer Unterkunft in Venedig<br>&bull; Name der Unterkunft: Hotel Canal (Santa Croce 553)<br>&bull; Referenz: Zimmer ',
+      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Angaben f&uuml;r die Stadt-Website</span>Grund: Gast in einer Unterkunft in Venedig<br>Unterkunft: Hotel Canal (Santa Croce 553)<br>Referenz: Zimmer ',
     ticketBtn: 'Offiziellen Befreiungs-QR-Code holen',
     legalText:
       'Diese E-Mail wurde automatisch vom Check-in-System des Hotel Canal gesendet. Ihre Daten werden gemäß EU-Verordnung 2016/679 (DSGVO) für Zwecke Ihres Aufenthalts verarbeitet. Die vollständige Datenschutzerklärung finden Sie an der Rezeption oder auf hotelcanal.com.',
@@ -425,15 +456,20 @@ export const WELCOME_I18N = {
     doorMainLabel: 'Entrada principal',
     doorInnerLabel: 'Puerta interior',
     routeTitle: 'A pie a la Terrazza',
-    routeDesc: 'Unos cinco minutos desde Santa Croce 553. Siga estos pasos:',
-    step1Title: 'Salga y gire a la derecha',
-    step1Line: 'Por la Fondamenta, Canal Grande a la izquierda.',
-    step2Title: 'Ciento cincuenta metros',
-    step2Line: 'Recto hasta el primer puente de piedra.',
-    step3Title: 'No cruce',
-    step3Line: 'Antes de los escalones, a la derecha en el sotoportego.',
+    routeDesc:
+      'Unos ocho minutos desde el hotel (Santa Croce 553) hasta Trattoria alla Terrazza, San Polo 2426. Abra tambi&eacute;n Maps:',
+    step1Title: 'Salga y gire a la izquierda',
+    step1Line:
+      'Deje el Canal Grande a su espalda y tome enseguida Fondamenta dei Tolentini.',
+    step2Title: 'Calle de le Case Nove',
+    step2Line:
+      'Tras unos setenta metros entre en Calle de le Case Nove hasta el campiello.',
+    step3Title: 'Hacia Rio Marin',
+    step3Line:
+      'Desde Campiello de le Muneghe siga por Calle Sechera y Corte Canal hasta Fondamenta Rio Marin.',
     step4Title: 'Llegada',
-    step4Line: 'Cincuenta pasos: Trattoria alla Terrazza sobre el agua.',
+    step4Line:
+      'Siga Fondamenta Rio Marin: en Calle de l&rsquo;Ogio est&aacute; Trattoria alla Terrazza.',
     mapsBtn: 'Abrir Google Maps',
     discountTitle: 'Descuento de bienvenida',
     discountBefore: 'Presente este pase al camarero ',
@@ -461,12 +497,16 @@ export const WELCOME_I18N = {
     veniceWalkTitle: 'A pie',
     veniceWalkBody:
       'Caminar es la mejor forma de descubrir Venecia. Siga los carteles amarillos hacia San Marcos / Rialto — el GPS a menudo se equivoca en las calli.<br><strong style="color:#164E5B !important;">Puente de Rialto:</strong> 15-25 minutos desde el hall.<br><strong style="color:#164E5B !important;">Plaza San Marcos:</strong> 25-40 minutos por las rutas principales.',
+    veniceRialtoTitle: 'Puente de Rialto',
+    veniceRialtoBody: 'Unos 15-25 minutos a pie desde el hall.',
+    veniceSanMarcoTitle: 'Plaza San Marcos',
+    veniceSanMarcoBody: 'Unos 25-40 minutos a pie, o vaporetto l&iacute;neas 1 / 2.',
     venicePdfBtn: 'Descargar la guía completa (PDF)',
     ticketTitle: 'Exención del ticket de acceso a Venecia',
     ticketDesc:
       'Como huésped del <strong>Hotel Canal</strong>, está totalmente exento del pago de la tasa diaria de acceso a Venecia. Solo debe registrar su estancia para obtener el código QR oficial del Ayuntamiento.',
     ticketBox:
-      '<strong>Datos a introducir en el sitio municipal:</strong><br>&bull; Motivo de exención: Huésped en establecimiento de alojamiento en Venecia<br>&bull; Nombre del establecimiento: Hotel Canal (Santa Croce 553)<br>&bull; Referencia: Habitación ',
+      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Datos para el sitio municipal</span>Motivo: hu&eacute;sped en establecimiento de alojamiento en Venecia<br>Establecimiento: Hotel Canal (Santa Croce 553)<br>Referencia: Habitaci&oacute;n ',
     ticketBtn: 'Obtener código QR de exención',
     legalText:
       'Este correo se envió automáticamente desde el sistema de check-in del Hotel Canal. Sus datos se tratan conforme al Reglamento UE 2016/679 (RGPD) para fines relacionados con su estancia. Puede consultar la política de privacidad en recepción o en hotelcanal.com.',

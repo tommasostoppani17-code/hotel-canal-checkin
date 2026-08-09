@@ -20,8 +20,8 @@
       --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
       --slide-ms: 350ms;
-      --card-h-1: min(552px, calc(100dvh - 40px));
-      --card-h-2: min(640px, calc(100dvh - 20px));
+      --card-h-1: min(430px, calc(100dvh - 64px));
+      --card-h-2: min(520px, calc(100dvh - 36px));
       --card-h-3: min(340px, calc(100dvh - 100px));
       --card-h: var(--card-h-1);
     }
@@ -352,74 +352,68 @@
       pointer-events: none;
     }
 
-    /* Vetrina ristorante: foto che si vedono, non fettine */
+    /* Vetrina ristorante: carosello HD + frecce geometriche */
     .restaurant-showcase {
-      margin: 0 0 8px;
+      margin: 0 0 6px;
       flex-shrink: 0;
     }
 
-    .restaurant-hero-card {
+    .rest-carousel {
       position: relative;
       width: 100%;
-      height: 118px;
-      border-radius: 12px;
+    }
+
+    .carousel-viewport {
+      position: relative;
+      width: 100%;
+      height: 148px;
+      border-radius: 16px;
       overflow: hidden;
-      margin: 0;
-      flex-shrink: 0;
-      box-shadow: 0 8px 22px rgba(18, 68, 83, 0.14);
       background: #124453;
+      box-shadow: 0 4px 16px rgba(18, 68, 83, 0.1);
     }
 
-    #step2 .restaurant-hero-card {
-      margin-top: 0;
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      transition: transform 320ms var(--ios-ease);
+      will-change: transform;
     }
 
-    /* Mirini d'angolo (solo grafica, non bottoni) */
-    .hero-reticle {
-      position: absolute;
-      inset: 0;
-      z-index: 4;
-      pointer-events: none;
+    .carousel-slide {
+      position: relative;
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      margin: 0;
     }
 
-    .hero-reticle span {
-      position: absolute;
-      width: 11px;
-      height: 11px;
-      border-color: rgba(255, 255, 255, 0.62);
-      border-style: solid;
-      box-sizing: border-box;
-    }
-
-    .hero-reticle .tl { top: 11px; left: 11px; border-width: 1.5px 0 0 1.5px; }
-    .hero-reticle .tr { top: 11px; right: 11px; border-width: 1.5px 1.5px 0 0; }
-    .hero-reticle .bl { bottom: 11px; left: 11px; border-width: 0 0 1.5px 1.5px; }
-    .hero-reticle .br { bottom: 11px; right: 11px; border-width: 0 1.5px 1.5px 0; }
-
-    .restaurant-hero-card > img {
+    .carousel-slide img {
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 40%;
+      object-position: center;
       border: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
     }
 
-    .restaurant-hero-card .hero-caption {
+    .carousel-caption {
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 32px 14px 12px;
-      box-sizing: border-box;
-      background: linear-gradient(transparent, rgba(18, 68, 83, 0.9));
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
       z-index: 2;
+      padding: 28px 14px 12px;
+      box-sizing: border-box;
+      background: linear-gradient(transparent, rgba(18, 68, 83, 0.88));
+      pointer-events: none;
     }
 
-    .restaurant-hero-card h4 {
+    .carousel-caption h4 {
       font-family: "Cinzel", Georgia, serif;
       font-size: 15px;
       font-weight: 700;
@@ -429,7 +423,7 @@
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
 
-    .restaurant-hero-card p {
+    .carousel-caption p {
       font-size: 10px;
       color: #A0C2CB;
       margin: 0;
@@ -438,45 +432,89 @@
       letter-spacing: 0.04em;
     }
 
-    .rest-strip {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .rest-strip figure {
+    /* Tondini avorio traslucidi — dentro la foto, a filo bordo */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      padding: 0;
       margin: 0;
-      border-radius: 6px;
-      overflow: hidden;
-      background: #124453;
-      aspect-ratio: auto;
-      width: 100%;
-      height: 44px;
-      box-shadow: 0 3px 10px rgba(18, 68, 83, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.62);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.76);
+      -webkit-backdrop-filter: blur(12px) saturate(160%);
+      backdrop-filter: blur(12px) saturate(160%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
     }
 
-    .rest-strip img {
+    .carousel-arrow:active {
+      transform: translateY(-50%) scale(0.92);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .carousel-arrow.left { left: 8px; }
+    .carousel-arrow.right { right: 8px; }
+
+    .arrow-bracket {
+      width: 7px;
+      height: 7px;
+      border-color: var(--canal-petroleum);
+      border-style: solid;
       display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      border: 0;
-      transition: transform 0.45s var(--ios-ease);
+      box-sizing: border-box;
     }
 
-    .rest-strip figure:active img {
-      transform: scale(1.04);
+    .arrow-bracket.left {
+      border-width: 1.5px 0 0 1.5px;
+      transform: rotate(-45deg) translate(1.5px, 1px);
+    }
+
+    .arrow-bracket.right {
+      border-width: 1.5px 1.5px 0 0;
+      transform: rotate(45deg) translate(-1.5px, 1px);
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 7px 0 0;
+    }
+
+    .carousel-dots button {
+      width: 5px;
+      height: 5px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(18, 68, 83, 0.2);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .carousel-dots button.is-active {
+      background: var(--canal-petroleum);
+      width: 12px;
+      border-radius: 999px;
     }
 
     .rest-desc-hero {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 10.5px;
+      font-size: 11px;
       line-height: 1.35;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       color: #5C6670;
       text-align: center;
       margin: 2px 0 12px;
@@ -527,8 +565,8 @@
     }
 
     #step2 .step-footer-fixed {
-      margin-top: 10px;
-      padding-top: 4px;
+      margin-top: 8px;
+      padding-top: 2px;
     }
 
     #step2 .step-footer-fixed .btn-ghost {
@@ -960,15 +998,11 @@
       100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
     }
 
-    /* Successo: fumo su hero + strip (ID reali del DOM vivo) */
-    #step2.is-dissolving .restaurant-hero-card,
-    #step2.is-dissolving #restHeroImg,
-    #step2.is-dissolving .rest-strip figure {
+    /* Successo: fumo sul carosello */
+    #step2.is-dissolving .carousel-viewport,
+    #step2.is-dissolving .carousel-caption {
       animation: photoSmoke 250ms var(--ios-ease) both;
     }
-    #step2.is-dissolving .rest-strip figure:nth-child(1) { animation-delay: 0s; }
-    #step2.is-dissolving .rest-strip figure:nth-child(2) { animation-delay: 0.03s; }
-    #step2.is-dissolving .rest-strip figure:nth-child(3) { animation-delay: 0.06s; }
 
     @keyframes photoSmoke {
       to {
@@ -1061,29 +1095,34 @@
       <section class="slide-step" id="step2">
         <div class="step-body">
           <div class="restaurant-showcase" aria-label="Trattoria alla Terrazza">
-            <div class="restaurant-hero-card">
-              <img src="/restaurant/01-terrazza-canale.jpg" alt="Trattoria alla Terrazza sul canale" width="900" height="600" decoding="async" id="restHeroImg">
-              <div class="hero-reticle" aria-hidden="true">
-                <span class="tl"></span>
-                <span class="tr"></span>
-                <span class="bl"></span>
-                <span class="br"></span>
+            <div class="rest-carousel" id="restCarousel">
+              <div class="carousel-viewport" id="restCarouselViewport">
+                <div class="carousel-track" id="restCarouselTrack">
+                  <figure class="carousel-slide">
+                    <img src="/restaurant/01-terrazza-canale.jpg" alt="Terrazza sul canale" width="900" height="600" decoding="async">
+                  </figure>
+                  <figure class="carousel-slide">
+                    <img src="/restaurant/05-pesce-al-forno.jpg" alt="Pesce al forno" width="900" height="600" loading="lazy" decoding="async">
+                  </figure>
+                  <figure class="carousel-slide">
+                    <img src="/restaurant/08-risotto.jpg" alt="Risotto" width="900" height="600" loading="lazy" decoding="async">
+                  </figure>
+                  <figure class="carousel-slide">
+                    <img src="/restaurant/06-linguine-granchio.jpg" alt="Linguine al granchio" width="900" height="600" loading="lazy" decoding="async">
+                  </figure>
+                </div>
+                <div class="carousel-caption">
+                  <h4>Trattoria alla Terrazza</h4>
+                  <p id="lbl-rest-tag">Offerta ospiti</p>
+                </div>
+                <button type="button" class="carousel-arrow left" id="restCarouselPrev" aria-label="Foto precedente">
+                  <span class="arrow-bracket left" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="carousel-arrow right" id="restCarouselNext" aria-label="Foto successiva">
+                  <span class="arrow-bracket right" aria-hidden="true"></span>
+                </button>
               </div>
-              <div class="hero-caption">
-                <h4>Trattoria alla Terrazza</h4>
-                <p id="lbl-rest-tag">Offerta ospiti</p>
-              </div>
-            </div>
-            <div class="rest-strip" aria-hidden="true">
-              <figure>
-                <img src="/restaurant/11-tavolo-canale.jpg" alt="" width="400" height="400" loading="lazy" decoding="async">
-              </figure>
-              <figure>
-                <img src="/restaurant/02-gondola-ingresso.jpg" alt="" width="400" height="400" loading="lazy" decoding="async">
-              </figure>
-              <figure>
-                <img src="/restaurant/08-risotto.jpg" alt="" width="400" height="400" loading="lazy" decoding="async">
-              </figure>
+              <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
             </div>
           </div>
 
@@ -1487,6 +1526,86 @@
     let breathT = 0;
     let ambientFrozen = false;
     const SLIDE_MS = 350;
+
+    /* Carosello foto ristorante (Step 2) — frecce + swipe */
+    (function initRestaurantCarousel() {
+      const trackEl = document.getElementById('restCarouselTrack');
+      const viewportEl = document.getElementById('restCarouselViewport');
+      const prevBtn = document.getElementById('restCarouselPrev');
+      const nextBtn = document.getElementById('restCarouselNext');
+      const dotsEl = document.getElementById('restCarouselDots');
+      if (!trackEl || !viewportEl) return;
+
+      const slides = trackEl.querySelectorAll('.carousel-slide');
+      const total = slides.length;
+      if (!total) return;
+
+      let idx = 0;
+
+      if (dotsEl) {
+        dotsEl.innerHTML = '';
+        for (let i = 0; i < total; i += 1) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.setAttribute('aria-label', `Foto ${i + 1}`);
+          if (i === 0) dot.classList.add('is-active');
+          dot.addEventListener('click', () => goTo(i));
+          dotsEl.appendChild(dot);
+        }
+      }
+
+      function render() {
+        trackEl.style.transform = `translate3d(${-idx * 100}%, 0, 0)`;
+        if (dotsEl) {
+          [...dotsEl.children].forEach((dot, i) => {
+            dot.classList.toggle('is-active', i === idx);
+          });
+        }
+      }
+
+      function goTo(next) {
+        idx = ((next % total) + total) % total;
+        render();
+      }
+
+      function move(dir) {
+        goTo(idx + dir);
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', () => move(-1));
+      if (nextBtn) nextBtn.addEventListener('click', () => move(1));
+
+      let touchX = 0;
+      let touchY = 0;
+      let tracking = false;
+      viewportEl.addEventListener(
+        'touchstart',
+        (e) => {
+          const t = e.changedTouches[0];
+          if (!t) return;
+          touchX = t.clientX;
+          touchY = t.clientY;
+          tracking = true;
+        },
+        { passive: true },
+      );
+      viewportEl.addEventListener(
+        'touchend',
+        (e) => {
+          if (!tracking) return;
+          tracking = false;
+          const t = e.changedTouches[0];
+          if (!t) return;
+          const dx = t.clientX - touchX;
+          const dy = t.clientY - touchY;
+          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+          move(dx < 0 ? 1 : -1);
+        },
+        { passive: true },
+      );
+
+      render();
+    })();
 
     function applyTrack(xPercent) {
       slideX = xPercent;
