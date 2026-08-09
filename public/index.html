@@ -281,7 +281,7 @@
 
     .slide-step.is-exiting {
       pointer-events: none;
-      contain: layout style;
+      contain: layout size style !important;
       height: auto !important;
     }
 
@@ -1555,7 +1555,9 @@
       }
 
       freezeAmbient(true);
-      /* Height destinazione + slide: stesso frame → GPU sync */
+      /* Stesso frame: misura → height + transform insieme (niente lag) */
+      const targetEl = document.getElementById(`step${step}`);
+      if (targetEl) void targetEl.offsetHeight;
       syncViewportHeight(step, !isTransit);
       applyTrack(toSlide);
       applyParallax(toParallax, toScale);
