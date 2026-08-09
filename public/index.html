@@ -3320,7 +3320,13 @@
     }
 
     // Init: lingua dal telefono (en / it / fr / de / es), altrimenti inglese
-    currentLang = detectLanguage();
+    // Override: ?lang=it|en|fr|de|es
+    const bootParams = new URLSearchParams(location.search);
+    const bootLang = String(bootParams.get('lang') || '')
+      .slice(0, 2)
+      .toLowerCase();
+    currentLang =
+      bootLang && translations[bootLang] ? bootLang : detectLanguage();
     clearRegistrationLock(); // sempre sblocca in fase di test
 
     setLanguage(currentLang);
@@ -3328,7 +3334,6 @@
     startAmbientInertia();
     startCardSheen();
     void loadGuestServices(t());
-    const bootParams = new URLSearchParams(location.search);
     const prefEmail = bootParams.get('email');
     if (prefEmail && emailEl) emailEl.value = prefEmail;
   </script>
