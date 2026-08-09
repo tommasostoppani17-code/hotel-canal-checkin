@@ -1,18 +1,20 @@
-# Keep Render free awake + blueprint for paid persistence
+# Hotel Canal Check-in — Blueprint Render
+# Produzione: plan starter + disk (richiede carta su Render).
+# Finché resti free: backup Gist (CHECKIN_BACKUP_*) + keep-alive workflow.
 services:
   - type: web
     name: hotel-canal-checkin
     runtime: node
-    # starter = sempre acceso + disco persistente (richiede carta su Render)
-    plan: starter
+    plan: free
     region: frankfurt
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
-    disk:
-      name: checkins-data
-      mountPath: /var/data
-      sizeGB: 1
+    # Dopo upgrade a starter, decommenta:
+    # disk:
+    #   name: checkins-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "20"
@@ -21,7 +23,7 @@ services:
       - key: CRON_TZ
         value: Europe/Rome
       - key: DATABASE_PATH
-        value: /var/data/checkins.db
+        value: ./data/checkins.db
       - key: PUBLIC_URL
         sync: false
       - key: REPORT_EMAIL
@@ -47,6 +49,5 @@ services:
       - key: CHECKIN_BACKUP_GITHUB_TOKEN
         sync: false
 
-  # Cron Job Render: piano a pagamento.
-  # Report automatici: .github/workflows/cron-reports.yml
-  # Keep-alive free tier: .github/workflows/keep-alive.yml
+  # Report: .github/workflows/cron-reports.yml
+  # Keep-alive free: .github/workflows/keep-alive.yml
