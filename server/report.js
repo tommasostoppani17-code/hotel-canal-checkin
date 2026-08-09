@@ -473,8 +473,11 @@ export function buildTableBookingEmail({ hotelName, row }) {
   const text = [
     `Ciao Payel,`,
     ``,
-    `nuova richiesta tavolo per Trattoria alla Terrazza dal check-in ${hotelName}.`,
-    `Richiama l'ospite e conferma tavolo${hasCoupon ? ' + coupon −10%' : ''}.`,
+    `Nuova richiesta tavolo per Trattoria alla Terrazza`,
+    `dal check-in ${hotelName}.`,
+    ``,
+    `Richiama l'ospite e conferma l'orario.`,
+    hasCoupon ? `Coupon −10%: già inviato all'ospite via email.` : null,
     ``,
     `Stanza: ${room}`,
     `Telefono: ${phone}`,
@@ -487,7 +490,9 @@ export function buildTableBookingEmail({ hotelName, row }) {
     ``,
     `Saluti,`,
     `Front Desk — ${hotelName}`,
-  ].join('\n');
+  ]
+    .filter((line) => line != null)
+    .join('\n');
 
   const detailRow = (label, valueHtml) => `
                 <tr>
@@ -500,19 +505,42 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 </tr>`;
 
   const bodyHtml = `
-              <p style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 12px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
+              <p style="font-family:${SERIF};font-style:normal;font-size:22px;font-weight:600;color:${C} !important;margin:0 0 18px;letter-spacing:0.01em;text-align:left;line-height:1.25;">
                 Ciao Payel,
               </p>
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 10px;text-align:left;">
-                nuova richiesta tavolo per
-                <strong style="color:${C} !important;font-weight:600;font-style:italic;">Trattoria alla Terrazza</strong>
-                dal check-in Hotel Canal.
+
+              <p style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${BRASS} !important;margin:0 0 8px;line-height:1.3;">
+                Nuova richiesta tavolo
               </p>
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 22px;text-align:left;">
-                Richiama l&rsquo;ospite e conferma il tavolo${
-                  hasCoupon ? ' con coupon &minus;10%' : ''
-                }.
+              <p style="font-family:${SERIF};font-style:normal;font-size:20px;font-weight:700;color:${C} !important;margin:0 0 6px;letter-spacing:0.02em;text-align:left;line-height:1.3;">
+                Trattoria alla Terrazza
               </p>
+              <p style="font-family:${SANS};font-size:13px;font-weight:500;color:#5C6670 !important;margin:0 0 20px;line-height:1.45;letter-spacing:0.01em;">
+                dal check-in Hotel Canal
+              </p>
+
+              <p style="font-family:${BODY};font-style:italic;font-size:15.5px;line-height:1.55;font-weight:400;color:#3D4A52 !important;margin:0 0 ${
+                hasCoupon ? '14' : '22'
+              }px;text-align:left;">
+                Richiama l&rsquo;ospite e conferma l&rsquo;orario del tavolo.
+              </p>
+              ${
+                hasCoupon
+                  ? `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
+                <tr>
+                  <td style="padding:11px 14px;background-color:#F3EEE6;border:1px solid rgba(138,106,69,0.28);border-radius:12px;">
+                    <div style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A6A45 !important;margin:0 0 4px;line-height:1.2;">
+                      Coupon &minus;10%
+                    </div>
+                    <div style="font-family:${SANS};font-size:13px;font-weight:600;color:#5C4A36 !important;line-height:1.4;">
+                      Gi&agrave; inviato all&rsquo;ospite via email &mdash; ricordaglielo in chiamata.
+                    </div>
+                  </td>
+                </tr>
+              </table>`
+                  : ''
+              }
 
               ${
                 phoneTel
