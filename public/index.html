@@ -16,9 +16,9 @@
       --text-main: #1D1D1F;
       --text-muted: #515154;
       --radius-ios: 14px;
-      --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
-      --slide-ms: 350ms;
+      --slide-ms: 520ms;
       /* Cupertino 8pt grid */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -226,7 +226,7 @@
       padding: 0 20px;
     }
 
-    /* Pillole allineate al binario (350ms) */
+    /* Pillole allineate al binario */
     .step-dots span {
       width: 6px;
       height: 6px;
@@ -2611,7 +2611,7 @@
     let formMode = true;
     let submitting = false;
 
-    /* Slide CSS 350ms — niente RAF mid-frame, niente height in parallelo */
+    /* Slide CSS — sync con --slide-ms; niente RAF mid-frame */
     let slideX = 0;
     let parallaxX = 0;
     let ambientUnlockTimer = 0;
@@ -2622,7 +2622,7 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 350;
+    const SLIDE_MS = 520;
 
     /* Carosello foto ristorante (Step 2) — frecce + swipe */
     (function initRestaurantCarousel() {
