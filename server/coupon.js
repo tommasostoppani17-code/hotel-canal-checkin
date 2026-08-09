@@ -248,43 +248,37 @@ function buildWelcomeHtml({
               </table>`;
 
   const veniceGuideBlock = `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:44px 0 0;">
+              ${sectionTitle(lp.veniceTitle, icons.gondola || icons.path, 'Venezia')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+                ${lp.veniceIntro}
+              </p>
+              <table role="presentation" class="route-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background-color:${BOX} !important;border-radius:16px;border:1px solid #E2E6E8;">
                 <tr>
-                  <td style="padding:0 0 8px 0;border-bottom:1px solid rgba(18,68,83,0.12);">
-                    <div style="font-family:${CINZEL};font-size:14px;font-weight:700;color:${C} !important;letter-spacing:0.06em;text-transform:uppercase;line-height:1.2;">
-                      ${lp.veniceTitle}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:16px 0 24px 0;font-family:${BODY};font-style:italic;font-size:13.5px;line-height:1.6;color:#64748B !important;font-weight:400;">
-                    ${lp.veniceIntro}
-                  </td>
-                </tr>
-              </table>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;margin:0 0 20px;background-color:#FFFFFF !important;">
-                <tr>
-                  <td style="padding:16px 0;border-bottom:1px solid #E5E5EA;font-family:${SANS};font-size:13.5px;line-height:1.6;color:#334155 !important;font-weight:400;background-color:#FFFFFF !important;">
-                    <div style="font-family:${CINZEL};font-size:11px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 6px 0;">
-                      ${lp.veniceActvTitle}
-                    </div>
-                    ${lp.veniceActvBody}
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:16px 0;border-bottom:1px solid #E5E5EA;font-family:${SANS};font-size:13.5px;line-height:1.6;color:#334155 !important;font-weight:400;background-color:#FFFFFF !important;">
-                    <div style="font-family:${CINZEL};font-size:11px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 6px 0;">
-                      ${lp.veniceIslandsTitle}
-                    </div>
-                    ${lp.veniceIslandsBody}
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:16px 0;font-family:${SANS};font-size:13.5px;line-height:1.6;color:#334155 !important;font-weight:400;background-color:#FFFFFF !important;">
-                    <div style="font-family:${CINZEL};font-size:11px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 6px 0;">
-                      ${lp.veniceWalkTitle}
-                    </div>
-                    ${lp.veniceWalkBody}
+                  <td style="padding:6px 18px 10px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom:1px solid #E8E4DC;">
+                      <tr>
+                        <td style="padding:14px 0;">
+                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 6px;">${lp.veniceActvTitle}</div>
+                          <div style="font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${lp.veniceActvBody}</div>
+                        </td>
+                      </tr>
+                    </table>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom:1px solid #E8E4DC;">
+                      <tr>
+                        <td style="padding:14px 0;">
+                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 6px;">${lp.veniceIslandsTitle}</div>
+                          <div style="font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${lp.veniceIslandsBody}</div>
+                        </td>
+                      </tr>
+                    </table>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td style="padding:14px 0 8px;">
+                          <div class="brand-title" style="font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.25;margin:0 0 6px;">${lp.veniceWalkTitle}</div>
+                          <div style="font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;color:#5C6670 !important;font-weight:400;">${lp.veniceWalkBody}</div>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>`;
@@ -294,7 +288,7 @@ function buildWelcomeHtml({
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;">
                 <tr>
                   <td align="center" style="padding:0;">
-                    <a href="${guidePdf}" target="_blank" style="display:block;text-align:center;border:1.5px solid ${C};color:${C} !important;text-decoration:none;padding:14px;border-radius:12px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.06em;background-color:#FFFFFF !important;">
+                    <a href="${guidePdf}" target="_blank" style="display:block;text-align:center;border:1.5px solid ${C};color:${C} !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;background-color:#FFFFFF !important;">
                       ${lp.venicePdfBtn}
                     </a>
                   </td>
@@ -303,32 +297,20 @@ function buildWelcomeHtml({
     : '';
 
   const accessTicketBlock = `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:8px 0 0;">
+              ${sectionTitle(lp.ticketTitle, icons.key || icons.door, 'Esenzione')}
+              <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;text-align:center;">
+                ${lp.ticketDesc}
+              </p>
+              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
                 <tr>
-                  <td style="padding:36px 0 16px 0;border-top:1px solid #E5E5EA;">
-                    <div style="font-family:${CINZEL};font-size:14px;font-weight:700;color:${C} !important;margin:0 0 8px 0;letter-spacing:0.05em;text-transform:uppercase;text-align:center;line-height:1.3;">
-                      ${lp.ticketTitle}
-                    </div>
-                    <p style="font-family:${SANS};font-size:13.5px;line-height:1.65;color:#48484A !important;margin:0 0 20px 0;font-weight:400;text-align:center;">
-                      ${lp.ticketDesc}
-                    </p>
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F4F7F9;border-radius:18px;border:1px solid rgba(18,68,83,0.06);margin:0 0 24px;">
-                      <tr>
-                        <td style="padding:16px 20px;font-family:${SANS};font-size:13px;line-height:1.65;color:#334155 !important;font-weight:500;">
-                          ${lp.ticketBox}<strong>${room}</strong>
-                        </td>
-                      </tr>
-                    </table>
+                  <td style="padding:20px 18px;font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.65;color:#4A5560 !important;font-weight:400;">
+                    ${lp.ticketBox}<strong style="color:${C} !important;font-weight:600;font-style:italic;">${room}</strong>
                   </td>
                 </tr>
-                <tr>
-                  <td align="center" style="padding:0 0 36px 0;border-bottom:1px solid #E5E5EA;">
-                    <a href="https://cda.ve.it" target="_blank" style="display:inline-block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px 28px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.06em;">
-                      ${lp.ticketBtn}
-                    </a>
-                  </td>
-                </tr>
-              </table>`;
+              </table>
+              <a href="https://cda.ve.it" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 36px;">
+                ${lp.ticketBtn}
+              </a>`;
 
   const legalFooterBlock = `
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 0;">
@@ -674,8 +656,12 @@ function buildWelcomeHtml({
                     <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.55;text-align:center;">
                       ${lp.wishes}
                     </div>
-                    <div class="brass" style="font-family:${SANS};font-size:11.5px;font-weight:600;color:${BRASS} !important;text-transform:uppercase;letter-spacing:0.14em;margin-top:12px;text-align:center;">
-                      ${lp.signatureLine1}<br>${lp.signatureLine2}
+                    <div style="width:36px;height:1px;line-height:1px;font-size:1px;background-color:${BRASS};margin:18px auto 14px;">&nbsp;</div>
+                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;text-align:center;">
+                      ${lp.signatureLine1}
+                    </div>
+                    <div class="brass" style="font-family:${SERIF};font-style:italic;font-size:13px;font-weight:600;color:${BRASS} !important;letter-spacing:0.06em;margin-top:8px;text-align:center;line-height:1.4;">
+                      ${lp.signatureLine2}
                     </div>
                   </td>
                 </tr>

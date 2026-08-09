@@ -61,24 +61,24 @@ export const WELCOME_I18N = {
     metaPax: 'OSPITI',
     tastesTitle: 'Assaggi dalla Terrazza',
     tastesDesc: 'Pesce, risotto e sapori veneziani.',
-    veniceTitle: 'Get Around',
+    veniceTitle: 'Come muoversi',
     veniceIntro:
-      'Note logistiche essenziali per muoversi tra i canali. I dettagli completi sono nella guida concierge.',
+      'Note essenziali per spostarsi tra i canali. I dettagli completi sono nella guida concierge.',
     veniceActvTitle: 'ACTV Vaporetto',
     veniceActvBody:
-      'Biglietti via app o alle biglietterie ufficiali. Obliterate sempre il titolo prima di salire.<br><strong style="color:#164E5B !important;">Linee 1 / 2</strong> - Canal Grande verso Rialto e San Marco (imbarco vicino a Piazzale Roma / Ferrovia).',
+      'Biglietti via app o alle biglietterie ufficiali. Obliterate sempre il titolo prima di salire.<br><strong style="color:#164E5B !important;font-style:italic;">Linee 1 / 2</strong> — Canal Grande verso Rialto e San Marco (imbarco vicino a Piazzale Roma / Ferrovia).',
     veniceIslandsTitle: 'Murano &amp; Burano',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;">Murano:</strong> Linee 4.1 / 4.2 dai moli della stazione.<br><strong style="color:#164E5B !important;">Burano:</strong> Linea 12 da Fondamente Nove.',
+      '<strong style="color:#164E5B !important;font-style:italic;">Murano:</strong> Linee 4.1 / 4.2 dai moli della stazione.<br><strong style="color:#164E5B !important;font-style:italic;">Burano:</strong> Linea 12 da Fondamente Nove.',
     veniceWalkTitle: 'A piedi',
     veniceWalkBody:
-      'Camminare nel centro storico &egrave; il modo migliore per vivere la citt&agrave;.<br><strong style="color:#164E5B !important;">Ponte di Rialto:</strong> 15-25 minuti dalla lobby.<br><strong style="color:#164E5B !important;">Piazza San Marco:</strong> 25-40 minuti lungo i percorsi pedonali principali.',
+      'Camminare nel centro storico &egrave; il modo migliore per vivere la citt&agrave;.<br><strong style="color:#164E5B !important;font-style:italic;">Ponte di Rialto:</strong> 15–25 minuti dalla lobby.<br><strong style="color:#164E5B !important;font-style:italic;">Piazza San Marco:</strong> 25–40 minuti lungo i percorsi pedonali principali.',
     venicePdfBtn: 'Scarica guida concierge (PDF)',
     ticketTitle: 'Esenzione contributo di accesso',
     ticketDesc:
-      'Come ospite dell&rsquo;<strong>Hotel Canal</strong>, sei legalmente esentato dal pagamento del ticket giornaliero di accesso a Venezia. Registra la presenza per ottenere il QR ufficiale del Comune.',
+      'Come ospite dell&rsquo;<strong style="font-style:italic;">Hotel Canal</strong>, sei legalmente esentato dal pagamento del ticket giornaliero di accesso a Venezia. Registra la presenza per ottenere il QR ufficiale del Comune.',
     ticketBox:
-      '<strong>Dati da inserire sul sito del Comune:</strong><br>&bull; Motivo esenzione: Ospite in struttura ricettiva a Venezia<br>&bull; Nome struttura: Hotel Canal (Santa Croce 553)<br>&bull; Riferimento: Stanza ',
+      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Dati per il sito del Comune</span>Motivo: ospite in struttura ricettiva a Venezia<br>Struttura: Hotel Canal (Santa Croce 553)<br>Riferimento: Stanza ',
     ticketBtn: 'Richiedi QR municipalit&agrave;',
     legalText:
       'Questa e-mail &egrave; stata inviata automaticamente dal sistema di check-in dell&rsquo;Hotel Canal. I tuoi dati sono trattati in conformit&agrave; al Regolamento UE 2016/679 (GDPR) per le finalit&agrave; legate al tuo soggiorno. Informativa completa al banco o su hotelcanal.com.',
@@ -94,7 +94,7 @@ export const WELCOME_I18N = {
       'Guida Venezia: San Marco, Rialto, Casino, Murano, Burano e mezzi - PDF:',
     textTicket:
       'Esenzione ticket accesso Venezia (ospite in struttura): registra su https://cda.ve.it',
-    textSignature: 'La Direzione - Hotel Canal Venezia',
+    textSignature: 'La Direzione — Hotel Canal Venezia',
   },
   en: {
     subject: 'Welcome to Venice',
@@ -155,24 +155,24 @@ export const WELCOME_I18N = {
     metaPax: 'GUESTS',
     tastesTitle: 'Tastes from the Terrazza',
     tastesDesc: 'Fish, risotto and Venetian flavours.',
-    veniceTitle: 'Get Around',
+    veniceTitle: 'Getting around',
     veniceIntro:
       'Essential notes for moving around the canals. Full details are in the concierge guide.',
     veniceActvTitle: 'ACTV Vaporetto',
     veniceActvBody:
-      'Tickets via app or official ticket offices. Always validate before boarding.<br><strong style="color:#164E5B !important;">Lines 1 / 2</strong> - Grand Canal toward Rialto and San Marco (dock near Piazzale Roma / Santa Lucia).',
+      'Tickets via app or official ticket offices. Always validate before boarding.<br><strong style="color:#164E5B !important;font-style:italic;">Lines 1 / 2</strong> — Grand Canal toward Rialto and San Marco (dock near Piazzale Roma / Santa Lucia).',
     veniceIslandsTitle: 'Murano &amp; Burano Islands',
     veniceIslandsBody:
-      '<strong style="color:#164E5B !important;">Murano:</strong> Lines 4.1 / 4.2 from the station docks.<br><strong style="color:#164E5B !important;">Burano:</strong> Line 12 from Fondamente Nove.',
+      '<strong style="color:#164E5B !important;font-style:italic;">Murano:</strong> Lines 4.1 / 4.2 from the station docks.<br><strong style="color:#164E5B !important;font-style:italic;">Burano:</strong> Line 12 from Fondamente Nove.',
     veniceWalkTitle: 'On foot',
     veniceWalkBody:
-      'Walking the historic center is the best way to experience the city.<br><strong style="color:#164E5B !important;">Rialto Bridge:</strong> 15-25 minutes from the lobby.<br><strong style="color:#164E5B !important;">San Marco Square:</strong> 25-40 minutes along the main pedestrian routes.',
+      'Walking the historic center is the best way to experience the city.<br><strong style="color:#164E5B !important;font-style:italic;">Rialto Bridge:</strong> 15–25 minutes from the lobby.<br><strong style="color:#164E5B !important;font-style:italic;">San Marco Square:</strong> 25–40 minutes along the main pedestrian routes.',
     venicePdfBtn: 'Download concierge guide (PDF)',
     ticketTitle: 'Access fee exemption',
     ticketDesc:
-      'As a guest of <strong>Hotel Canal</strong>, you are legally exempt from Venice&rsquo;s daily access fee. Register your stay to receive the official municipal QR code.',
+      'As a guest of <strong style="font-style:italic;">Hotel Canal</strong>, you are legally exempt from Venice&rsquo;s daily access fee. Register your stay to receive the official municipal QR code.',
     ticketBox:
-      '<strong>Details for the municipal website:</strong><br>&bull; Reason for exemption: Guest in an accommodation facility in Venice<br>&bull; Facility name: Hotel Canal (Santa Croce 553)<br>&bull; Reference: Room ',
+      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Details for the municipal website</span>Reason: guest in an accommodation facility in Venice<br>Property: Hotel Canal (Santa Croce 553)<br>Reference: Room ',
     ticketBtn: 'Request municipal QR',
     legalText:
       'This e-mail was sent automatically by the Hotel Canal check-in system. Your personal data is processed under EU Regulation 2016/679 (GDPR) for hospitality purposes related to your stay. Full privacy notice at the desk or on hotelcanal.com.',
