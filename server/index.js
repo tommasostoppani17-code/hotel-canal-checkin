@@ -171,6 +171,23 @@ app.get('/health', (_req, res) => {
   });
 });
 
+/** Wi-Fi + codici porta per lo Step 3 (stessi valori della welcome email). */
+app.get('/api/guest-services', (_req, res) => {
+  let doorMain = String(process.env.DOOR_CODE_WALTER || '5358#').trim() || '5358#';
+  if (!doorMain.endsWith('#')) doorMain = `${doorMain}#`;
+  const doorInner = String(process.env.DOOR_CODE_AIRONE || '532E').trim() || '532E';
+  res.json({
+    wifiSsid: String(process.env.WIFI_SSID || 'hotel canal').trim() || 'hotel canal',
+    wifiPassword: String(process.env.WIFI_PASSWORD || '').trim(),
+    doorMain,
+    doorInner,
+    trattoriaPhone: String(process.env.TRATTORIA_PHONE || '+393282464972').trim(),
+    trattoriaPhoneDisplay: String(
+      process.env.TRATTORIA_PHONE_DISPLAY || '328 246 4972',
+    ).trim(),
+  });
+});
+
 /** Checklist go-live (senza segreti). */
 app.get('/api/ready', (_req, res) => {
   const from = String(process.env.SMTP_FROM || '');
