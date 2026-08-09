@@ -1242,12 +1242,12 @@
 
           <div class="form-grid-container">
             <div class="form-group">
-              <label id="lbl-room" for="room">Stanza</label>
+              <label id="lbl-room" for="room">Stanza *</label>
               <div class="input-with-icon">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="8" cy="10" r="3"/><path d="M11 10h9v3M17 10v6M20 10v4"/></svg>
                 </span>
-                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off">
+                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off" required>
               </div>
             </div>
             <div class="form-group">
@@ -1260,12 +1260,12 @@
               </div>
             </div>
             <div class="form-group span-2">
-              <label id="lbl-staff" for="receptionist">Receptionist</label>
+              <label id="lbl-staff" for="receptionist">Receptionist *</label>
               <div class="input-with-icon">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 0.7 4 2.2"/></svg>
                 </span>
-                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Nome" inputmode="text">
+                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Chi fa il check-in" inputmode="text" required>
               </div>
             </div>
           </div>
@@ -1320,20 +1320,20 @@
         lastName: 'Cognome *',
         nameRequired: 'Il nome è obbligatorio.',
         lastNameRequired: 'Il cognome è obbligatorio.',
-        room: 'Numero di Stanza',
-        roomShort: 'Stanza',
+        room: 'Numero di Stanza *',
+        roomShort: 'Stanza *',
         guestsShort: 'Ospiti',
-        staffShort: 'Receptionist',
-        staffPlaceholder: 'Nome',
-        restDescShort: 'Coupon 10% · Stanza e receptionist',
+        staffShort: 'Receptionist *',
+        staffPlaceholder: 'Chi fa il check-in',
+        restDescShort: 'Per il coupon: stanza + receptionist del check-in',
         restTag: 'Offerta ospiti',
         nextBtn: 'Continua',
         restSub: 'Ristorante tipico veneziano',
         restTitle: 'Sconto 10% di benvenuto',
-        restDesc: 'Per il coupon 10% servono numero di stanza e nome del receptionist.',
-        staff: 'Nome del Receptionist',
+        restDesc: 'Per il coupon 10% servono numero di stanza e nome del receptionist che ti sta facendo il check-in.',
+        staff: 'Nome del Receptionist *',
         staffNone: 'Seleziona…',
-        staffInvalid: 'Inserisci il nome del receptionist.',
+        staffInvalid: 'Serve il nome del receptionist che ti fa il check-in.',
         roomInvalid: 'Inserisci il numero di stanza.',
         guests: 'Numero ospiti',
         button: 'Conferma e ricevi coupon',
@@ -1376,20 +1376,20 @@
         lastName: 'Last Name *',
         nameRequired: 'First name is required.',
         lastNameRequired: 'Last name is required.',
-        room: 'Room Number',
-        roomShort: 'Room',
+        room: 'Room Number *',
+        roomShort: 'Room *',
         guestsShort: 'Guests',
-        staffShort: 'Receptionist',
-        staffPlaceholder: 'Name',
-        restDescShort: '10% coupon · Room & receptionist',
+        staffShort: 'Receptionist *',
+        staffPlaceholder: 'Who is checking you in',
+        restDescShort: 'Coupon needs: room + check-in receptionist',
         restTag: 'Guest offer',
         nextBtn: 'Continue',
         restSub: 'Typical Venetian restaurant',
         restTitle: '10% Welcome Discount',
-        restDesc: 'Room number and receptionist name are required for the 10% coupon.',
-        staff: 'Receptionist Name',
+        restDesc: 'Room number and the receptionist checking you in are required for the 10% coupon.',
+        staff: 'Receptionist Name *',
         staffNone: 'Select…',
-        staffInvalid: 'Please enter the receptionist name.',
+        staffInvalid: 'Enter the receptionist who is checking you in.',
         roomInvalid: 'Please enter the room number.',
         guests: 'Number of guests',
         button: 'Confirm & get coupon',
@@ -1431,20 +1431,20 @@
         lastName: 'Nom *',
         nameRequired: 'Le prénom est obligatoire.',
         lastNameRequired: 'Le nom est obligatoire.',
-        room: 'Numéro de chambre',
-        roomShort: 'Chambre',
+        room: 'Numéro de chambre *',
+        roomShort: 'Chambre *',
         guestsShort: 'Pers.',
-        staffShort: 'Réceptionniste',
-        staffPlaceholder: 'Nom',
-        restDescShort: 'Coupon 10% · Chambre et réception',
+        staffShort: 'Réceptionniste *',
+        staffPlaceholder: 'Qui fait le check-in',
+        restDescShort: 'Coupon : chambre + réceptionniste du check-in',
         nextBtn: 'Continuer',
         restSub: 'Restaurant typique vénitien',
         restTitle: 'Réduction de bienvenue 10%',
-        restDesc: 'Chambre et nom du réceptionniste requis pour le coupon 10%.',
+        restDesc: 'Chambre et nom du réceptionniste qui fait le check-in requis pour le coupon 10%.',
         restTag: 'Offre clients',
-        staff: 'Nom du réceptionniste',
+        staff: 'Nom du réceptionniste *',
         staffNone: 'Choisir…',
-        staffInvalid: 'Entrez le nom du réceptionniste.',
+        staffInvalid: 'Entrez le réceptionniste qui fait le check-in.',
         roomInvalid: 'Entrez le numéro de chambre.',
         guests: 'Nombre de personnes',
         button: 'Confirmer et recevoir le coupon',
@@ -1486,20 +1486,20 @@
         lastName: 'Nachname *',
         nameRequired: 'Vorname ist erforderlich.',
         lastNameRequired: 'Nachname ist erforderlich.',
-        room: 'Zimmernummer',
-        roomShort: 'Zimmer',
+        room: 'Zimmernummer *',
+        roomShort: 'Zimmer *',
         guestsShort: 'Gäste',
-        staffShort: 'Empfang',
-        staffPlaceholder: 'Name',
-        restDescShort: '10%-Gutschein · Zimmer & Empfang',
+        staffShort: 'Empfang *',
+        staffPlaceholder: 'Wer macht den Check-in',
+        restDescShort: 'Gutschein: Zimmer + Empfang beim Check-in',
         nextBtn: 'Weiter',
         restSub: 'Typisch venezianisches Restaurant',
         restTitle: '10% Willkommensrabatt',
-        restDesc: 'Für den 10%-Gutschein sind Zimmer und Empfangsname erforderlich.',
+        restDesc: 'Für den 10%-Gutschein sind Zimmer und der Empfangsname beim Check-in erforderlich.',
         restTag: 'Gästeangebot',
-        staff: 'Name Empfang',
+        staff: 'Name Empfang *',
         staffNone: 'Auswählen…',
-        staffInvalid: 'Bitte den Namen des Empfangs eingeben.',
+        staffInvalid: 'Bitte den Empfangsnamen beim Check-in eingeben.',
         roomInvalid: 'Bitte die Zimmernummer eingeben.',
         guests: 'Anzahl Gäste',
         button: 'Bestätigen & Gutschein erhalten',
@@ -1541,20 +1541,20 @@
         lastName: 'Apellido *',
         nameRequired: 'El nombre es obligatorio.',
         lastNameRequired: 'El apellido es obligatorio.',
-        room: 'Número de habitación',
-        roomShort: 'Habitación',
+        room: 'Número de habitación *',
+        roomShort: 'Habitación *',
         guestsShort: 'Huéspedes',
-        staffShort: 'Recepcionista',
-        staffPlaceholder: 'Nombre',
-        restDescShort: 'Cupón 10% · Habitación y recepción',
+        staffShort: 'Recepcionista *',
+        staffPlaceholder: 'Quién hace el check-in',
+        restDescShort: 'Cupón: habitación + recepcionista del check-in',
         nextBtn: 'Continuar',
         restSub: 'Restaurante típico veneciano',
         restTitle: 'Descuento de bienvenida 10%',
-        restDesc: 'Para el cupón 10% hacen falta habitación y nombre del recepcionista.',
+        restDesc: 'Para el cupón 10% hacen falta habitación y el recepcionista del check-in.',
         restTag: 'Oferta huéspedes',
-        staff: 'Nombre del recepcionista',
+        staff: 'Nombre del recepcionista *',
         staffNone: 'Seleccionar…',
-        staffInvalid: 'Escriba el nombre del recepcionista.',
+        staffInvalid: 'Escriba el recepcionista que hace el check-in.',
         roomInvalid: 'Introduzca el número de habitación.',
         guests: 'Número de huéspedes',
         button: 'Confirmar y recibir cupón',
@@ -2342,7 +2342,7 @@
       return true;
     }
 
-    /** Coupon: stanza + nome receptionist obbligatori */
+    /** Coupon: stanza + nome receptionist del check-in obbligatori */
     function validateCouponFields() {
       clearError();
       const roomRaw = roomEl.value.trim();

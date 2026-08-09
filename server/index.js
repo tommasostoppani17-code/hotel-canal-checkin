@@ -535,7 +535,18 @@ async function handleCheckin(req, res) {
       req.body?.includeCoupon === true ||
       req.body?.includeCoupon === 'true';
 
-    // Coupon in mail solo se richiesto + stanza + receptionist
+    // Coupon: stanza + receptionist del check-in obbligatori
+    if (wantCoupon) {
+      if (!roomNumber) {
+        return res.status(400).json({ error: 'Numero di stanza obbligatorio per il coupon' });
+      }
+      if (!receptionist) {
+        return res
+          .status(400)
+          .json({ error: 'Nome del receptionist del check-in obbligatorio per il coupon' });
+      }
+    }
+
     const includeCoupon = Boolean(wantCoupon && roomNumber && receptionist);
     if (!includeCoupon) {
       roomNumber = null;
