@@ -558,7 +558,7 @@ export function buildCouponRedeemPage({
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sconto 5% - Trattoria alla Terrazza</title>
+  <title>Sconto 10% - Trattoria alla Terrazza</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
@@ -597,7 +597,7 @@ export function buildCouponRedeemPage({
     <div class="eyebrow">Trattoria alla Terrazza</div>
     <h1>Coupon attivo</h1>
     <p class="meta">Ristorante tipico veneziano con vista sul canale</p>
-    <div class="discount">−5%</div>
+    <div class="discount">−10%</div>
     <p class="meta">${guest ? `Ospite: <strong>${guest}</strong>` : ''}</p>
     <div class="grid">
       <div class="cell"><span>Stanza</span><strong>${room}</strong></div>
@@ -893,7 +893,7 @@ export function buildCouponClaimPage({ token, guestName, error = '' }) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coupon 5% - Trattoria alla Terrazza</title>
+  <title>Coupon 10% - Trattoria alla Terrazza</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root { --canal: #124453; }
@@ -929,7 +929,7 @@ export function buildCouponClaimPage({ token, guestName, error = '' }) {
 <body>
   <div class="card">
     <div class="eyebrow">Hotel Canal · Partner</div>
-    <h1>Coupon sconto 5%</h1>
+    <h1>Coupon sconto 10%</h1>
     <p class="sub">Trattoria alla Terrazza - inserisci stanza e conferma il receptionist.</p>
     ${guest ? `<p class="guest">Ospite: <strong>${guest}</strong></p>` : ''}
     ${err ? `<p class="err">${err}</p>` : ''}

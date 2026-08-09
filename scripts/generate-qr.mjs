@@ -284,7 +284,7 @@ const poster = `<!DOCTYPE html>
       <strong>Regalo di benvenuto</strong>
       <p>
         Nel form, inserisci il nome del receptionist e ricevi via email
-        lo sconto 5% per la Trattoria alla Terrazza.
+        lo sconto 10% per la Trattoria alla Terrazza.
       </p>
     </div>
     <p class="url">${publicUrl}</p>
