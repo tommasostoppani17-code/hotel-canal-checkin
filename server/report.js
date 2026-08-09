@@ -534,7 +534,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                       Coupon &minus;10%
                     </div>
                     <div style="font-family:${SANS};font-size:13px;font-weight:600;color:#5C4A36 !important;line-height:1.4;">
-                      Gi&agrave; inviato all&rsquo;ospite via email &mdash; ricordaglielo in chiamata.
+                      Gi&agrave; inviato all&rsquo;ospite via email. Ricordaglielo in chiamata.
                     </div>
                   </td>
                 </tr>
@@ -545,44 +545,17 @@ export function buildTableBookingEmail({ hotelName, row }) {
               ${
                 phoneTel
                   ? `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;">
-                <tr>
-                  <td align="center" style="padding:0;">
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="width:100%;border-collapse:separate;">
-                      <tr>
-                        <td align="center" bgcolor="${C}" style="background-color:${C};border-radius:16px;mso-padding-alt:0;">
-                          <!--[if mso]>
-                          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="tel:${escapeHtml(phoneTel)}" style="height:72px;v-text-anchor:middle;width:420px;" arcsize="22%" stroke="f" fillcolor="${C}">
-                            <w:anchorlock/>
-                            <center style="color:#FFFFFF;font-family:Segoe UI,Arial,sans-serif;font-size:15px;font-weight:700;">
-                              Richiama ${escapeHtml(name)} · ${escapeHtml(phone)}
-                            </center>
-                          </v:roundrect>
-                          <![endif]-->
-                          <!--[if !mso]><!-- -->
-                          <a href="tel:${escapeHtml(phoneTel)}" style="display:block;padding:16px 18px;background-color:${C};border-radius:16px;text-decoration:none;text-align:center;line-height:1.25;-webkit-text-size-adjust:none;">
-                            <span style="display:block;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.78) !important;margin:0 0 6px;">
-                              Azione · tocca per chiamare
-                            </span>
-                            <span style="display:block;font-family:${SANS};font-size:16px;font-weight:700;color:#FFFFFF !important;letter-spacing:0.01em;">
-                              Richiama ${escapeHtml(name)}
-                            </span>
-                            <span style="display:block;font-family:${SANS};font-size:14px;font-weight:600;color:#FFFFFF !important;letter-spacing:0.04em;margin-top:5px;">
-                              ${escapeHtml(phone)}
-                            </span>
-                          </a>
-                          <!--<![endif]-->
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>`
+              <a href="tel:${escapeHtml(phoneTel)}" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px 18px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 10px;-webkit-text-size-adjust:none;">
+                Richiama ${escapeHtml(name)}
+              </a>
+              <p style="font-family:${SANS};font-size:12px;font-weight:600;color:${BRASS} !important;text-align:center;margin:0 0 26px;letter-spacing:0.04em;line-height:1.35;">
+                ${escapeHtml(phone)}
+              </p>`
                   : `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;background-color:${BOX};border-radius:16px;border:1px solid #E2E6E8;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;background-color:${BOX};border-radius:14px;border:1px solid #E2E6E8;">
                 <tr>
-                  <td style="padding:16px 18px;font-family:${SANS};font-size:13px;font-weight:600;color:${C} !important;line-height:1.45;text-align:center;">
-                    Azione: richiama ${escapeHtml(name)}
+                  <td style="padding:15px 18px;font-family:${SANS};font-size:12.5px;font-weight:600;color:${C} !important;line-height:1.45;text-align:center;text-transform:uppercase;letter-spacing:0.08em;">
+                    Richiama ${escapeHtml(name)}
                   </td>
                 </tr>
               </table>`
