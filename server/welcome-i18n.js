@@ -2,19 +2,22 @@
 
 export const WELCOME_I18N = {
   it: {
-    subject: 'Il tuo soggiorno all\'Hotel Canal',
+    subject: 'Benvenuto a Venezia',
     htmlTitle: 'Benvenuto - Hotel Canal Venezia',
-    preheader: (room) =>
-      `Camera ${room || 'da assegnare'} · Wi-Fi · Codici porta · Welcome privilege`,
+    subjectRoom: (room) => (room ? `Stanza ${room}` : ''),
+    preheader: (name, room) =>
+      room
+        ? `Siamo felici di ospitarti, ${name}. I tuoi codici per la camera ${room}, il Wi-Fi e un brindisi sulla terrazza sono pronti.`
+        : `Siamo felici di ospitarti, ${name}. Ecco Wi-Fi, codici di accesso e un brindisi speciale sulla terrazza.`,
     preheaderNoCoupon:
-      'Wi-Fi · Codici porta · Guida Venezia · Regalo di benvenuto su richiesta',
+      'Siamo felici di ospitarti tra i canali. Wi-Fi, codici porta e guida Venezia ti aspettano.',
     claimTitle: 'Voucher in sospeso',
     claimDesc:
       'Sblocca il coupon sconto del 10% per la Trattoria alla Terrazza inserendo il nome dello staff che ti ha assistito.',
     claimBtn: 'Richiedi il tuo regalo di benvenuto',
     textClaim: 'Vuoi il coupon sconto ristorante? Apri questo link:',
-    guestFallback: 'OSPITE',
-    roomFallback: 'DA ASSEGNARE',
+    guestFallback: 'Ospite',
+    roomFallback: 'Da assegnare',
     greeting: (name) => `Gentile ${name},`,
     welcome:
       'Benvenuto a Venezia. Siamo felici di ospitarti all&rsquo;Hotel Canal. Qui sotto trovi orari, Wi-Fi, codici porta, il percorso a piedi alla Terrazza e il tuo pass di benvenuto.',
@@ -94,19 +97,22 @@ export const WELCOME_I18N = {
     textSignature: 'La Direzione - Hotel Canal Venezia',
   },
   en: {
-    subject: 'Your stay at Hotel Canal',
+    subject: 'Welcome to Venice',
     htmlTitle: 'Welcome - Hotel Canal Venice',
-    preheader: (room) =>
-      `Room ${room || 'to be assigned'} · Wi-Fi · Door codes · Welcome privilege`,
+    subjectRoom: (room) => (room ? `Room ${room}` : ''),
+    preheader: (name, room) =>
+      room
+        ? `We are thrilled to have you with us, ${name}. Your access codes for room ${room}, fast Wi-Fi, and a welcome toast on the terrace are ready.`
+        : `We are thrilled to have you with us, ${name}. Your access codes, fast Wi-Fi, and a special welcome toast on our canal-view terrace are ready.`,
     preheaderNoCoupon:
-      'Wi-Fi · Door codes · Venice guide · Welcome gift on request',
+      'We are thrilled to have you with us. Wi-Fi, door codes and your Venice guide await.',
     claimTitle: 'Pending welcome gift',
     claimDesc:
       'Unlock your 10% discount coupon for Trattoria alla Terrazza by entering the name of the staff member assisting you.',
     claimBtn: 'Claim your welcome gift',
     textClaim: 'Want the restaurant discount coupon? Open this link:',
-    guestFallback: 'GUEST',
-    roomFallback: 'TO ASSIGN',
+    guestFallback: 'Guest',
+    roomFallback: 'To assign',
     greeting: (name) => `Dear ${name},`,
     welcome:
       'Welcome to Venice. We are delighted to host you at Hotel Canal. Below you&rsquo;ll find hours, Wi-Fi, door codes, the walk to the Terrazza and your welcome pass.',
@@ -185,18 +191,22 @@ export const WELCOME_I18N = {
     textSignature: 'The Management - Hotel Canal Venice',
   },
   fr: {
-    subject: 'Welcome to Hotel Canal - Santa Croce 553, Venise',
+    subject: 'Bienvenue à Venise',
     htmlTitle: 'Bienvenue - Hotel Canal Venise',
-    preheader: (room) =>
-      `Chambre ${room || 'à assigner'} · Wi-Fi · Codes porte · Bon 10%`,
-    preheaderNoCoupon: 'Wi-Fi · Codes porte · Guide Venise · Bon resto sur demande',
+    subjectRoom: (room) => (room ? `Chambre ${room}` : ''),
+    preheader: (name, room) =>
+      room
+        ? `Nous sommes ravis de vous accueillir, ${name}. Codes d'accès pour la chambre ${room}, Wi-Fi et un toast de bienvenue sur la terrasse vous attendent.`
+        : `Nous sommes ravis de vous accueillir, ${name}. Wi-Fi, codes d'accès et un toast de bienvenue sur la terrasse sont prêts.`,
+    preheaderNoCoupon:
+      'Nous sommes ravis de vous accueillir. Wi-Fi, codes porte et guide de Venise vous attendent.',
     claimTitle: 'Réduction restaurant 10%',
     claimDesc:
       'Vous souhaitez le bon de réduction Trattoria alla Terrazza ? Activez-le en un clic.',
     claimBtn: 'Vous voulez le coupon ? Cliquez ici',
     textClaim: 'Vous voulez le coupon resto ? Ouvrez ce lien :',
-    guestFallback: 'CLIENT',
-    roomFallback: 'À ASSIGNER',
+    guestFallback: 'Client',
+    roomFallback: 'À assigner',
     greeting: (name) => `Cher/Chère ${name},`,
     welcome:
       'Bienvenue à Venise. Nous sommes ravis de vous accueillir à l&rsquo;Hotel Canal. Horaires, accès, itinéraire à pied vers notre restaurant partenaire et votre pass de bienvenue sont ci-dessous.',
@@ -274,18 +284,22 @@ export const WELCOME_I18N = {
     textSignature: 'La Direction - Hotel Canal Venise',
   },
   de: {
-    subject: 'Welcome to Hotel Canal - Santa Croce 553, Venedig',
+    subject: 'Willkommen in Venedig',
     htmlTitle: 'Willkommen - Hotel Canal Venedig',
-    preheader: (room) =>
-      `Zimmer ${room || 'noch zuzuweisen'} · Wi-Fi · Türcodes · 10%-Gutschein`,
-    preheaderNoCoupon: 'Wi-Fi · Türcodes · Venedig-Guide · Restaurantgutschein auf Anfrage',
+    subjectRoom: (room) => (room ? `Zimmer ${room}` : ''),
+    preheader: (name, room) =>
+      room
+        ? `Wir freuen uns, Sie begrüßen zu dürfen, ${name}. Zugangscodes für Zimmer ${room}, WLAN und ein Willkommenstoast auf der Terrasse warten auf Sie.`
+        : `Wir freuen uns, Sie begrüßen zu dürfen, ${name}. WLAN, Zugangscodes und ein Willkommenstoast auf der Terrasse sind bereit.`,
+    preheaderNoCoupon:
+      'Wir freuen uns auf Sie. WLAN, Türcodes und der Venedig-Guide erwarten Sie.',
     claimTitle: '10% Restaurant-Rabatt',
     claimDesc:
       'Möchten Sie den Gutschein für die Trattoria alla Terrazza? Mit einem Tip aktivieren.',
     claimBtn: 'Gutschein gewünscht? Hier tippen',
     textClaim: 'Restaurant-Gutschein gewünscht? Link öffnen:',
-    guestFallback: 'GAST',
-    roomFallback: 'OFFEN',
+    guestFallback: 'Gast',
+    roomFallback: 'Offen',
     greeting: (name) => `Sehr geehrte/r ${name},`,
     welcome:
       'Willkommen in Venedig. Wir freuen uns, Sie im Hotel Canal begrüßen zu dürfen. Zeiten, Zugang, Fußweg zu unserem Partnerrestaurant und Ihr Willkommenspass finden Sie unten.',
@@ -363,18 +377,22 @@ export const WELCOME_I18N = {
     textSignature: 'Die Direktion - Hotel Canal Venedig',
   },
   es: {
-    subject: 'Welcome to Hotel Canal - Santa Croce 553, Venecia',
+    subject: 'Bienvenido a Venecia',
     htmlTitle: 'Bienvenido - Hotel Canal Venecia',
-    preheader: (room) =>
-      `Habitación ${room || 'por asignar'} · Wi-Fi · Códigos puerta · Cupón 10%`,
-    preheaderNoCoupon: 'Wi-Fi · Códigos puerta · Guía Venecia · Cupón restaurante bajo petición',
+    subjectRoom: (room) => (room ? `Habitación ${room}` : ''),
+    preheader: (name, room) =>
+      room
+        ? `Estamos encantados de recibirle, ${name}. Códigos de acceso para la habitación ${room}, Wi-Fi y un brindis de bienvenida en la terraza le esperan.`
+        : `Estamos encantados de recibirle, ${name}. Wi-Fi, códigos de acceso y un brindis de bienvenida en la terraza están listos.`,
+    preheaderNoCoupon:
+      'Estamos encantados de recibirle. Wi-Fi, códigos de puerta y guía de Venecia le esperan.',
     claimTitle: 'Descuento restaurante 10%',
     claimDesc:
       '¿Quiere el cupón de descuento de Trattoria alla Terrazza? Actívelo en un toque.',
     claimBtn: '¿Quiere el cupón? Pulse aquí',
     textClaim: '¿Quiere el cupón del restaurante? Abra este enlace:',
-    guestFallback: 'HUÉSPED',
-    roomFallback: 'POR ASIGNAR',
+    guestFallback: 'Huésped',
+    roomFallback: 'Por asignar',
     greeting: (name) => `Estimado/a ${name},`,
     welcome:
       'Bienvenido a Venecia. Estamos encantados de alojarle en el Hotel Canal. Horarios, acceso, ruta a pie al restaurante asociado y su pase de bienvenida están más abajo.',

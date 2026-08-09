@@ -270,9 +270,11 @@ function buildDailyGuestCards(rows) {
  * Report notturno Payel: tabella fixed-layout, copia nativa via textarea, CSV Excel-ready.
  */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
-  const subject = `AUDIT RECEPTION - ${count} Camere - ${dateLabel}`;
+  const subject = `⚖️ REPORT NOTTURNO AUDIT · ${count} Camere Sincronizzate · ${dateLabel}`;
   const couponCount = rows.filter(hasRestaurantCoupon).length;
   const hero = escapeHtml(publicAssetUrl('email', 'hero-venice.jpg'));
+  const reportPreheader =
+    'Registro presenze chiuso con successo per la direzione. L\'archivio master .CSV per il controllo delle stanze e dello staff è allegato e pronto per Excel.';
 
   const listaSoloNumeri = rows
     .map((row) => row.phone)
@@ -329,7 +331,7 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
 </head>
 <body style="margin:0;padding:0;background-color:#FFFFFF !important;color:#1D1D1F !important;font-family:'DM Sans',Helvetica,Arial,sans-serif;">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#FFFFFF;">
-    ${escapeHtml(`Daily Front Office Audit — ${count} registrations — ${dateLabel}`)}
+    ${escapeHtml(reportPreheader)}
   </div>
   <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:28px 12px;">
     <tr>

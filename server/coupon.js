@@ -28,6 +28,17 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
+/** Title Case: "mArIo rOsSi" → "Mario Rossi" */
+function toTitleCase(str) {
+  const raw = String(str ?? '').trim();
+  if (!raw) return '';
+  return raw
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 function getFrom() {
   return env(
     'SMTP_FROM',
@@ -177,6 +188,9 @@ function buildWelcomeHtml({
   const labelStyle = `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
 
   const name = escapeHtml(guestName || lp.guestFallback);
+  const firstNamePlain = String(guestName || lp.guestFallback)
+    .trim()
+    .split(/\s+/)[0] || lp.guestFallback;
   const room = escapeHtml(roomNumber || lp.roomFallback);
   const staff = escapeHtml(receptionist || 'RECEPTION');
   const guests = escapeHtml(String(guestsCount ?? 2));
@@ -192,7 +206,9 @@ function buildWelcomeHtml({
   const doorWalterSafe = escapeHtml(doorWalter || '5358#');
   const doorAironeSafe = escapeHtml(doorAirone || '532E');
   const preheader = escapeHtml(
-    includeCoupon ? lp.preheader(roomNumber) : lp.preheaderNoCoupon,
+    includeCoupon
+      ? lp.preheader(firstNamePlain, roomNumber)
+      : lp.preheaderNoCoupon,
   );
   const preheaderHash = escapeHtml(
     String(claimUrl || qrSrc || 'hc')
@@ -845,6 +861,8 @@ export async function sendWelcomeEmail({
 }) {
   const resolvedLang = resolveWelcomeLang(lang || language);
   const lp = welcomeCopy(resolvedLang);
+  const displayName = toTitleCase(guestName) || lp.guestFallback;
+  const firstName = displayName.split(/\s+/)[0] || lp.guestFallback;
   const redeemUrl = couponRedeemUrl(token);
   const claimUrl = couponClaimUrl(token);
   const mapsUrl = mapsDirectionsUrl();
@@ -937,7 +955,7 @@ export async function sendWelcomeEmail({
   const guidePdfUrl = `${publicBaseUrl()}/venice-guide.pdf?lang=${encodeURIComponent(resolvedLang)}`;
 
   const html = buildWelcomeHtml({
-    guestName,
+    guestName: displayName,
     roomNumber,
     receptionist,
     guestsCount,
@@ -963,16 +981,15 @@ export async function sendWelcomeEmail({
   const room = roomNumber || lp.roomFallback;
   const staff = receptionist || 'RECEPTION';
   const guests = guestsCount ?? 2;
-  const plainName = guestName || lp.guestFallback;
-  const firstName = String(guestName || '')
-    .trim()
-    .split(/\s+/)[0];
-  // Subject univoco → Gmail non nasconde il corpo dietro i tre puntini della conversazione
-  const subject = roomNumber
-    ? `${lp.subject} · ${roomNumber}`
-    : firstName
-      ? `${lp.subject} · ${firstName}`
-      : `${lp.subject} · ${String(token).slice(0, 6)}`;
+  const plainName = displayName;
+  const roomInSubject =
+    typeof lp.subjectRoom === 'function' && roomNumber
+      ? lp.subjectRoom(roomNumber)
+      : '';
+  // Caldo + univoco (anti-thread Gmail) + gondola
+  const subject = roomInSubject
+    ? `🛶 ${lp.subject}, ${firstName} · Hotel Canal (${roomInSubject})`
+    : `🛶 ${lp.subject}, ${firstName} · Hotel Canal · ${String(token).slice(0, 6)}`;
 
   console.log(
     `[welcome] assets da ${emailAssetBaseUrl()} · QR/claim su ${publicBaseUrl()} · coupon ${withCoupon ? 'sì' : 'no (claim link)'} · html ~${Math.round(Buffer.byteLength(html, 'utf8') / 1024)}KB · 0 allegati`,
