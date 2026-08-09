@@ -1464,6 +1464,7 @@
       opacity: 1;
       pointer-events: none;
       visibility: hidden;
+      overflow: hidden;
       transition:
         transform var(--slide-ms) var(--slide-ease),
         visibility 0s linear var(--slide-ms);
@@ -2477,6 +2478,41 @@
       transform: rotate(45deg);
     }
 
+    /* Flash conferma prenotazione — solo check, niente testo che allunga lo sheet */
+    .book-success-flash {
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(237, 244, 248, 0.92);
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 180ms ease, visibility 0s linear 180ms;
+    }
+
+    .book-success-flash.is-on {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 180ms ease, visibility 0s linear 0s;
+    }
+
+    .book-success-flash .success-check {
+      margin: 0;
+      width: 64px;
+      height: 64px;
+    }
+
+    .book-success-flash .success-check::after {
+      left: 24px;
+      top: 18px;
+      width: 11px;
+      height: 20px;
+    }
+
     @keyframes popIn {
       from { opacity: 0; transform: scale(0.7); }
       to { opacity: 1; transform: scale(1); }
@@ -2830,6 +2866,9 @@
                 <span id="lbl-sheet-back">Indietro</span>
               </button>
             </div>
+            <div class="book-success-flash" id="bookSuccessFlash" aria-hidden="true">
+              <div class="success-check" aria-hidden="true"></div>
+            </div>
           </div>
         </div>
       </section>
@@ -2888,7 +2927,7 @@
         bookOr: 'Oppure richiedi un tavolo',
         bookSend: 'Invia richiesta',
         bookSending: 'Invio…',
-        bookSent: 'Inviata',
+        bookSent: 'Richiesta inviata',
         bookDone: 'Richiesta inviata. Ti ricontatteremo al telefono.',
         bookError: 'Non inviata. Riprova o chiedi in reception.',
         bookNeedTime: 'Scegli un orario.',
@@ -4420,6 +4459,61 @@
       );
     }
 
+    function playConfirmChime() {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        const ctx = new AC();
+        const now = ctx.currentTime;
+        const notes = [
+          { f: 880, t: 0, d: 0.16 },
+          { f: 1174.66, t: 0.1, d: 0.22 },
+        ];
+        notes.forEach(({ f, t, d }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = f;
+          gain.gain.setValueAtTime(0.0001, now + t);
+          gain.gain.exponentialRampToValueAtTime(0.11, now + t + 0.018);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + t + d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + t);
+          osc.stop(now + t + d + 0.02);
+        });
+        window.setTimeout(() => {
+          try {
+            ctx.close();
+          } catch (_) {
+            /* ignore */
+          }
+        }, 700);
+      } catch (_) {
+        /* ignore — autoplay / unsupported */
+      }
+    }
+
+    function showBookSuccessFlash() {
+      const flash = document.getElementById('bookSuccessFlash');
+      if (!flash) return;
+      const check = flash.querySelector('.success-check');
+      if (check) {
+        check.style.animation = 'none';
+        void check.offsetWidth;
+        check.style.animation = '';
+      }
+      flash.classList.add('is-on');
+      flash.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideBookSuccessFlash() {
+      const flash = document.getElementById('bookSuccessFlash');
+      if (!flash) return;
+      flash.classList.remove('is-on');
+      flash.setAttribute('aria-hidden', 'true');
+    }
+
     document.getElementById('btnBookSend')?.addEventListener('click', async () => {
       const dict = t();
       const sendBtn = document.getElementById('btnBookSend');
@@ -4433,11 +4527,6 @@
         done.hidden = false;
         done.textContent = text;
         done.classList.toggle('is-error', Boolean(isError));
-        try {
-          done.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        } catch (_) {
-          /* ignore */
-        }
       };
 
       if (!lastCheckinId) {
@@ -4484,11 +4573,27 @@
           showBookMsg(body.error || dict.bookError, true);
           return;
         }
-        showBookMsg(dict.bookDone, false);
-        sendBtn.disabled = true;
-        sendBtn.textContent = dict.bookSent || dict.bookDone || dict.bookSend;
-        if (timeEl) timeEl.disabled = true;
-        if (paxEl) paxEl.disabled = true;
+
+        // Solo check + suono, poi torna al menu (niente testo “Richiesta inviata”)
+        playConfirmChime();
+        showBookSuccessFlash();
+        const tableSub = document.getElementById('lbl-act-table-sub');
+        if (tableSub) {
+          tableSub.textContent = dict.bookSent || dict.bookDone || 'Sent';
+        }
+        window.setTimeout(() => {
+          closeGuestSheet();
+          hideBookSuccessFlash();
+          sendBtn.disabled = false;
+          sendBtn.textContent = dict.bookSend;
+          if (timeEl) timeEl.disabled = false;
+          if (paxEl) paxEl.disabled = false;
+          if (done) {
+            done.hidden = true;
+            done.textContent = '';
+            done.classList.remove('is-error');
+          }
+        }, reduceMotion ? 280 : 900);
       } catch (_) {
         sendBtn.disabled = false;
         sendBtn.textContent = dict.bookSend;
