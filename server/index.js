@@ -20,6 +20,7 @@ import {
   buildCouponClaimPage,
   buildCouponQrPng,
 } from './coupon.js';
+import { buildCheckinQrPng, sendPosterEmail } from './poster.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -103,6 +104,56 @@ app.get('/health', (_req, res) => {
     hotel: HOTEL_NAME,
     tz: CRON_TZ,
   });
+});
+
+/** QR PNG check-in (URL pubblico) — usato dal poster email e dalla locandina. */
+app.get('/qr-checkin.png', async (_req, res) => {
+  try {
+    const png = await buildCheckinQrPng();
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(png);
+  } catch (err) {
+    console.error('QR check-in:', err);
+    return res.status(500).end();
+  }
+});
+
+/**
+ * Invia il poster A4 stampabile via email.
+ * Auth: ?secret=CRON_SECRET (stesso token dei cron).
+ */
+app.get('/api/send-poster', async (req, res) => {
+  if (!isAuthorizedCron(req)) {
+    return res.status(401).type('html').send(
+      `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Non autorizzato.</body></html>`,
+    );
+  }
+
+  try {
+    const result = await sendPosterEmail({
+      to: typeof req.query.to === 'string' ? req.query.to : undefined,
+    });
+    const safeTo = String(result.to || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    return res.type('html').send(
+      `<!DOCTYPE html><html><body style="font-family:-apple-system,sans-serif;text-align:center;padding:48px;color:#124453;">
+        <h2 style="margin:0 0 12px;">Poster A4 inviato</h2>
+        <p style="margin:0;color:#64748B;">Destinatario: <strong style="color:#124453;">${safeTo}</strong></p>
+        <p style="margin:16px 0 0;font-size:13px;color:#8E8E93;">Apri la mail → Stampa → margini nessuno → grafica di sfondo.</p>
+      </body></html>`,
+    );
+  } catch (err) {
+    console.error('Invio poster:', err);
+    return res
+      .status(500)
+      .type('html')
+      .send(
+        `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Errore invio poster: ${String(err.message || err)}</body></html>`,
+      );
+  }
 });
 
 function couponLinkGonePage() {
