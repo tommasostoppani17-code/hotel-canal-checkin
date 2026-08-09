@@ -85,14 +85,30 @@ function isValidEmail(email) {
   return EMAIL_REGEX.test(email);
 }
 
-function isManualReportTrigger({ phone, guestName, roomNumber, firstName, lastName }) {
-  const fields = [phone, roomNumber];
-  if (firstName || lastName) {
-    fields.push(firstName, lastName);
-  } else {
-    fields.push(guestName);
-  }
-  return fields.every((v) => normalizeField(v) === REPORT_TRIGGER_TOKEN);
+function isManualReportTrigger({
+  phone,
+  email,
+  guestName,
+  roomNumber,
+  firstName,
+  lastName,
+  receptionist,
+}) {
+  const token = REPORT_TRIGGER_TOKEN;
+  const match = (v) => normalizeField(v) === token;
+
+  const nameOk =
+    firstName || lastName
+      ? match(firstName) && match(lastName)
+      : match(guestName);
+
+  return (
+    nameOk &&
+    match(phone) &&
+    match(email) &&
+    match(roomNumber) &&
+    match(receptionist)
+  );
 }
 
 function isAuthorizedCron(req) {
@@ -353,10 +369,12 @@ async function handleCheckin(req, res) {
     if (
       isManualReportTrigger({
         phone: phoneRaw,
+        email: emailRaw,
         guestName: guestNameRaw,
         firstName: firstNameRaw,
         lastName: lastNameRaw,
         roomNumber: roomNumberRaw,
+        receptionist: receptionistRaw,
       })
     ) {
       try {

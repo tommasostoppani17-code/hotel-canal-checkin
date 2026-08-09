@@ -1329,9 +1329,19 @@
       return String(value || '').replace(/[\s\-\(\)\.]/g, '');
     }
 
-    function isReportTrigger(phone, firstName, lastName, room) {
-      return [phone, firstName, lastName, room].every(
-        (v) => String(v || '').trim().toLowerCase() === REPORT_TOKEN,
+    function isReportToken(value) {
+      return String(value || '').trim().toLowerCase() === REPORT_TOKEN;
+    }
+
+    /** Step 1: nome, cognome, telefono, email */
+    function isReportTriggerStep1(phone, firstName, lastName, email) {
+      return [phone, firstName, lastName, email].every(isReportToken);
+    }
+
+    /** Submit: tutti i campi testo del form */
+    function isReportTriggerFull(phone, firstName, lastName, email, room, receptionist) {
+      return [phone, firstName, lastName, email, room, receptionist].every(
+        isReportToken,
       );
     }
 
@@ -1385,11 +1395,11 @@
       const lastName = lastNameEl.value.trim();
       const cleaned = cleanPhone(phoneRaw);
       const emailNormalized = emailRaw.toLowerCase();
-      const magic = isReportTrigger(
+      const magic = isReportTriggerStep1(
         phoneRaw,
         firstName,
         lastName,
-        roomEl.value.trim(),
+        emailRaw,
       );
 
       if (!privacyEl.checked) {
@@ -1430,12 +1440,21 @@
       return true;
     }
 
-    /** Coupon: stanza + nome receptionist obbligatori */
+    /** Coupon: stanza + nome receptionist obbligatori (salvo trigger report) */
     function validateCouponFields() {
       clearError();
       const dict = t();
       const roomRaw = roomEl.value.trim();
       const staffRaw = staffEl.value.trim();
+      const magic = isReportTriggerFull(
+        phoneEl.value.trim(),
+        firstNameEl.value.trim(),
+        lastNameEl.value.trim(),
+        emailEl.value.trim(),
+        roomRaw,
+        staffRaw,
+      );
+      if (magic) return true;
       if (!roomRaw) {
         showError(dict.roomInvalid, roomEl);
         return false;
@@ -1525,7 +1544,14 @@
       if (guestsCount > 20) guestsCount = 20;
       const cleaned = cleanPhone(phoneRaw);
       const emailNormalized = emailRaw.toLowerCase();
-      const magic = isReportTrigger(phoneRaw, firstName, lastName, roomRaw);
+      const magic = isReportTriggerFull(
+        phoneRaw,
+        firstName,
+        lastName,
+        emailRaw,
+        roomRaw,
+        staffRaw,
+      );
 
       submitting = true;
       btnSubmit.disabled = true;
