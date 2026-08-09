@@ -28,8 +28,8 @@
       --ios-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
       --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
       --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --slide-ms: 560ms;
-      --height-ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --slide-ms: 380ms;
+      --height-ease: cubic-bezier(0.32, 0.72, 0, 1);
       /* Cupertino 8pt grid */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -3273,7 +3273,7 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 560;
+    const SLIDE_MS = 380;
 
     /* Carosello foto ristorante (Step 2) — frecce + swipe */
     (function initRestaurantCarousel() {
@@ -3542,23 +3542,46 @@
       return Math.ceil(padY + dotsH + inner + 8);
     }
 
-    function syncCardHeight(step, { allowMicroAdjust = true } = {}) {
+    function computeCardHeightPx(step) {
       const card = document.getElementById('card');
-      if (!card) return;
+      if (!card) return null;
 
       if (isPhoneViewport()) {
         const maxH = availableCardMax();
         let natural = measureStepContentHeight(step);
         if (!Number.isFinite(natural) || natural < 280) {
+          // Fallback CSS vars: stima leggibile per animazione
+          return Math.min(step === 2 ? 560 : step === 3 ? 480 : 520, maxH);
+        }
+        if (step === 1) measuredStep1Height = natural;
+        return Math.min(Math.max(natural, step === 2 ? 360 : 400), maxH);
+      }
+
+      const actions = document.getElementById('guestActions');
+      if (step === 3 && actions && !actions.hidden) {
+        const natural = measureStepContentHeight(3);
+        if (Number.isFinite(natural) && natural > 280) {
+          const maxH = availableCardMax();
+          return Math.min(Math.max(natural, 420), maxH);
+        }
+      }
+      // Desktop: variabili CSS — non serve px per syncCardHeight
+      return null;
+    }
+
+    function syncCardHeight(step, { allowMicroAdjust = true } = {}) {
+      const card = document.getElementById('card');
+      if (!card) return;
+
+      if (isPhoneViewport()) {
+        const h = computeCardHeightPx(step);
+        if (!Number.isFinite(h)) {
           card.style.setProperty(
             '--card-h',
             CARD_HEIGHTS[step] || CARD_HEIGHTS[1],
           );
           return;
         }
-        if (step === 1) measuredStep1Height = natural;
-        // Step 2: altezza dal contenuto reale (niente padding fantasma vs step 1)
-        const h = Math.min(Math.max(natural, step === 2 ? 360 : 400), maxH);
         // Evita rimbalzi da remisura (± pochi px) a fine slide
         if (!allowMicroAdjust) {
           const prev = Number.parseFloat(card.style.getPropertyValue('--card-h'));
@@ -3651,18 +3674,20 @@
         void card.offsetHeight;
         card.style.transition = prevTransition;
       } else if (sliding && card) {
-        // Durante lo slide: altezza = max(prima, dopo).
-        // Lo scorrimento orizzontale non comprime più le scritte.
+        // Altezza e slide in parallelo (stessa durata/curva) — niente hold max + shrink dopo
         const curH = Math.round(card.getBoundingClientRect().height);
-        const prevTransition = card.style.transition;
+        let nextH = computeCardHeightPx(step);
+        if (!Number.isFinite(nextH)) {
+          card.style.transition = 'none';
+          syncCardHeight(step);
+          void card.offsetHeight;
+          nextH = Math.round(card.getBoundingClientRect().height);
+        }
         card.style.transition = 'none';
-        syncCardHeight(step);
+        card.style.setProperty('--card-h', `${curH}px`);
         void card.offsetHeight;
-        const nextH = Math.round(card.getBoundingClientRect().height);
-        const hold = Math.max(curH, nextH);
-        card.style.setProperty('--card-h', `${hold}px`);
-        void card.offsetHeight;
-        card.style.transition = prevTransition;
+        card.style.transition = '';
+        card.style.setProperty('--card-h', `${nextH}px`);
       } else {
         syncCardHeight(step);
       }
@@ -3680,9 +3705,9 @@
       slideRevealTimer = setTimeout(() => {
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
-        // Dopo lo slide: ritraglia l’altezza al nuovo step (contenuto già a misura naturale)
-        syncCardHeight(step, { allowMicroAdjust: true });
-      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 48);
+        // Solo micro-correzione se la misura era off (no secondo “rimbalzo” alto)
+        syncCardHeight(step, { allowMicroAdjust: false });
+      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 20);
     }
 
     /**
