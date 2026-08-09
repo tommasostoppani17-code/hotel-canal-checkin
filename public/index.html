@@ -1597,7 +1597,7 @@
     }
 
     .apple-input.is-invalid {
-      border-color: #C62828 !important;
+      border: 1.5px solid #C62828 !important;
       background: #FFF9F9 !important;
       box-shadow:
         0 0 0 3.5px rgba(198, 40, 40, 0.12),
@@ -1667,8 +1667,13 @@
     }
 
     .privacy-box.is-invalid input {
-      border-color: #d70015;
-      box-shadow: 0 0 0 3px rgba(215, 0, 21, 0.12);
+      border-color: #C62828;
+      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.14);
+    }
+
+    #lbl-privacy.label-error-state {
+      color: #C62828 !important;
+      font-weight: 600;
     }
 
     .privacy-box.shake {
@@ -2063,7 +2068,7 @@
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="8" cy="10" r="3"/><path d="M11 10h9v3M17 10v6M20 10v4"/></svg>
                 </span>
-                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off" required>
+                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off">
               </div>
             </div>
             <div class="form-group">
@@ -2081,7 +2086,7 @@
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 0.7 4 2.2"/></svg>
                 </span>
-                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Chi fa il check-in" inputmode="text" required>
+                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Chi fa il check-in" inputmode="text">
               </div>
             </div>
           </div>
@@ -2134,7 +2139,7 @@
                 <div class="book-fields">
                   <div class="book-field">
                     <label id="lbl-book-time" for="bookTime">Orario</label>
-                    <input type="time" id="bookTime" value="19:30" step="300" required>
+                    <input type="time" id="bookTime" value="19:30" step="300">
                   </div>
                   <div class="book-field">
                     <label id="lbl-book-pax" for="bookPax">Persone</label>
@@ -3154,17 +3159,16 @@
       shakeCard();
     }
 
-    /** Privacy non spuntata: messaggio chiaro + shake. */
+    /** Privacy non spuntata: SOLO testo/checkbox rossi + shake. Nessun toast. */
     function showPrivacyError() {
       hideToast();
       pinCardInView();
-      const dict = t();
       document.getElementById('lbl-privacy')?.classList.add('label-error-state');
       privacyBox.classList.add('is-invalid');
-      if (errorEl) {
-        errorEl.textContent = dict.privacyRequired;
-        errorEl.classList.add('visible');
-      }
+      privacyBox.classList.remove('shake');
+      void privacyBox.offsetWidth;
+      privacyBox.classList.add('shake');
+      setTimeout(() => privacyBox.classList.remove('shake'), 400);
       shakeCard();
     }
 
