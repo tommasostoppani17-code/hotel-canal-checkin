@@ -21,7 +21,7 @@
       --slide-ms: 350ms;
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
-      --card-h-2: min(600px, calc(100dvh - 20px));
+      --card-h-2: min(628px, calc(100dvh - 16px));
       --card-h-3: min(420px, calc(100dvh - 80px));
       --card-h-3-booking: min(480px, calc(100dvh - 48px));
       --card-h: var(--card-h-1);
@@ -531,6 +531,37 @@
       0% { transform: scale(0.86); }
       55% { transform: scale(1.12); }
       100% { transform: scale(1.05); }
+    }
+
+    .rest-offer-blurb {
+      text-align: center;
+      margin: 2px 0 10px;
+      padding: 0 4px;
+    }
+
+    .rest-offer-blurb .rest-sub {
+      display: block;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 11.5px;
+      line-height: 1.4;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      color: #3D4A52;
+      margin: 0 0 5px;
+    }
+
+    .rest-offer-blurb .rest-desc-hero {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 10px;
+      line-height: 1.4;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      color: #6B7780;
+      text-align: center;
+      margin: 0;
+      padding: 0;
     }
 
     .rest-desc-hero {
@@ -1228,15 +1259,19 @@
               </div>
               <div class="carousel-caption">
                 <h4>Trattoria alla Terrazza</h4>
-                <p id="lbl-rest-tag">Offerta ospiti</p>
+                <p id="lbl-rest-tag">−10% per gli ospiti hotel</p>
               </div>
             </div>
           </div>
 
-          <p id="lbl-rest-desc" class="rest-desc-hero">
-            Coupon 10% · Stanza e receptionist
-          </p>
-          <p class="rest-sub" id="lbl-rest-sub" hidden>Ristorante tipico veneziano</p>
+          <div class="rest-offer-blurb">
+            <p class="rest-sub" id="lbl-rest-sub">
+              Cucina veneziana sulla terrazza del canale — a pochi minuti a piedi dall’hotel.
+            </p>
+            <p id="lbl-rest-desc" class="rest-desc-hero">
+              Conferma sotto: il coupon −10% arriva in email (stanza + receptionist del check-in).
+            </p>
+          </div>
           <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
           <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
 
@@ -1325,12 +1360,12 @@
         guestsShort: 'Ospiti',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
-        restDescShort: 'Per il coupon: stanza + receptionist del check-in',
-        restTag: 'Offerta ospiti',
+        restDescShort: 'Conferma sotto: il coupon −10% arriva in email (stanza + receptionist del check-in).',
+        restTag: '−10% per gli ospiti hotel',
         nextBtn: 'Continua',
-        restSub: 'Ristorante tipico veneziano',
+        restSub: 'Cucina veneziana sulla terrazza del canale — a pochi minuti a piedi dall’hotel.',
         restTitle: 'Sconto 10% di benvenuto',
-        restDesc: 'Per il coupon 10% servono numero di stanza e nome del receptionist che ti sta facendo il check-in.',
+        restDesc: 'La Trattoria alla Terrazza è il ristorante dell’hotel. Conferma stanza e receptionist del check-in per ricevere il coupon −10% via email.',
         staff: 'Nome del Receptionist *',
         staffNone: 'Seleziona…',
         staffInvalid: 'Serve il nome del receptionist che ti fa il check-in.',
@@ -1381,12 +1416,12 @@
         guestsShort: 'Guests',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
-        restDescShort: 'Coupon needs: room + check-in receptionist',
-        restTag: 'Guest offer',
+        restDescShort: 'Confirm below: your −10% coupon arrives by email (room + check-in receptionist).',
+        restTag: '−10% for hotel guests',
         nextBtn: 'Continue',
-        restSub: 'Typical Venetian restaurant',
+        restSub: 'Venetian cooking on the canal terrace — a short walk from the hotel.',
         restTitle: '10% Welcome Discount',
-        restDesc: 'Room number and the receptionist checking you in are required for the 10% coupon.',
+        restDesc: 'Trattoria alla Terrazza is the hotel restaurant. Enter room and check-in receptionist to get your −10% coupon by email.',
         staff: 'Receptionist Name *',
         staffNone: 'Select…',
         staffInvalid: 'Enter the receptionist who is checking you in.',
@@ -1436,12 +1471,12 @@
         guestsShort: 'Pers.',
         staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
-        restDescShort: 'Coupon : chambre + réceptionniste du check-in',
+        restDescShort: 'Confirmez : le coupon −10% arrive par e-mail (chambre + réceptionniste du check-in).',
         nextBtn: 'Continuer',
-        restSub: 'Restaurant typique vénitien',
+        restSub: 'Cuisine vénitienne sur la terrasse du canal — à quelques minutes à pied.',
         restTitle: 'Réduction de bienvenue 10%',
-        restDesc: 'Chambre et nom du réceptionniste qui fait le check-in requis pour le coupon 10%.',
-        restTag: 'Offre clients',
+        restDesc: 'La Trattoria alla Terrazza est le restaurant de l’hôtel. Chambre et réceptionniste du check-in pour le coupon −10% par e-mail.',
+        restTag: '−10% pour les clients de l’hôtel',
         staff: 'Nom du réceptionniste *',
         staffNone: 'Choisir…',
         staffInvalid: 'Entrez le réceptionniste qui fait le check-in.',
@@ -1491,12 +1526,12 @@
         guestsShort: 'Gäste',
         staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
-        restDescShort: 'Gutschein: Zimmer + Empfang beim Check-in',
+        restDescShort: 'Bestätigen: −10%-Gutschein per E-Mail (Zimmer + Empfang beim Check-in).',
         nextBtn: 'Weiter',
-        restSub: 'Typisch venezianisches Restaurant',
+        restSub: 'Venezianische Küche auf der Kanalterrasse — wenige Minuten zu Fuß.',
         restTitle: '10% Willkommensrabatt',
-        restDesc: 'Für den 10%-Gutschein sind Zimmer und der Empfangsname beim Check-in erforderlich.',
-        restTag: 'Gästeangebot',
+        restDesc: 'Trattoria alla Terrazza ist das Hotelrestaurant. Zimmer und Empfang beim Check-in für den −10%-Gutschein per E-Mail.',
+        restTag: '−10% für Hotelgäste',
         staff: 'Name Empfang *',
         staffNone: 'Auswählen…',
         staffInvalid: 'Bitte den Empfangsnamen beim Check-in eingeben.',
@@ -1546,12 +1581,12 @@
         guestsShort: 'Huéspedes',
         staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
-        restDescShort: 'Cupón: habitación + recepcionista del check-in',
+        restDescShort: 'Confirme abajo: el cupón −10% llega por email (habitación + recepcionista del check-in).',
         nextBtn: 'Continuar',
-        restSub: 'Restaurante típico veneciano',
+        restSub: 'Cocina veneciana en la terraza del canal — a pocos minutos a pie.',
         restTitle: 'Descuento de bienvenida 10%',
-        restDesc: 'Para el cupón 10% hacen falta habitación y el recepcionista del check-in.',
-        restTag: 'Oferta huéspedes',
+        restDesc: 'Trattoria alla Terrazza es el restaurante del hotel. Habitación y recepcionista del check-in para el cupón −10% por email.',
+        restTag: '−10% para huéspedes del hotel',
         staff: 'Nombre del recepcionista *',
         staffNone: 'Seleccionar…',
         staffInvalid: 'Escriba el recepcionista que hace el check-in.',
