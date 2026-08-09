@@ -431,10 +431,10 @@ function buildWelcomeHtml({
               ${
                 includeCoupon
                   ? `
-              ${sectionTitle(lp.privilegeTitle, icons.key, 'Sconto')}
+              ${sectionTitle(lp.discountTitle, icons.key, 'Sconto')}
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 22px;">
-                ${lp.privilegeBefore}<strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.privilegeBold1}</strong>${lp.privilegeMid}
-                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.privilegeBold2}</strong>${lp.privilegeAfter}
+                ${lp.discountBefore}<strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.discountBold1}</strong>${lp.discountMid}
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${lp.discountBold2}</strong>${lp.discountAfter}
               </p>
 
               <!-- VOUCHER SCONTO -->
