@@ -314,18 +314,12 @@ function buildWelcomeHtml({
               </table>`;
   })();
 
+  const venicePdfFooter = ''; // Guida PDF completa: ripristinare quando il file è pronto
+  /* was:
   const venicePdfFooter = guidePdf
-    ? `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;">
-                <tr>
-                  <td align="center" style="padding:0;">
-                    <a href="${guidePdf}" target="_blank" style="display:block;text-align:center;border:1.5px solid ${C};color:${C} !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;background-color:#FFFFFF !important;">
-                      ${lp.venicePdfBtn}
-                    </a>
-                  </td>
-                </tr>
-              </table>`
+    ? `...button...`
     : '';
+  */
 
   const accessTicketBlock = `
               ${sectionTitle(lp.ticketTitle, icons.key || icons.door, 'Esenzione')}
@@ -970,7 +964,8 @@ export async function sendWelcomeEmail({
   if (!doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
   const doorAirone = env('DOOR_CODE_AIRONE', '532E').trim() || '532E';
 
-  const guidePdfUrl = `${publicBaseUrl()}/venice-guide.pdf?lang=${encodeURIComponent(resolvedLang)}`;
+  const guidePdfUrl = ''; // Guida completa non ancora pronta — niente CTA in mail
+  // const guidePdfUrl = `${publicBaseUrl()}/venice-guide.pdf?lang=${encodeURIComponent(resolvedLang)}`;
 
   const html = buildWelcomeHtml({
     guestName: displayName,
@@ -1043,9 +1038,6 @@ export async function sendWelcomeEmail({
       `Maps: ${mapsUrl}`,
       '',
       ...textTail,
-      '',
-      lp.textVenice,
-      guidePdfUrl,
       '',
       lp.textTicket,
       '',
