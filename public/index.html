@@ -374,6 +374,28 @@
       margin-top: 0;
     }
 
+    /* Mirini d'angolo (solo grafica, non bottoni) */
+    .hero-reticle {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .hero-reticle span {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border-color: rgba(255, 255, 255, 0.62);
+      border-style: solid;
+      box-sizing: border-box;
+    }
+
+    .hero-reticle .tl { top: 11px; left: 11px; border-width: 1.5px 0 0 1.5px; }
+    .hero-reticle .tr { top: 11px; right: 11px; border-width: 1.5px 1.5px 0 0; }
+    .hero-reticle .bl { bottom: 11px; left: 11px; border-width: 0 0 1.5px 1.5px; }
+    .hero-reticle .br { bottom: 11px; right: 11px; border-width: 0 1.5px 1.5px 0; }
+
     .restaurant-hero-card > img {
       display: block;
       width: 100%;
@@ -394,6 +416,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      z-index: 2;
     }
 
     .restaurant-hero-card h4 {
@@ -448,13 +471,51 @@
     }
 
     .rest-desc-hero {
-      font-size: 11.5px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 10.5px;
       line-height: 1.35;
-      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #5C6670;
       text-align: center;
-      margin: 0 0 8px;
+      margin: 2px 0 12px;
       padding: 0;
-      font-weight: 500;
+    }
+
+    .input-with-icon {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-with-icon .field-glyph {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: #8E8E93;
+      pointer-events: none;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-with-icon .field-glyph svg {
+      display: block;
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .input-with-icon .apple-input {
+      padding-left: 34px;
     }
 
     #step2 .form-grid-container {
@@ -1002,6 +1063,12 @@
           <div class="restaurant-showcase" aria-label="Trattoria alla Terrazza">
             <div class="restaurant-hero-card">
               <img src="/restaurant/01-terrazza-canale.jpg" alt="Trattoria alla Terrazza sul canale" width="900" height="600" decoding="async" id="restHeroImg">
+              <div class="hero-reticle" aria-hidden="true">
+                <span class="tl"></span>
+                <span class="tr"></span>
+                <span class="bl"></span>
+                <span class="br"></span>
+              </div>
               <div class="hero-caption">
                 <h4>Trattoria alla Terrazza</h4>
                 <p id="lbl-rest-tag">Offerta ospiti</p>
@@ -1021,7 +1088,7 @@
           </div>
 
           <p id="lbl-rest-desc" class="rest-desc-hero">
-            Coupon 10%: inserisci numero stanza e nome receptionist.
+            Coupon 10% · Stanza e receptionist
           </p>
           <p class="rest-sub" id="lbl-rest-sub" hidden>Ristorante tipico veneziano</p>
           <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
@@ -1030,15 +1097,30 @@
           <div class="form-grid-container">
             <div class="form-group">
               <label id="lbl-room" for="room">Stanza</label>
-              <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off">
+              <div class="input-with-icon">
+                <span class="field-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="8" cy="10" r="3"/><path d="M11 10h9v3M17 10v6M20 10v4"/></svg>
+                </span>
+                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off">
+              </div>
             </div>
             <div class="form-group">
               <label id="lbl-guests" for="guests">Ospiti</label>
-              <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="2" placeholder="2">
+              <div class="input-with-icon">
+                <span class="field-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M14.5 19c.4-2.2 2-3.6 4.5-3.6 1.2 0 2.2.3 3 .9"/></svg>
+                </span>
+                <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="2" placeholder="2">
+              </div>
             </div>
             <div class="form-group span-2">
               <label id="lbl-staff" for="receptionist">Receptionist</label>
-              <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Nome" inputmode="text">
+              <div class="input-with-icon">
+                <span class="field-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 0.7 4 2.2"/></svg>
+                </span>
+                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Nome" inputmode="text">
+              </div>
             </div>
           </div>
         </div>
@@ -1086,7 +1168,7 @@
         guestsShort: 'Ospiti',
         staffShort: 'Receptionist',
         staffPlaceholder: 'Nome',
-        restDescShort: 'Coupon 10%: inserisci numero stanza e nome receptionist.',
+        restDescShort: 'Coupon 10% · Stanza e receptionist',
         restTag: 'Offerta ospiti',
         nextBtn: 'Continua',
         restSub: 'Ristorante tipico veneziano',
@@ -1138,7 +1220,7 @@
         guestsShort: 'Guests',
         staffShort: 'Receptionist',
         staffPlaceholder: 'Name',
-        restDescShort: '10% coupon: enter room number and receptionist name.',
+        restDescShort: '10% coupon · Room & receptionist',
         restTag: 'Guest offer',
         nextBtn: 'Continue',
         restSub: 'Typical Venetian restaurant',
@@ -1189,7 +1271,7 @@
         guestsShort: 'Pers.',
         staffShort: 'Réceptionniste',
         staffPlaceholder: 'Nom',
-        restDescShort: 'Coupon 10% : n° de chambre et nom du réceptionniste.',
+        restDescShort: 'Coupon 10% · Chambre et réception',
         nextBtn: 'Continuer',
         restSub: 'Restaurant typique vénitien',
         restTitle: 'Réduction de bienvenue 10%',
@@ -1240,7 +1322,7 @@
         guestsShort: 'Gäste',
         staffShort: 'Empfang',
         staffPlaceholder: 'Name',
-        restDescShort: '10%-Gutschein: Zimmernummer und Empfangsname eingeben.',
+        restDescShort: '10%-Gutschein · Zimmer & Empfang',
         nextBtn: 'Weiter',
         restSub: 'Typisch venezianisches Restaurant',
         restTitle: '10% Willkommensrabatt',
@@ -1291,7 +1373,7 @@
         guestsShort: 'Huéspedes',
         staffShort: 'Recepcionista',
         staffPlaceholder: 'Nombre',
-        restDescShort: 'Cupón 10%: número de habitación y nombre del recepcionista.',
+        restDescShort: 'Cupón 10% · Habitación y recepción',
         nextBtn: 'Continuar',
         restSub: 'Restaurante típico veneciano',
         restTitle: 'Descuento de bienvenida 10%',
