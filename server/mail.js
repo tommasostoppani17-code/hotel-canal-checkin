@@ -11,6 +11,10 @@ import {
   markReported,
   getMonthlyStaffStats,
 } from './db.js';
+import {
+  sendDailyWhatsAppReport,
+  whatsappConfigured,
+} from './whatsapp.js';
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
@@ -135,30 +139,73 @@ export async function runDailyReport({ force = false } = {}) {
     };
   }
 
-  assertEmailReady(reportEmail);
+  const emailOn =
+    Boolean(reportEmail) && (resendConfigured() || smtpConfigured());
+  const waOn = whatsappConfigured();
+
+  if (!emailOn && !waOn) {
+    throw new Error(
+      'Nessun canale report: configura email (REPORT_EMAIL + Resend/SMTP) e/o WhatsApp (TWILIO_* + WHATSAPP_PAYEL + PUBLIC_URL)',
+    );
+  }
 
   const dateLabel = formatRomeDate();
   const csv = buildCsv(rows);
-  const { subject, text, html } = buildReportEmail({
-    hotelName,
-    count: rows.length,
-    dateLabel,
-    rows,
-  });
-
   const filename = `report_presenze_hotel_canal_${new Date()
     .toISOString()
     .slice(0, 10)}.csv`;
 
-  const provider = resendConfigured() ? 'resend' : 'smtp';
-  await sendReportMail({
-    to: reportEmail,
-    subject,
-    text,
-    html,
-    filename,
-    csv,
-  });
+  const channels = { email: null, whatsapp: null };
+  const errors = [];
+
+  if (emailOn) {
+    try {
+      const { subject, text, html } = buildReportEmail({
+        hotelName,
+        count: rows.length,
+        dateLabel,
+        rows,
+      });
+      const provider = resendConfigured() ? 'resend' : 'smtp';
+      await sendReportMail({
+        to: reportEmail,
+        subject,
+        text,
+        html,
+        filename,
+        csv,
+      });
+      channels.email = { sent: true, to: reportEmail, provider };
+    } catch (err) {
+      const message = err.message || String(err);
+      errors.push(`email: ${message}`);
+      channels.email = { sent: false, error: message };
+      console.error('[report] Email fallita:', message);
+    }
+  }
+
+  if (waOn) {
+    try {
+      channels.whatsapp = await sendDailyWhatsAppReport({
+        hotelName,
+        dateLabel,
+        count: rows.length,
+        rows,
+        csv,
+        filename,
+      });
+    } catch (err) {
+      const message = err.message || String(err);
+      errors.push(`whatsapp: ${message}`);
+      channels.whatsapp = { sent: false, error: message };
+      console.error('[report] WhatsApp fallito:', message);
+    }
+  }
+
+  const anySent = Boolean(channels.email?.sent || channels.whatsapp?.sent);
+  if (!anySent) {
+    throw new Error(`Report non inviato. ${errors.join('; ')}`);
+  }
 
   const ids = rows.map((row) => row.id);
   markReported(ids);
@@ -176,8 +223,10 @@ export async function runDailyReport({ force = false } = {}) {
   return {
     sent: true,
     count: rows.length,
-    to: reportEmail,
-    provider,
+    to: channels.email?.to || channels.whatsapp?.to || reportEmail,
+    email: channels.email,
+    whatsapp: channels.whatsapp,
+    partialErrors: errors.length ? errors : undefined,
     force,
   };
 }

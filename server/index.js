@@ -17,6 +17,7 @@ import {
   countCheckins,
 } from './db.js';
 import { runDailyReport, runMonthlyStaffReport } from './mail.js';
+import { getCsvMedia, whatsappConfigured } from './whatsapp.js';
 import {
   sendWelcomeEmail,
   buildCouponRedeemPage,
@@ -175,8 +176,11 @@ app.get('/api/ready', (_req, res) => {
   const onPersistentDisk = dbPath.startsWith('/var/data');
   const backupOk = isBackupConfigured();
   const guestEmailReady = resendKey && !usingDevFrom;
+  const whatsappReady = whatsappConfigured();
   const reportReady =
-    Boolean(reportEmail) && (guestEmailReady || /gmail\.com$/i.test(reportEmail));
+    (Boolean(reportEmail) &&
+      (guestEmailReady || /gmail\.com$/i.test(reportEmail))) ||
+    whatsappReady;
   const dataReady = onPersistentDisk || backupOk;
   const blockers = [];
   if (!guestEmailReady) {
@@ -184,7 +188,11 @@ app.get('/api/ready', (_req, res) => {
       'Verifica dominio su Resend e imposta SMTP_FROM tipo Welcome <checkin@hotelcanal.com>',
     );
   }
-  if (!reportEmail) blockers.push('Imposta REPORT_EMAIL (mail Payel / hotel)');
+  if (!reportEmail && !whatsappReady) {
+    blockers.push(
+      'Imposta REPORT_EMAIL (mail Canal) e/o WhatsApp Payel (TWILIO_* + WHATSAPP_PAYEL)',
+    );
+  }
   if (!dataReady) {
     blockers.push('Aggiungi disco Render su /var/data oppure backup Gist');
   }
@@ -197,11 +205,26 @@ app.get('/api/ready', (_req, res) => {
     smtpFromDev: usingDevFrom,
     guestEmailReady,
     reportReady,
+    whatsappReady,
     dataReady,
     backupConfigured: backupOk,
     persistentDisk: onPersistentDisk,
     blockers,
   });
+});
+
+/** CSV temporaneo per Twilio mediaUrl (token monouso a tempo, senza auth). */
+app.get('/api/reports/whatsapp-csv/:token', (req, res) => {
+  const item = getCsvMedia(req.params.token);
+  if (!item) {
+    return res.status(404).type('text/plain').send('CSV non trovato o scaduto');
+  }
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${item.filename.replace(/"/g, '')}"`,
+  );
+  return res.send(item.csv);
 });
 
 /** QR PNG check-in (URL pubblico) — usato dal poster PDF e dalla locandina. */
@@ -613,11 +636,20 @@ cron.schedule(
     try {
       const result = await runDailyReport();
       if (result.sent) {
+        const channels = [
+          result.email?.sent ? `email→${result.email.to}` : null,
+          result.whatsapp?.sent ? `whatsapp→${result.whatsapp.to}` : null,
+        ]
+          .filter(Boolean)
+          .join(', ');
         console.log(
-          `[cron] Inviato report (${result.count} contatti) a ${result.to}`,
+          `[cron] Inviato report (${result.count} contatti) ${channels || result.to}`,
         );
+        if (result.partialErrors?.length) {
+          console.warn('[cron] Canali parziali:', result.partialErrors.join('; '));
+        }
       } else {
-        console.log(`[cron] Nessun nuovo contatto — mail non inviata`);
+        console.log(`[cron] Nessun nuovo contatto — report non inviato`);
       }
     } catch (err) {
       console.error('[cron] Fallito:', err.message || err);
@@ -649,7 +681,7 @@ cron.schedule(
 app.listen(PORT, async () => {
   console.log(`${HOTEL_NAME} check-in attivo su http://localhost:${PORT}`);
   console.log(
-    `Cron report: 00:00 ${CRON_TZ} → ${process.env.REPORT_EMAIL || '(REPORT_EMAIL non impostata)'}`,
+    `Cron report: 00:00 ${CRON_TZ} → email ${process.env.REPORT_EMAIL || '(off)'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
   );
   console.log(`Cron staff: 23:59 ultimo giorno del mese (${CRON_TZ})`);
   await restoreCheckinsBackupIfNeeded();

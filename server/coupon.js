@@ -518,7 +518,7 @@ function buildWelcomeHtml({
                     <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;">
                       <tr>
                         <td align="center" style="padding:16px 10px;">
-                          <div style="${labelStyle};margin:0 0 8px;">Walter</div>
+                          <div style="${labelStyle};margin:0 0 8px;">${lp.doorMainLabel || 'Entrata principale'}</div>
                           <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;line-height:1;">${doorWalterSafe}</div>
                         </td>
                       </tr>
@@ -528,7 +528,7 @@ function buildWelcomeHtml({
                     <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;">
                       <tr>
                         <td align="center" style="padding:16px 10px;">
-                          <div style="${labelStyle};margin:0 0 8px;">Airone</div>
+                          <div style="${labelStyle};margin:0 0 8px;">${lp.doorInnerLabel || 'Porta interna'}</div>
                           <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;line-height:1;">${doorAironeSafe}</div>
                         </td>
                       </tr>
