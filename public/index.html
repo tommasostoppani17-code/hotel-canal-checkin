@@ -23,8 +23,8 @@
       --card-h-1: min(508px, calc(100dvh - 48px));
       --card-h-2: min(658px, calc(100dvh - 12px));
       --card-h-3: min(560px, calc(100dvh - 16px));
-      --card-h-3-booking: min(600px, calc(100dvh - 12px));
-      --card-h-3-open: min(720px, calc(100dvh - 8px));
+      --card-h-3-booking: min(640px, calc(100dvh - 10px));
+      --card-h-3-open: min(780px, calc(100dvh - 6px));
       --card-h: var(--card-h-1);
     }
 
@@ -657,6 +657,81 @@
     .guest-action.is-primary {
       border-color: rgba(18, 68, 83, 0.28);
       background: rgba(18, 68, 83, 0.06);
+    }
+
+    .guest-call {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 42px;
+      padding: 10px 12px;
+      margin: 0 0 8px;
+      border: 1px solid rgba(18, 68, 83, 0.22);
+      border-radius: 12px;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      text-decoration: none;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .guest-call:active {
+      background: rgba(18, 68, 83, 0.12);
+    }
+
+    .guest-call .ga-label {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .guest-call .ga-title {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .guest-call .ga-sub {
+      font-size: 10.5px;
+      font-weight: 500;
+      color: #6B7780;
+      line-height: 1.25;
+    }
+
+    .guest-call .ga-phone {
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .guest-action.is-static .guest-action-panel {
+      display: block;
+      border-top: 0;
+      padding-top: 2px;
+    }
+
+    .guest-action.is-static .guest-action-head {
+      padding: 10px 12px 0;
+    }
+
+    .guest-action.is-static .guest-action-head .ga-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      line-height: 1.2;
+    }
+
+    .guest-action.is-static .guest-action-head .ga-sub {
+      display: block;
+      margin-top: 1px;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: #6B7780;
+      line-height: 1.25;
     }
 
     .guest-action-btn {
@@ -1544,17 +1619,22 @@
           </div>
 
           <div class="guest-actions" id="guestActions" hidden>
-            <div class="guest-action is-primary" id="actionTable">
-              <button type="button" class="guest-action-btn" data-panel="tablePanel" id="btnTable">
-                <span class="ga-label">
-                  <span class="ga-title" id="lbl-act-table">Prenota un tavolo per stasera</span>
-                  <span class="ga-sub" id="lbl-act-table-sub">Trattoria alla Terrazza · −10%</span>
-                </span>
-                <span class="ga-chevron" aria-hidden="true"></span>
-              </button>
+            <a class="guest-call" id="btnCallTrattoria" href="tel:+393282464972">
+              <span class="ga-label">
+                <span class="ga-title" id="lbl-act-call">Chiama la trattoria</span>
+                <span class="ga-sub" id="lbl-act-call-sub">Trattoria alla Terrazza</span>
+              </span>
+              <span class="ga-phone" id="lbl-call-phone">328 246 4972</span>
+            </a>
+
+            <div class="guest-action is-primary is-static" id="actionTable">
+              <div class="guest-action-head">
+                <span class="ga-title" id="lbl-act-table">Prenota un tavolo per stasera</span>
+                <span class="ga-sub" id="lbl-act-table-sub">Orario a tua scelta · vi ricontattiamo</span>
+              </div>
               <div class="guest-action-panel" id="tablePanel">
                 <p class="book-hint" id="lbl-book-hint">
-                  Scegli l’orario che preferisci e quante persone siete — vi ricontatteremo.
+                  Scegli l’orario e quante persone siete — vi ricontatteremo.
                 </p>
                 <div class="book-fields">
                   <div class="book-field">
@@ -1571,20 +1651,6 @@
               </div>
             </div>
 
-            <div class="guest-action" id="actionWifi">
-              <button type="button" class="guest-action-btn" data-panel="wifiPanel" id="btnWifi">
-                <span class="ga-label">
-                  <span class="ga-title" id="lbl-act-wifi">Accedi al Wi‑Fi</span>
-                  <span class="ga-sub" id="lbl-act-wifi-sub">Rete hotel in tutta la struttura</span>
-                </span>
-                <span class="ga-chevron" aria-hidden="true"></span>
-              </button>
-              <div class="guest-action-panel" id="wifiPanel">
-                <div class="guest-kv"><span class="k" id="lbl-wifi-net">Rete</span><span class="v" id="wifiSsid">—</span></div>
-                <div class="guest-kv"><span class="k" id="lbl-wifi-pass">Password</span><span class="v" id="wifiPass">—</span></div>
-              </div>
-            </div>
-
             <div class="guest-action" id="actionDoors">
               <button type="button" class="guest-action-btn" data-panel="doorsPanel" id="btnDoors">
                 <span class="ga-label">
@@ -1598,10 +1664,24 @@
                 <div class="guest-kv"><span class="k" id="lbl-door-inner">Porta interna</span><span class="v" id="doorInner">—</span></div>
               </div>
             </div>
+
+            <div class="guest-action" id="actionWifi">
+              <button type="button" class="guest-action-btn" data-panel="wifiPanel" id="btnWifi">
+                <span class="ga-label">
+                  <span class="ga-title" id="lbl-act-wifi">Accedi al Wi‑Fi</span>
+                  <span class="ga-sub" id="lbl-act-wifi-sub">Rete hotel in tutta la struttura</span>
+                </span>
+                <span class="ga-chevron" aria-hidden="true"></span>
+              </button>
+              <div class="guest-action-panel" id="wifiPanel">
+                <div class="guest-kv"><span class="k" id="lbl-wifi-net">Rete</span><span class="v" id="wifiSsid">—</span></div>
+                <div class="guest-kv"><span class="k" id="lbl-wifi-pass">Password</span><span class="v" id="wifiPass">—</span></div>
+              </div>
+            </div>
           </div>
 
           <p class="reception-note" id="lbl-reception-note">
-            La reception è aperta 24h — torna quando serve.
+            Reception aperta 24h per il check-in — passa quando vuoi.
           </p>
         </div>
       </section>
@@ -1645,9 +1725,11 @@
         successSub: 'Ti abbiamo inviato le indicazioni via email. Qui i tasti rapidi.',
         successSubCoupon: 'Coupon −10% in arrivo via email. Prenota un tavolo, Wi‑Fi e codici porta qui sotto.',
         actTable: 'Prenota un tavolo per stasera',
-        actTableSub: 'Trattoria alla Terrazza · −10% · vi ricontattiamo',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · vi ricontattiamo',
-        bookHint: 'Scegli l’orario che preferisci e quante persone siete — vi ricontatteremo.',
+        actTableSub: 'Orario a tua scelta · vi ricontattiamo',
+        actTableSubNoCoupon: 'Orario a tua scelta · vi ricontattiamo',
+        actCall: 'Chiama la trattoria',
+        actCallSub: 'Trattoria alla Terrazza',
+        bookHint: 'Scegli l’orario e quante persone siete — vi ricontatteremo.',
         bookTime: 'Orario',
         bookPax: 'Persone',
         bookSend: 'Invia richiesta',
@@ -1664,7 +1746,7 @@
         wifiPass: 'Password',
         doorMain: 'Entrata principale',
         doorInner: 'Porta interna',
-        receptionNote: 'La reception è aperta 24h — torna quando serve.',
+        receptionNote: 'Reception aperta 24h per il check-in — passa quando vuoi.',
         trattoriaPhoneAria: 'Chiama Trattoria alla Terrazza',
         askReception: 'Chiedi in reception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -1721,8 +1803,10 @@
         successSub: 'We emailed your guide. Quick actions below.',
         successSubCoupon: 'Your −10% coupon is on the way. Book a table, Wi‑Fi and door codes below.',
         actTable: 'Book a table for tonight',
-        actTableSub: 'Trattoria alla Terrazza · −10% · we’ll call you back',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · we’ll call you back',
+        actTableSub: 'Pick your time · we’ll call you back',
+        actTableSubNoCoupon: 'Pick your time · we’ll call you back',
+        actCall: 'Call the restaurant',
+        actCallSub: 'Trattoria alla Terrazza',
         bookHint: 'Choose your preferred time and party size — we’ll contact you.',
         bookTime: 'Time',
         bookPax: 'Guests',
@@ -1740,7 +1824,7 @@
         wifiPass: 'Password',
         doorMain: 'Main entrance',
         doorInner: 'Inner door',
-        receptionNote: 'Reception is open 24h — come back anytime you need us.',
+        receptionNote: 'Reception is open 24h for check-in — come by anytime.',
         trattoriaPhoneAria: 'Call Trattoria alla Terrazza',
         askReception: 'Ask at reception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -1796,8 +1880,10 @@
         successSub: 'Nous vous avons envoyé le guide par e-mail. Actions rapides ci-dessous.',
         successSubCoupon: 'Coupon −10% en route. Réservez une table, Wi‑Fi et codes ci-dessous.',
         actTable: 'Réserver une table ce soir',
-        actTableSub: 'Trattoria alla Terrazza · −10% · on vous rappelle',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · on vous rappelle',
+        actTableSub: 'Choisissez l’heure · on vous rappelle',
+        actTableSubNoCoupon: 'Choisissez l’heure · on vous rappelle',
+        actCall: 'Appeler le restaurant',
+        actCallSub: 'Trattoria alla Terrazza',
         bookHint: 'Choisissez l’heure qui vous convient et le nombre de personnes — nous vous recontacterons.',
         bookTime: 'Heure',
         bookPax: 'Personnes',
@@ -1815,7 +1901,7 @@
         wifiPass: 'Mot de passe',
         doorMain: 'Entrée principale',
         doorInner: 'Porte intérieure',
-        receptionNote: 'La réception est ouverte 24h/24 — revenez quand vous voulez.',
+        receptionNote: 'Réception ouverte 24h/24 pour le check-in — passez quand vous voulez.',
         trattoriaPhoneAria: 'Appeler Trattoria alla Terrazza',
         askReception: 'Demandez à la réception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -1871,8 +1957,10 @@
         successSub: 'Wir haben den Guide per E-Mail geschickt. Schnellaktionen unten.',
         successSubCoupon: '−10%-Gutschein unterwegs. Tisch, Wi‑Fi und Türcodes unten.',
         actTable: 'Tisch für heute Abend reservieren',
-        actTableSub: 'Trattoria alla Terrazza · −10% · wir rufen zurück',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · wir rufen zurück',
+        actTableSub: 'Wunschuhrzeit · wir rufen zurück',
+        actTableSubNoCoupon: 'Wunschuhrzeit · wir rufen zurück',
+        actCall: 'Restaurant anrufen',
+        actCallSub: 'Trattoria alla Terrazza',
         bookHint: 'Wählen Sie Ihre Wunschuhrzeit und die Personenanzahl — wir melden uns.',
         bookTime: 'Uhrzeit',
         bookPax: 'Personen',
@@ -1890,7 +1978,7 @@
         wifiPass: 'Passwort',
         doorMain: 'Haupteingang',
         doorInner: 'Innentür',
-        receptionNote: 'Die Rezeption ist 24h geöffnet — kommen Sie jederzeit vorbei.',
+        receptionNote: 'Rezeption 24h für Check-in geöffnet — kommen Sie jederzeit vorbei.',
         trattoriaPhoneAria: 'Trattoria alla Terrazza anrufen',
         askReception: 'An der Rezeption fragen',
         trattoriaPhoneDefault: '328 246 4972',
@@ -1946,8 +2034,10 @@
         successSub: 'Le enviamos la guía por email. Acciones rápidas abajo.',
         successSubCoupon: 'Cupón −10% en camino. Reserve mesa, Wi‑Fi y códigos abajo.',
         actTable: 'Reservar mesa esta noche',
-        actTableSub: 'Trattoria alla Terrazza · −10% · le llamamos',
-        actTableSubNoCoupon: 'Trattoria alla Terrazza · le llamamos',
+        actTableSub: 'Elija la hora · le llamamos',
+        actTableSubNoCoupon: 'Elija la hora · le llamamos',
+        actCall: 'Llamar al restaurante',
+        actCallSub: 'Trattoria alla Terrazza',
         bookHint: 'Elija la hora que prefiera y cuántas personas son — le contactaremos.',
         bookTime: 'Hora',
         bookPax: 'Personas',
@@ -1965,7 +2055,7 @@
         wifiPass: 'Contraseña',
         doorMain: 'Entrada principal',
         doorInner: 'Puerta interior',
-        receptionNote: 'La recepción está abierta 24h — vuelva cuando lo necesite.',
+        receptionNote: 'Recepción abierta 24h para el check-in — pase cuando quiera.',
         trattoriaPhoneAria: 'Llamar a Trattoria alla Terrazza',
         askReception: 'Pregunte en recepción',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2266,12 +2356,8 @@
       let h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
       const actions = document.getElementById('guestActions');
       if (step === 3 && actions && !actions.hidden) {
-        const tableOpen = document
-          .getElementById('actionTable')
-          ?.classList.contains('is-open');
-        h = tableOpen
-          ? 'var(--card-h-3-open)'
-          : 'var(--card-h-3-booking)';
+        // Form prenotazione sempre visibile → altezza open
+        h = 'var(--card-h-3-open)';
       }
       card.style.setProperty('--card-h', h);
     }
@@ -2672,6 +2758,8 @@
         const el = document.getElementById(id);
         if (el && value != null) el.textContent = value;
       };
+      setTxt('lbl-act-call', dict.actCall);
+      setTxt('lbl-act-call-sub', dict.actCallSub);
       setTxt('lbl-act-table', dict.actTable);
       setTxt(
         'lbl-act-table-sub',
@@ -2691,10 +2779,32 @@
       setTxt('lbl-door-main', dict.doorMain);
       setTxt('lbl-door-inner', dict.doorInner);
       setTxt('lbl-reception-note', dict.receptionNote);
+      const callBtn = document.getElementById('btnCallTrattoria');
+      if (callBtn) {
+        callBtn.setAttribute(
+          'aria-label',
+          dict.trattoriaPhoneAria || dict.actCall || 'Call',
+        );
+      }
       const tableAction = document.getElementById('actionTable');
       if (tableAction) {
         tableAction.classList.toggle('is-primary', Boolean(couponSent));
       }
+    }
+
+    function applyTrattoriaPhone(data, dict) {
+      const display =
+        data?.trattoriaPhoneDisplay ||
+        dict?.trattoriaPhoneDefault ||
+        '328 246 4972';
+      const raw = String(data?.trattoriaPhone || '').trim() || '+393282464972';
+      const tel = raw.startsWith('+') || raw.startsWith('00')
+        ? raw.replace(/\s+/g, '')
+        : `+${raw.replace(/\D/g, '')}`;
+      const phoneEl = document.getElementById('lbl-call-phone');
+      const callBtn = document.getElementById('btnCallTrattoria');
+      if (phoneEl) phoneEl.textContent = display;
+      if (callBtn) callBtn.href = `tel:${tel}`;
     }
 
     async function loadGuestServices(dict) {
@@ -2713,8 +2823,10 @@
         if (passEl) passEl.textContent = data.wifiPassword || ask;
         if (mainEl) mainEl.textContent = data.doorMain || ask;
         if (innerEl) innerEl.textContent = data.doorInner || ask;
+        applyTrattoriaPhone(data, dict);
         applyGuestActionLabels(dict, lastCouponSent);
       } catch (_) {
+        applyTrattoriaPhone({}, dict);
         /* ignore — valori restano placeholder */
       }
     }
@@ -2727,6 +2839,7 @@
       if (!action) return;
       const willOpen = !action.classList.contains('is-open');
       document.querySelectorAll('#guestActions .guest-action').forEach((el) => {
+        if (el.classList.contains('is-static')) return;
         el.classList.remove('is-open');
       });
       if (willOpen) action.classList.add('is-open');
@@ -2736,6 +2849,7 @@
           action.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         });
       }
+    });
 
     document.getElementById('btnBookSend')?.addEventListener('click', async () => {
       const dict = t();
