@@ -1438,6 +1438,49 @@
       will-change: transform, opacity;
     }
 
+    /* Report inviato: messaggio centrato nella card */
+    #step3.is-report-result .step3-home {
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+    }
+
+    #step3.is-report-result .step3-head {
+      margin: 0;
+      justify-content: center;
+    }
+
+    #step3.is-report-result .step3-body,
+    #step3.is-report-result .receipt-badge {
+      display: none !important;
+    }
+
+    #step3.is-report-result .success-check {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 16px;
+    }
+
+    #step3.is-report-result .success-check::after {
+      left: 19px;
+      top: 14px;
+      width: 9px;
+      height: 16px;
+      border-width: 0 2.5px 2.5px 0;
+    }
+
+    #step3.is-report-result #lbl-succ-title {
+      font-size: 24px !important;
+    }
+
+    #step3.is-report-result #lbl-succ-sub {
+      margin: 10px 0 0 !important;
+      max-width: 28ch;
+      font-size: 13px !important;
+      line-height: 1.45 !important;
+    }
+
     #step3.sheet-open .step3-home {
       transform: translate3d(-18%, 0, 0) scale(0.97);
       opacity: 0.42;
@@ -3149,7 +3192,7 @@
         staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
         restDescShort: 'Zimmer und Empfang angeben: Ihr −10% landet in der Inbox, bereit für heute Abend.',
-        restBlurb: '−10% Willkommen per E-Mail',
+        restBlurb: 'Wie wäre es mit einem Abendessen mit Kanalblick in unserem Partnerrestaurant? Venezianische Küche, reichliche Portionen und ein Rabatt, weil Sie Gast in unserem Hotel sind.',
         nextBtn: 'Weiter',
         restSub: 'Abendessen auf der Kanalterrasse, für Gäste des Hotel Canal.',
         restTitle: 'Ihr −10% an der Terrazza',
@@ -3233,7 +3276,7 @@
         staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
         restDescShort: 'Deje habitación y recepcionista: el −10% llega a su email, listo para esta noche.',
-        restBlurb: '−10% de bienvenida por email',
+        restBlurb: '¿Qué le parece una cena con vistas al canal en nuestro restaurante asociado? Cocina veneciana, raciones generosas y un descuento por ser huésped de nuestro hotel.',
         nextBtn: 'Continuar',
         restSub: 'Cena en la terraza del canal, pensada para huéspedes del Hotel Canal.',
         restTitle: 'Su −10% en la Terrazza',
@@ -3681,14 +3724,17 @@
         let natural = measureStepContentHeight(step);
         if (!Number.isFinite(natural) || natural < 280) {
           if (cached >= 280) return Math.min(cached, maxH);
-          return Math.min(step === 2 ? 560 : step === 3 ? 480 : 520, maxH);
+          return Math.min(step === 2 ? 620 : step === 3 ? 480 : 520, maxH);
         }
         // Se la misura è chiaramente gonfiata vs cache, tieni la cache
         if (cached >= 280 && natural > cached + 40) {
           natural = cached;
         }
         const h = Math.min(
-          Math.max(natural + (step === 1 ? 28 : 0), step === 2 ? 360 : step === 1 ? 428 : 400),
+          Math.max(
+            natural + (step === 1 ? 28 : step === 2 ? 20 : 0),
+            step === 2 ? 420 : step === 1 ? 428 : 400,
+          ),
           maxH,
         );
         if (step === 1) measuredStep1Height = h;
@@ -4267,6 +4313,7 @@
       lastCouponSent = Boolean(couponSent);
       guestAccessToken = accessToken || null;
       guestServicesCache = null;
+      document.getElementById('step3')?.classList.remove('is-report-result');
 
       // Solo testi (niente display:none / flex recalc). Poi slide → successo.
       document.getElementById('lbl-succ-title').textContent = already
@@ -4678,6 +4725,7 @@
       document.getElementById('receiptBadge').classList.add('is-collapsed');
       const actions = document.getElementById('guestActions');
       if (actions) actions.hidden = true;
+      document.getElementById('step3')?.classList.add('is-report-result');
       playSuccessKinetics(() => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => setStep(TOTAL_STEPS));
