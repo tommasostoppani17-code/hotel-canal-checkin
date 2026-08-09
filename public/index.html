@@ -21,7 +21,7 @@
       --slide-ms: 350ms;
       /* Step 1: abbastanza alto da mostrare form+privacy+Continua senza clip */
       --card-h-1: min(508px, calc(100dvh - 48px));
-      --card-h-2: min(658px, calc(100dvh - 12px));
+      --card-h-2: min(640px, calc(100dvh - 14px));
       --card-h-3: min(560px, calc(100dvh - 16px));
       --card-h-3-booking: min(620px, calc(100dvh - 10px));
       --card-h-3-open: min(700px, calc(100dvh - 8px));
@@ -625,9 +625,9 @@
       padding-left: 34px;
     }
 
-    /* Step 2: tre zone (top / form / footer) — respiro senza altezza fissa da mockup */
+    /* Step 2: stack compatto (foto → copy → form), footer ancorato in basso */
     #step2.slide-step {
-      justify-content: space-between;
+      justify-content: flex-start;
     }
 
     #step2 .step-body {
@@ -640,34 +640,56 @@
 
     #step2 .step2-top {
       flex-shrink: 0;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     #step2 .carousel-viewport {
-      height: 148px;
+      height: 156px;
     }
 
     #step2 .carousel-caption {
-      margin-top: 6px;
+      margin-top: 8px;
+    }
+
+    #step2 .carousel-caption h4 {
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      margin: 0 0 3px;
+      line-height: 1.2;
+    }
+
+    #step2 .carousel-caption p {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      line-height: 1.3;
     }
 
     #step2 .rest-offer-blurb {
-      margin: 8px 0 0;
+      margin: 10px 2px 0;
+      padding: 0 6px;
     }
 
     #step2 .rest-offer-blurb .rest-sub {
-      margin: 0 0 6px;
-      line-height: 1.4;
+      margin: 0 0 8px;
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 500;
+      color: #2C3A42;
     }
 
     #step2 .rest-offer-blurb .rest-desc-hero {
-      line-height: 1.4;
+      font-size: 10.5px;
+      line-height: 1.45;
+      font-weight: 500;
+      color: #6B7780;
+      letter-spacing: 0.01em;
+      text-transform: none;
     }
 
     #step2 .form-grid-container {
-      margin-top: auto;
-      gap: 10px;
-      padding-bottom: 2px;
+      margin-top: 0;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     #step2 .form-group.span-2 {
@@ -679,13 +701,13 @@
     }
 
     #step2 .step-footer-fixed {
-      margin-top: 14px;
-      padding-top: 4px;
+      margin-top: auto;
+      padding-top: 12px;
       padding-bottom: 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       flex-shrink: 0;
     }
 
@@ -1771,10 +1793,10 @@
 
             <div class="rest-offer-blurb">
               <p class="rest-sub" id="lbl-rest-sub">
-                Che ne dici di una cena tipica e abbondante per due stasera, sulla terrazza del canale?
+                Cena tipica veneziana per due, stasera sulla terrazza del canale.
               </p>
               <p id="lbl-rest-desc" class="rest-desc-hero">
-                Hotel Canal è partner di Trattoria alla Terrazza: conferma sotto e richiedi lo sconto esclusivo (−10% via email).
+                Conferma sotto e ricevi lo sconto esclusivo (−10%) via email.
               </p>
             </div>
             <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
@@ -1880,8 +1902,8 @@
                 <span class="ga-chevron" aria-hidden="true"></span>
               </button>
               <div class="guest-action-panel" id="doorsPanel">
-                <div class="guest-kv"><span class="k" id="lbl-door-main">Entrata principale</span><span class="v" id="doorMain">—</span></div>
-                <div class="guest-kv"><span class="k" id="lbl-door-inner">Porta interna</span><span class="v" id="doorInner">—</span></div>
+                <div class="guest-kv"><span class="k" id="lbl-door-main">Entrata principale</span><span class="v" id="doorMain">-</span></div>
+                <div class="guest-kv"><span class="k" id="lbl-door-inner">Porta interna</span><span class="v" id="doorInner">-</span></div>
               </div>
             </div>
 
@@ -1894,14 +1916,14 @@
                 <span class="ga-chevron" aria-hidden="true"></span>
               </button>
               <div class="guest-action-panel" id="wifiPanel">
-                <div class="guest-kv"><span class="k" id="lbl-wifi-net">Rete</span><span class="v" id="wifiSsid">—</span></div>
-                <div class="guest-kv"><span class="k" id="lbl-wifi-pass">Password</span><span class="v" id="wifiPass">—</span></div>
+                <div class="guest-kv"><span class="k" id="lbl-wifi-net">Rete</span><span class="v" id="wifiSsid">-</span></div>
+                <div class="guest-kv"><span class="k" id="lbl-wifi-pass">Password</span><span class="v" id="wifiPass">-</span></div>
               </div>
             </div>
           </div>
 
           <p class="reception-note" id="lbl-reception-note">
-            Reception aperta 24h per il check-in — passa quando vuoi.
+            Reception aperta 24h per il check-in. Passa quando vuoi.
           </p>
         </div>
       </section>
@@ -1926,12 +1948,12 @@
         guestsShort: 'Ospiti',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
-        restDescShort: 'Hotel Canal è partner di Trattoria alla Terrazza: conferma sotto e richiedi lo sconto esclusivo (−10% via email).',
+        restDescShort: 'Conferma sotto e ricevi lo sconto esclusivo (−10%) via email.',
         restTag: '−10% per gli ospiti hotel',
         nextBtn: 'Continua',
-        restSub: 'Che ne dici di una cena tipica e abbondante per due stasera, sulla terrazza del canale?',
+        restSub: 'Cena tipica veneziana per due, stasera sulla terrazza del canale.',
         restTitle: 'Sconto 10% di benvenuto',
-        restDesc: 'Che ne dici di una cena tipica e abbondante per due stasera? Hotel Canal è partner di Trattoria alla Terrazza: conferma stanza e receptionist del check-in e richiedi lo sconto esclusivo via email.',
+        restDesc: 'Cena tipica veneziana per due. Conferma stanza e receptionist per lo sconto esclusivo via email.',
         staff: 'Nome del Receptionist *',
         staffNone: 'Seleziona…',
         staffInvalid: 'Serve il nome del receptionist che ti fa il check-in.',
@@ -1949,12 +1971,12 @@
         actTableSubNoCoupon: 'Orario a tua scelta · vi ricontattiamo',
         actCall: 'Chiama la trattoria',
         actCallSub: 'Trattoria alla Terrazza',
-        bookHint: 'Scegli l’orario e quante persone siete — vi ricontatteremo.',
+        bookHint: 'Scegli l’orario e quante persone siete. Vi ricontatteremo.',
         bookTime: 'Orario',
         bookPax: 'Persone',
         bookSend: 'Invia richiesta',
         bookSending: 'Invio…',
-        bookDone: 'Richiesta inviata — ti ricontatteremo al telefono.',
+        bookDone: 'Richiesta inviata. Ti ricontatteremo al telefono.',
         bookError: 'Non inviata. Riprova o chiedi in reception.',
         bookNeedTime: 'Scegli un orario.',
         bookNeedPax: 'Indica quante persone siete.',
@@ -1966,7 +1988,7 @@
         wifiPass: 'Password',
         doorMain: 'Entrata principale',
         doorInner: 'Porta interna',
-        receptionNote: 'Reception aperta 24h per il check-in — passa quando vuoi.',
+        receptionNote: 'Reception aperta 24h per il check-in. Passa quando vuoi.',
         trattoriaPhoneAria: 'Chiama Trattoria alla Terrazza',
         askReception: 'Chiedi in reception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2004,12 +2026,12 @@
         guestsShort: 'Guests',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
-        restDescShort: 'Hotel Canal partners with Trattoria alla Terrazza — confirm below for your exclusive −10% by email.',
+        restDescShort: 'Confirm below for your exclusive −10% by email.',
         restTag: '−10% for hotel guests',
         nextBtn: 'Continue',
-        restSub: 'How about a hearty Venetian dinner for two tonight, on the canal terrace?',
+        restSub: 'A hearty Venetian dinner for two tonight, on the canal terrace.',
         restTitle: '10% Welcome Discount',
-        restDesc: 'How about a hearty Venetian dinner for two tonight? Hotel Canal partners with Trattoria alla Terrazza — enter room and check-in receptionist for your exclusive discount by email.',
+        restDesc: 'A hearty Venetian dinner for two. Confirm room and receptionist for your exclusive discount by email.',
         staff: 'Receptionist Name *',
         staffNone: 'Select…',
         staffInvalid: 'Enter the receptionist who is checking you in.',
@@ -2027,12 +2049,12 @@
         actTableSubNoCoupon: 'Pick your time · we’ll call you back',
         actCall: 'Call the restaurant',
         actCallSub: 'Trattoria alla Terrazza',
-        bookHint: 'Choose your preferred time and party size — we’ll contact you.',
+        bookHint: 'Choose your preferred time and party size. We’ll contact you.',
         bookTime: 'Time',
         bookPax: 'Guests',
         bookSend: 'Send request',
         bookSending: 'Sending…',
-        bookDone: 'Request sent — we’ll call you back.',
+        bookDone: 'Request sent. We’ll call you back.',
         bookError: 'Could not send. Try again or ask reception.',
         bookNeedTime: 'Please choose a time.',
         bookNeedPax: 'Please enter party size.',
@@ -2044,7 +2066,7 @@
         wifiPass: 'Password',
         doorMain: 'Main entrance',
         doorInner: 'Inner door',
-        receptionNote: 'Reception is open 24h for check-in — come by anytime.',
+        receptionNote: 'Reception is open 24h for check-in. Come by anytime.',
         trattoriaPhoneAria: 'Call Trattoria alla Terrazza',
         askReception: 'Ask at reception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2081,11 +2103,11 @@
         guestsShort: 'Pers.',
         staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
-        restDescShort: 'Hotel Canal est partenaire de Trattoria alla Terrazza — confirmez pour le −10% exclusif par e-mail.',
+        restDescShort: 'Confirmez ci-dessous pour le −10% exclusif par e-mail.',
         nextBtn: 'Continuer',
-        restSub: 'Et si vous dîniez ce soir, cuisine vénitienne généreuse pour deux, sur la terrasse du canal ?',
+        restSub: 'Dîner vénitien généreux pour deux, ce soir sur la terrasse du canal.',
         restTitle: 'Réduction de bienvenue 10%',
-        restDesc: 'Et si vous dîniez ce soir ? Hotel Canal est partenaire de Trattoria alla Terrazza : chambre et réceptionniste du check-in pour le −10% exclusif par e-mail.',
+        restDesc: 'Dîner vénitien pour deux. Confirmez chambre et réceptionniste pour le −10% exclusif par e-mail.',
         restTag: '−10% pour les clients de l’hôtel',
         staff: 'Nom du réceptionniste *',
         staffNone: 'Choisir…',
@@ -2104,12 +2126,12 @@
         actTableSubNoCoupon: 'Choisissez l’heure · on vous rappelle',
         actCall: 'Appeler le restaurant',
         actCallSub: 'Trattoria alla Terrazza',
-        bookHint: 'Choisissez l’heure qui vous convient et le nombre de personnes — nous vous recontacterons.',
+        bookHint: 'Choisissez l’heure et le nombre de personnes. Nous vous recontacterons.',
         bookTime: 'Heure',
         bookPax: 'Personnes',
         bookSend: 'Envoyer la demande',
         bookSending: 'Envoi…',
-        bookDone: 'Demande envoyée — nous vous rappellerons.',
+        bookDone: 'Demande envoyée. Nous vous rappellerons.',
         bookError: 'Échec. Réessayez ou demandez à la réception.',
         bookNeedTime: 'Choisissez une heure.',
         bookNeedPax: 'Indiquez le nombre de personnes.',
@@ -2121,7 +2143,7 @@
         wifiPass: 'Mot de passe',
         doorMain: 'Entrée principale',
         doorInner: 'Porte intérieure',
-        receptionNote: 'Réception ouverte 24h/24 pour le check-in — passez quand vous voulez.',
+        receptionNote: 'Réception ouverte 24h/24 pour le check-in. Passez quand vous voulez.',
         trattoriaPhoneAria: 'Appeler Trattoria alla Terrazza',
         askReception: 'Demandez à la réception',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2158,11 +2180,11 @@
         guestsShort: 'Gäste',
         staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
-        restDescShort: 'Hotel Canal ist Partner der Trattoria alla Terrazza — bestätigen für exklusiv −10% per E-Mail.',
+        restDescShort: 'Unten bestätigen für exklusiv −10% per E-Mail.',
         nextBtn: 'Weiter',
-        restSub: 'Wie wäre es mit einem herzhaften venezianischen Abendessen für zwei heute Abend auf der Kanalterrasse?',
+        restSub: 'Herzhaftes venezianisches Abendessen für zwei, heute Abend auf der Kanalterrasse.',
         restTitle: '10% Willkommensrabatt',
-        restDesc: 'Wie wäre es mit einem herzhaften Abendessen für zwei? Hotel Canal ist Partner der Trattoria alla Terrazza — Zimmer und Empfang beim Check-in für den exklusiven −10%-Rabatt per E-Mail.',
+        restDesc: 'Herzhaftes Abendessen für zwei. Zimmer und Empfang bestätigen für den exklusiven −10% per E-Mail.',
         restTag: '−10% für Hotelgäste',
         staff: 'Name Empfang *',
         staffNone: 'Auswählen…',
@@ -2181,12 +2203,12 @@
         actTableSubNoCoupon: 'Wunschuhrzeit · wir rufen zurück',
         actCall: 'Restaurant anrufen',
         actCallSub: 'Trattoria alla Terrazza',
-        bookHint: 'Wählen Sie Ihre Wunschuhrzeit und die Personenanzahl — wir melden uns.',
+        bookHint: 'Wählen Sie Wunschuhrzeit und Personenanzahl. Wir melden uns.',
         bookTime: 'Uhrzeit',
         bookPax: 'Personen',
         bookSend: 'Anfrage senden',
         bookSending: 'Senden…',
-        bookDone: 'Anfrage gesendet — wir rufen Sie zurück.',
+        bookDone: 'Anfrage gesendet. Wir rufen Sie zurück.',
         bookError: 'Nicht gesendet. Erneut versuchen oder Rezeption fragen.',
         bookNeedTime: 'Bitte eine Uhrzeit wählen.',
         bookNeedPax: 'Bitte Personenanzahl angeben.',
@@ -2198,7 +2220,7 @@
         wifiPass: 'Passwort',
         doorMain: 'Haupteingang',
         doorInner: 'Innentür',
-        receptionNote: 'Rezeption 24h für Check-in geöffnet — kommen Sie jederzeit vorbei.',
+        receptionNote: 'Rezeption 24h für Check-in geöffnet. Kommen Sie jederzeit vorbei.',
         trattoriaPhoneAria: 'Trattoria alla Terrazza anrufen',
         askReception: 'An der Rezeption fragen',
         trattoriaPhoneDefault: '328 246 4972',
@@ -2235,11 +2257,11 @@
         guestsShort: 'Huéspedes',
         staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
-        restDescShort: 'Hotel Canal es partner de Trattoria alla Terrazza — confirme abajo el −10% exclusivo por email.',
+        restDescShort: 'Confirme abajo para el −10% exclusivo por email.',
         nextBtn: 'Continuar',
-        restSub: '¿Qué tal una cena típica y abundante para dos esta noche, en la terraza del canal?',
+        restSub: 'Cena típica veneciana para dos, esta noche en la terraza del canal.',
         restTitle: 'Descuento de bienvenida 10%',
-        restDesc: '¿Qué tal una cena típica y abundante para dos esta noche? Hotel Canal es partner de Trattoria alla Terrazza: habitación y recepcionista del check-in para el descuento exclusivo por email.',
+        restDesc: 'Cena típica para dos. Confirme habitación y recepcionista para el descuento exclusivo por email.',
         restTag: '−10% para huéspedes del hotel',
         staff: 'Nombre del recepcionista *',
         staffNone: 'Seleccionar…',
@@ -2258,12 +2280,12 @@
         actTableSubNoCoupon: 'Elija la hora · le llamamos',
         actCall: 'Llamar al restaurante',
         actCallSub: 'Trattoria alla Terrazza',
-        bookHint: 'Elija la hora que prefiera y cuántas personas son — le contactaremos.',
+        bookHint: 'Elija la hora y cuántas personas son. Le contactaremos.',
         bookTime: 'Hora',
         bookPax: 'Personas',
         bookSend: 'Enviar solicitud',
         bookSending: 'Enviando…',
-        bookDone: 'Solicitud enviada — le llamaremos.',
+        bookDone: 'Solicitud enviada. Le llamaremos.',
         bookError: 'No enviada. Intente de nuevo o pregunte en recepción.',
         bookNeedTime: 'Elija una hora.',
         bookNeedPax: 'Indique cuántas personas.',
@@ -2275,7 +2297,7 @@
         wifiPass: 'Contraseña',
         doorMain: 'Entrada principal',
         doorInner: 'Puerta interior',
-        receptionNote: 'Recepción abierta 24h para el check-in — pase cuando quiera.',
+        receptionNote: 'Recepción abierta 24h para el check-in. Pase cuando quiera.',
         trattoriaPhoneAria: 'Llamar a Trattoria alla Terrazza',
         askReception: 'Pregunte en recepción',
         trattoriaPhoneDefault: '328 246 4972',
@@ -3078,7 +3100,7 @@
           guestServicesCache = await res.json().catch(() => ({}));
         }
         const data = guestServicesCache || {};
-        const ask = dict.askReception || '—';
+        const ask = dict.askReception || '-';
         const ssidEl = document.getElementById('wifiSsid');
         const passEl = document.getElementById('wifiPass');
         const mainEl = document.getElementById('doorMain');
