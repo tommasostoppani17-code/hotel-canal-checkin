@@ -1,4 +1,6 @@
-/** Report email per Payel — stesso linguaggio visuale della welcome ospiti */
+/** Report email per Payel - audit front office istituzionale */
+
+import crypto from 'node:crypto';
 
 function csvEscape(value) {
   const raw = value == null ? '' : String(value);
@@ -179,11 +181,91 @@ export function formatRomeDate(date = new Date()) {
   }).format(date);
 }
 
+function broadcastSecret() {
+  return (
+    process.env.CRON_SECRET ||
+    process.env.COUPON_SECRET ||
+    process.env.RESEND_API_KEY ||
+    'hotel-canal-dev-broadcast'
+  );
+}
+
+/** URL firmato con i numeri esatti della mail (non ricalcola dal DB). */
+export function buildCopyBroadcastUrl(phoneList) {
+  const text = String(phoneList || '');
+  const payload = Buffer.from(text, 'utf8').toString('base64url');
+  const sig = crypto
+    .createHmac('sha256', broadcastSecret())
+    .update(payload)
+    .digest('base64url');
+  return `${publicBaseUrl()}/api/copy-broadcast?d=${encodeURIComponent(payload)}&s=${encodeURIComponent(sig)}`;
+}
+
+export function verifyCopyBroadcastQuery(d, s) {
+  const payload = String(d || '').trim();
+  const sig = String(s || '').trim();
+  if (!payload || !sig) return null;
+  const expect = crypto
+    .createHmac('sha256', broadcastSecret())
+    .update(payload)
+    .digest('base64url');
+  const a = Buffer.from(sig);
+  const b = Buffer.from(expect);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  try {
+    return Buffer.from(payload, 'base64url').toString('utf8');
+  } catch {
+    return null;
+  }
+}
+
+export function buildCopyBroadcastPage(phoneText) {
+  const jsonText = JSON.stringify(String(phoneText || ''));
+  return `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copia numeri</title>
+  <style>
+    body { margin:0; min-height:100dvh; display:flex; align-items:center; justify-content:center; background:#F4F6F9; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; padding:24px; }
+    .badge { background:#124453; color:#fff; padding:22px 28px; border-radius:14px; font-weight:600; font-size:16px; text-align:center; box-shadow:0 10px 25px rgba(18,68,83,0.15); max-width:420px; }
+    textarea { width:100%; margin-top:14px; min-height:72px; border-radius:10px; border:1px solid #D8DEE3; padding:10px; font-family:ui-monospace,Menlo,monospace; font-size:12px; box-sizing:border-box; }
+  </style>
+</head>
+<body>
+  <div class="badge" id="msg">Copia in corso...</div>
+  <script>
+    const textToCopy = ${jsonText};
+    const msg = document.getElementById('msg');
+    function ok() {
+      msg.textContent = 'Numeri copiati negli appunti';
+      setTimeout(function () { try { window.close(); } catch (e) {} }, 1200);
+    }
+    function fallback() {
+      msg.innerHTML = 'Seleziona e copia:<br>';
+      const ta = document.createElement('textarea');
+      ta.readOnly = true;
+      ta.value = textToCopy;
+      msg.appendChild(ta);
+      ta.focus();
+      ta.select();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(ok).catch(fallback);
+    } else {
+      fallback();
+    }
+  </script>
+</body>
+</html>`;
+}
+
 function buildDailyTableRows(rows) {
   if (!rows.length) {
     return `
       <tr>
-        <td colspan="5" style="padding:18px 10px;border-bottom:1px solid #E5E5EA;color:#8A949C;text-align:center;font-size:12.5px;">
+        <td colspan="5" style="padding:20px 4px;border-bottom:1px solid #E5E5EA;color:#8E8E93;text-align:center;font-size:12.5px;">
           Nessuna registrazione in questa giornata
         </td>
       </tr>
@@ -200,29 +282,29 @@ function buildDailyTableRows(rows) {
       const pax = cleanCell(row.guests_count ?? '2') || '2';
       const haVoucher = hasRestaurantCoupon(row);
       const couponCell = haVoucher
-        ? `<span style="color:#124453 !important;font-weight:700;font-size:10px;letter-spacing:0.04em;text-transform:uppercase;">EMESSO (Pax: ${escapeHtml(pax)})</span>`
-        : `<span style="color:#8E8E93 !important;font-weight:600;font-size:10px;letter-spacing:0.04em;text-transform:uppercase;">NON EMESSO</span>`;
+        ? `<span style="color:#124453 !important;font-weight:700;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;">ISSUED (pax: ${escapeHtml(pax)})</span>`
+        : `<span style="color:#8E8E93 !important;font-weight:500;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;">DECLINED</span>`;
 
       return `
         <tr>
-          <td width="72" style="font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;color:#124453 !important;padding:14px 10px;border-bottom:1px solid #E5E5EA;vertical-align:top;">
+          <td width="70" style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:700;color:#124453 !important;padding:16px 4px;border-bottom:1px solid #E5E5EA;vertical-align:middle;">
             ${escapeHtml(room || '-')}
           </td>
-          <td style="padding:14px 10px;border-bottom:1px solid #E5E5EA;vertical-align:top;">
-            <div style="font-weight:700;font-size:12px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.02em;">
+          <td style="padding:16px 8px;border-bottom:1px solid #E5E5EA;vertical-align:middle;">
+            <div style="font-weight:700;font-size:12.5px;color:#1D1D1F !important;text-transform:uppercase;letter-spacing:0.03em;line-height:1.3;">
               ${escapeHtml(name || 'NON SPECIFICATO')}
             </div>
-            <div style="font-size:11px;color:#64748B !important;margin-top:3px;">
+            <div style="font-size:11px;color:#8E8E93 !important;margin-top:4px;line-height:1.3;">
               ${escapeHtml(email || '-')}
             </div>
           </td>
-          <td width="120" style="padding:14px 10px;border-bottom:1px solid #E5E5EA;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:600;color:#1D1D1F !important;vertical-align:top;">
+          <td width="120" style="padding:16px 8px;border-bottom:1px solid #E5E5EA;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;font-weight:600;color:#1D1D1F !important;vertical-align:middle;letter-spacing:0.01em;">
             ${escapeHtml(phone)}
           </td>
-          <td width="100" align="center" style="padding:14px 8px;border-bottom:1px solid #E5E5EA;font-size:10.5px;font-weight:700;color:#124453 !important;text-transform:uppercase;letter-spacing:0.05em;vertical-align:top;">
+          <td width="70" align="center" style="padding:16px 4px;border-bottom:1px solid #E5E5EA;font-size:10px;font-weight:700;color:#124453 !important;text-transform:uppercase;letter-spacing:0.06em;vertical-align:middle;">
             ${escapeHtml(staff)}
           </td>
-          <td width="110" align="center" style="padding:14px 8px;border-bottom:1px solid #E5E5EA;vertical-align:top;">
+          <td width="100" align="right" style="padding:16px 4px;border-bottom:1px solid #E5E5EA;vertical-align:middle;">
             ${couponCell}
           </td>
         </tr>
@@ -232,11 +314,11 @@ function buildDailyTableRows(rows) {
 }
 
 /**
- * Report notturno Payel: hero Venezia remoto + tabella squadrata istituzionale.
- * Zero emoji. CSV master in allegato. HTML leggero (<102KB).
+ * Report notturno Payel: hero Venezia, tabella glass-line, zero emoji.
+ * CSV allegato + tasto COPIA TUTTI via /api/copy-broadcast.
  */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
-  const subject = `AUDIT RECEPTION - ${count} Registrazioni Camere - ${dateLabel}`;
+  const subject = `AUDIT RECEPTION - ${count} Camere - ${dateLabel}`;
   const couponCount = rows.filter(hasRestaurantCoupon).length;
   const hero = escapeHtml(publicAssetUrl('email', 'hero-venice.jpg'));
 
@@ -244,18 +326,21 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
     .map((row) => row.phone)
     .filter(Boolean)
     .join(', ');
+  const copyUrl = escapeHtml(buildCopyBroadcastUrl(listaSoloNumeri));
 
   const text = [
     `Ciao Payel,`,
     ``,
-    `Registro giornaliero Fast Check-in ${hotelName} - ${dateLabel}.`,
-    `Camere totali: ${count}`,
-    `Coupon emessi: ${couponCount}`,
+    `Front Office Audit ${hotelName} - ${dateLabel}.`,
+    `Sincronizzazioni 24h: ${count}`,
+    `Coupon ISSUED: ${couponCount}`,
     ``,
-    `Lista numeri broadcast:`,
+    `WhatsApp broadcast:`,
     listaSoloNumeri || '-',
     ``,
-    `Documento sorgente .CSV allegato.`,
+    `Copia numeri: ${buildCopyBroadcastUrl(listaSoloNumeri)}`,
+    ``,
+    `CSV allegato.`,
     ``,
     `${hotelName} Ledger`,
   ].join('\n');
@@ -280,28 +365,27 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
     @media (prefers-color-mode: dark) {
       body, table, td, .email-bg, .wrapper { background-color: #FFFFFF !important; color: #1D1D1F !important; }
       td, p, h2, div, th, strong, span { color: #1D1D1F !important; }
-      .data-table th { background-color: #124453 !important; color: #FFFFFF !important; }
+      .data-table th { color: #8E8E93 !important; border-bottom: 1px solid #1D1D1F !important; background: #FFFFFF !important; }
       .data-table td { border-bottom: 1px solid #E5E5EA !important; }
       .utility-box { background-color: #F4F7F9 !important; border-color: #E5E5EA !important; }
-      .meta-text { color: #124453 !important; }
     }
   </style>
 </head>
 <body style="margin:0;padding:0;background-color:#FFFFFF !important;color:#1D1D1F !important;">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#FFFFFF;">
-    ${escapeHtml(`Ciao Payel - ${count} registrazioni - ${couponCount} coupon - ${dateLabel}`)}
+    ${escapeHtml(`Ciao Payel - ${count} camere - audit ${dateLabel}`)}
   </div>
-  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:28px 12px;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="email-bg" style="background-color:#FFFFFF !important;padding:40px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background-color:#FFFFFF !important;">
+        <table role="presentation" width="100%" class="wrapper" border="0" cellspacing="0" cellpadding="0" style="max-width:560px;background-color:#FFFFFF !important;">
 
           <tr>
-            <td align="center" style="padding:0 0 24px 0;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:16px;overflow:hidden;">
+            <td align="center" style="padding:0 0 36px 0;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:18px;overflow:hidden;">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:#E9EEF0;border-radius:16px;">
-                    <img src="${hero}" width="600" alt="Venezia - Hotel Canal" style="display:block;width:100%;max-width:600px;height:auto;border:0;border-radius:16px;">
+                  <td style="padding:0;line-height:0;font-size:0;background-color:#E9EEF0;border-radius:18px;">
+                    <img src="${hero}" width="560" alt="Venezia" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:18px;">
                   </td>
                 </tr>
               </table>
@@ -309,71 +393,88 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
           </tr>
 
           <tr>
-            <td align="center" style="padding:0 0 28px 0;border-bottom:1px solid #124453;">
-              <div style="font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:700;letter-spacing:0.08em;color:#124453 !important;text-transform:uppercase;">
+            <td align="center" style="padding:0 0 40px 0;border-bottom:1px solid #1D1D1F;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:700;letter-spacing:0.1em;color:#124453 !important;text-transform:uppercase;line-height:1;">
                 ${escapeHtml(hotelName)}
               </div>
-              <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.22em;color:#64748B !important;margin-top:6px;">
-                Venice Experience · Front Office Audit
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.28em;color:#8E8E93 !important;margin-top:8px;">
+                Venice Experience · Front Office Business Intelligence
               </div>
             </td>
           </tr>
 
           <tr>
-            <td style="padding:28px 0 0 0;">
-              <p style="font-size:14px;line-height:1.5;color:#124453 !important;margin:0 0 6px;font-weight:600;">
+            <td style="padding:32px 0 12px 0;">
+              <p style="font-size:14px;line-height:1.45;color:#124453 !important;margin:0 0 18px;font-weight:600;">
                 Ciao Payel,
               </p>
-              <p style="font-size:13px;line-height:1.5;color:#48484A !important;margin:0 0 22px;font-weight:500;">
-                Registro delle anagrafiche Fast Check-in del
-                <span style="white-space:nowrap;">${escapeHtml(dateLabel)}</span>.
-              </p>
-
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0 0 16px;">
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td valign="bottom">
-                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;color:#124453 !important;letter-spacing:0.06em;text-transform:uppercase;">
-                      Registro Giornaliero Presenze
+                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;color:#124453 !important;margin:0;letter-spacing:0.08em;text-transform:uppercase;">
+                      Front Office Audit
                     </div>
                   </td>
-                  <td align="right" valign="bottom" style="font-size:13px;color:#48484A !important;font-weight:600;white-space:nowrap;">
-                    Camere totali: <span style="color:#124453 !important;font-weight:700;">${count}</span>
+                  <td align="right" valign="bottom" style="font-size:12.5px;color:#64748B !important;font-weight:500;">
+                    Sincronizzazioni 24h:
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:700;color:#124453 !important;margin-left:4px;">${count}</span>
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
 
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;margin:0 0 28px;font-size:12.5px;">
+          <tr>
+            <td style="padding-top:16px;">
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="width:100%;border-collapse:collapse;font-size:13px;">
                 <thead>
                   <tr>
-                    <th align="left" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:left;padding:12px 10px;">Stanza</th>
-                    <th align="left" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:left;padding:12px 10px;">Capogruppo / Contatti</th>
-                    <th align="left" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:left;padding:12px 10px;">Telefono</th>
-                    <th align="center" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:center;padding:12px 8px;">Staff</th>
-                    <th align="center" style="background-color:#124453 !important;color:#FFFFFF !important;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:0.06em;text-align:center;padding:12px 8px;">Coupon</th>
+                    <th width="70" align="left" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:left;padding:12px 4px;border-bottom:1px solid #1D1D1F;">Room</th>
+                    <th align="left" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:left;padding:12px 8px;border-bottom:1px solid #1D1D1F;">Guest / Contacts</th>
+                    <th width="120" align="left" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:left;padding:12px 8px;border-bottom:1px solid #1D1D1F;">Telephone</th>
+                    <th width="70" align="center" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:center;padding:12px 4px;border-bottom:1px solid #1D1D1F;">Staff</th>
+                    <th width="100" align="right" style="color:#8E8E93 !important;background:#FFFFFF !important;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:0.08em;text-align:right;padding:12px 4px;border-bottom:1px solid #1D1D1F;">Coupon</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${buildDailyTableRows(rows)}
                 </tbody>
               </table>
+            </td>
+          </tr>
 
-              <div style="font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:700;color:#124453 !important;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 10px;">
-                Lista Numeri Broadcast
-              </div>
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="utility-box" style="background-color:#F4F7F9 !important;border:1px solid #E5E5EA;margin:0 0 24px;">
+          <tr>
+            <td style="padding-top:28px;">
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0 0 8px;">
                 <tr>
-                  <td style="padding:14px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#1D1D1F !important;word-break:break-all;line-height:1.55;">
+                  <td valign="middle">
+                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:11px;font-weight:700;color:#8E8E93 !important;text-transform:uppercase;letter-spacing:0.06em;">
+                      WhatsApp Broadcast List
+                    </div>
+                  </td>
+                  <td align="right" valign="middle">
+                    <a href="${copyUrl}" target="_blank" style="font-size:10px;font-weight:700;background-color:rgba(18,68,83,0.06);color:#124453 !important;text-decoration:none;padding:7px 12px;border-radius:6px;letter-spacing:0.06em;text-transform:uppercase;display:inline-block;">
+                      Copia tutti
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" class="utility-box" style="background-color:#F4F7F9 !important;border:1px solid #E5E5EA;border-radius:8px;margin:0 0 28px;">
+                <tr>
+                  <td style="padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;color:#334155 !important;word-break:break-all;line-height:1.55;">
                     ${escapeHtml(listaSoloNumeri || '-')}
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
 
-              <p style="font-size:12px;line-height:1.5;color:#48484A !important;margin:0 0 6px;">
-                Il documento sorgente in formato <strong style="color:#124453 !important;">.CSV</strong> &egrave; allegato a questo messaggio.
-              </p>
-              <p style="font-size:10.5px;line-height:1.45;color:#8A949C !important;margin:0;">
-                Generato da ${escapeHtml(hotelName)} Ledger · Audit notturno
-              </p>
+          <tr>
+            <td style="font-size:10px;color:#8E8E93 !important;line-height:1.5;border-top:1px solid #1D1D1F;padding-top:16px;text-align:center;font-weight:500;">
+              L'archivio master completo in formato <strong style="color:#124453 !important;">.CSV</strong> &egrave; allegato a questo flusso informativo.<br>
+              <span style="opacity:0.65;text-transform:uppercase;font-size:8.5px;letter-spacing:0.05em;display:block;margin-top:6px;">
+                Generato da ${escapeHtml(hotelName)} Ledger Core
+              </span>
             </td>
           </tr>
 
