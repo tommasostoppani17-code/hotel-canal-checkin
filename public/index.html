@@ -17,6 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="/venice-bg.jpg">
+  <link rel="preload" as="image" href="/email/postcard-terrazza.jpg">
   <link rel="preload" as="image" href="/restaurant/13-sala-interna.jpg">
   <style>
     :root {
@@ -988,10 +989,19 @@
     }
     .dining-mosaic {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(6, 1fr);
       gap: 8px;
       width: 100%;
       margin: 0;
+    }
+    .dining-mosaic figure:nth-child(-n + 3) {
+      grid-column: span 2;
+    }
+    .dining-mosaic figure:nth-child(4) {
+      grid-column: 2 / 4;
+    }
+    .dining-mosaic figure:nth-child(5) {
+      grid-column: 4 / 6;
     }
     .dining-mosaic figure {
       margin: 0;
@@ -1064,6 +1074,12 @@
     }
     #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(3) {
       animation: mediaIn 640ms var(--slide-ease) 180ms both;
+    }
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(4) {
+      animation: mediaIn 640ms var(--slide-ease) 230ms both;
+    }
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(5) {
+      animation: mediaIn 640ms var(--slide-ease) 280ms both;
     }
     #step2.is-active:not(.is-sliding) .concierge-header-title {
       animation: fadeRise 560ms var(--slide-ease) 150ms both;
@@ -3958,13 +3974,15 @@
         <div class="step-body step-scroll dining-vitrine">
           <div class="dining-showcase" aria-hidden="true">
             <div class="dining-hero">
-              <img src="/email/postcard-ingresso.jpg" alt="" width="1100" height="611" decoding="async">
+              <img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async">
               <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
             </div>
             <div class="dining-mosaic dining-mosaic-row">
-              <figure><img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async"></figure>
               <figure><img src="/email/postcard-tavolo.jpg" alt="" width="1200" height="572" decoding="async"></figure>
               <figure><img src="/email/postcard-dish.jpg" alt="" width="1200" height="800" decoding="async"></figure>
+              <figure><img src="/restaurant/15-linguine-astice.jpg" alt="" width="1200" height="800" decoding="async"></figure>
+              <figure><img src="/restaurant/08-risotto.jpg" alt="" width="1200" height="800" decoding="async"></figure>
+              <figure><img src="/restaurant/16-guazzetto-mare.jpg" alt="" width="1200" height="800" decoding="async"></figure>
             </div>
           </div>
           <div class="concierge-header-title" id="lbl-concierge-title">Dining Privilege</div>
