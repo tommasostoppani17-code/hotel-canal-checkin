@@ -57,19 +57,27 @@ export function initDb(databasePath) {
   return db;
 }
 
-function couponSecret() {
-  const secret = String(
-    process.env.COUPON_SECRET ||
-      process.env.CRON_SECRET ||
-      '',
-  ).trim();
-  if (secret) return secret;
-  if (process.env.RENDER === 'true' || process.env.NODE_ENV === 'production') {
-    throw new Error(
-      'COUPON_SECRET o CRON_SECRET obbligatorio in produzione (niente fallback)',
-    );
+function couponSecrets() {
+  const primary = String(process.env.COUPON_SECRET || '').trim();
+  const cron = String(process.env.CRON_SECRET || '').trim();
+  const isProd =
+    process.env.RENDER === 'true' || process.env.NODE_ENV === 'production';
+  if (isProd) {
+    if (!primary || primary.length < 24) {
+      throw new Error('COUPON_SECRET obbligatorio in produzione (≥24 char)');
+    }
+    if (cron && primary === cron) {
+      throw new Error('COUPON_SECRET deve essere diverso da CRON_SECRET');
+    }
+    // Include cron solo per verificare link legacy firmati pre-hardening
+    return cron && cron !== primary ? [primary, cron] : [primary];
   }
-  return 'hotel-canal-dev-coupon';
+  const list = [primary, cron, 'hotel-canal-dev-coupon'].filter(Boolean);
+  return [...new Set(list)];
+}
+
+function couponSecret() {
+  return couponSecrets()[0];
 }
 
 function timingSafeEqualStr(a, b) {
@@ -80,51 +88,35 @@ function timingSafeEqualStr(a, b) {
 }
 
 /**
- * Token firmato (sopravvive al wipe del SQLite su Render free).
- * Payload: guest + optional room/staff per redeem diretto.
+ * Token opaco (32 byte). PII solo in DB — niente email/telefono nell'URL.
+ * Legacy v1 (json.hmac) ancora accettato in lettura per link già inviati.
  */
-export function createCouponToken({
-  id = '',
-  email = '',
-  guestName = '',
-  phone = '',
-  guestsCount = 2,
-  roomNumber = null,
-  receptionist = null,
-} = {}) {
-  const body = {
-    v: 1,
-    id: id || crypto.randomBytes(8).toString('hex'),
-    e: String(email || '').trim().slice(0, 120),
-    g: String(guestName || '').trim().slice(0, 80),
-    p: String(phone || '').trim().slice(0, 32),
-    n: Number(guestsCount) > 0 ? Number(guestsCount) : 2,
-  };
-  const room = String(roomNumber || '').trim().slice(0, 20);
-  const staff = String(receptionist || '').trim().slice(0, 40);
-  if (room) body.r = room;
-  if (staff) body.s = staff;
-
-  const json = Buffer.from(JSON.stringify(body), 'utf8').toString('base64url');
-  const sig = crypto
-    .createHmac('sha256', couponSecret())
-    .update(json)
-    .digest('base64url');
-  return `${json}.${sig}`;
+export function createCouponToken(_legacyIgnored = {}) {
+  return crypto.randomBytes(32).toString('base64url');
 }
 
+/** Solo legacy firmato v1 (pre-hardening). I token opachi non hanno payload. */
 export function parseCouponToken(token) {
   const raw = String(token || '').trim();
+  if (!raw.includes('.')) return null;
   const i = raw.lastIndexOf('.');
   if (i <= 0) return null;
   const json = raw.slice(0, i);
   const sig = raw.slice(i + 1);
   if (!json || !sig) return null;
-  const expect = crypto
-    .createHmac('sha256', couponSecret())
-    .update(json)
-    .digest('base64url');
-  if (!timingSafeEqualStr(sig, expect)) return null;
+
+  let valid = false;
+  for (const secret of couponSecrets()) {
+    const expect = crypto
+      .createHmac('sha256', secret)
+      .update(json)
+      .digest('base64url');
+    if (timingSafeEqualStr(sig, expect)) {
+      valid = true;
+      break;
+    }
+  }
+  if (!valid) return null;
   try {
     const body = JSON.parse(Buffer.from(json, 'base64url').toString('utf8'));
     if (!body || body.v !== 1 || !body.id) return null;
@@ -134,22 +126,17 @@ export function parseCouponToken(token) {
   }
 }
 
-/** Riga DB se c'è, altrimenti riga sintetica dal token firmato. */
+/** Preferisce riga DB; fallback solo per token legacy firmati. */
 export function resolveCouponFromToken(token) {
   const raw = String(token || '').trim();
-  if (!raw) return null;
+  if (!raw || raw.length < 16) return null;
 
   const row = getCheckinByCouponToken(raw);
-  const payload = parseCouponToken(raw);
-
   if (row) {
-    return {
-      row,
-      payload,
-      token: raw,
-    };
+    return { row, payload: null, token: raw };
   }
 
+  const payload = parseCouponToken(raw);
   if (!payload) return null;
 
   return {

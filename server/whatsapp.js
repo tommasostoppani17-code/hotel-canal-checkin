@@ -54,23 +54,23 @@ function payelWhatsAppNumber() {
 
 export function createCsvMediaToken(csv, filename) {
   pruneExpiredMedia();
-  const token = crypto.randomBytes(24).toString('hex');
+  const token = crypto.randomBytes(32).toString('hex');
   mediaStore.set(token, {
     csv: String(csv ?? ''),
     filename: String(filename || 'report.csv'),
-    expiresAt: Date.now() + 20 * 60 * 1000,
+    expiresAt: Date.now() + 5 * 60 * 1000,
   });
   return token;
 }
 
+/** Consume-on-read: monouso + TTL corto. */
 export function getCsvMedia(token) {
   pruneExpiredMedia();
-  const item = mediaStore.get(String(token || ''));
+  const key = String(token || '');
+  const item = mediaStore.get(key);
   if (!item) return null;
-  if (item.expiresAt < Date.now()) {
-    mediaStore.delete(token);
-    return null;
-  }
+  mediaStore.delete(key);
+  if (item.expiresAt < Date.now()) return null;
   return item;
 }
 
@@ -145,12 +145,11 @@ export async function sendDailyWhatsAppReport({
     mediaUrl: [mediaUrl],
   });
 
-  console.log(`[whatsapp] Report inviato a ${payelWhatsAppNumber()} (${count} contatti)`);
+  console.log(`[whatsapp] Report inviato (${count} contatti)`);
 
   return {
     sent: true,
-    to: payelWhatsAppNumber(),
-    mediaUrl,
+    // non esporre mediaUrl / destinatario nelle API HTTP
   };
 }
 
@@ -193,14 +192,11 @@ export async function sendTableBookingWhatsApp(row) {
   const to = toWhatsAppAddress(payelWhatsAppNumber());
   const msg = await client.messages.create({ from, to, body });
 
-  console.log(
-    `[whatsapp] Alert tavolo → ${payelWhatsAppNumber()} · stanza ${room} · ${phone}`,
-  );
+  console.log(`[whatsapp] Alert tavolo · stanza ${room}`);
 
   return {
     sent: true,
     channel: 'whatsapp',
-    to: payelWhatsAppNumber(),
     sid: msg.sid,
   };
 }

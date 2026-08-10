@@ -15,9 +15,8 @@ jobs:
           set -euo pipefail
           URL="https://hotel-canal-checkin.onrender.com/health"
           for i in 1 2 3 4 5; do
-            code=$(curl -sS -o /tmp/health.json -w "%{http_code}" "$URL" || echo "000")
+            code=$(curl -sS -o /dev/null -w "%{http_code}" "$URL" || echo "000")
             echo "attempt $i -> HTTP $code"
-            head -c 200 /tmp/health.json; echo
             if [ "$code" = "200" ]; then
               exit 0
             fi

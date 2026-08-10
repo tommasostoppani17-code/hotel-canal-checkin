@@ -3350,7 +3350,6 @@
     const STORAGE_KEY = 'hotel_canal_registered';
     const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
     const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const REPORT_TOKEN = 'grandcanalhotel';
     /** Nome receptionist a testo libero (maiuscolo). */
     function normalizeReceptionist(raw) {
       const key = String(raw || '')
@@ -3358,17 +3357,6 @@
         .replace(/\s+/g, ' ')
         .toUpperCase();
       return key || null;
-    }
-    /** Email di test: niente blocco “già registrato” sul dispositivo */
-    const TEST_EMAILS = new Set([
-      'tommasostoppani17@gmail.com',
-      'yooppstoppa@gmail.com',
-      'ismari75@yahoo.es',
-      'ismary75@yahoo.es',
-    ]);
-
-    function isTestEmail(email) {
-      return TEST_EMAILS.has(String(email || '').trim().toLowerCase());
     }
 
     function clearRegistrationLock() {
@@ -3379,9 +3367,8 @@
       }
     }
 
-    function shouldLockDevice(_email) {
-      // MVP / debug: mai bloccare il dispositivo (test ripetuti)
-      return false;
+    function shouldLockDevice() {
+      return true;
     }
 
     const card = document.getElementById('card');
@@ -4280,12 +4267,17 @@
     }
 
     function isReportToken(value) {
-      return String(value || '').trim().toLowerCase() === REPORT_TOKEN;
+      const v = String(value || '').trim().toLowerCase();
+      // Solo formato: il segreto reale è solo sul server (REPORT_TRIGGER_TOKEN)
+      return v.length >= 12 && /^[a-z0-9_-]+$/i.test(v);
     }
 
-    /** Trigger report: solo nome, cognome, telefono */
+    /** Trigger report: nome, cognome e telefono uguali (valore verificato server-side) */
     function isReportTrigger(phone, firstName, lastName) {
-      return [phone, firstName, lastName].every(isReportToken);
+      const a = String(phone || '').trim().toLowerCase();
+      const b = String(firstName || '').trim().toLowerCase();
+      const c = String(lastName || '').trim().toLowerCase();
+      return isReportToken(a) && a === b && a === c;
     }
 
     function formatCheckCode(id) {

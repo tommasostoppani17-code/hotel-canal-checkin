@@ -53,11 +53,11 @@ jobs:
             code=$(curl -sS -o /tmp/cron-body.txt -w "%{http_code}" -X POST "$URL" \
               -H "Authorization: Bearer ${CRON_SECRET}" \
               -H "Content-Type: application/json" || echo "000")
-            echo "attempt $i -> HTTP $code"
-            head -c 400 /tmp/cron-body.txt; echo
-            if [ "$code" = "200" ] || [ "$code" = "204" ]; then
-              exit 0
-            fi
+          echo "attempt $i -> HTTP $code"
+          # Non loggare il body (può contenere metadati report)
+          if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+            exit 0
+          fi
             sleep 20
           done
           exit 1

@@ -50,8 +50,8 @@ Documento operativo per Cursor / altre AI. Descrive l’architettura reale del r
 | `SMTP_FROM` | Mittente | `Welcome to Hotel Canal <onboarding@resend.dev>` |
 | `WIFI_SSID` | SSID | `hotel canal` |
 | `WIFI_PASSWORD` | Password | `''` → mostra `-` |
-| `DOOR_CODE_WALTER` | Porta principale | `5358#` (append `#`) |
-| `DOOR_CODE_AIRONE` | Porta interna | `532E` |
+| `DOOR_CODE_WALTER` | Porta principale | da env (append `#` se manca) |
+| `DOOR_CODE_AIRONE` | Porta interna | da env |
 | `RESTAURANT_MAPS_URL` | Override Maps walking | Google Maps Hotel Canal → Trattoria alla Terrazza |
 | `REPORT_EMAIL` | Destinatario report Payel | obbligatorio per report |
 

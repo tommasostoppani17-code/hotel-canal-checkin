@@ -12,7 +12,6 @@ import {
   markCouponSent,
   resolveCouponFromToken,
   updateCheckinCouponDetails,
-  updateCheckinCouponToken,
   exportAllCheckins,
   importCheckinsIfEmpty,
   countCheckins,
@@ -66,18 +65,28 @@ function assertProductionSecrets() {
   if (!IS_PROD) return;
   const cron = String(process.env.CRON_SECRET || '').trim();
   const guest = String(process.env.GUEST_ACCESS_SECRET || '').trim();
-  const coupon = String(process.env.COUPON_SECRET || cron).trim();
+  const coupon = String(process.env.COUPON_SECRET || '').trim();
   const weak = (s) =>
     !s ||
     s.length < 24 ||
     /change-me|dev-only|hotel-canal-dev/i.test(s);
 
-  if (!cron) {
-    throw new Error('CRON_SECRET obbligatorio in produzione');
+  if (!cron || weak(cron)) {
+    throw new Error('CRON_SECRET obbligatorio in produzione (≥24 char random)');
   }
-  if (weak(cron) || weak(guest) || weak(coupon)) {
-    console.warn(
-      '[security] Segreti deboli o corti: genera CRON_SECRET / GUEST_ACCESS_SECRET / COUPON_SECRET ≥24 char random',
+  if (!guest || weak(guest)) {
+    throw new Error(
+      'GUEST_ACCESS_SECRET obbligatorio in produzione (≥24 char, distinto da CRON)',
+    );
+  }
+  if (!coupon || weak(coupon)) {
+    throw new Error(
+      'COUPON_SECRET obbligatorio in produzione (≥24 char, distinto da CRON)',
+    );
+  }
+  if (guest === cron || coupon === cron || guest === coupon) {
+    throw new Error(
+      'CRON_SECRET, GUEST_ACCESS_SECRET e COUPON_SECRET devono essere tutti diversi',
     );
   }
 }
@@ -204,7 +213,6 @@ app.use(
     lastModified: true,
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-      res.setHeader('Access-Control-Allow-Origin', '*');
     },
   }),
 );
@@ -220,6 +228,14 @@ app.get('/sw.js', (_req, res) => {
   res.sendFile(path.join(rootDir, 'public', 'sw.js'));
 });
 
+/** Niente backup / scrap in pubblico. */
+app.use((req, res, next) => {
+  if (/\.(bak|old|swp|tmp)$/i.test(req.path) || /\/_bak[-_/]/i.test(req.path)) {
+    return res.status(404).end();
+  }
+  return next();
+});
+
 app.use(express.static(path.join(rootDir, 'public')));
 
 const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
@@ -227,14 +243,12 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const GUEST_ACCESS_TTL_SEC = 60 * 60 * 72; // 72h dopo check-in
 
 function guestAccessSecret() {
-  const secret = String(
-    process.env.GUEST_ACCESS_SECRET || process.env.CRON_SECRET || '',
-  ).trim();
+  const secret = String(process.env.GUEST_ACCESS_SECRET || '').trim();
   if (secret) return secret;
   if (IS_PROD) {
-    throw new Error('GUEST_ACCESS_SECRET o CRON_SECRET obbligatorio in produzione');
+    throw new Error('GUEST_ACCESS_SECRET obbligatorio in produzione');
   }
-  return 'dev-only-change-me';
+  return String(process.env.CRON_SECRET || 'dev-only-change-me').trim();
 }
 
 function timingSafeEqualStr(a, b) {
@@ -281,7 +295,8 @@ function readGuestAccessToken(req) {
   if (header.toLowerCase().startsWith('bearer ')) {
     return header.slice(7).trim();
   }
-  return String(req.query.token || req.get('x-guest-token') || '').trim();
+  // Solo header (niente ?token= nei log proxy / Referer)
+  return String(req.get('x-guest-token') || '').trim();
 }
 
 function buildGuestServicesPayload() {
@@ -353,23 +368,28 @@ function isAuthorizedCron(req) {
   if (!CRON_SECRET) return false;
   const header = req.get('authorization') || '';
   const bearer = header.startsWith('Bearer ') ? header.slice(7) : '';
-  const querySecret = String(req.query.secret || '');
-  return (
-    timingSafeEqualStr(bearer, CRON_SECRET) ||
-    timingSafeEqualStr(querySecret, CRON_SECRET)
-  );
+  // Solo Authorization Bearer — niente ?secret= in query/log
+  return timingSafeEqualStr(bearer, CRON_SECRET);
+}
+
+function publicReportSummary(result) {
+  if (!result || typeof result !== 'object') return { ok: true };
+  return {
+    sent: Boolean(result.sent),
+    count: Number(result.count) || 0,
+    empty: Boolean(result.empty) || result.reason === 'no_new_checkins',
+  };
 }
 
 app.get('/health', (_req, res) => {
-  res.json({
-    ok: true,
-    hotel: HOTEL_NAME,
-    tz: CRON_TZ,
-  });
+  res.json({ ok: true });
 });
 
 /** Wi-Fi + codici porta: solo con token emesso al check-in riuscito. */
-app.get('/api/guest-services', (req, res) => {
+app.get(
+  '/api/guest-services',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  (req, res) => {
   const access = verifyGuestAccessToken(readGuestAccessToken(req));
   if (!access) {
     return res.status(401).json({
@@ -383,8 +403,14 @@ app.get('/api/guest-services', (req, res) => {
   });
 });
 
-/** Checklist go-live (senza email/PII in chiaro). Auth opzionale via CRON_SECRET. */
-app.get('/api/ready', (req, res) => {
+/** Ops checklist — solo staff con CRON_SECRET (niente recon pubblico). */
+app.get(
+  '/api/ready',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  (req, res) => {
+  if (!isAuthorizedCron(req)) {
+    return res.status(401).json({ error: 'Non autorizzato' });
+  }
   const from = String(process.env.SMTP_FROM || '');
   const reportEmail = String(process.env.REPORT_EMAIL || '').trim();
   const resendKey = Boolean(String(process.env.RESEND_API_KEY || '').trim());
@@ -401,27 +427,20 @@ app.get('/api/ready', (req, res) => {
   const dataReady = onPersistentDisk || backupOk;
   const blockers = [];
   if (!guestEmailReady) {
-    blockers.push(
-      'Verifica dominio su Resend e imposta SMTP_FROM tipo Welcome <checkin@hotelcanal.com>',
-    );
+    blockers.push('SMTP_FROM: verifica dominio Resend');
   }
   if (!reportEmail && !whatsappReady) {
-    blockers.push(
-      'Imposta REPORT_EMAIL (mail Canal) e/o WhatsApp Payel (TWILIO_* + WHATSAPP_PAYEL)',
-    );
+    blockers.push('REPORT_EMAIL e/o WhatsApp non configurati');
   }
   if (!dataReady) {
-    blockers.push('Aggiungi disco Render su /var/data oppure backup Gist');
+    blockers.push('Disco persistente o backup Gist mancante');
   }
-  const staffView = isAuthorizedCron(req);
+  res.setHeader('Cache-Control', 'no-store');
   res.json({
     ok: blockers.length === 0,
     hotel: HOTEL_NAME,
-    publicUrl: process.env.PUBLIC_URL || null,
-    checkins: staffView ? countCheckins() : undefined,
+    checkins: countCheckins(),
     reportEmailConfigured: Boolean(reportEmail),
-    reportEmail: staffView ? reportEmail || null : undefined,
-    smtpFromDev: usingDevFrom,
     guestEmailReady,
     reportReady,
     whatsappReady,
@@ -432,12 +451,16 @@ app.get('/api/ready', (req, res) => {
   });
 });
 
-/** CSV temporaneo per Twilio mediaUrl (token monouso a tempo, senza auth). */
-app.get('/api/reports/whatsapp-csv/:token', (req, res) => {
+/** CSV temporaneo per Twilio mediaUrl (token monouso, TTL corto). */
+app.get(
+  '/api/reports/whatsapp-csv/:token',
+  rateLimit({ windowMs: 60_000, max: 10 }),
+  (req, res) => {
   const item = getCsvMedia(req.params.token);
   if (!item) {
-    return res.status(404).type('text/plain').send('CSV non trovato o scaduto');
+    return res.status(404).type('text/plain').send('Not found');
   }
+  res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader(
     'Content-Disposition',
@@ -496,9 +519,12 @@ app.get('/poster-a4.pdf', async (_req, res) => {
 
 /**
  * Email the A4 PDF poster.
- * Auth: ?secret=CRON_SECRET
+ * Auth: Authorization Bearer CRON_SECRET
  */
-app.get('/api/send-poster', async (req, res) => {
+app.get(
+  '/api/send-poster',
+  rateLimit({ windowMs: 60_000, max: 5 }),
+  async (req, res) => {
   if (!isAuthorizedCron(req)) {
     return res.status(401).type('html').send(
       `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Unauthorized.</body></html>`,
@@ -506,18 +532,13 @@ app.get('/api/send-poster', async (req, res) => {
   }
 
   try {
-    const result = await sendPosterEmail({
+    await sendPosterEmail({
       to: typeof req.query.to === 'string' ? req.query.to : undefined,
     });
-    const safeTo = String(result.to || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
     return res.type('html').send(
       `<!DOCTYPE html><html><body style="font-family:-apple-system,sans-serif;text-align:center;padding:48px;color:#124453;">
         <h2 style="margin:0 0 12px;">A4 PDF poster sent</h2>
-        <p style="margin:0;color:#64748B;">To: <strong style="color:#124453;">${safeTo}</strong> · ~${result.pdfKb} KB</p>
-        <p style="margin:16px 0 0;font-size:13px;color:#8E8E93;">Also available at <a href="/poster-a4.pdf" style="color:#124453;">/poster-a4.pdf</a></p>
+        <p style="margin:0;color:#64748B;">Delivery queued.</p>
       </body></html>`,
     );
   } catch (err) {
@@ -526,7 +547,7 @@ app.get('/api/send-poster', async (req, res) => {
       .status(500)
       .type('html')
       .send(
-        `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Poster send error: ${String(err.message || err).replace(/</g, '')}</body></html>`,
+        `<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:48px;color:#C62828;">Poster send error.</body></html>`,
       );
   }
 });
@@ -581,9 +602,9 @@ app.post('/coupon/claim/:token', (req, res) => {
 
   const { row, payload } = resolved;
   const roomNumber = toUpperOrNull(req.body?.roomNumber || req.body?.room || '');
-  const receptionist =
-    normalizeReceptionist(req.body?.receptionist || req.body?.staff || '') ||
-    'TOMMASO';
+  const receptionist = normalizeReceptionist(
+    req.body?.receptionist || req.body?.staff || '',
+  );
 
   if (!roomNumber) {
     return res.status(400).type('html').send(
@@ -594,37 +615,40 @@ app.post('/coupon/claim/:token', (req, res) => {
       }),
     );
   }
-
-  const redeemToken = createCouponToken({
-    id: payload?.id,
-    email: row.email || payload?.e || '',
-    guestName: row.guest_name || payload?.g || '',
-    phone: row.phone || payload?.p || '',
-    guestsCount: row.guests_count ?? payload?.n ?? 2,
-    roomNumber,
-    receptionist,
-  });
+  if (!receptionist) {
+    return res.status(400).type('html').send(
+      buildCouponClaimPage({
+        token,
+        guestName: row.guest_name,
+        error: 'Inserisci il nome del receptionist.',
+      }),
+    );
+  }
 
   if (row.id) {
     updateCheckinCouponDetails(row.id, { roomNumber, receptionist });
-    updateCheckinCouponToken(row.id, redeemToken);
     markCouponSent(row.id);
-  } else {
-    const phone = row.phone || payload?.p;
-    if (phone) {
-      const id = insertCheckin({
-        phone,
-        email: row.email || payload?.e || null,
-        guestName: row.guest_name || payload?.g || null,
-        roomNumber,
-        receptionist,
-        guestsCount: row.guests_count ?? payload?.n ?? 2,
-        couponToken: redeemToken,
-      });
-      markCouponSent(id);
-      void syncCheckinsBackup('coupon-claim');
-    }
+    void syncCheckinsBackup('coupon-claim');
+    return res.redirect(302, `/coupon/${encodeURIComponent(token)}`);
   }
+
+  // Legacy token firmato senza riga DB: crea check-in con token opaco nuovo
+  const phone = row.phone || payload?.p;
+  if (!phone) {
+    return res.status(400).type('html').send(couponLinkGonePage());
+  }
+  const redeemToken = createCouponToken();
+  const id = insertCheckin({
+    phone,
+    email: row.email || payload?.e || null,
+    guestName: row.guest_name || payload?.g || null,
+    roomNumber,
+    receptionist,
+    guestsCount: row.guests_count ?? payload?.n ?? 2,
+    couponToken: redeemToken,
+  });
+  markCouponSent(id);
+  void syncCheckinsBackup('coupon-claim');
 
   return res.redirect(302, `/coupon/${encodeURIComponent(redeemToken)}`);
 });
@@ -696,16 +720,16 @@ async function handleCheckin(req, res) {
     ) {
       try {
         const result = await runDailyReport({ force: true });
-        console.log('[manual-report]', result);
+        console.log('[manual-report]', publicReportSummary(result));
         return res.status(200).json({
           success: true,
           reportTriggered: true,
-          ...result,
+          ...publicReportSummary(result),
         });
       } catch (err) {
         console.error('Errore report manuale:', err);
         return res.status(500).json({
-          error: err.message || 'Errore invio report',
+          error: 'Errore invio report',
         });
       }
     }
@@ -767,14 +791,7 @@ async function handleCheckin(req, res) {
       receptionist = null;
     }
 
-    const couponToken = createCouponToken({
-      email,
-      guestName,
-      phone,
-      guestsCount,
-      roomNumber: includeCoupon ? roomNumber : null,
-      receptionist: includeCoupon ? receptionist : null,
-    });
+    const couponToken = createCouponToken();
 
     const id = insertCheckin({
       phone,
@@ -802,7 +819,7 @@ async function handleCheckin(req, res) {
       if (includeCoupon) markCouponSent(id);
       welcomeSent = true;
       console.log(
-        `[welcome] Concierge email → ${email} · lang ${String(languageRaw || 'en').slice(0, 2)} · coupon ${includeCoupon ? 'yes' : 'claim-link'} · room ${roomNumber || '-'} · staff ${receptionist || '-'} · guests ${guestsCount}`,
+        `[welcome] Concierge email → ${maskEmail(email)} · lang ${String(languageRaw || 'en').slice(0, 2)} · coupon ${includeCoupon ? 'yes' : 'claim-link'} · room ${roomNumber || '-'} · staff ${receptionist || '-'} · guests ${guestsCount}`,
       );
     } catch (mailErr) {
       console.error('[welcome] Errore invio:', mailErr.message || mailErr);
@@ -816,10 +833,6 @@ async function handleCheckin(req, res) {
       createdAt: new Date().toISOString(),
       welcomeSent,
       couponSent: includeCoupon && welcomeSent,
-      couponToken,
-      claimUrl: includeCoupon
-        ? null
-        : `${(process.env.PUBLIC_URL || '').replace(/\/$/, '')}/coupon/claim/${encodeURIComponent(couponToken)}`,
       receptionist: receptionist || null,
       guestsCount,
     });
@@ -919,8 +932,6 @@ app.post(
       saved: true,
       alertSent: anySent,
       tableBooking: rawTime,
-      channels,
-      warning: anySent ? undefined : (errors.join(' | ') || 'Alert staff non inviato'),
     });
   } catch (err) {
     console.error('Errore table-booking:', err);
@@ -928,31 +939,37 @@ app.post(
   }
 });
 
-app.post('/api/cron/daily-report', async (req, res) => {
+app.post(
+  '/api/cron/daily-report',
+  rateLimit({ windowMs: 60_000, max: 10 }),
+  async (req, res) => {
   if (!isAuthorizedCron(req)) {
     return res.status(401).json({ error: 'Non autorizzato' });
   }
 
   try {
     const result = await runDailyReport({ force: true });
-    return res.json(result);
+    return res.json(publicReportSummary(result));
   } catch (err) {
     console.error('Errore report giornaliero:', err);
-    return res.status(500).json({ error: err.message || 'Errore report' });
+    return res.status(500).json({ error: 'Errore report' });
   }
 });
 
-app.post('/api/cron/monthly-staff-report', async (req, res) => {
+app.post(
+  '/api/cron/monthly-staff-report',
+  rateLimit({ windowMs: 60_000, max: 10 }),
+  async (req, res) => {
   if (!isAuthorizedCron(req)) {
     return res.status(401).json({ error: 'Non autorizzato' });
   }
 
   try {
     const result = await runMonthlyStaffReport({ force: true });
-    return res.json(result);
+    return res.json(publicReportSummary(result));
   } catch (err) {
     console.error('Errore report mensile:', err);
-    return res.status(500).json({ error: err.message || 'Errore report mensile' });
+    return res.status(500).json({ error: 'Errore report mensile' });
   }
 });
 

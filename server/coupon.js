@@ -216,9 +216,9 @@ function buildWelcomeHtml({
   const gallery = escapeHtml(gallerySrc || restaurantSrc);
   const dish = escapeHtml(dishSrc || restaurantSrc);
   const wifiSsidSafe = escapeHtml(wifiSsid || 'hotel canal');
-  const wifiPasswordSafe = escapeHtml(wifiPassword || '-');
-  const doorWalterSafe = escapeHtml(doorWalter || '5358#');
-  const doorAironeSafe = escapeHtml(doorAirone || '532E');
+  const wifiPasswordSafe = escapeHtml(wifiPassword || '—');
+  const doorWalterSafe = escapeHtml(doorWalter || '—');
+  const doorAironeSafe = escapeHtml(doorAirone || '—');
   const preheader = escapeHtml(
     includeCoupon
       ? lp.preheader(firstNamePlain, roomNumber)
@@ -953,11 +953,10 @@ export async function sendWelcomeEmail({
 
   const wifiSsid = env('WIFI_SSID', 'hotel canal');
   const wifiPassword = env('WIFI_PASSWORD', '');
-  // Walter richiede il cancelletto (#). In .env va tra virgolette: DOOR_CODE_WALTER="5358#"
-  // altrimenti dotenv tratta # come commento e resta solo "5358".
-  let doorWalter = env('DOOR_CODE_WALTER', '5358#').trim() || '5358#';
-  if (!doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
-  const doorAirone = env('DOOR_CODE_AIRONE', '532E').trim() || '532E';
+  // Walter: cancelletto (#) obbligatorio — in .env usare virgolette: DOOR_CODE_WALTER="…#"
+  let doorWalter = env('DOOR_CODE_WALTER', '').trim();
+  if (doorWalter && !doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
+  const doorAirone = env('DOOR_CODE_AIRONE', '').trim();
 
   const guidePdfUrl = ''; // Guida completa non ancora pronta — niente CTA in mail
   // const guidePdfUrl = `${publicBaseUrl()}/venice-guide.pdf?lang=${encodeURIComponent(resolvedLang)}`;
