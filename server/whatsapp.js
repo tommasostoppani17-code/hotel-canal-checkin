@@ -88,10 +88,9 @@ export function buildWhatsAppDailyBody({ hotelName, dateLabel, count, rows = [] 
     );
 
   return [
-    `Ciao Payel,`,
+    `Gentile Payel,`,
     ``,
-    `in allegato il report contatti di oggi (${dateLabel}): *${count}* registrazioni.`,
-    `Dagli un'occhiata quando puoi.`,
+    `report contatti di oggi (${dateLabel}): *${count}* check-in. CSV nel messaggio successivo.`,
     ``,
     `*Numeri:*`,
     lista || '—',
@@ -99,9 +98,6 @@ export function buildWhatsAppDailyBody({ hotelName, dateLabel, count, rows = [] 
       ? ['', '*Tavoli richiesti:*', ...tavoli]
       : []),
     ``,
-    `CSV nel messaggio successivo.`,
-    ``,
-    `Saluti,`,
     `Front Desk — ${hotelName}`,
   ].join('\n');
 }

@@ -285,47 +285,47 @@ function buildDailyGuestRows(rows) {
 }
 
 /**
- * Report notturno Payel: chiaro, commerciale, un solo emoji Venezia.
+ * Report notturno Payel: un solo saluto, un solo blocco di testo, poi i dati.
  */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   const subject = `🛶 Report contatti · ${dateLabel}`;
   const couponCount = rows.filter(hasRestaurantCoupon).length;
-  const reportPreheader = `Report contatti del ${dateLabel}: ${count} registrazioni. CSV in allegato.`;
+  const statsLine = couponCount
+    ? `${count} check-in, ${couponCount} voucher ristorante`
+    : `${count} check-in`;
+  const reportPreheader = `Gentile Payel — report contatti del ${dateLabel}: ${statsLine}. CSV in allegato.`;
 
   const listaSoloNumeri = rows
     .map((row) => row.phone)
     .filter(Boolean)
     .join(', ');
 
+  const introPlain = `in allegato il report contatti di oggi (${dateLabel}): ${statsLine}. Il CSV è pronto per Excel.`;
+
   const text = [
-    `Ciao Payel,`,
+    `Gentile Payel,`,
     ``,
-    `in allegato il report contatti di oggi (${dateLabel}).`,
-    `${count} registrazioni${couponCount ? `, ${couponCount} voucher ristorante` : ''}.`,
-    `Dagli un'occhiata quando puoi — il CSV è pronto per Excel.`,
+    introPlain,
     ``,
     `Numeri WhatsApp:`,
     listaSoloNumeri || '-',
     ``,
-    `Saluti,`,
     `Front Desk — ${hotelName}`,
   ].join('\n');
 
   const bodyHtml = `
-              <p style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 12px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
-                Ciao Payel,
+              <p style="font-family:${SERIF};font-size:18px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${C} !important;margin:0 0 14px;text-align:left;line-height:1.3;">
+                Gentile Payel,
               </p>
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 10px;text-align:left;">
-                in allegato trovi il report contatti di oggi
-                (<strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(dateLabel)}</strong>).
-              </p>
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 8px;text-align:left;">
-                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${count}</strong> registrazioni${
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
+                in allegato il report contatti di oggi
+                (<strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(dateLabel)}</strong>):
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${count}</strong> check-in${
                   couponCount
                     ? `, <strong style="color:${C} !important;font-weight:600;font-style:italic;">${couponCount}</strong> voucher ristorante`
                     : ''
                 }.
-                Dagli un&rsquo;occhiata quando puoi: il file CSV &egrave; pronto per Excel.
+                Il CSV &egrave; pronto per Excel.
               </p>
 
               ${sectionTitle('Presenze')}
@@ -368,6 +368,8 @@ export function buildMonthlyStaffEmail({
   const subject = `Hotel Canal · Report mensile · ${monthLabel} ${year}`;
   const totaleMese = Number(totals?.totale_mese || 0);
   const totaleCoupon = Number(totals?.totale_coupon || 0);
+  const period = `${monthLabel} ${year}`;
+  const introPlain = `riepilogo di ${period}: ${totaleMese} check-in, ${totaleCoupon} voucher ristorante. Qui sotto la classifica staff: i check-in effettuati da ciascun receptionist e, a fianco, quanti ospiti hanno preso il voucher della Trattoria (referral).`;
 
   const rowsHtml = ranking
     .map((row, index) => {
@@ -387,21 +389,22 @@ export function buildMonthlyStaffEmail({
     })
     .join('');
 
-  const csv = `\uFEFFClassifica Staff,Ospiti Registrati,Coupon Emessi\n${ranking
+  const csv = `\uFEFFReceptionist,Check-in,Voucher ristorante (referral)\n${ranking
     .map(
-      (row, i) =>
-        `${i + 1}. ${csvEscape(row.receptionist)},${row.totale_registrati},${row.coupon_emessi}`,
+      (row) =>
+        `${csvEscape(row.receptionist)},${row.totale_registrati},${row.coupon_emessi}`,
     )
     .join('\n')}\n`;
 
   const bodyHtml = `
-              <p style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
+              <p style="font-family:${SERIF};font-size:18px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${C} !important;margin:0 0 14px;text-align:left;line-height:1.3;">
                 Gentile Payel,
               </p>
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 8px;text-align:left;">
-                riepilogo performance reception di <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(monthLabel)} ${escapeHtml(String(year))}</strong>:
-                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${totaleMese}</strong> registrazioni,
-                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${totaleCoupon}</strong> voucher.
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
+                riepilogo di <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(period)}</strong>:
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${totaleMese}</strong> check-in,
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${totaleCoupon}</strong> voucher ristorante.
+                Qui sotto la classifica staff: i check-in effettuati da ciascun receptionist e, a fianco, quanti ospiti hanno preso il voucher della Trattoria (referral).
               </p>
 
               ${sectionTitle('Classifica staff')}
@@ -409,11 +412,14 @@ export function buildMonthlyStaffEmail({
                 <tr>
                   <td width="36" style="padding:12px 8px 12px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">#</td>
                   <td style="padding:12px 8px;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">Reception</td>
-                  <td align="right" style="padding:12px 0 12px 8px;border-bottom:1px solid #E8E4DC;text-align:right;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">Ospiti</td>
-                  <td align="right" style="padding:12px 0 12px 8px;border-bottom:1px solid #E8E4DC;text-align:right;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">Voucher</td>
+                  <td align="right" style="padding:12px 0 12px 8px;border-bottom:1px solid #E8E4DC;text-align:right;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8A949C;">Check-in</td>
+                  <td align="right" style="padding:12px 0 12px 8px;border-bottom:1px solid #E8E4DC;text-align:right;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8A949C;">Referral</td>
                 </tr>
                 ${rowsHtml}
               </table>
+              <p style="font-family:${SANS};font-size:11px;font-weight:500;color:#8A949C !important;margin:0 0 28px;line-height:1.45;">
+                Referral = ospiti che hanno ricevuto il voucher &minus;10% Trattoria alla Terrazza.
+              </p>
 
               ${closingFooter(hotelName, 'CSV di riepilogo mensile in allegato.')}
   `;
@@ -422,23 +428,20 @@ export function buildMonthlyStaffEmail({
     title: subject,
     hotelName,
     eyebrow: 'Santa Croce 553 · Venezia',
-    preheader: `${monthLabel} ${year} · ${totaleMese} registrazioni · ${totaleCoupon} voucher`,
+    preheader: `Gentile Payel — ${period}: ${totaleMese} check-in, ${totaleCoupon} voucher ristorante`,
     bodyHtml,
   });
 
   const text = [
     `Gentile Payel,`,
     ``,
-    `riepilogo ${hotelName} — ${monthLabel} ${year}.`,
-    `Registrazioni: ${totaleMese}`,
-    `Voucher: ${totaleCoupon}`,
+    introPlain,
     ``,
     ...ranking.map(
       (row, i) =>
-        `${i + 1}. ${row.receptionist} — ${row.totale_registrati} ospiti, ${row.coupon_emessi} voucher`,
+        `${i + 1}. ${row.receptionist} — ${row.totale_registrati} check-in, ${row.coupon_emessi} referral`,
     ),
     ``,
-    `Cordiali saluti,`,
     `La Direzione — ${hotelName}`,
   ].join('\n');
 
