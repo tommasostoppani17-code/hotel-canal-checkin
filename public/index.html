@@ -236,13 +236,13 @@
         padding-right: var(--ios-inset);
       }
 
-      #step4.slide-step {
+      #step3.slide-step {
         padding-left: 0;
         padding-right: 0;
       }
 
-      #step4 .step3-home,
-      #step4 .guest-sheet {
+      #step3 .step3-home,
+      #step3 .guest-sheet {
         padding-left: var(--ios-inset);
         padding-right: var(--ios-inset);
       }
@@ -337,12 +337,12 @@
         font-size: 10px;
       }
 
-      #step4 .guest-action-btn {
+      #step3 .guest-action-btn {
         min-height: 42px;
         padding: 8px 12px;
       }
 
-      #step4 .receipt-badge {
+      #step3 .receipt-badge {
         padding: 10px 12px;
         margin-bottom: 10px;
       }
@@ -435,7 +435,7 @@
       overflow: hidden;
       position: relative;
       will-change: height;
-      transition: height 350ms cubic-bezier(0.16, 1, 0.3, 1);
+      transition: height 380ms cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
@@ -444,7 +444,7 @@
       display: flex;
       flex-wrap: nowrap;
       align-items: flex-start;
-      width: 400%;
+      width: 300%;
       height: auto;
       min-height: 100%;
       transform: translate3d(0, 0, 0);
@@ -464,10 +464,10 @@
      * Se il viewport è clampato, .is-active riempie e scrolla il body interno.
      */
     .slide-step {
-      flex: 0 0 25%;
-      width: 25%;
-      max-width: 25%;
-      min-width: 25%;
+      flex: 0 0 33.333%;
+      width: 33.333%;
+      max-width: 33.333%;
+      min-width: 33.333%;
       height: auto;
       min-height: 0;
       max-height: none;
@@ -923,13 +923,13 @@
     /* Step 2: hero panoramica ristorante */
     .concierge-hero {
       width: 100%;
-      height: 155px;
+      height: 110px;
       margin: 0 0 12px;
       border-radius: 14px;
       overflow: hidden;
       flex: 0 0 auto;
       background: #124453;
-      box-shadow: 0 6px 18px rgba(18, 68, 83, 0.12);
+      box-shadow: 0 4px 14px rgba(18, 68, 83, 0.06);
     }
 
     .concierge-hero img {
@@ -942,23 +942,23 @@
     }
 
     @media (max-height: 670px) {
-      .concierge-hero { height: 120px; margin-bottom: 10px; }
+      .concierge-hero { height: 96px; margin-bottom: 10px; }
     }
 
-    /* Step 3 room: stessi moduli dello Step 1 */
-    #step3 .form-grid-container {
+    /* Step 2 room form: stessi moduli dello Step 1 */
+    #step2 .form-grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      margin: 0;
+      margin: 4px 0 0;
       padding: 2px;
-      gap: var(--ios-gap-lg);
+      gap: 10px;
       width: 100%;
       box-sizing: border-box;
     }
 
-    #step3 .form-group.span-2 { grid-column: span 2; }
+    #step2 .form-group.span-2 { grid-column: span 2; }
 
-    #step3 .step-footer-fixed {
+    #step2 .step-footer-fixed {
       margin: 0;
       padding: 10px 0 2px;
       display: flex;
@@ -975,7 +975,7 @@
       );
     }
 
-    #step3 .step-footer-fixed .btn-canal {
+    #step2 .step-footer-fixed .btn-canal {
       margin: 0;
       width: 100%;
       height: var(--ios-touch);
@@ -1039,13 +1039,7 @@
 
     /* Vetrina editoriale HD — backdrop simmetrico, zero carosello */
     .concierge-photo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      width: 100%;
-      height: 65px;
-      margin: 0 0 12px;
-      flex: 0 0 auto;
+      display: none !important;
     }
 
     .concierge-photo-grid img {
@@ -1504,50 +1498,50 @@
       padding: 6px 12px 10px;
     }
 
-    #step4 .book-fields {
+    #step3 .book-fields {
       margin: 0;
       gap: 10px;
     }
 
-    #step4 .book-submit {
+    #step3 .book-submit {
       height: 44px;
       font-size: 15px;
       margin: 0;
     }
 
-    #step4 .book-done {
+    #step3 .book-done {
       margin: 0;
     }
 
-    #step4 .book-hint {
+    #step3 .book-hint {
       display: none;
     }
 
-    #step4 .book-field input,
-    #step4 .book-field .book-select {
+    #step3 .book-field input,
+    #step3 .book-field .book-select {
       height: var(--ios-touch);
       font-size: var(--type-body);
       border-radius: var(--radius-ios);
     }
 
-    #step4 .receipt-badge .time {
+    #step3 .receipt-badge .time {
       font-size: 9.5px;
     }
 
-    #step4 .guest-actions {
+    #step3 .guest-actions {
       margin-top: var(--ios-3);
       gap: var(--ios-2);
       width: 100%;
     }
 
-    #step4 .reception-note {
+    #step3 .reception-note {
       margin-top: var(--ios-3);
       font-size: 13px;
       line-height: 1.38;
       letter-spacing: -0.01em;
     }
 
-    #step4.slide-step {
+    #step3.slide-step {
       justify-content: stretch;
       overflow-x: hidden;
       overflow-y: auto;
@@ -1562,11 +1556,11 @@
       scrollbar-width: none;
     }
 
-    #step4.slide-step::-webkit-scrollbar {
+    #step3.slide-step::-webkit-scrollbar {
       display: none;
     }
 
-    #step4 .step3-shell {
+    #step3 .step3-shell {
       position: relative;
       display: flex;
       flex-direction: column;
@@ -1577,7 +1571,7 @@
       overflow: visible;
     }
 
-    #step4 .step3-home {
+    #step3 .step3-home {
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
@@ -1596,30 +1590,30 @@
     }
 
     /* Report inviato: messaggio centrato nella card */
-    #step4.is-report-result .step3-home {
+    #step3.is-report-result .step3-home {
       justify-content: center;
       align-items: center;
       height: 100%;
       text-align: center;
     }
 
-    #step4.is-report-result .step3-head {
+    #step3.is-report-result .step3-head {
       margin: 0;
       justify-content: center;
     }
 
-    #step4.is-report-result .step3-body,
-    #step4.is-report-result .receipt-badge {
+    #step3.is-report-result .step3-body,
+    #step3.is-report-result .receipt-badge {
       display: none !important;
     }
 
-    #step4.is-report-result .success-check {
+    #step3.is-report-result .success-check {
       width: 52px;
       height: 52px;
       margin: 0 auto 16px;
     }
 
-    #step4.is-report-result .success-check::after {
+    #step3.is-report-result .success-check::after {
       left: 19px;
       top: 14px;
       width: 9px;
@@ -1627,18 +1621,18 @@
       border-width: 0 2.5px 2.5px 0;
     }
 
-    #step4.is-report-result #lbl-succ-title {
+    #step3.is-report-result #lbl-succ-title {
       font-size: 24px !important;
     }
 
-    #step4.is-report-result #lbl-succ-sub {
+    #step3.is-report-result #lbl-succ-sub {
       margin: 10px 0 0 !important;
       max-width: 28ch;
       font-size: 13px !important;
       line-height: 1.45 !important;
     }
 
-    #step4.sheet-open .step3-home {
+    #step3.sheet-open .step3-home {
       transform: translate3d(-18%, 0, 0) scale(0.97);
       opacity: 0.42;
       pointer-events: none;
@@ -1672,7 +1666,7 @@
       box-shadow: -12px 0 40px rgba(18, 68, 83, 0.12);
     }
 
-    #step4.sheet-open .guest-sheet,
+    #step3.sheet-open .guest-sheet,
     .guest-sheet.is-open {
       transform: translate3d(0, 0, 0);
       pointer-events: auto;
@@ -1794,7 +1788,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #step4 .step3-home,
+      #step3 .step3-home,
       .guest-sheet,
       .guest-sheet-panel {
         transition: none !important;
@@ -1802,11 +1796,11 @@
       }
     }
 
-    #step4.slide-step::-webkit-scrollbar {
+    #step3.slide-step::-webkit-scrollbar {
       display: none;
     }
 
-    #step4 .step3-head {
+    #step3 .step3-head {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1818,7 +1812,7 @@
       gap: 0;
     }
 
-    #step4 .step3-body {
+    #step3 .step3-body {
       width: 100%;
       flex: 1 1 auto;
       min-height: 0;
@@ -1827,26 +1821,26 @@
       justify-content: flex-end;
     }
 
-    #step4 .guest-actions {
+    #step3 .guest-actions {
       gap: var(--ios-gap);
       margin-top: var(--ios-gap);
       margin-bottom: 0;
     }
 
-    #step4 .header {
+    #step3 .header {
       margin-bottom: 0;
       justify-content: flex-start !important;
       padding-top: 0 !important;
     }
 
-    #step4 .success-check {
+    #step3 .success-check {
       width: 36px;
       height: 36px;
       margin: 0 auto 10px;
       box-shadow: 0 3px 10px rgba(18, 68, 83, 0.22);
     }
 
-    #step4 .success-check::after {
+    #step3 .success-check::after {
       left: 13px;
       top: 9px;
       width: 7px;
@@ -1854,7 +1848,7 @@
       border-width: 0 2.2px 2.2px 0;
     }
 
-    #step4 #lbl-succ-title {
+    #step3 #lbl-succ-title {
       font-family: "Cinzel", Georgia, serif !important;
       font-size: var(--type-title) !important;
       line-height: 1.25 !important;
@@ -1865,7 +1859,7 @@
       text-transform: none !important;
     }
 
-    #step4 #lbl-succ-sub {
+    #step3 #lbl-succ-sub {
       display: block !important;
       font-size: 12px !important;
       margin: 6px 0 12px !important;
@@ -1876,7 +1870,7 @@
       color: var(--text-muted) !important;
     }
 
-    #step4 .receipt-badge {
+    #step3 .receipt-badge {
       padding: 12px 14px;
       margin: 0 0 var(--ios-gap-lg);
       width: 100%;
@@ -1886,7 +1880,7 @@
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
-    #step4 .receipt-badge .eyebrow {
+    #step3 .receipt-badge .eyebrow {
       font-size: var(--type-label);
       letter-spacing: 0.06em;
       color: var(--canal-petroleum);
@@ -1894,18 +1888,18 @@
       text-transform: uppercase;
     }
 
-    #step4 .receipt-badge .code {
+    #step3 .receipt-badge .code {
       font-size: 20px;
       margin: 4px 0 2px;
       color: var(--canal-petroleum);
     }
 
-    #step4 .receipt-badge .time {
+    #step3 .receipt-badge .time {
       font-size: 11px;
       color: var(--text-muted);
     }
 
-    #step4 .guest-call {
+    #step3 .guest-call {
       min-height: calc(var(--ios-touch) + 8px);
       gap: var(--ios-gap-lg);
       padding: 12px 14px 12px 12px;
@@ -1914,41 +1908,41 @@
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
-    #step4 .guest-call .ga-call-icon {
+    #step3 .guest-call .ga-call-icon {
       width: 36px;
       height: 36px;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(18, 68, 83, 0.18);
     }
 
-    #step4 .guest-call .ga-call-icon svg {
+    #step3 .guest-call .ga-call-icon svg {
       width: 14px;
       height: 14px;
     }
 
-    #step4 .guest-call .ga-title {
+    #step3 .guest-call .ga-title {
       font-size: 13px;
       font-weight: 700;
     }
 
-    #step4 .guest-call .ga-sub {
+    #step3 .guest-call .ga-sub {
       font-size: 10.5px;
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
-    #step4 .guest-call .ga-phone {
+    #step3 .guest-call .ga-phone {
       font-size: 12px;
       font-weight: 600;
       padding: 6px 10px;
       border-radius: 12px;
     }
 
-    #step4 .guest-action {
+    #step3 .guest-action {
       border-radius: var(--radius-ios);
     }
 
-    #step4 .guest-action-btn {
+    #step3 .guest-action-btn {
       min-height: var(--ios-touch);
       height: auto;
       padding: 10px 12px;
@@ -1958,42 +1952,42 @@
         background-color 0.2s ease;
     }
 
-    #step4 .guest-action-btn:active {
+    #step3 .guest-action-btn:active {
       transform: scale(0.97);
     }
 
-    #step4 .guest-action-btn .ga-title {
+    #step3 .guest-action-btn .ga-title {
       font-size: 13px;
       font-weight: 700;
       color: var(--canal-petroleum);
     }
 
-    #step4 .guest-action-btn .ga-sub {
+    #step3 .guest-action-btn .ga-sub {
       font-size: 10.5px;
       color: #7A8791;
     }
 
-    #step4 .guest-action-panel {
+    #step3 .guest-action-panel {
       display: none;
     }
 
-    #step4 .guest-kv {
+    #step3 .guest-kv {
       padding: 12px;
       font-size: 12px;
     }
 
-    #step4 .guest-kv .v {
+    #step3 .guest-kv .v {
       font-size: var(--type-body);
     }
 
-    #step4 .book-field label {
+    #step3 .book-field label {
       font-size: var(--type-label);
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
-    #step4 .book-submit {
+    #step3 .book-submit {
       border-radius: var(--radius-ios);
       font-weight: 600;
       letter-spacing: -0.02em;
@@ -2001,7 +1995,7 @@
       font-size: var(--type-cta);
     }
 
-    #step4 .reception-note {
+    #step3 .reception-note {
       margin-top: var(--ios-gap-lg);
       margin-bottom: var(--ios-1);
       font-size: var(--type-label);
@@ -2927,7 +2921,7 @@
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
-    #step4.is-active .receipt-badge:not(.is-collapsed) {
+    #step3.is-active .receipt-badge:not(.is-collapsed) {
       animation: badgeInflate 0.45s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
@@ -2982,7 +2976,7 @@
   <div class="apple-card is-entering" id="card">
     <div class="card-sheen" aria-hidden="true"></div>
     <div class="step-dots" id="stepDots" aria-hidden="true">
-      <span class="active"></span><span></span><span></span><span></span>
+      <span class="active"></span><span></span><span></span>
     </div>
 
     <div class="error" id="error" role="alert"></div>
@@ -3030,7 +3024,7 @@
         </div>
       </section>
 
-      <!-- STEP 2: Dining Privilege — vetrina + orario (zero form) -->
+      <!-- STEP 2: Dining + room (hero → testo → ore → form → conferma) -->
       <section class="slide-step" id="step2" aria-hidden="true">
         <div class="step-body step-scroll">
           <div class="concierge-hero" aria-hidden="true">
@@ -3038,7 +3032,7 @@
           </div>
           <div class="concierge-header-title" id="lbl-concierge-title">Dining Privilege</div>
           <p class="concierge-sub-text" id="lbl-concierge-sub">
-            As our guest, you hold a 10% exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Select a preferred dinner time tonight.
+            Come nostro ospite hai diritto a un certificato di sconto esclusivo del 10% presso la <strong>Trattoria alla Terrazza</strong>. Seleziona l&rsquo;orario se desideri riservare un tavolo per stasera.
           </p>
           <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
           <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
@@ -3048,7 +3042,7 @@
 
           <div class="booking-reserve-block">
             <label class="booking-reserve-label" id="lbl-reserve-tonight" for="bookingHourGrid">
-              Reserve a table for tonight? (optional)
+              Prenotare un tavolo per stasera? (opzionale)
             </label>
             <div class="booking-segment-grid" id="bookingHourGrid" role="group" aria-labelledby="lbl-reserve-tonight">
               <button type="button" class="hour-pill-ios" data-hour="19:30">19:30</button>
@@ -3057,23 +3051,7 @@
               <button type="button" class="hour-pill-ios is-skip is-selected" data-hour="NO" id="pillSkipTable">Skip</button>
             </div>
           </div>
-        </div>
 
-        <div class="step-footer-fixed" id="step2Footer">
-          <button type="button" class="btn-canal" id="btnDiningNext">Continua</button>
-          <button type="button" class="btn-ghost" id="btnDiningBack">Indietro</button>
-        </div>
-      </section>
-
-      <!-- STEP 3: Room Details — stanza / ospiti / receptionist -->
-      <section class="slide-step" id="step3" aria-hidden="true">
-        <div class="header">
-          <span class="hotel-title">Hotel Canal</span>
-          <span class="hotel-subtitle">Venice Experience</span>
-          <h1 id="lbl-room-title">Dettagli stanza</h1>
-        </div>
-
-        <div class="step-body step-scroll">
           <div class="form-grid-container" id="roomFormGrid">
             <div class="form-group">
               <label id="lbl-room" for="room">Stanza *</label>
@@ -3105,18 +3083,19 @@
           </div>
         </div>
 
-        <div class="step-footer-fixed" id="step3Footer">
+        <div class="step-footer-fixed" id="step2Footer">
           <button type="button" class="btn-canal" id="btnSubmit">Conferma e ricevi coupon</button>
           <button type="button" class="btn-ghost" id="btnSkip">Salta, solo registrazione</button>
           <button type="button" class="btn-ghost" id="btnBack">Indietro</button>
         </div>
       </section>
 
-      <!-- STEP 4 SUCCESS -->
-      <section class="slide-step" id="step4" aria-hidden="true">
-        <div class="step3-shell step4-shell" id="step4Shell">
-          <div class="step3-home step4-home" id="step4Home">
-            <div class="header step3-head step4-head">
+      <!-- STEP 3 SUCCESS -->
+      <section class="slide-step" id="step3" aria-hidden="true">
+
+        <div class="step3-shell" id="step3Shell">
+          <div class="step3-home" id="step3Home">
+            <div class="header step3-head step3-head">
               <div class="success-check" aria-hidden="true"></div>
               <h1 id="lbl-succ-title">Registrato!</h1>
               <p id="lbl-succ-sub">
@@ -3129,7 +3108,7 @@
               </div>
             </div>
 
-            <div class="step-body step3-body step4-body">
+            <div class="step-body step3-body step3-body">
               <div class="guest-actions" id="guestActions" hidden>
                 <div class="guest-action is-book" id="actionTable">
                   <button type="button" class="guest-action-btn" data-sheet="tablePanel" id="btnTable" aria-expanded="false" aria-controls="tablePanel">
@@ -3312,7 +3291,7 @@
         restDescShort: 'Completa stanza e receptionist per attivare il certificato −10%.',
         restBlurb: 'In qualità di ospite hai un certificato sconto −10% presso Trattoria alla Terrazza. Completa il check-in stanza o prenota un tavolo.',
         conciergeTitle: 'Dining Privilege',
-        conciergeSubHtml: 'In qualità di ospite hai un certificato sconto esclusivo −10% presso <strong>Trattoria alla Terrazza</strong>. Scegli un orario per stasera.',
+        conciergeSubHtml: 'Come nostro ospite hai diritto a un certificato di sconto esclusivo del 10% presso la <strong>Trattoria alla Terrazza</strong>. Seleziona l\'orario se desideri riservare un tavolo per stasera.',
         reserveTonight: 'Prenotare un tavolo per stasera? (opzionale)',
         pillSkip: 'No',
         restTag: 'Il nostro regalo per te',
@@ -3797,13 +3776,11 @@
     const privacyEl = document.getElementById('privacy');
     const privacyBox = document.getElementById('privacyBox');
     const btnNext = document.getElementById('btnNext');
-    const btnDiningNext = document.getElementById('btnDiningNext');
-    const btnDiningBack = document.getElementById('btnDiningBack');
     const btnBack = document.getElementById('btnBack');
     const btnSkip = document.getElementById('btnSkip');
     const btnSubmit = document.getElementById('btnSubmit');
 
-    const TOTAL_STEPS = 4;
+    const TOTAL_STEPS = 3;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let currentLang = 'en';
@@ -4038,7 +4015,7 @@
         } catch (_) {
           /* ignore older browsers */
         }
-        if (i !== 3 || step !== TOTAL_STEPS) {
+        if (i !== TOTAL_STEPS || step !== TOTAL_STEPS) {
           el.classList.remove('is-dissolving');
         }
       }
@@ -4156,13 +4133,11 @@
     function ensurePrimaryCtaVisible() {
       const viewport = document.getElementById('sliderViewport');
       const btn =
-        currentStep === 3
+        currentStep === 2
           ? document.getElementById('btnSubmit')
-          : currentStep === 2
-            ? document.getElementById('btnDiningNext')
-            : currentStep === 1
-              ? document.getElementById('btnNext')
-              : null;
+          : currentStep === 1
+            ? document.getElementById('btnNext')
+            : null;
       if (!viewport || !btn) return;
       const vr = viewport.getBoundingClientRect();
       const br = btn.getBoundingClientRect();
@@ -4379,7 +4354,7 @@
      * Successo: micro rubber, poi salto netto allo step 3 (niente dissolve + slide sovrapposti).
      */
     function playSuccessKinetics(thenGo) {
-      const stepRoom = document.getElementById('step3');
+      const stepRoom = document.getElementById('step2');
       if (stepRoom) stepRoom.classList.remove('is-dissolving');
       playConfirmChime();
 
@@ -4582,12 +4557,12 @@
         return true;
       }
       if (/stanz|room|chambre|zimmer|habitaci/.test(msg)) {
-        setStep(3);
+        setStep(2);
         showFieldError(roomEl);
         return true;
       }
       if (/reception|staff|impiegat/.test(msg)) {
-        setStep(3);
+        setStep(2);
         showFieldError(staffEl);
         return true;
       }
@@ -4689,8 +4664,6 @@
       const guestsLbl = document.getElementById('lbl-guests');
       if (guestsLbl) guestsLbl.textContent = dict.guestsShort || dict.guests || 'Ospiti';
       btnNext.textContent = dict.nextBtn;
-      if (btnDiningNext) btnDiningNext.textContent = dict.nextBtn;
-      if (btnDiningBack) btnDiningBack.textContent = dict.back;
       btnBack.textContent = dict.back;
       if (btnSkip) btnSkip.textContent = dict.skip || 'Skip';
       if (!btnSubmit.disabled) btnSubmit.textContent = dict.button;
@@ -4802,7 +4775,7 @@
       lastCouponSent = Boolean(couponSent);
       guestAccessToken = accessToken || null;
       guestServicesCache = null;
-      document.getElementById('step4')?.classList.remove('is-report-result');
+      document.getElementById('step3')?.classList.remove('is-report-result');
 
       // Solo testi (niente display:none / flex recalc). Poi slide → successo.
       document.getElementById('lbl-succ-title').textContent = already
@@ -4980,7 +4953,7 @@
     });
 
     function openGuestSheet(panelId, triggerBtn) {
-      const step3 = document.getElementById('step4');
+      const step3 = document.getElementById('step3');
       const sheet = document.getElementById('guestSheet');
       const titleEl = document.getElementById('guestSheetTitle');
       if (!step3 || !sheet || !panelId) return;
@@ -5017,7 +4990,7 @@
     }
 
     function closeGuestSheet() {
-      const step3 = document.getElementById('step4');
+      const step3 = document.getElementById('step3');
       const sheet = document.getElementById('guestSheet');
       if (!step3 || !sheet) return;
 
@@ -5229,7 +5202,7 @@
       document.getElementById('receiptBadge').classList.add('is-collapsed');
       const actions = document.getElementById('guestActions');
       if (actions) actions.hidden = true;
-      document.getElementById('step4')?.classList.add('is-report-result');
+      document.getElementById('step3')?.classList.add('is-report-result');
       playSuccessKinetics(() => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => setStep(TOTAL_STEPS));
@@ -5333,7 +5306,7 @@
         triggerManualReport();
         return;
       }
-      setStep(2); // dining
+      setStep(2);
     });
 
     [firstNameEl, lastNameEl, phoneEl, emailEl, staffEl, roomEl, guestsEl]
@@ -5387,31 +5360,11 @@
       }
     });
 
-    btnDiningNext?.addEventListener('click', () => {
-      if (submitting) return;
-      try {
-        document.activeElement?.blur?.();
-      } catch (_) {
-        /* ignore */
-      }
-      pinCardInView();
-      clearError();
-      playConfirmChime({ soft: true });
-      setStep(3);
-    });
-
-    btnDiningBack?.addEventListener('click', () => {
-      if (submitting) return;
-      clearError();
-      playConfirmChime({ soft: true });
-      setStep(1);
-    });
-
     btnBack.addEventListener('click', () => {
       if (submitting) return;
       clearError();
       playConfirmChime({ soft: true });
-      setStep(2);
+      setStep(1);
     });
 
     btnSubmit.addEventListener('click', () => {
@@ -5428,7 +5381,7 @@
 
     async function submitFinal({ clearStaff = false, requireCoupon = false } = {}) {
       if (submitting) return;
-      if (currentStep !== 3) setStep(3);
+      if (currentStep !== 2) setStep(2);
       if (!validateStep1()) {
         setStep(1);
         return;
@@ -5456,8 +5409,6 @@
       submitting = true;
       setCanalButtonLoading(btnSubmit);
       btnNext.disabled = true;
-      if (btnDiningNext) btnDiningNext.disabled = true;
-      if (btnDiningBack) btnDiningBack.disabled = true;
       if (btnSkip) btnSkip.disabled = true;
       if (btnBack) btnBack.disabled = true;
 
@@ -5477,7 +5428,7 @@
       };
 
       try {
-        // Resta su Step 3 (room) mentre aspetta; Step 4 solo dopo OK server/Resend
+        // Resta su Step 2 mentre aspetta; Step 3 solo dopo OK server/Resend
         const response = await fetch('/api/checkins', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -5489,8 +5440,6 @@
           submitting = false;
           resetCanalButton(btnSubmit, dict.button);
           btnNext.disabled = false;
-          if (btnDiningNext) btnDiningNext.disabled = false;
-          if (btnDiningBack) btnDiningBack.disabled = false;
           if (btnSkip) btnSkip.disabled = false;
           if (btnBack) btnBack.disabled = false;
           if (response.status >= 500) {
@@ -5555,8 +5504,6 @@
         submitting = false;
         resetCanalButton(btnSubmit, dict.button);
         btnNext.disabled = false;
-        if (btnDiningNext) btnDiningNext.disabled = false;
-        if (btnDiningBack) btnDiningBack.disabled = false;
         if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
         if (
