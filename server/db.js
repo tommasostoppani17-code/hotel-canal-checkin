@@ -2,6 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import Database from 'better-sqlite3';
+import {
+  encryptField,
+  decryptCheckinRow,
+} from './crypto-fields.js';
 
 let db;
 
@@ -52,6 +56,11 @@ export function initDb(databasePath) {
     CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_coupon_token
       ON checkins (coupon_token)
       WHERE coupon_token IS NOT NULL;
+  `);
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_checkins_created_at
+      ON checkins (created_at);
   `);
 
   return db;
@@ -176,9 +185,9 @@ export function insertCheckin({
   `);
 
   const info = stmt.run({
-    phone,
-    email: email || null,
-    guestName: guestName || null,
+    phone: encryptField(phone),
+    email: email ? encryptField(email) : null,
+    guestName: guestName ? encryptField(guestName) : null,
     roomNumber: roomNumber || null,
     receptionist: receptionist || null,
     guestsCount: guestsCount ?? null,
@@ -197,7 +206,7 @@ export function markCouponSent(id) {
 }
 
 export function getCheckinById(id) {
-  return db
+  const row = db
     .prepare(
       `
       SELECT
@@ -208,6 +217,7 @@ export function getCheckinById(id) {
     `,
     )
     .get(Number(id));
+  return row ? decryptCheckinRow(row) : null;
 }
 
 /** Save dinner table preference (e.g. 20:15) and optional party size. */
@@ -239,7 +249,7 @@ export function setTableBooking(id, tableBooking, guestsCount = null) {
 }
 
 export function getCheckinByCouponToken(token) {
-  return db
+  const row = db
     .prepare(
       `
       SELECT id, phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, coupon_sent_at, created_at
@@ -249,6 +259,7 @@ export function getCheckinByCouponToken(token) {
     `,
     )
     .get(token);
+  return row ? decryptCheckinRow(row) : null;
 }
 
 export function updateCheckinCouponDetails(id, { roomNumber, receptionist }) {
@@ -300,7 +311,8 @@ export function getUnreportedCheckins() {
         created_at ASC
     `,
     )
-    .all();
+    .all()
+    .map((row) => decryptCheckinRow(row));
 }
 
 export function markReported(ids) {
@@ -360,7 +372,7 @@ export function countCheckins() {
   return db.prepare(`SELECT COUNT(*) AS n FROM checkins`).get()?.n || 0;
 }
 
-/** Snapshot completo per backup durable (Gist / disk). */
+/** Snapshot completo per backup durable (Gist / disk) — PII resta cifrato at rest. */
 export function exportAllCheckins() {
   return db
     .prepare(
@@ -387,6 +399,20 @@ export function exportAllCheckins() {
 }
 
 /**
+ * GDPR retention: elimina check-in più vecchi di `hours` ore.
+ * Default 24h — dopo report notturno il caveau si svuota.
+ */
+export function purgeCheckinsOlderThanHours(hours = 24) {
+  const h = Math.max(1, Number(hours) || 24);
+  const result = db
+    .prepare(
+      `DELETE FROM checkins WHERE created_at < datetime('now', ?)`,
+    )
+    .run(`-${h} hours`);
+  return result.changes || 0;
+}
+
+/**
  * Ripristina check-in da backup se il DB locale è vuoto.
  * Preserva gli id originali quando presenti.
  */
@@ -408,11 +434,15 @@ export function importCheckinsIfEmpty(rows) {
     let n = 0;
     for (const row of list) {
       if (!row?.phone) continue;
+      // Backup già cifrato: non ri-cifrare. Legacy plaintext: cifra al ripristino.
+      const phone = encryptField(row.phone);
+      const email = row.email ? encryptField(row.email) : null;
+      const guestName = row.guest_name ? encryptField(row.guest_name) : null;
       stmt.run({
         id: row.id ?? null,
-        phone: row.phone,
-        email: row.email || null,
-        guest_name: row.guest_name || null,
+        phone,
+        email,
+        guest_name: guestName,
         room_number: row.room_number || null,
         receptionist: row.receptionist || null,
         guests_count: row.guests_count ?? null,

@@ -17,6 +17,7 @@ import {
   countCheckins,
   setTableBooking,
   getCheckinById,
+  purgeCheckinsOlderThanHours,
 } from './db.js';
 import {
   runDailyReport,
@@ -87,6 +88,12 @@ function assertProductionSecrets() {
   if (guest === cron || coupon === cron || guest === coupon) {
     throw new Error(
       'CRON_SECRET, GUEST_ACCESS_SECRET e COUPON_SECRET devono essere tutti diversi',
+    );
+  }
+  const fieldKey = String(process.env.FIELD_ENCRYPTION_KEY || '').trim();
+  if (!fieldKey || fieldKey.length < 32) {
+    throw new Error(
+      'FIELD_ENCRYPTION_KEY obbligatorio in produzione (≥32 char random)',
     );
   }
 }
@@ -1047,4 +1054,13 @@ app.listen(PORT, async () => {
   );
   console.log(`Cron staff: 23:59 ultimo giorno del mese (${CRON_TZ})`);
   await restoreCheckinsBackupIfNeeded();
+  try {
+    const purged = purgeCheckinsOlderThanHours(24);
+    if (purged > 0) {
+      console.log(`[GDPR] Boot purge: eliminati ${purged} check-in >24h`);
+      void syncCheckinsBackup('gdpr-purge');
+    }
+  } catch (err) {
+    console.error('[GDPR] Boot purge failed:', err.message || err);
+  }
 });

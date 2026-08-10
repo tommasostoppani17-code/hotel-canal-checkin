@@ -11,6 +11,8 @@ import {
   getUnreportedCheckins,
   markReported,
   getMonthlyStaffStats,
+  purgeCheckinsOlderThanHours,
+  exportAllCheckins,
 } from './db.js';
 import {
   sendDailyWhatsAppReport,
@@ -202,10 +204,29 @@ export async function runDailyReport({ force = false } = {}) {
   const rows = getUnreportedCheckins();
 
   if (!rows.length) {
+    let purged = 0;
+    try {
+      purged = purgeCheckinsOlderThanHours(24);
+      if (purged > 0) {
+        console.log(
+          `[GDPR] Eliminati ${purged} check-in più vecchi di 24 ore (retention)`,
+        );
+        const { pushCheckinsBackup } = await import('./backup.js');
+        if (
+          process.env.CHECKIN_BACKUP_GIST_ID &&
+          process.env.CHECKIN_BACKUP_GITHUB_TOKEN
+        ) {
+          await pushCheckinsBackup(exportAllCheckins());
+        }
+      }
+    } catch (err) {
+      console.error('[GDPR] purge failed:', err.message || err);
+    }
     return {
       sent: false,
       reason: 'no_new_checkins',
       count: 0,
+      purged,
     };
   }
 
@@ -280,10 +301,19 @@ export async function runDailyReport({ force = false } = {}) {
   const ids = rows.map((row) => row.id);
   markReported(ids);
 
+  let purged = 0;
   try {
+    purged = purgeCheckinsOlderThanHours(24);
+    if (purged > 0) {
+      console.log(
+        `[GDPR] Eliminati ${purged} check-in più vecchi di 24 ore (retention)`,
+      );
+    }
     const { pushCheckinsBackup } = await import('./backup.js');
-    const { exportAllCheckins } = await import('./db.js');
-    if (process.env.CHECKIN_BACKUP_GIST_ID && process.env.CHECKIN_BACKUP_GITHUB_TOKEN) {
+    if (
+      process.env.CHECKIN_BACKUP_GIST_ID &&
+      process.env.CHECKIN_BACKUP_GITHUB_TOKEN
+    ) {
       await pushCheckinsBackup(exportAllCheckins());
     }
   } catch (err) {
@@ -297,6 +327,7 @@ export async function runDailyReport({ force = false } = {}) {
     email: channels.email,
     whatsapp: channels.whatsapp,
     partialErrors: errors.length ? errors : undefined,
+    purged,
     force,
   };
 }

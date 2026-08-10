@@ -42,6 +42,8 @@ services:
         sync: false
       - key: COUPON_SECRET
         sync: false
+      - key: FIELD_ENCRYPTION_KEY
+        sync: false
       - key: REPORT_TRIGGER_TOKEN
         sync: false
       - key: WIFI_SSID

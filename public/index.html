@@ -2206,6 +2206,106 @@
       user-select: none;
     }
 
+    .privacy-link {
+      display: inline;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--canal-petroleum);
+      font: inherit;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .privacy-sheet {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .privacy-sheet[hidden] {
+      display: none !important;
+    }
+
+    .privacy-sheet-backdrop {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      background: rgba(10, 45, 55, 0.42);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: pointer;
+    }
+
+    .privacy-sheet-panel {
+      position: relative;
+      z-index: 1;
+      width: min(420px, 100%);
+      max-height: min(78vh, 640px);
+      margin: 0;
+      padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+      border-radius: 22px 22px 0 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(228,238,244,0.96));
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 -12px 40px rgba(18, 68, 83, 0.18);
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .privacy-sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .privacy-sheet-head h2 {
+      margin: 0;
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--canal-petroleum);
+    }
+
+    .privacy-sheet-x {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 12px;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .privacy-sheet-body {
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #3A4550;
+    }
+
+    .privacy-sheet-body p {
+      margin: 0 0 12px;
+    }
+
+    .privacy-sheet-body a {
+      color: var(--canal-petroleum);
+      font-weight: 600;
+    }
+
     .privacy-box input {
       appearance: none;
       -webkit-appearance: none;
@@ -2600,9 +2700,9 @@
 
           <div class="step-footer-fixed">
             <label class="privacy-box" id="privacyBox">
-              <input type="checkbox" id="privacy" name="privacy">
+              <input type="checkbox" id="privacy" name="privacy" required aria-required="true">
               <span id="lbl-privacy" class="privacy-text">
-                Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.
+                Accetto il <button type="button" class="privacy-link" id="btnPrivacyInfo" aria-haspopup="dialog">trattamento dei dati</button> per le comunicazioni relative al mio soggiorno.
               </span>
             </label>
             <button type="button" class="btn-canal" id="btnNext">Continua</button>
@@ -2832,6 +2932,27 @@
     </div>
   </div>
 
+
+  <!-- Privacy policy glass sheet (GDPR informativa) -->
+  <div class="privacy-sheet" id="privacySheet" hidden aria-hidden="true">
+    <button type="button" class="privacy-sheet-backdrop" id="privacySheetCloseBg" aria-label="Close"></button>
+    <div class="privacy-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="privacySheetTitle">
+      <div class="privacy-sheet-head">
+        <h2 id="privacySheetTitle">Informativa privacy</h2>
+        <button type="button" class="privacy-sheet-x" id="privacySheetClose" aria-label="Chiudi">×</button>
+      </div>
+      <div class="privacy-sheet-body" id="privacySheetBody">
+        <p><strong>Titolare del trattamento:</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE), P.IVA / C.F. 04711930273.</p>
+        <p><strong>Finalità:</strong> esecuzione di misure precontrattuali e contrattuali relative al soggiorno (check-in digitale, invio istruzioni Wi‑Fi/accessi, coupon partner, prenotazione tavolo, report interni di portineria).</p>
+        <p><strong>Base giuridica:</strong> art. 6.1.b GDPR (contratto/misure precontrattuali) e art. 6.1.a (consenso esplicito raccolto in app).</p>
+        <p><strong>Conservazione:</strong> i dati anagrafici di contatto sono conservati sul server al massimo 24 ore, poi eliminati automaticamente dopo l’uso operativo (report di portineria).</p>
+        <p><strong>Destinatari:</strong> personale autorizzato dell’hotel (front desk). Nessuna cessione a piattaforme di remarketing o terzi commerciali. Fornitori tecnici (hosting/email/WhatsApp business) agiscono come responsabili del trattamento ove applicabile.</p>
+        <p><strong>Diritti:</strong> accesso, rettifica, cancellazione, limitazione, opposizione — contattare la reception o <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>
+        <p><a href="/privacy.html" target="_blank" rel="noopener">Apri versione completa</a></p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const translations = {
       it: {
@@ -2911,6 +3032,9 @@
         emailRequired: 'L\'email è obbligatoria.',
         emailInvalid: 'Inserisci un\'email valida.',
         privacyRequired: 'Per continuare accetta il trattamento dei dati.',
+        privacyLinkLabel: 'trattamento dei dati',
+        privacyHtml: 'Accetto il __LINK__ per le comunicazioni relative al mio soggiorno.',
+        privacySheetTitle: 'Informativa privacy',
         privacy: 'Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.',
         submitError: 'Errore durante l\'invio. Riprova.',
         networkError: 'Errore di connessione.',
@@ -3000,6 +3124,9 @@
         emailRequired: 'Email is required.',
         emailInvalid: 'Enter a valid email.',
         privacyRequired: 'Please accept data processing to continue.',
+        privacyLinkLabel: 'data processing',
+        privacyHtml: 'I accept __LINK__ for communications related to my stay.',
+        privacySheetTitle: 'Privacy notice',
         privacy: 'I accept data processing for communications related to my stay.',
         submitError: 'Could not submit. Please try again.',
         networkError: 'Connection error.',
@@ -3088,6 +3215,9 @@
         emailRequired: 'L\'e-mail est obligatoire.',
         emailInvalid: 'Entrez une adresse e-mail valide.',
         privacyRequired: 'Veuillez accepter le traitement des données.',
+        privacyLinkLabel: 'traitement des données',
+        privacyHtml: 'J\'accepte le __LINK__ pour les communications liées à mon séjour.',
+        privacySheetTitle: 'Information confidentialité',
         privacy: 'J\'accepte le traitement des données pour les communications liées à mon séjour.',
         submitError: 'Erreur d\'envoi. Réessayez.',
         networkError: 'Erreur de connexion.',
@@ -3176,6 +3306,9 @@
         emailRequired: 'E-Mail ist erforderlich.',
         emailInvalid: 'Gültige E-Mail eingeben.',
         privacyRequired: 'Bitte akzeptieren Sie die Datenverarbeitung.',
+        privacyLinkLabel: 'Datenverarbeitung',
+        privacyHtml: 'Ich akzeptiere die __LINK__ für Mitteilungen zu meinem Aufenthalt.',
+        privacySheetTitle: 'Datenschutzhinweis',
         privacy: 'Ich akzeptiere die Datenverarbeitung für Mitteilungen zu meinem Aufenthalt.',
         submitError: 'Senden fehlgeschlagen.',
         networkError: 'Verbindungsfehler.',
@@ -3264,6 +3397,9 @@
         emailRequired: 'El correo electrónico es obligatorio.',
         emailInvalid: 'Introduzca un correo válido.',
         privacyRequired: 'Acepte el tratamiento de datos para continuar.',
+        privacyLinkLabel: 'tratamiento de datos',
+        privacyHtml: 'Acepto el __LINK__ para comunicaciones relativas a mi estancia.',
+        privacySheetTitle: 'Aviso de privacidad',
         privacy: 'Acepto el tratamiento de datos para comunicaciones relativas a mi estancia.',
         submitError: 'Error al enviar. Inténtelo de nuevo.',
         networkError: 'Error de conexión.',
@@ -4124,7 +4260,20 @@
       document.getElementById('lbl-firstname').textContent = dict.name;
       document.getElementById('lbl-lastname').textContent = dict.lastName;
       document.getElementById('lbl-room').textContent = dict.roomShort || dict.room;
-      document.getElementById('lbl-privacy').textContent = dict.privacy;
+      const privacyLbl = document.getElementById('lbl-privacy');
+      if (privacyLbl) {
+        const linkLabel = dict.privacyLinkLabel || 'trattamento dei dati';
+        const template =
+          dict.privacyHtml ||
+          dict.privacy ||
+          'I accept data processing for communications related to my stay.';
+        privacyLbl.innerHTML = String(template).replace(
+          '__LINK__',
+          `<button type="button" class="privacy-link" id="btnPrivacyInfo" aria-haspopup="dialog">${linkLabel}</button>`,
+        );
+      }
+      const privacyTitle = document.getElementById('privacySheetTitle');
+      if (privacyTitle) privacyTitle.textContent = dict.privacySheetTitle || 'Privacy notice';
       const conciergeTitle = document.getElementById('lbl-concierge-title');
       if (conciergeTitle) {
         conciergeTitle.textContent = dict.conciergeTitle || 'Partner Dining Privilege';
@@ -4829,6 +4978,30 @@
           }
         });
       });
+
+    function openPrivacySheet(e) {
+      e?.preventDefault?.();
+      e?.stopPropagation?.();
+      const sheet = document.getElementById('privacySheet');
+      if (!sheet) return;
+      sheet.hidden = false;
+      sheet.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePrivacySheet() {
+      const sheet = document.getElementById('privacySheet');
+      if (!sheet) return;
+      sheet.hidden = true;
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('privacySheetClose')?.addEventListener('click', closePrivacySheet);
+    document.getElementById('privacySheetCloseBg')?.addEventListener('click', closePrivacySheet);
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest?.('#btnPrivacyInfo, .privacy-link');
+      if (!btn) return;
+      openPrivacySheet(e);
+    });
 
     privacyEl?.addEventListener('change', () => {
       privacyBox.classList.remove('is-invalid', 'shake');
