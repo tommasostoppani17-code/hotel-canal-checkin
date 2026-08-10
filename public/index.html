@@ -988,21 +988,14 @@
     }
     .dining-mosaic {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
       width: 100%;
-      margin: 0 0 8px;
-    }
-    .dining-mosaic-row {
-      margin-bottom: 0;
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-    .dining-mosaic-row figure {
-      aspect-ratio: 1 / 1;
+      margin: 0;
     }
     .dining-mosaic figure {
       margin: 0;
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 1 / 1;
       border-radius: 11px;
       overflow: hidden;
       background: #124453;
@@ -1116,12 +1109,8 @@
     }
     @media (max-height: 720px) {
       .dining-hero { aspect-ratio: 2 / 1; }
-      .dining-mosaic figure { aspect-ratio: 5 / 4; }
-      .dining-mosaic { gap: 6px; margin-bottom: 6px; }
       .dining-showcase { margin-bottom: 10px; }
-    }
-    @media (max-height: 640px) {
-      .dining-mosaic-row { display: none; }
+      .dining-mosaic { gap: 6px; }
     }
 
         #step3 .form-grid-container {
@@ -3835,16 +3824,10 @@
               <img src="/email/postcard-ingresso.jpg" alt="" width="1100" height="611" decoding="async">
               <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
             </div>
-            <div class="dining-mosaic">
+            <div class="dining-mosaic dining-mosaic-row">
               <figure><img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async"></figure>
               <figure><img src="/email/postcard-tavolo.jpg" alt="" width="1200" height="572" decoding="async"></figure>
               <figure><img src="/email/postcard-dish.jpg" alt="" width="1200" height="800" decoding="async"></figure>
-              <figure><img src="/email/thumb-pesce.jpg" alt="" width="600" height="600" decoding="async"></figure>
-            </div>
-            <div class="dining-mosaic dining-mosaic-row">
-              <figure><img src="/email/thumb-risotto.jpg" alt="" width="600" height="600" decoding="async"></figure>
-              <figure><img src="/email/thumb-linguine.jpg" alt="" width="600" height="600" decoding="async"></figure>
-              <figure><img src="/email/thumb-ingresso.jpg" alt="" width="600" height="600" decoding="async"></figure>
             </div>
           </div>
           <div class="concierge-header-title" id="lbl-concierge-title">Dining Privilege</div>
