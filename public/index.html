@@ -57,27 +57,36 @@
       --type-label: 9.5px;
       --type-body: 16px;
       --type-cta: 16px;
-      /* Viewport stabile su mobile; JS scrive --vvh da visualViewport */
-      --app-vh: var(--vvh, 100svh);
-      /* Step heights — Step 2 concierge compatto (niente carosello) */
-      --card-h-1: min(540px, calc(var(--app-vh) - 24px));
-      --card-h-2: min(620px, calc(var(--app-vh) - 8px));
-      /* Visual continuity: Step 3 volume + aria per le barre */
-      --card-h-3: min(520px, calc(var(--app-vh) - 20px));
-      --card-h-3-booking: min(540px, calc(var(--app-vh) - 20px));
-      --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
+      /* Viewport stabile; JS scrive --vvh da visualViewport */
+      --app-vh: var(--vvh, 100dvh);
+      /* Soft CSS fallbacks — JS misura e scrive --card-h in px */
+      --card-h-1: 480px;
+      --card-h-2: 560px;
+      --card-h-3: 500px;
+      --card-h-3-booking: 520px;
+      --card-h-3-open: 580px;
       --card-h: var(--card-h-1);
+      --card-max: calc(
+        var(--app-vh) - env(safe-area-inset-top, 0px) -
+          env(safe-area-inset-bottom, 0px) - 24px
+      );
     }
 
-    /* Blocca rimbalzo/overscroll del browser - effetto app a schermo fisso */
+    /* Blocca rimbalzo — altezza hardware-aware (Safari + Isola Dinamica) */
+    html {
+      height: 100%;
+      height: -webkit-fill-available;
+    }
+
     html, body {
       margin: 0;
       width: 100%;
       height: 100%;
       height: 100svh;
       height: 100dvh;
-      max-height: 100svh;
+      height: -webkit-fill-available;
       max-height: 100dvh;
+      max-height: -webkit-fill-available;
       overflow: hidden !important;
       overscroll-behavior: none !important;
       touch-action: manipulation;
@@ -87,7 +96,11 @@
 
     body {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: max(8px, env(safe-area-inset-top)) 12px max(8px, env(safe-area-inset-bottom));
+      padding:
+        calc(12px + env(safe-area-inset-top, 0px))
+        14px
+        calc(12px + env(safe-area-inset-bottom, 0px))
+        14px;
       box-sizing: border-box;
       display: flex;
       justify-content: center;
@@ -149,12 +162,12 @@
       --spot-x: 50%;
       --spot-y: 18%;
       position: relative;
-      z-index: 1;
+      z-index: 2;
       width: 100%;
       max-width: 380px;
-      /* Altezza per-step (JS setta --card-h), sync con lo slide */
+      /* Altezza = misura JS del contenuto; tetto = viewport + safe-area */
       height: var(--card-h);
-      max-height: var(--card-h);
+      max-height: min(var(--card-h), var(--card-max));
       display: flex;
       flex-direction: column;
       /* Crema → azzurro laguna */
@@ -173,7 +186,6 @@
       box-shadow:
         0 20px 60px rgba(8, 48, 72, 0.18),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
-      /* Clip solo il vetro: gli step gestiscono lo scroll interno se serve */
       overflow: hidden;
       isolation: isolate;
       transform: translate3d(0, 0, 0);
@@ -182,7 +194,6 @@
       transition:
         height var(--slide-ms) var(--height-ease),
         max-height var(--slide-ms) var(--height-ease);
-      /* Evita paint a scatti durante lo slide */
       contain: layout style;
     }
 
@@ -198,14 +209,18 @@
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
-    /* Smartphone: card un filo più stretta + margini laterali */
+    /* Smartphone: card più stretta + tetto safe-area */
     @media (max-width: 480px) {
       :root {
-        --card-h-1: min(520px, calc(var(--app-vh) - 20px));
-        --card-h-2: min(640px, calc(var(--app-vh) - 4px));
-        --card-h-3: min(520px, calc(var(--app-vh) - 16px));
-        --card-h-3-booking: min(560px, calc(var(--app-vh) - 14px));
-        --card-h-3-open: min(640px, calc(var(--app-vh) - 10px));
+        --card-h-1: 460px;
+        --card-h-2: 540px;
+        --card-h-3: 480px;
+        --card-h-3-booking: 520px;
+        --card-h-3-open: 600px;
+        --card-max: calc(
+          var(--app-vh) - env(safe-area-inset-top, 0px) -
+            env(safe-area-inset-bottom, 0px) - 20px
+        );
       }
 
       html, body {
@@ -213,41 +228,19 @@
         max-height: var(--app-vh);
       }
 
-      body {
-        padding-top: max(8px, env(safe-area-inset-top));
-        padding-bottom: max(8px, env(safe-area-inset-bottom));
-        padding-left: 14px;
-        padding-right: 14px;
-      }
-
       .apple-card {
         max-width: 360px;
         width: 100%;
         margin-left: auto;
         margin-right: auto;
-        /* Segue --card-h; il calc è solo tetto viewport (prima bloccava lo shrink) */
-        max-height: min(
-          var(--card-h),
-          calc(
-            var(--app-vh) - env(safe-area-inset-top, 0px) -
-              env(safe-area-inset-bottom, 0px) - 16px
-          )
-        );
-        padding: 14px 0 14px;
+        max-height: min(var(--card-h), var(--card-max));
+        padding: 14px 0 16px;
         border-radius: 24px;
-        background-color: var(--card-cream);
-        background-image: linear-gradient(
-          180deg,
-          var(--card-cream-top) 0%,
-          var(--card-cream-bottom) 100%
-        );
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
       }
 
       .slide-step {
-        padding-left: 16px;
-        padding-right: 16px;
+        padding-left: var(--ios-inset);
+        padding-right: var(--ios-inset);
       }
 
       #step3.slide-step {
@@ -277,6 +270,88 @@
 
       .apple-input:focus {
         background: var(--input-white);
+      }
+    }
+
+    /* V4: schermi corti (SE / Mini / landscape corto) — compressione intelligente */
+    @media (max-height: 670px) {
+      .apple-card {
+        padding: 14px 0 12px;
+        border-radius: 24px;
+      }
+
+      .header {
+        margin-bottom: 8px;
+      }
+
+      .header .hotel-title {
+        font-size: 18px;
+      }
+
+      .header h1,
+      .concierge-header-title {
+        font-size: 18px;
+      }
+
+      .concierge-photo-grid {
+        height: 72px;
+        margin-bottom: 8px;
+      }
+
+      .concierge-sub-text {
+        font-size: 10.5px;
+        margin-bottom: 8px !important;
+        line-height: 1.35;
+      }
+
+      .booking-segment-grid {
+        gap: 6px;
+        margin-bottom: 10px !important;
+      }
+
+      .hour-pill-ios {
+        height: 36px;
+        font-size: 12px;
+      }
+
+      .form-grid-container {
+        gap: 8px;
+      }
+
+      #step2 .form-grid-container {
+        padding: 10px;
+        gap: 8px 10px;
+      }
+
+      .apple-input,
+      #step2 .apple-input {
+        height: 40px;
+        font-size: 15px;
+      }
+
+      .btn-canal,
+      #step2 .step-footer-fixed .btn-canal {
+        height: 42px;
+        font-size: 15px;
+      }
+
+      .privacy-box {
+        margin: 10px 0 8px !important;
+        gap: 6px;
+      }
+
+      .privacy-text {
+        font-size: 10px;
+      }
+
+      #step3 .guest-action-btn {
+        min-height: 42px;
+        padding: 8px 12px;
+      }
+
+      #step3 .receipt-badge {
+        padding: 10px 12px;
+        margin-bottom: 10px;
       }
     }
 
@@ -3834,11 +3909,16 @@
     }
 
     function availableCardMax() {
+      const vv = window.visualViewport;
+      const viewportH = Math.round(
+        (vv && vv.height) || window.innerHeight || 0,
+      );
       const body = document.body;
       const bs = getComputedStyle(body);
       const pad =
         (parseFloat(bs.paddingTop) || 0) + (parseFloat(bs.paddingBottom) || 0);
-      return Math.max(360, Math.round(window.innerHeight - pad - 8));
+      // Tetto fluido: viewport hardware − padding safe-area − aria esterna
+      return Math.max(280, Math.round(viewportH - pad - 8));
     }
 
     /** Altezza naturale del contenuto dello step (indipendente dall’altezza attuale della card). */
@@ -3901,70 +3981,43 @@
     function computeCardHeightPx(step, { preferCache = true } = {}) {
       const card = document.getElementById('card');
       if (!card) return null;
+      const maxH = availableCardMax();
+      const softFloor = step === 2 ? 420 : step === 3 ? 400 : 380;
 
-      if (isPhoneViewport()) {
-        const maxH = availableCardMax();
-        // Step 3 home: floor 520, cresce se il contenuto è più alto (niente taglio)
-        if (step === 3) {
-          const step3 = document.getElementById('step3');
-          if (!step3?.classList.contains('sheet-open')) {
-            const natural = measureStepContentHeight(3);
-            const floor = 520;
-            const h = Math.min(
-              Math.max(Number.isFinite(natural) ? natural + 12 : floor, floor),
-              maxH,
-            );
-            stepHeightCache[3] = h;
-            return h;
-          }
-        }
-        const cached = stepHeightCache[step];
-        if (preferCache && cached >= 280) {
-          return Math.min(cached, maxH);
-        }
-        let natural = measureStepContentHeight(step);
-        if (!Number.isFinite(natural) || natural < 280) {
-          if (cached >= 280) return Math.min(cached, maxH);
-          return Math.min(step === 2 ? 620 : step === 3 ? 520 : 520, maxH);
-        }
-        // Se la misura è chiaramente gonfiata vs cache, tieni la cache
-        if (cached >= 280 && natural > cached + 40) {
-          natural = cached;
-        }
-        const floors = { 1: 500, 2: 600, 3: 520 };
-        const pads = { 1: 24, 2: 28, 3: 12 };
-        const h = Math.min(
-          Math.max(natural + (pads[step] || 16), floors[step] || 500),
-          maxH,
-        );
-        if (step === 1) measuredStep1Height = h;
-        return h;
+      // Cache solo se ancora sotto il tetto viewport (evita misure stale su rotate)
+      const cached = stepHeightCache[step];
+      if (preferCache && cached >= softFloor && cached <= maxH) {
+        return cached;
       }
 
-      const actions = document.getElementById('guestActions');
-      if (step === 3 && actions && !actions.hidden) {
-        const step3 = document.getElementById('step3');
-        if (!step3?.classList.contains('sheet-open')) {
-          const natural = measureStepContentHeight(3);
-          const maxH = availableCardMax();
-          return Math.min(
-            Math.max(Number.isFinite(natural) ? natural + 12 : 520, 520),
-            maxH,
-          );
-        }
-        const natural = measureStepContentHeight(3);
-        if (Number.isFinite(natural) && natural > 280) {
-          const maxH = availableCardMax();
-          return Math.min(Math.max(natural, 520), maxH);
-        }
+      let natural = measureStepContentHeight(step);
+      if (!Number.isFinite(natural) || natural < 240) {
+        if (cached >= softFloor) return Math.min(cached, maxH);
+        return Math.min(softFloor + 40, maxH);
       }
-      return null;
+
+      // Sheet aperti: lascia respirare un filo in più
+      const step3 = document.getElementById('step3');
+      const sheetBoost =
+        step === 3 && step3?.classList.contains('sheet-open') ? 24 : 8;
+      const h = Math.min(Math.max(natural + sheetBoost, softFloor), maxH);
+      stepHeightCache[step] = h;
+      if (step === 1) measuredStep1Height = h;
+      return h;
+    }
+
+    /** Alias Cupertino: misura biologica → --card-h (animata via CSS). */
+    function syncViewportHeight(stepNumber) {
+      const step = Number(stepNumber) || currentStep;
+      const h = computeCardHeightPx(step, { preferCache: false });
+      if (Number.isFinite(h)) applyCardHeightPx(h, { animate: true });
     }
 
     function applyCardHeightPx(h, { animate = false, shrink = false } = {}) {
       const card = document.getElementById('card');
       if (!card || !Number.isFinite(h)) return;
-      const px = `${Math.round(h)}px`;
+      const clamped = Math.min(Math.round(h), availableCardMax());
+      const px = `${clamped}px`;
       if (!animate) {
         card.classList.remove('is-height-shrink');
         // Instant senza spezzare le transition future: un solo write
@@ -4010,33 +4063,28 @@
         return;
       }
 
-      let h = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
-      const actions = document.getElementById('guestActions');
-      if (step === 3 && actions && !actions.hidden) {
-        const step3 = document.getElementById('step3');
-        if (!step3?.classList.contains('sheet-open')) {
-          const natural = measureStepContentHeight(3);
-          const px = Math.min(
-            Math.max(Number.isFinite(natural) ? natural + 12 : 520, 520),
-            availableCardMax(),
-          );
-          stepHeightCache[3] = px;
-          applyCardHeightPx(px, { animate: false });
-          return;
-        }
-        h = 'var(--card-h-3-booking)';
+      // Desktop / tablet: stessa misura biologica del telefono
+      const h = computeCardHeightPx(step, { preferCache: false });
+      if (Number.isFinite(h)) {
+        applyCardHeightPx(h, { animate: false });
+        return;
       }
       card.style.height = '';
       card.style.maxHeight = '';
-      card.style.setProperty('--card-h', h);
+      card.style.setProperty('--card-h', CARD_HEIGHTS[step] || CARD_HEIGHTS[1]);
     }
 
     /** Allinea --vvh all’altezza layout (Safari URL bar). */
     function syncAppViewportHeight() {
-      const h = Math.round(window.innerHeight || 0);
+      const vv = window.visualViewport;
+      const h = Math.round((vv && vv.height) || window.innerHeight || 0);
       if (h > 0) {
         document.documentElement.style.setProperty('--vvh', `${h}px`);
       }
+      // Svuota cache: dopo rotate / URL-bar Safari le misure vecchie mentono
+      stepHeightCache[1] = 0;
+      stepHeightCache[2] = 0;
+      stepHeightCache[3] = 0;
       syncCardHeight(currentStep, { preferCache: false });
     }
 
