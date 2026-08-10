@@ -50,8 +50,8 @@
       /* Viewport stabile su mobile; JS scrive --vvh da visualViewport */
       --app-vh: var(--vvh, 100svh);
       /* Step heights — Step 2 concierge compatto (niente carosello) */
-      --card-h-1: min(548px, calc(var(--app-vh) - 40px));
-      --card-h-2: min(580px, calc(var(--app-vh) - 16px));
+      --card-h-1: min(475px, calc(var(--app-vh) - 40px));
+      --card-h-2: min(575px, calc(var(--app-vh) - 12px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
       --card-h-3-open: min(600px, calc(var(--app-vh) - 16px));
@@ -189,8 +189,8 @@
     /* Smartphone: card un filo più stretta + margini laterali */
     @media (max-width: 480px) {
       :root {
-        --card-h-1: min(568px, calc(var(--app-vh) - 28px));
-        --card-h-2: min(600px, calc(var(--app-vh) - 12px));
+        --card-h-1: min(490px, calc(var(--app-vh) - 28px));
+        --card-h-2: min(590px, calc(var(--app-vh) - 8px));
         --card-h-3: min(500px, calc(var(--app-vh) - 28px));
         --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
         --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
@@ -819,7 +819,7 @@
       min-height: 0;
       justify-content: flex-start;
       align-items: stretch;
-      gap: 10px;
+      gap: 8px;
       position: relative;
       z-index: 1;
     }
@@ -839,11 +839,11 @@
     /* Vetrina editoriale HD — backdrop simmetrico, zero carosello */
     .concierge-photo-grid {
       display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 6px;
       width: 100%;
-      height: 105px;
-      margin: 0 0 14px;
+      height: 95px;
+      margin: 0 0 12px;
       flex: 0 0 auto;
     }
 
@@ -875,10 +875,10 @@
     .concierge-sub-text {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 11.5px;
-      line-height: 1.45;
+      line-height: 1.4;
       color: #4A5560;
       text-align: center;
-      margin: 0 0 14px !important;
+      margin: 0 0 12px !important;
       font-weight: 500;
       font-style: normal;
     }
@@ -908,7 +908,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin: 6px 0 14px;
+      margin: 6px 0 16px !important;
     }
 
     .hour-pill-ios {
@@ -956,9 +956,9 @@
 
     @media (max-width: 480px) {
       .concierge-photo-grid {
-        height: 92px;
+        height: 88px;
         gap: 6px;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
 
       .concierge-header-title {
@@ -3850,7 +3850,7 @@
         let natural = measureStepContentHeight(step);
         if (!Number.isFinite(natural) || natural < 280) {
           if (cached >= 280) return Math.min(cached, maxH);
-          return Math.min(step === 2 ? 620 : step === 3 ? 480 : 520, maxH);
+          return Math.min(step === 2 ? 575 : step === 3 ? 480 : 475, maxH);
         }
         // Se la misura è chiaramente gonfiata vs cache, tieni la cache
         if (cached >= 280 && natural > cached + 40) {
@@ -3858,8 +3858,8 @@
         }
         const h = Math.min(
           Math.max(
-            natural + (step === 1 ? 28 : step === 2 ? 20 : 0),
-            step === 2 ? 420 : step === 1 ? 428 : 400,
+            natural + (step === 1 ? 20 : step === 2 ? 24 : 0),
+            step === 2 ? 575 : step === 1 ? 475 : 400,
           ),
           maxH,
         );
