@@ -283,18 +283,18 @@
 
       .header h1,
       .concierge-header-title {
-        font-size: 18px;
+        font-size: 19px;
       }
 
       .concierge-photo-grid {
-        height: 56px;
-        margin-bottom: 8px;
+        display: none !important;
       }
 
       .concierge-sub-text {
-        font-size: 10.5px;
+        font-size: 12.5px;
         margin-bottom: 8px !important;
-        line-height: 1.35;
+        line-height: 1.45;
+        color: #2C3640;
       }
 
       .booking-segment-grid {
@@ -946,64 +946,119 @@
       .concierge-hero { height: 140px; margin-bottom: 12px; }
     }
 
-    /* Dining Privilege gallery (email photos, proper crop) */
-    .dining-gallery {
-      display: grid;
-      grid-template-columns: 1.45fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 8px;
+    /* Dining Privilege — single panoramic hero */
+    .dining-hero {
+      position: relative;
       width: 100%;
-      height: 200px;
-      margin: 0 0 8px;
-      flex: 0 0 auto;
-    }
-    .dining-gallery-main {
-      grid-row: 1 / 3;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #124453;
-      box-shadow: 0 4px 14px rgba(18, 68, 83, 0.1);
-    }
-    .dining-gallery-side {
+      aspect-ratio: 2 / 1;
+      max-height: 200px;
+      margin: 0 0 16px;
       border-radius: 12px;
       overflow: hidden;
-      background: #124453;
-    }
-    .dining-gallery img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 40%;
-      border: 0;
-    }
-    .dining-strip {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr;
-      gap: 8px;
-      width: 100%;
-      height: 72px;
-      margin: 0 0 14px;
       flex: 0 0 auto;
+      background: #124453;
+      box-shadow: 0 6px 18px rgba(18, 68, 83, 0.12);
     }
-    .dining-strip img {
+    .dining-hero img {
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
-      border-radius: 11px;
+      object-position: center 42%;
       border: 0;
-      background: #124453;
+    }
+    .dining-discount-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      padding: 7px 10px;
+      border-radius: 10px;
+      background: rgba(22, 78, 91, 0.92);
+      color: #FFFFFF;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      box-shadow: 0 4px 12px rgba(5, 11, 13, 0.25);
+    }
+    .dining-gallery,
+    .dining-strip {
+      display: none !important;
     }
     .concierge-hero-sm {
-      height: 88px !important;
-      margin-bottom: 12px !important;
+      height: 92px !important;
+      margin: 0 0 0 !important;
+      border-radius: 12px;
+    }
+    .dining-book .booking-reserve-block {
+      margin-top: 16px;
+    }
+    .dining-book .booking-segment-grid {
+      margin-top: 10px !important;
+      margin-bottom: 16px !important;
+    }
+    .dining-book .form-grid-container {
+      gap: 12px;
+      margin-top: 4px;
+    }
+    #step3 .input-with-icon .field-glyph {
+      left: 14px;
+      width: 16px;
+      height: 16px;
+    }
+    #step3 .input-with-icon .field-glyph svg {
+      width: 16px;
+      height: 16px;
+    }
+    #step3 .input-with-icon .apple-input {
+      height: 48px;
+      padding-left: 42px;
+      padding-right: 14px;
+      font-size: 15px;
+      border-radius: var(--radius-ios);
+    }
+    #step3 input[type="number"].apple-input {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    #step3 input[type="number"].apple-input::-webkit-outer-spin-button,
+    #step3 input[type="number"].apple-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .btn-text-link {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      padding: 8px 10px;
+      margin: 0;
+      min-height: 36px;
+      height: auto;
+      width: auto;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748B !important;
+      text-decoration: none;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+    }
+    .btn-text-link:active {
+      opacity: 0.65;
+    }
+    #btnSkip.btn-text-link {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      color: #64748B !important;
     }
     @media (max-height: 670px) {
-      .dining-gallery { height: 168px; }
-      .dining-strip { height: 60px; margin-bottom: 10px; }
-      .concierge-hero-sm { height: 72px !important; }
+      .dining-hero { max-height: 160px; margin-bottom: 12px; }
+      .concierge-hero-sm { height: 76px !important; }
+      .dining-book .booking-reserve-block { margin-top: 12px; }
     }
 
     #step3 .form-grid-container {
@@ -1163,13 +1218,13 @@
 
     .concierge-header-title {
       font-family: 'Cinzel', Georgia, serif;
-      font-size: var(--type-title);
+      font-size: 21px;
       font-weight: 600;
       color: var(--canal-petroleum);
       text-transform: none;
       letter-spacing: -0.02em;
       text-align: center;
-      margin: 0 0 var(--ios-1);
+      margin: 0 0 10px;
       border-bottom: none;
       padding-bottom: 0;
       line-height: 1.25;
@@ -1177,13 +1232,14 @@
 
     .concierge-sub-text {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 11.5px;
-      line-height: 1.4;
-      color: #4A5560;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #2C3640;
       text-align: center;
-      margin: 0 0 12px !important;
+      margin: 0 0 8px !important;
       font-weight: 500;
       font-style: normal;
+      padding: 0 4px;
     }
 
     .concierge-sub-text strong {
@@ -3134,22 +3190,10 @@
 
       <!-- STEP 2: Dining Privilege — gallery + testo + Continua -->
       <section class="slide-step" id="step2" aria-hidden="true">
-        <div class="step-body step-scroll">
-          <div class="dining-gallery" aria-hidden="true">
-            <div class="dining-gallery-main">
-              <img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async">
-            </div>
-            <div class="dining-gallery-side">
-              <img src="/email/postcard-ingresso.jpg" alt="" width="1100" height="611" decoding="async">
-            </div>
-            <div class="dining-gallery-side">
-              <img src="/email/postcard-tavolo.jpg" alt="" width="1200" height="572" decoding="async">
-            </div>
-          </div>
-          <div class="dining-strip" aria-hidden="true">
-            <img src="/email/postcard-dish.jpg" alt="" width="1200" height="800" decoding="async">
-            <img src="/email/thumb-pesce.jpg" alt="" width="400" height="400" decoding="async">
-            <img src="/email/thumb-linguine.jpg" alt="" width="400" height="400" decoding="async">
+        <div class="step-body step-scroll dining-vitrine">
+          <div class="dining-hero" aria-hidden="true">
+            <img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async">
+            <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
           </div>
           <div class="concierge-header-title" id="lbl-concierge-title">Dining Privilege</div>
           <p class="concierge-sub-text" id="lbl-concierge-sub">
@@ -3164,13 +3208,13 @@
 
         <div class="step-footer-fixed" id="step2Footer">
           <button type="button" class="btn-canal" id="btnDiningNext">Continua</button>
-          <button type="button" class="btn-ghost" id="btnDiningBack">Indietro</button>
+          <button type="button" class="btn-text-link" id="btnDiningBack">Indietro</button>
         </div>
       </section>
 
       <!-- STEP 3: Prenotazione opzionale + stanza (foto piccola, no titolo Dining) -->
       <section class="slide-step" id="step3" aria-hidden="true">
-        <div class="step-body step-scroll">
+        <div class="step-body step-scroll dining-book">
           <div class="concierge-hero concierge-hero-sm" aria-hidden="true">
             <img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async">
           </div>
@@ -3194,7 +3238,7 @@
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="8" cy="10" r="3"/><path d="M11 10h9v3M17 10v6M20 10v4"/></svg>
                 </span>
-                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off">
+                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="next">
               </div>
             </div>
             <div class="form-group">
@@ -3220,8 +3264,8 @@
 
         <div class="step-footer-fixed" id="step3Footer">
           <button type="button" class="btn-canal" id="btnSubmit">Conferma e ricevi coupon</button>
-          <button type="button" class="btn-ghost" id="btnSkip">Salta, solo registrazione</button>
-          <button type="button" class="btn-ghost" id="btnBack">Indietro</button>
+          <button type="button" class="btn-text-link" id="btnSkip">Salta, solo registrazione</button>
+          <button type="button" class="btn-text-link" id="btnBack">Indietro</button>
         </div>
       </section>
 
@@ -3907,6 +3951,13 @@
     const firstNameEl = document.getElementById('firstname');
     const lastNameEl = document.getElementById('lastname');
     const roomEl = document.getElementById('room');
+    function sanitizeRoomInput() {
+      if (!roomEl) return;
+      const next = String(roomEl.value || '').replace(/\D+/g, '').slice(0, 4);
+      if (roomEl.value !== next) roomEl.value = next;
+    }
+    roomEl?.addEventListener('input', sanitizeRoomInput);
+    roomEl?.addEventListener('blur', sanitizeRoomInput);
     const staffEl = document.getElementById('receptionist');
     const guestsEl = document.getElementById('guests');
     const privacyEl = document.getElementById('privacy');
