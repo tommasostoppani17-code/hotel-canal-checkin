@@ -20,6 +20,26 @@ function smtpConfigured() {
   return Boolean(env('SMTP_HOST') && env('SMTP_USER') && env('SMTP_PASS'));
 }
 
+function getFrom() {
+  return env(
+    'SMTP_FROM',
+    'Welcome to Hotel Canal <onboarding@resend.dev>',
+  );
+}
+
+/** Resend onboarding@resend.dev = solo email del proprietario account (test). */
+function isResendTestFrom(from = getFrom()) {
+  return /@resend\.dev\b/i.test(String(from || ''));
+}
+
+/**
+ * In produzione con from di test: preferisci SMTP reale se configurato,
+ * altrimenti Resend (limita i destinatari all'owner).
+ */
+function preferSmtpOverResend() {
+  return isResendTestFrom() && smtpConfigured();
+}
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -37,13 +57,6 @@ function toTitleCase(str) {
     .split(/\s+/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-}
-
-function getFrom() {
-  return env(
-    'SMTP_FROM',
-    'Welcome to Hotel Canal <onboarding@resend.dev>',
-  );
 }
 
 export function publicBaseUrl() {
@@ -794,7 +807,7 @@ async function sendMail({
     );
   }
 
-  if (resendConfigured()) {
+  if (resendConfigured() && !preferSmtpOverResend()) {
     const resend = new Resend(env('RESEND_API_KEY').trim());
     const payload = {
       from: getFrom(),
@@ -819,12 +832,23 @@ async function sendMail({
     }
     const { data, error } = await resend.emails.send(payload);
     if (error) {
-      throw new Error(error.message || JSON.stringify(error));
+      const msg = error.message || JSON.stringify(error);
+      if (isResendTestFrom() && /only send testing emails|own email/i.test(msg)) {
+        throw new Error(
+          'Resend in modalità test (onboarding@resend.dev): può mandare solo alla tua mail. Verifica un dominio su resend.com/domains e imposta SMTP_FROM tipo Welcome <checkin@hotelcanal.com>',
+        );
+      }
+      throw new Error(msg);
     }
     return data;
   }
 
   if (!smtpConfigured()) {
+    if (isResendTestFrom()) {
+      throw new Error(
+        'Email ospiti bloccata: SMTP_FROM usa onboarding@resend.dev (solo test). Verifica hotelcanal.com su Resend oppure configura SMTP_USER/SMTP_PASS Gmail.',
+      );
+    }
     throw new Error('Email non configurata');
   }
 
