@@ -174,15 +174,17 @@ export async function sendTableBookingWhatsApp(row) {
   const lang = String(row.guest_lang || '').slice(0, 2).toUpperCase() || '-';
 
   const body = [
-    `Buongiorno Payel,`,
-    `hai una nuova richiesta di prenotazione dalla stanza ${room}.`,
-    `Orario ${timeLabel} · ${pax} pers. · ${name}`,
-    `Tel ${phone}`,
-    coupon === 'SÌ' ? `Coupon −10% già inviato.` : null,
-    staff && staff !== '-' ? `Reception ${staff}` : null,
+    `Buongiorno,`,
     ``,
-    `Saluti,`,
-    `il front desk`,
+    `Nuova richiesta dalla stanza ${room}.`,
+    `Ospite: ${name}`,
+    `Orario: ${timeLabel}`,
+    `Persone: ${pax}`,
+    `Tel: ${phone}`,
+    coupon === 'SÌ' ? `Coupon −10% già inviato.` : null,
+    staff && staff !== '-' ? `Receptionist: ${staff}` : null,
+    ``,
+    `Chiamare per confermare la disponibilità.`,
   ]
     .filter((line) => line != null)
     .join('\n');

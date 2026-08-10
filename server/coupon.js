@@ -176,6 +176,7 @@ function buildWelcomeHtml({
   restaurantSrc,
   gallerySrc,
   dishSrc,
+  terraceSrc,
   thumbs = [],
   icons = {},
   stickers = {},
@@ -228,6 +229,9 @@ function buildWelcomeHtml({
   const resto = escapeHtml(restaurantSrc);
   const gallery = escapeHtml(gallerySrc || restaurantSrc);
   const dish = escapeHtml(dishSrc || restaurantSrc);
+  const terrace = escapeHtml(
+    terraceSrc || gallerySrc || restaurantSrc,
+  );
   const wifiSsidSafe = escapeHtml(wifiSsid || 'hotel canal');
   const wifiPasswordSafe = escapeHtml(wifiPassword || '—');
   const doorWalterSafe = escapeHtml(doorWalter || '—');
@@ -664,6 +668,7 @@ function buildWelcomeHtml({
                 ${lp.tastesDesc}
               </p>
               ${photoGrid(thumbs.slice(0, 4), 8)}
+              ${postcard(terrace, 'Terrazza sul canale', 8)}
               ${postcard(dish, 'Cucina della Trattoria alla Terrazza', 8)}
 
               ${veniceGuideBlock}
@@ -908,6 +913,7 @@ export async function sendWelcomeEmail({
     ['email', 'hero-venice.jpg'],
     ['email', 'postcard-tavolo.jpg'],
     ['email', 'postcard-ingresso.jpg'],
+    ['email', 'postcard-terrazza.jpg'],
     ['email', 'postcard-dish.jpg'],
     ['email', 'thumb-ingresso.jpg'],
     ['email', 'thumb-pesce.jpg'],
@@ -923,6 +929,8 @@ export async function sendWelcomeEmail({
   const heroSrc = publicAssetUrl('email', 'hero-venice.jpg');
   const restaurantSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
   const gallerySrc = publicAssetUrl('email', 'postcard-ingresso.jpg');
+  /* Stessa terrazza panoramica usata nell’alert Payel */
+  const terraceSrc = publicAssetUrl('email', 'postcard-terrazza.jpg');
   const dishSrc = publicAssetUrl('email', 'postcard-dish.jpg');
   const thumbs = [
     {
@@ -996,6 +1004,7 @@ export async function sendWelcomeEmail({
     restaurantSrc,
     gallerySrc,
     dishSrc,
+    terraceSrc,
     thumbs,
     icons,
     stickers,
