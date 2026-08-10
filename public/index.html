@@ -49,9 +49,9 @@
       --ios-inset: 22px;
       /* Viewport stabile su mobile; JS scrive --vvh da visualViewport */
       --app-vh: var(--vvh, 100svh);
-      /* Step heights — desktop/tablet; su phone vedi @media sotto */
+      /* Step heights — Step 2 concierge compatto (niente carosello) */
       --card-h-1: min(548px, calc(var(--app-vh) - 40px));
-      --card-h-2: min(740px, calc(var(--app-vh) - 12px));
+      --card-h-2: min(520px, calc(var(--app-vh) - 24px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
       --card-h-3-open: min(600px, calc(var(--app-vh) - 16px));
@@ -188,7 +188,7 @@
     @media (max-width: 480px) {
       :root {
         --card-h-1: min(568px, calc(var(--app-vh) - 28px));
-        --card-h-2: min(760px, calc(var(--app-vh) - 8px));
+        --card-h-2: min(540px, calc(var(--app-vh) - 16px));
         --card-h-3: min(500px, calc(var(--app-vh) - 28px));
         --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
         --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
@@ -247,28 +247,14 @@
         padding-right: 16px;
       }
 
-      /* Foto ristorante: inset pulito, niente bleed che accavalla */
-      #step2 .restaurant-showcase {
-        margin-left: 0;
-        margin-right: 0;
+      /* Step 2 concierge: niente carosello foto */
+      #step2 .booking-segment-grid {
+        gap: 7px;
       }
 
-      #step2 .carousel-viewport {
-        border-radius: 14px;
-        height: auto;
-        aspect-ratio: 5 / 4;
-        max-height: min(220px, 30svh);
-        width: 100%;
-      }
-
-      #step2 .carousel-slide img {
-        object-fit: cover;
-        object-position: center bottom;
-      }
-
-      #step2 .carousel-caption {
-        padding-left: 0;
-        padding-right: 0;
+      #step2 .hour-pill-ios {
+        height: 34px;
+        font-size: 12px;
       }
 
       .apple-input {
@@ -803,7 +789,7 @@
       padding-left: 34px;
     }
 
-    /* Step 2: stack Apple — una colonna, ritmi fissi, zero accavallamenti */
+    /* Step 2: Concierge Privilege — scheda istituzionale, niente marketing */
     #step2.slide-step {
       justify-content: flex-start;
       overflow-x: hidden;
@@ -827,7 +813,7 @@
       min-height: 0;
       justify-content: flex-start;
       align-items: stretch;
-      gap: 14px;
+      gap: 12px;
       position: relative;
       z-index: 1;
     }
@@ -836,7 +822,7 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: 10px;
+      gap: 0;
       margin: 0;
       padding: 0;
       flex: 0 0 auto;
@@ -844,194 +830,115 @@
       z-index: 1;
     }
 
-    #step2 .restaurant-showcase,
-    #step2 .rest-carousel {
-      position: relative;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      flex: 0 0 auto;
-      z-index: 0;
-    }
-
-    #step2 .carousel-viewport {
-      position: relative;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 5 / 4;
-      max-height: 220px;
-      border-radius: 14px;
-      overflow: hidden;
-      isolation: isolate;
-      background: #124453;
-      box-shadow: none;
-      z-index: 0;
-    }
-
-    #step2 .carousel-track,
-    #step2 .carousel-slide,
-    #step2 .carousel-slide img {
-      position: relative;
-      z-index: 0;
-    }
-
-    #step2 .carousel-slide img {
-      object-fit: cover;
-      object-position: center bottom;
-    }
-
-    #step2 .carousel-discount-badge,
-    #step2 .carousel-arrow,
-    #step2 .carousel-dots {
-      z-index: 2;
-    }
-
-    #step2 .carousel-discount-badge {
-      top: 10px;
-      left: 10px;
-      padding: 5px 9px;
-      font-size: 11px;
-      border-radius: 8px;
-    }
-
-    #step2 .carousel-arrow {
-      width: 28px;
-      height: 28px;
-    }
-
-    #step2 .carousel-arrow.left { left: 8px; }
-    #step2 .carousel-arrow.right { right: 8px; }
-
-    #step2 .carousel-dots {
-      bottom: 8px;
-    }
-
-    #step2 .step2-copy {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    #step2 .step2-copy h4 {
-      margin: 0;
-      font-family: "Cinzel", Georgia, serif;
-      font-size: 15px;
+    .concierge-header-title {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.06em;
-      line-height: 1.25;
-      text-transform: uppercase;
       color: var(--canal-petroleum);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-align: center;
+      margin: 0 0 8px;
+      border-bottom: 1px solid rgba(18, 68, 83, 0.12);
+      padding-bottom: 10px;
     }
 
-    #step2 .rest-rating {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 2px 0 0;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: rgba(18, 68, 83, 0.08);
-      border: 1px solid rgba(18, 68, 83, 0.12);
-    }
-
-    #step2 .rest-stars {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      line-height: 0;
-    }
-
-    #step2 .rest-star {
-      position: relative;
-      width: 11px;
-      height: 11px;
-      display: block;
-      background: rgba(18, 68, 83, 0.18);
-      clip-path: polygon(
-        50% 0%,
-        61% 35%,
-        98% 35%,
-        68% 57%,
-        79% 91%,
-        50% 70%,
-        21% 91%,
-        32% 57%,
-        2% 35%,
-        39% 35%
-      );
-    }
-
-    #step2 .rest-star.is-full {
-      background: #B79A63;
-    }
-
-    #step2 .rest-star.is-half {
-      background: linear-gradient(
-        90deg,
-        #B79A63 0 50%,
-        rgba(18, 68, 83, 0.18) 50% 100%
-      );
-    }
-
-    #step2 .rest-score {
+    .concierge-sub-text {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 12px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--canal-petroleum);
-      line-height: 1;
-    }
-
-    #step2 .rest-reviews {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      color: #7A8791;
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    #step2 .step2-copy .step2-tag {
-      margin: 0;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #8A949C;
-      line-height: 1.3;
-    }
-
-    #step2 .step2-copy .rest-blurb {
-      margin: 4px 0 0;
-      max-width: 34ch;
-      font-size: 12.5px;
-      line-height: 1.4;
+      line-height: 1.45;
+      color: #4A5560;
+      text-align: center;
+      margin: 0 0 14px;
       font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: -0.01em;
-      white-space: normal;
+      font-style: normal;
     }
 
-    #step2 .carousel-caption,
-    #step2 .rest-offer-blurb {
-      display: none;
+    .concierge-sub-text strong {
+      color: var(--canal-petroleum);
+      font-weight: 700;
+    }
+
+    .booking-reserve-block {
+      width: 100%;
+      margin: 0 0 2px;
+    }
+
+    .booking-reserve-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--canal-petroleum);
+      padding-left: 2px;
+      margin: 0 0 8px;
+    }
+
+    .booking-segment-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 0 0 4px;
+    }
+
+    .hour-pill-ios {
+      height: 36px;
+      margin: 0;
+      padding: 0 4px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 12px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition:
+        background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      -webkit-tap-highlight-color: transparent;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .hour-pill-ios:active {
+      transform: scale(0.96);
+    }
+
+    .hour-pill-ios.is-skip {
+      font-size: 11px;
+      color: #8E8E93;
+      font-weight: 600;
+    }
+
+    .hour-pill-ios.is-selected {
+      background: var(--canal-petroleum) !important;
+      border-color: var(--canal-petroleum) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.18);
     }
 
     #step2 .form-grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       margin: 0;
-      padding: 0;
-      gap: 12px 12px;
+      padding: 12px;
+      gap: 10px 12px;
       flex-shrink: 0;
       position: relative;
       z-index: 1;
       width: 100%;
+      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(18, 68, 83, 0.08);
+      border-radius: 16px;
     }
 
     #step2 .form-group {
@@ -1040,15 +947,16 @@
     }
 
     #step2 .form-group.span-2 {
+      grid-column: span 2;
       margin: 0;
     }
 
     #step2 .form-group label {
       display: block;
       margin: 0 0 6px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--canal-petroleum);
       padding: 0;
@@ -2702,55 +2610,31 @@
         </div>
       </section>
 
-      <!-- STEP 2: foto landscape · copy stretta · form · CTA -->
+      <!-- STEP 2: Concierge Privilege — scheda servizi + pillole orario -->
       <section class="slide-step" id="step2" aria-hidden="true">
         <div class="step-body">
           <div class="step2-top">
-            <div class="restaurant-showcase" aria-label="Trattoria alla Terrazza">
-              <div class="rest-carousel" id="restCarousel">
-                <div class="carousel-viewport" id="restCarouselViewport">
-                  <div class="carousel-track" id="restCarouselTrack">
-                    <figure class="carousel-slide">
-                      <img src="/restaurant/13-sala-interna.jpg" alt="" width="664" height="373" decoding="async">
-                    </figure>
-                    <figure class="carousel-slide">
-                      <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="1020" height="682" loading="lazy" decoding="async">
-                    </figure>
-                    <figure class="carousel-slide">
-                      <img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="768" height="1024" loading="lazy" decoding="async">
-                    </figure>
-                    <figure class="carousel-slide">
-                      <img src="/restaurant/14-pesce-grigliato.jpg" alt="" width="1024" height="1024" loading="lazy" decoding="async">
-                    </figure>
-                  </div>
-                  <p class="carousel-discount-badge" id="lbl-rest-discount" aria-hidden="true">−10%</p>
-                  <button type="button" class="carousel-arrow left" id="restCarouselPrev" aria-label="Foto precedente">
-                    <span class="arrow-bracket left" aria-hidden="true"></span>
-                  </button>
-                  <button type="button" class="carousel-arrow right" id="restCarouselNext" aria-label="Foto successiva">
-                    <span class="arrow-bracket right" aria-hidden="true"></span>
-                  </button>
-                  <div class="carousel-dots" id="restCarouselDots" role="tablist" aria-label="Galleria ristorante"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="step2-copy">
-              <h4>Trattoria alla Terrazza</h4>
-              <p class="rest-blurb" id="lbl-rest-blurb">
-                Che ne dici di una cena vista canale al nostro ristorante partner? Cibo veneziano, porzioni abbondanti, e uno sconto perché sei ospite del nostro hotel.
-              </p>
-            </div>
-            <div class="carousel-caption" hidden>
-              <h4>Trattoria alla Terrazza</h4>
-              <p>Per gli ospiti hotel</p>
-            </div>
-            <div class="rest-offer-blurb" hidden>
-              <p class="rest-sub" id="lbl-rest-sub"></p>
-              <p id="lbl-rest-desc" class="rest-desc-hero"></p>
-            </div>
+            <div class="concierge-header-title" id="lbl-concierge-title">Partner Dining Privilege</div>
+            <p class="concierge-sub-text" id="lbl-concierge-sub">
+              As our guest, you hold a 10% exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Complete your room check-in or reserve a table below.
+            </p>
             <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
             <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
+            <p id="lbl-rest-blurb" hidden></p>
+            <p id="lbl-rest-sub" hidden></p>
+            <p id="lbl-rest-desc" hidden></p>
+          </div>
+
+          <div class="booking-reserve-block">
+            <label class="booking-reserve-label" id="lbl-reserve-tonight" for="bookingHourGrid">
+              Reserve a table for tonight?
+            </label>
+            <div class="booking-segment-grid" id="bookingHourGrid" role="group" aria-labelledby="lbl-reserve-tonight">
+              <button type="button" class="hour-pill-ios" data-hour="19:30">19:30</button>
+              <button type="button" class="hour-pill-ios" data-hour="20:15">20:15</button>
+              <button type="button" class="hour-pill-ios" data-hour="21:00">21:00</button>
+              <button type="button" class="hour-pill-ios is-skip is-selected" data-hour="NO" id="pillSkipTable">Skip</button>
+            </div>
           </div>
 
           <div class="form-grid-container">
@@ -2965,8 +2849,12 @@
         guestsShort: 'Ospiti',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
-        restDescShort: 'Lascia stanza e receptionist: ti arriva il −10% in email, pronto per stasera.',
-        restBlurb: 'Che ne dici di una cena vista canale al nostro ristorante partner? Cibo veneziano, porzioni abbondanti, e uno sconto perché sei ospite del nostro hotel.',
+        restDescShort: 'Completa stanza e receptionist per attivare il certificato −10%.',
+        restBlurb: 'In qualità di ospite hai un certificato sconto −10% presso Trattoria alla Terrazza. Completa il check-in stanza o prenota un tavolo.',
+        conciergeTitle: 'Partner Dining Privilege',
+        conciergeSubHtml: 'In qualità di ospite hai un certificato sconto esclusivo −10% presso <strong>Trattoria alla Terrazza</strong>. Completa il check-in stanza o prenota un tavolo.',
+        reserveTonight: 'Prenotare un tavolo per stasera?',
+        pillSkip: 'No',
         restTag: 'Il nostro regalo per te',
         restReviews: '128 recensioni',
         restDiscount: '−10%',
@@ -3050,8 +2938,12 @@
         guestsShort: 'Guests',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
-        restDescShort: 'Add your room and receptionist: your −10% lands in your inbox, ready for tonight.',
-        restBlurb: 'How about dinner with a canal view at our partner restaurant? Venetian food, generous portions, and a discount because you’re a guest at our hotel.',
+        restDescShort: 'Add room and receptionist to activate your −10% certificate.',
+        restBlurb: 'As our guest, you hold a 10% exclusive discount certificate at Trattoria alla Terrazza. Complete room check-in or reserve a table.',
+        conciergeTitle: 'Partner Dining Privilege',
+        conciergeSubHtml: 'As our guest, you hold a 10% exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Complete your room check-in or reserve a table below.',
+        reserveTonight: 'Reserve a table for tonight?',
+        pillSkip: 'Skip',
         restTag: 'A gift just for you',
         restReviews: '128 reviews',
         restDiscount: '−10%',
@@ -3134,8 +3026,12 @@
         guestsShort: 'Pers.',
         staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
-        restDescShort: 'Indiquez chambre et réceptionniste: le −10% arrive dans votre boîte mail, prêt pour ce soir.',
-        restBlurb: 'Et si vous dîniez face au canal dans notre restaurant partenaire? Cuisine vénitienne, généreuses portions, et une réduction parce que vous êtes client de notre hôtel.',
+        restDescShort: 'Indiquez chambre et réceptionniste pour activer le certificat −10%.',
+        restBlurb: 'En tant qu’hôte, vous disposez d’un certificat −10% à la Trattoria alla Terrazza. Finalisez le check-in ou réservez une table.',
+        conciergeTitle: 'Partner Dining Privilege',
+        conciergeSubHtml: 'En tant qu’hôte, vous disposez d’un certificat exclusif −10% chez <strong>Trattoria alla Terrazza</strong>. Finalisez le check-in chambre ou réservez une table.',
+        reserveTonight: 'Réserver une table pour ce soir ?',
+        pillSkip: 'Non',
         nextBtn: 'Continuer',
         restSub: 'Un dîner sur la terrasse du canal, pensé pour les clients Hotel Canal.',
         restTitle: 'Votre −10% à la Terrazza',
@@ -3218,8 +3114,12 @@
         guestsShort: 'Gäste',
         staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
-        restDescShort: 'Zimmer und Empfang angeben: Ihr −10% landet in der Inbox, bereit für heute Abend.',
-        restBlurb: 'Wie wäre es mit einem Abendessen mit Kanalblick in unserem Partnerrestaurant? Venezianische Küche, reichliche Portionen und ein Rabatt, weil Sie Gast in unserem Hotel sind.',
+        restDescShort: 'Zimmer und Empfang angeben, um Ihr −10%-Zertifikat zu aktivieren.',
+        restBlurb: 'Als Gast erhalten Sie ein exklusives −10%-Zertifikat in der Trattoria alla Terrazza. Check-in abschließen oder Tisch reservieren.',
+        conciergeTitle: 'Partner Dining Privilege',
+        conciergeSubHtml: 'Als Gast erhalten Sie ein exklusives −10%-Zertifikat bei <strong>Trattoria alla Terrazza</strong>. Check-in abschließen oder einen Tisch reservieren.',
+        reserveTonight: 'Tisch für heute Abend reservieren?',
+        pillSkip: 'Nein',
         nextBtn: 'Weiter',
         restSub: 'Abendessen auf der Kanalterrasse, für Gäste des Hotel Canal.',
         restTitle: 'Ihr −10% an der Terrazza',
@@ -3302,8 +3202,12 @@
         guestsShort: 'Huéspedes',
         staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
-        restDescShort: 'Deje habitación y recepcionista: el −10% llega a su email, listo para esta noche.',
-        restBlurb: '¿Qué le parece una cena con vistas al canal en nuestro restaurante asociado? Cocina veneciana, raciones generosas y un descuento por ser huésped de nuestro hotel.',
+        restDescShort: 'Indique habitación y recepcionista para activar el certificado −10%.',
+        restBlurb: 'Como huésped tiene un certificado exclusivo −10% en Trattoria alla Terrazza. Complete el check-in o reserve mesa.',
+        conciergeTitle: 'Partner Dining Privilege',
+        conciergeSubHtml: 'Como huésped tiene un certificado exclusivo −10% en <strong>Trattoria alla Terrazza</strong>. Complete el check-in o reserve una mesa.',
+        reserveTonight: '¿Reservar mesa para esta noche?',
+        pillSkip: 'No',
         nextBtn: 'Continuar',
         restSub: 'Cena en la terraza del canal, pensada para huéspedes del Hotel Canal.',
         restTitle: 'Su −10% en la Terrazza',
@@ -3439,7 +3343,27 @@
     let ambientFrozen = false;
     const SLIDE_MS = 440;
 
-    /* Carosello foto ristorante (Step 2) — frecce + swipe */
+    /** Orario tavolo scelto nello Step 2 (default Skip). */
+    let selectedTableTime = 'NO';
+
+    function selectBookingHour(element, hourValue) {
+      if (!element) return;
+      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
+        pill.classList.remove('is-selected');
+      });
+      element.classList.add('is-selected');
+      selectedTableTime = String(hourValue || 'NO').trim().toUpperCase() || 'NO';
+      playConfirmChime({ soft: true });
+    }
+
+    document.getElementById('bookingHourGrid')?.addEventListener('click', (e) => {
+      const pill = e.target.closest('.hour-pill-ios');
+      if (!pill) return;
+      selectBookingHour(pill, pill.getAttribute('data-hour') || 'NO');
+    });
+
+    /* Carosello foto ristorante (legacy — no-op se rimosso dallo Step 2) */
+
     (function initRestaurantCarousel() {
       const trackEl = document.getElementById('restCarouselTrack');
       const viewportEl = document.getElementById('restCarouselViewport');
@@ -4201,6 +4125,25 @@
       document.getElementById('lbl-lastname').textContent = dict.lastName;
       document.getElementById('lbl-room').textContent = dict.roomShort || dict.room;
       document.getElementById('lbl-privacy').textContent = dict.privacy;
+      const conciergeTitle = document.getElementById('lbl-concierge-title');
+      if (conciergeTitle) {
+        conciergeTitle.textContent = dict.conciergeTitle || 'Partner Dining Privilege';
+      }
+      const conciergeSub = document.getElementById('lbl-concierge-sub');
+      if (conciergeSub) {
+        conciergeSub.innerHTML =
+          dict.conciergeSubHtml ||
+          dict.restBlurb ||
+          [dict.restSub, dict.restDescShort || dict.restDesc]
+            .filter(Boolean)
+            .join(' · ');
+      }
+      const reserveLbl = document.getElementById('lbl-reserve-tonight');
+      if (reserveLbl) {
+        reserveLbl.textContent = dict.reserveTonight || 'Reserve a table for tonight?';
+      }
+      const pillSkip = document.getElementById('pillSkipTable');
+      if (pillSkip) pillSkip.textContent = dict.pillSkip || 'Skip';
       const restBlurb = document.getElementById('lbl-rest-blurb');
       if (restBlurb) {
         restBlurb.textContent =
@@ -4209,9 +4152,12 @@
             .filter(Boolean)
             .join(' · ');
       }
-      document.getElementById('lbl-rest-sub').textContent = dict.restSub;
-      document.getElementById('lbl-rest-title').textContent = dict.restTitle;
-      document.getElementById('lbl-rest-desc').textContent = dict.restDescShort || dict.restDesc;
+      const restSub = document.getElementById('lbl-rest-sub');
+      if (restSub) restSub.textContent = dict.restSub || '';
+      const restTitle = document.getElementById('lbl-rest-title');
+      if (restTitle) restTitle.textContent = dict.restTitle || '';
+      const restDesc = document.getElementById('lbl-rest-desc');
+      if (restDesc) restDesc.textContent = dict.restDescShort || dict.restDesc || '';
       const restTag = document.getElementById('lbl-rest-tag');
       if (restTag) restTag.textContent = dict.restTag || dict.restTitle;
       const restReviews = document.getElementById('lbl-rest-reviews');
@@ -4957,6 +4903,7 @@
         wantCoupon: Boolean(requireCoupon),
         privacy: true,
         language: currentLang,
+        tableBooking: selectedTableTime || 'NO',
       };
 
       try {
@@ -5002,6 +4949,36 @@
           couponSent: Boolean(body.couponSent),
           guestAccessToken: body.guestAccessToken || null,
         });
+
+        // Prenotazione tavolo scelta nello Step 2 → stesso endpoint dello Step 3
+        const tableTime = String(selectedTableTime || 'NO').trim().toUpperCase();
+        if (
+          tableTime &&
+          tableTime !== 'NO' &&
+          tableTime !== 'SKIP' &&
+          tableTime !== 'NONE' &&
+          body.id &&
+          body.guestAccessToken
+        ) {
+          const paxForTable = guestsCount;
+          const bookTimeEl = document.getElementById('bookTime');
+          const bookPaxEl = document.getElementById('bookPax');
+          if (bookTimeEl) bookTimeEl.value = tableTime;
+          if (bookPaxEl) bookPaxEl.value = String(paxForTable);
+          void fetch('/api/table-booking', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${body.guestAccessToken}`,
+            },
+            body: JSON.stringify({
+              checkinId: body.id,
+              tableBooking: tableTime,
+              guestsCount: paxForTable,
+              language: currentLang,
+            }),
+          }).catch(() => {});
+        }
       } catch (err) {
         submitting = false;
         resetCanalButton(btnSubmit, dict.button);

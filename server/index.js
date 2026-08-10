@@ -802,6 +802,24 @@ async function handleCheckin(req, res) {
       guestsCount,
       couponToken,
     });
+
+    // Orario tavolo scelto nello Step 2 (opzionale)
+    const tableRaw = String(
+      req.body?.tableBooking ?? req.body?.table_booking ?? '',
+    )
+      .trim()
+      .toUpperCase();
+    if (
+      tableRaw &&
+      tableRaw !== 'NO' &&
+      tableRaw !== 'SKIP' &&
+      tableRaw !== 'NONE' &&
+      (/^\d{2}:\d{2}$/.test(tableRaw) ||
+        /^(REQUESTED|CALL|TAVOLO)$/i.test(tableRaw))
+    ) {
+      setTableBooking(id, tableRaw, guestsCount);
+    }
+
     void syncCheckinsBackup('checkin');
 
     let welcomeSent = false;
