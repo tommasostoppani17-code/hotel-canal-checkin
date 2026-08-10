@@ -946,6 +946,819 @@
       .concierge-hero { height: 140px; margin-bottom: 12px; }
     }
 
+    /* Dining Privilege — vetrina multi-foto allineata */
+    .dining-showcase {
+      width: 100%;
+      margin: 0 0 14px;
+      flex: 0 0 auto;
+    }
+    .dining-hero {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      margin: 0 0 8px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #124453;
+      box-shadow: 0 6px 18px rgba(18, 68, 83, 0.12);
+    }
+    .dining-hero img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      border: 0;
+    }
+    .dining-discount-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      padding: 7px 10px;
+      border-radius: 10px;
+      background: rgba(22, 78, 91, 0.92);
+      color: #FFFFFF;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      box-shadow: 0 4px 12px rgba(5, 11, 13, 0.25);
+    }
+    .dining-mosaic {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      margin: 0 0 8px;
+    }
+    .dining-mosaic-row {
+      margin-bottom: 0;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .dining-mosaic-row figure {
+      aspect-ratio: 1 / 1;
+    }
+    .dining-mosaic figure {
+      margin: 0;
+      aspect-ratio: 4 / 3;
+      border-radius: 11px;
+      overflow: hidden;
+      background: #124453;
+    }
+    .dining-mosaic img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border: 0;
+    }
+    .dining-gallery,
+    .dining-strip,
+    .concierge-hero-sm {
+      display: none !important;
+    }
+
+    /* Step 3 booking — form only, no cropped strip */
+    .dining-book-head {
+      width: 100%;
+      text-align: center;
+      margin: 0 0 16px;
+      padding: 0;
+    }
+    .dining-book-kicker {
+      margin: 0 0 6px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #6E868F;
+    }
+    .dining-book-title {
+      margin: 0;
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: var(--type-title);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--canal-petroleum);
+      line-height: 1.2;
+    }
+    .dining-book .booking-reserve-block {
+      margin-top: 0;
+    }
+    .dining-book .booking-segment-grid {
+      margin-top: 10px !important;
+      margin-bottom: 18px !important;
+      gap: 10px;
+    }
+    .dining-book .form-grid-container {
+      gap: 12px !important;
+      margin-top: 0 !important;
+      padding: 0 !important;
+    }
+    #step3 .form-group {
+      margin-bottom: 0;
+    }
+    #step3 .input-with-icon .field-glyph {
+      left: 14px;
+      width: 16px;
+      height: 16px;
+    }
+    #step3 .input-with-icon .field-glyph svg {
+      width: 16px;
+      height: 16px;
+    }
+    #step3 .input-with-icon .apple-input {
+      height: var(--ios-touch);
+      padding-left: 42px;
+      padding-right: 14px;
+      font-size: var(--type-body);
+      border-radius: var(--radius-ios);
+    }
+    #step3 input[type="number"].apple-input {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    #step3 input[type="number"].apple-input::-webkit-outer-spin-button,
+    #step3 input[type="number"].apple-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .btn-text-link {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      padding: 8px 10px;
+      margin: 0;
+      min-height: 36px;
+      height: auto;
+      width: auto;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748B !important;
+      text-decoration: none;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+    }
+    .btn-text-link:active {
+      opacity: 0.65;
+    }
+    #btnSkip.btn-text-link {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      color: #64748B !important;
+    }
+    @media (max-height: 720px) {
+      .dining-hero { aspect-ratio: 2 / 1; }
+      .dining-mosaic figure { aspect-ratio: 5 / 4; }
+      .dining-mosaic { gap: 6px; margin-bottom: 6px; }
+      .dining-showcase { margin-bottom: 10px; }
+    }
+    @media (max-height: 640px) {
+      .dining-mosaic-row { display: none; }
+    }
+
+        #step3 .form-grid-container {
+        padding: 0;
+        gap: 12px;
+      }
+
+      .apple-input,
+      #step3 .apple-input {
+        height: var(--ios-touch);
+        font-size: var(--type-body);
+      }
+
+      .btn-canal,
+      #step2 .step-footer-fixed .btn-canal,
+      #step3 .step-footer-fixed .btn-canal {
+        height: var(--ios-touch);
+        font-size: var(--type-cta);
+      }
+
+      .privacy-box {
+        margin: 10px 0 8px !important;
+        gap: 6px;
+      }
+
+      .privacy-text {
+        font-size: 10px;
+      }
+
+      #step4 .guest-action-btn {
+        min-height: 42px;
+        padding: 8px 12px;
+      }
+
+      #step4 .receipt-badge {
+        padding: 10px 12px;
+        margin-bottom: 10px;
+      }
+    }
+
+    /* Specchio di luce sul vetro (desktop) — niente preserve-3d / tilt */
+    .card-sheen {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      background:
+        radial-gradient(
+          520px circle at var(--spot-x) var(--spot-y),
+          rgba(255, 255, 255, 0.22),
+          transparent 42%
+        );
+      mix-blend-mode: soft-light;
+      transition: opacity 0.45s var(--ios-ease);
+    }
+
+    .apple-card.is-lit .card-sheen {
+      opacity: 1;
+    }
+
+    @keyframes cardIntro {
+      from {
+        opacity: 0;
+        transform: scale(0.97) translate3d(0, 12px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translate3d(0, 0, 0);
+      }
+    }
+
+    .apple-card.is-rubber {
+      animation: cardRubber 280ms cubic-bezier(0.25, 1, 0.5, 1) both;
+    }
+
+    @keyframes cardRubber {
+      0% { transform: scale(1) translate3d(0, 0, 0); }
+      50% { transform: scale(0.985) translate3d(0, 2px, 0); }
+      100% { transform: scale(1) translate3d(0, 0, 0); }
+    }
+
+    .step-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 0 0 16px;
+      padding: 0 20px;
+    }
+
+    /* Pillole allineate al binario */
+    .step-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(18, 68, 83, 0.15);
+      transition:
+        width var(--slide-ms) var(--slide-ease),
+        background-color var(--slide-ms) var(--slide-ease);
+    }
+
+    .step-dots span.active {
+      width: 16px;
+      border-radius: 3px;
+      background: var(--canal-petroleum);
+      transform: none;
+    }
+
+    .step-dots.hidden {
+      display: none;
+    }
+
+    button, a, input, select, textarea, label, .btn-ghost, .btn-canal {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Viewport: altezza biologica dello step attivo (JS). Card resta height:auto. */
+    .slider-viewport {
+      width: 100%;
+      flex: 0 0 auto;
+      min-height: 0;
+      height: auto;
+      overflow: hidden;
+      position: relative;
+      will-change: height;
+      transition: height 380ms cubic-bezier(0.16, 1, 0.3, 1);
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    .slider-track {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      width: 400%;
+      height: auto;
+      min-height: 100%;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+      transition: transform var(--slide-ms) var(--slide-ease);
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      isolation: isolate;
+      transform-style: flat;
+      -webkit-transform-style: flat;
+      -webkit-perspective: 1000;
+    }
+
+    /*
+     * Step a altezza naturale (niente height:100% che schiaccia i flex).
+     * Se il viewport è clampato, .is-active riempie e scrolla il body interno.
+     */
+    .slide-step {
+      flex: 0 0 25%;
+      width: 25%;
+      max-width: 25%;
+      min-width: 25%;
+      height: auto;
+      min-height: 0;
+      max-height: none;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-self: flex-start;
+      padding: 0 var(--ios-inset);
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      overflow: visible;
+      pointer-events: none;
+      opacity: 1;
+      visibility: hidden;
+    }
+
+    .slide-step.is-active,
+    .slide-step.is-sliding {
+      /* Quando il viewport ha altezza fissa, riempi senza comprimere i CTA */
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .slide-step::-webkit-scrollbar {
+      display: none;
+    }
+
+    .step-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .step-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slide-step.is-active {
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    /* Durante lo slide entrambi gli step devono restare visibili */
+    .slide-step.is-sliding {
+      visibility: visible;
+      pointer-events: none;
+    }
+
+    .slide-step.is-active:not(.is-sliding) {
+      transition: opacity 180ms ease-out;
+    }
+
+    .apple-input,
+    .slide-step input,
+    .slide-step select,
+    .slide-step textarea {
+      pointer-events: auto !important;
+      cursor: text;
+      -webkit-user-select: text;
+      user-select: text;
+      touch-action: manipulation;
+    }
+
+    .slide-step button,
+    .slide-step .btn-canal,
+    .slide-step .btn-ghost {
+      pointer-events: auto !important;
+      touch-action: manipulation;
+    }
+
+    /* Niente stagger interno. */
+
+    @media (prefers-reduced-motion: reduce) {
+      .apple-card,
+      .card-sheen,
+      .bg-inertia,
+      .slider-viewport,
+      .slider-track,
+      .step-dots span,
+      .btn-canal,
+      .btn-ghost,
+      .apple-input {
+        animation: none !important;
+        transition: none !important;
+      }
+      .apple-card { animation: none !important; }
+    }
+
+    .step-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .step-footer-fixed {
+      flex: 0 0 auto;
+      flex-shrink: 0;
+      width: 100%;
+      margin-top: auto;
+      padding-top: var(--ios-gap-lg);
+      padding-bottom: 4px;
+      text-align: center;
+      position: relative;
+      z-index: 4;
+      background: linear-gradient(
+        180deg,
+        rgba(228, 238, 244, 0) 0%,
+        var(--card-cream-bottom) 28%
+      );
+    }
+
+    .step-footer-fixed .privacy-box {
+      margin: 10px 0 10px !important;
+      padding: 0 2px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .step-footer-fixed .btn-ghost:first-of-type {
+      margin-top: var(--ios-1);
+    }
+
+    .input-row-grid,
+    .form-grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--ios-gap-lg);
+      width: 100%;
+      box-sizing: border-box;
+      /* Aria per bordo/focus inset: non finiscono sotto il clip della card */
+      padding: 2px;
+      margin: 0 -2px;
+    }
+
+    .input-row-grid .form-group,
+    .form-grid-container .form-group {
+      margin-bottom: 0;
+      min-width: 0;
+    }
+
+    .form-grid-container .span-2 {
+      grid-column: span 2;
+    }
+
+    .receipt-badge.is-collapsed {
+      visibility: hidden;
+      opacity: 0;
+      height: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* Vetrina ristorante: carosello HD + frecce geometriche */
+    .restaurant-showcase {
+      margin: 0 0 6px;
+      flex-shrink: 0;
+    }
+
+    .rest-carousel {
+      position: relative;
+      width: 100%;
+    }
+
+    .carousel-viewport {
+      position: relative;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 3;
+      max-height: 200px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #124453;
+      box-shadow: 0 3px 12px rgba(18, 68, 83, 0.1);
+    }
+
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      transition: transform 320ms var(--ios-ease);
+      will-change: transform;
+    }
+
+    .carousel-slide {
+      position: relative;
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    .carousel-slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      border: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    /* Titolo fuori dalla foto — niente gradient che la mangia */
+    .carousel-caption {
+      margin: 8px 2px 0;
+      padding: 0;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .carousel-caption h4 {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      margin: 0 0 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .carousel-caption p {
+      font-size: 9.5px;
+      color: #7A8791;
+      margin: 0;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Frecce discrete — non coprono il soggetto */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      margin: 0;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
+      backdrop-filter: blur(10px) saturate(140%);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    }
+
+    .carousel-arrow:active {
+      transform: translateY(-50%) scale(0.92);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .carousel-arrow.left { left: 6px; }
+    .carousel-arrow.right { right: 6px; }
+
+    .arrow-bracket {
+      width: 7px;
+      height: 7px;
+      border-color: var(--canal-petroleum);
+      border-style: solid;
+      display: block;
+      box-sizing: border-box;
+    }
+
+    .arrow-bracket.left {
+      border-width: 1.5px 0 0 1.5px;
+      transform: rotate(-45deg) translate(1.5px, 1px);
+    }
+
+    .arrow-bracket.right {
+      border-width: 1.5px 1.5px 0 0;
+      transform: rotate(45deg) translate(-1.5px, 1px);
+    }
+
+    .carousel-discount-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 9;
+      margin: 0;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(18, 68, 83, 0.88);
+      -webkit-backdrop-filter: blur(8px) saturate(140%);
+      backdrop-filter: blur(8px) saturate(140%);
+      color: #FFFFFF;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+      pointer-events: none;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 10px;
+      z-index: 8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      pointer-events: none;
+    }
+
+    .carousel-dots button {
+      width: 6px;
+      height: 6px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.48);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        width 280ms var(--ios-ease),
+        background-color 280ms var(--ios-ease),
+        transform 280ms var(--ios-ease),
+        opacity 280ms var(--ios-ease);
+      transform: scale(1);
+      opacity: 0.85;
+    }
+
+    .carousel-dots button.is-active {
+      width: 16px;
+      border-radius: 999px;
+      background: #FFFFFF;
+      opacity: 1;
+      transform: scale(1.05);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+    }
+
+    .carousel-dots button.is-pulse {
+      animation: dotPulse 320ms var(--ios-ease);
+    }
+
+    @keyframes dotPulse {
+      0% { transform: scale(0.86); }
+      55% { transform: scale(1.12); }
+      100% { transform: scale(1.05); }
+    }
+
+    .rest-offer-blurb {
+      text-align: center;
+      margin: 0 0 8px;
+      padding: 0 2px;
+    }
+
+    .rest-offer-blurb .rest-sub {
+      display: block;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      color: #3D4A52;
+      margin: 0 0 4px;
+    }
+
+    .rest-offer-blurb .rest-desc-hero {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 10px;
+      line-height: 1.35;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      color: #6B7780;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .rest-desc-hero {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 10.5px;
+      line-height: 1.35;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #5C6670;
+      text-align: center;
+      margin: 4px 0 10px;
+      padding: 0;
+    }
+
+    .input-with-icon {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-with-icon .field-glyph {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: #8E8E93;
+      pointer-events: none;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-with-icon .field-glyph svg {
+      display: block;
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .input-with-icon .apple-input {
+      padding-left: 34px;
+    }
+
+
+    /* Step 2: hero panoramica ristorante */
+    .concierge-hero {
+      width: 100%;
+      height: 168px;
+      margin: 0 0 14px;
+      border-radius: 14px;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: #124453;
+      box-shadow: 0 6px 18px rgba(18, 68, 83, 0.12);
+    }
+
+    .concierge-hero img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 42%;
+      border: 0;
+    }
+
+    @media (max-height: 670px) {
+      .concierge-hero { height: 140px; margin-bottom: 12px; }
+    }
+
     /* Dining Privilege — single panoramic hero */
     .dining-hero {
       position: relative;
@@ -3187,12 +4000,25 @@
         </div>
       </section>
 
-      <!-- STEP 2: Dining Privilege — gallery + testo + Continua -->
+      <!-- STEP 2: Dining Privilege — vetrina ristorante (foto multiple) -->
       <section class="slide-step" id="step2" aria-hidden="true">
         <div class="step-body step-scroll dining-vitrine">
-          <div class="dining-hero" aria-hidden="true">
-            <img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async">
-            <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
+          <div class="dining-showcase" aria-hidden="true">
+            <div class="dining-hero">
+              <img src="/email/postcard-ingresso.jpg" alt="" width="1100" height="611" decoding="async">
+              <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
+            </div>
+            <div class="dining-mosaic">
+              <figure><img src="/email/postcard-terrazza.jpg" alt="" width="1020" height="682" decoding="async"></figure>
+              <figure><img src="/email/postcard-tavolo.jpg" alt="" width="1200" height="572" decoding="async"></figure>
+              <figure><img src="/email/postcard-dish.jpg" alt="" width="1200" height="800" decoding="async"></figure>
+              <figure><img src="/email/thumb-pesce.jpg" alt="" width="600" height="600" decoding="async"></figure>
+            </div>
+            <div class="dining-mosaic dining-mosaic-row">
+              <figure><img src="/email/thumb-risotto.jpg" alt="" width="600" height="600" decoding="async"></figure>
+              <figure><img src="/email/thumb-linguine.jpg" alt="" width="600" height="600" decoding="async"></figure>
+              <figure><img src="/email/thumb-ingresso.jpg" alt="" width="600" height="600" decoding="async"></figure>
+            </div>
           </div>
           <div class="concierge-header-title" id="lbl-concierge-title">Dining Privilege</div>
           <p class="concierge-sub-text" id="lbl-concierge-sub">
@@ -3211,11 +4037,12 @@
         </div>
       </section>
 
-      <!-- STEP 3: Prenotazione opzionale + stanza (foto piccola, no titolo Dining) -->
+      <!-- STEP 3: Prenotazione + stanza — solo form, zero foto tagliata -->
       <section class="slide-step" id="step3" aria-hidden="true">
         <div class="step-body step-scroll dining-book">
-          <div class="concierge-hero concierge-hero-sm" aria-hidden="true">
-            <img src="/email/postcard-tavolo.jpg" alt="" width="1200" height="572" decoding="async">
+          <div class="dining-book-head">
+            <p class="dining-book-kicker" id="lbl-book-kicker">Trattoria alla Terrazza</p>
+            <h2 class="dining-book-title" id="lbl-book-title">Prenotazione</h2>
           </div>
 
           <div class="booking-reserve-block">
@@ -3455,6 +4282,8 @@
         title: 'Registrazione rapida',
         title2: 'Regalo di benvenuto',
         roomTitle: 'Dettagli stanza',
+        bookTitle: 'Prenotazione',
+        bookKicker: 'Trattoria alla Terrazza',
         subtitle: 'Nome, cognome, email e telefono per attivare i servizi digitali.',
         phone: 'Numero di Telefono *',
         email: 'Email *',
@@ -3548,6 +4377,8 @@
         title: 'Fast Registration',
         title2: 'Welcome Gift',
         roomTitle: 'Room Details',
+        bookTitle: 'Reservation',
+        bookKicker: 'Trattoria alla Terrazza',
         subtitle: 'First name, last name, email and phone to activate digital services.',
         phone: 'Phone Number *',
         email: 'Email *',
@@ -3657,6 +4488,8 @@
         conciergeSubHtml: 'En tant qu’hôte, vous disposez d’un certificat exclusif −10% chez <strong>Trattoria alla Terrazza</strong>.',
         reserveTonight: 'Réserver une table pour ce soir ? (facultatif)',
         roomTitle: 'Détails chambre',
+        bookTitle: 'Réservation',
+        bookKicker: 'Trattoria alla Terrazza',
         pillSkip: 'Non',
         nextBtn: 'Continuer',
         restSub: 'Un dîner sur la terrasse du canal, pensé pour les clients Hotel Canal.',
@@ -3749,6 +4582,8 @@
         conciergeSubHtml: 'Als Gast erhalten Sie ein exklusives −10%-Zertifikat bei <strong>Trattoria alla Terrazza</strong>.',
         reserveTonight: 'Tisch für heute Abend reservieren? (optional)',
         roomTitle: 'Zimmerdetails',
+        bookTitle: 'Reservierung',
+        bookKicker: 'Trattoria alla Terrazza',
         pillSkip: 'Nein',
         nextBtn: 'Weiter',
         restSub: 'Abendessen auf der Kanalterrasse, für Gäste des Hotel Canal.',
@@ -3841,6 +4676,8 @@
         conciergeSubHtml: 'Como huésped tiene un certificado exclusivo −10% en <strong>Trattoria alla Terrazza</strong>.',
         reserveTonight: '¿Reservar mesa para esta noche? (opcional)',
         roomTitle: 'Detalles de habitación',
+        bookTitle: 'Reserva',
+        bookKicker: 'Trattoria alla Terrazza',
         pillSkip: 'No',
         nextBtn: 'Continuar',
         restSub: 'Cena en la terraza del canal, pensada para huéspedes del Hotel Canal.',
@@ -4861,6 +5698,10 @@
       if (!btnSubmit.disabled) btnSubmit.textContent = dict.button;
       const roomTitle = document.getElementById('lbl-room-title');
       if (roomTitle) roomTitle.textContent = dict.roomTitle || dict.title2 || 'Room Details';
+      const bookTitle = document.getElementById('lbl-book-title');
+      if (bookTitle) bookTitle.textContent = dict.bookTitle || 'Reservation';
+      const bookKicker = document.getElementById('lbl-book-kicker');
+      if (bookKicker) bookKicker.textContent = dict.bookKicker || 'Trattoria alla Terrazza';
       applyGuestActionLabels(dict, lastCouponSent);
     }
 
