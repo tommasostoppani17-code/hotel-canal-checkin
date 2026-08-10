@@ -36,11 +36,11 @@
        * Vietato iniettare px casuali nei singoli step: solo queste costanti.
        */
       --radius-ios: 20px;
-      --ios-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --ios-snap: cubic-bezier(0.32, 0.72, 0, 1);
-      --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --slide-ms: 520ms;
-      --height-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --ios-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
+      --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --slide-ms: 580ms;
+      --height-ease: cubic-bezier(0.16, 1, 0.3, 1);
       /* Cupertino 8pt grid + ritmo moduli */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -436,7 +436,7 @@
       overflow: hidden;
       position: relative;
       will-change: height;
-      transition: height 380ms cubic-bezier(0.16, 1, 0.3, 1);
+      transition: height var(--slide-ms) var(--height-ease);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
@@ -530,7 +530,7 @@
     }
 
     .slide-step.is-active:not(.is-sliding) {
-      transition: opacity 180ms ease-out;
+      transition: opacity 280ms var(--slide-ease);
     }
 
     .apple-input,
@@ -1014,6 +1014,143 @@
       display: none !important;
     }
 
+    /* --- Motion: slide + settle silk --- */
+    @keyframes stepSettle {
+      from {
+        opacity: 0.55;
+        transform: translate3d(var(--settle-x, 10px), 6px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+    @keyframes mediaIn {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 12px, 0) scale(0.982);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+    @keyframes fadeRise {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 10px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    .slide-step.is-active:not(.is-sliding) > .header,
+    .slide-step.is-active:not(.is-sliding) > .step-body,
+    .slide-step.is-active:not(.is-sliding) > .step-footer-fixed,
+    .slide-step.is-active:not(.is-sliding) > .dining-book-head {
+      animation: stepSettle 560ms var(--slide-ease) both;
+    }
+
+    #step2.is-active:not(.is-sliding) .dining-hero {
+      animation: mediaIn 680ms var(--slide-ease) 30ms both;
+    }
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(1) {
+      animation: mediaIn 640ms var(--slide-ease) 80ms both;
+    }
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(2) {
+      animation: mediaIn 640ms var(--slide-ease) 130ms both;
+    }
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(3) {
+      animation: mediaIn 640ms var(--slide-ease) 180ms both;
+    }
+    #step2.is-active:not(.is-sliding) .concierge-header-title {
+      animation: fadeRise 560ms var(--slide-ease) 150ms both;
+    }
+    #step2.is-active:not(.is-sliding) .concierge-sub-text {
+      animation: fadeRise 560ms var(--slide-ease) 200ms both;
+    }
+    #step3.is-active:not(.is-sliding) .dining-book-head,
+    #step3.is-active:not(.is-sliding) .booking-reserve-block,
+    #step3.is-active:not(.is-sliding) .form-grid-container {
+      animation: fadeRise 540ms var(--slide-ease) both;
+    }
+    #step3.is-active:not(.is-sliding) .booking-reserve-block {
+      animation-delay: 70ms;
+    }
+    #step3.is-active:not(.is-sliding) .form-grid-container {
+      animation-delay: 130ms;
+    }
+
+    .dining-hero,
+    .dining-mosaic figure {
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    .hour-pill-ios {
+      transition:
+        background 360ms var(--slide-ease),
+        color 360ms var(--slide-ease),
+        border-color 360ms var(--slide-ease),
+        transform 280ms var(--slide-ease),
+        box-shadow 360ms var(--slide-ease) !important;
+    }
+    .hour-pill-ios:active {
+      transform: scale(0.96);
+    }
+    .hour-pill-ios.is-selected {
+      transition:
+        background 420ms var(--slide-ease),
+        color 420ms var(--slide-ease),
+        border-color 420ms var(--slide-ease),
+        box-shadow 420ms var(--slide-ease),
+        transform 320ms var(--slide-ease) !important;
+    }
+
+    .btn-canal {
+      transition:
+        transform 340ms var(--slide-ease),
+        background-color 320ms var(--ios-ease),
+        box-shadow 360ms var(--slide-ease) !important;
+    }
+    .btn-text-link {
+      transition: opacity 280ms var(--slide-ease), transform 280ms var(--slide-ease) !important;
+    }
+    .btn-text-link:active {
+      transform: scale(0.98);
+    }
+
+    .step-dots span {
+      transition:
+        width 420ms var(--slide-ease),
+        background-color 420ms var(--slide-ease),
+        transform 420ms var(--slide-ease) !important;
+    }
+
+    .apple-input {
+      transition:
+        border-color 320ms var(--ios-ease),
+        box-shadow 320ms var(--ios-ease),
+        transform 280ms var(--slide-ease) !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide-step.is-active:not(.is-sliding) > .header,
+      .slide-step.is-active:not(.is-sliding) > .step-body,
+      .slide-step.is-active:not(.is-sliding) > .step-footer-fixed,
+      #step2.is-active:not(.is-sliding) .dining-hero,
+      #step2.is-active:not(.is-sliding) .dining-mosaic figure,
+      #step2.is-active:not(.is-sliding) .concierge-header-title,
+      #step2.is-active:not(.is-sliding) .concierge-sub-text,
+      #step3.is-active:not(.is-sliding) .dining-book-head,
+      #step3.is-active:not(.is-sliding) .booking-reserve-block,
+      #step3.is-active:not(.is-sliding) .form-grid-container {
+        animation: none !important;
+      }
+    }
+
     /* Step 3 booking — form only, no cropped strip */
     .dining-book-head {
       width: 100%;
@@ -1238,7 +1375,7 @@
       overflow: hidden;
       position: relative;
       will-change: height;
-      transition: height 380ms cubic-bezier(0.16, 1, 0.3, 1);
+      transition: height var(--slide-ms) var(--height-ease);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
@@ -1332,7 +1469,7 @@
     }
 
     .slide-step.is-active:not(.is-sliding) {
-      transition: opacity 180ms ease-out;
+      transition: opacity 280ms var(--slide-ease);
     }
 
     .apple-input,
@@ -4634,7 +4771,7 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 520;
+    const SLIDE_MS = 580;
 
     /** Orario tavolo scelto nello Step 2 (default Skip). */
     let selectedTableTime = 'NO';
@@ -4812,8 +4949,8 @@
           breathT = now * 0.00022;
           const breathX = Math.sin(breathT) * 0.55;
           const breathY = Math.cos(breathT * 0.85) * 0.35;
-          ambX += (targetAmbX + breathX - ambX) * 0.035;
-          ambY += (targetAmbY + breathY - ambY) * 0.035;
+          ambX += (targetAmbX + breathX - ambX) * 0.045;
+          ambY += (targetAmbY + breathY - ambY) * 0.045;
           applyAmbient(ambX, ambY);
         }
         ambientRaf = requestAnimationFrame(ambientFrame);
@@ -5108,6 +5245,9 @@
       // Successo: taglio netto (niente overlap form + Registered)
       const hardCut = instant || step === TOTAL_STEPS || prev === TOTAL_STEPS;
       const sliding = !hardCut && prev !== step && !reduceMotion;
+      // Settle entra dalla direzione opposta allo slide
+      const settleX = step > prev ? '12px' : step < prev ? '-12px' : '0px';
+      document.documentElement.style.setProperty('--settle-x', settleX);
       markStepClasses(step, { slidingFrom: sliding ? prev : null });
 
       const toSlide = -((step - 1) * 100) / TOTAL_STEPS;
