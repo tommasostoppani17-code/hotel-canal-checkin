@@ -4591,6 +4591,10 @@
         showBookMsg(dict.bookError || 'Request failed.', true);
         return;
       }
+      if (!guestAccessToken) {
+        showBookMsg(dict.bookError || 'Session expired. Restart check-in.', true);
+        return;
+      }
 
       const timeValue = normalizeBookTime(timeEl?.value);
       let pax = Number.parseInt(String(paxEl?.value || '').trim(), 10);
@@ -4615,7 +4619,12 @@
       try {
         const res = await fetch('/api/table-booking', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(guestAccessToken
+              ? { Authorization: `Bearer ${guestAccessToken}` }
+              : {}),
+          },
           body: JSON.stringify({
             checkinId: lastCheckinId,
             tableBooking: timeValue,
@@ -4623,6 +4632,12 @@
             language: currentLang,
           }),
         });
+        if (res.status === 401 || res.status === 403) {
+          sendBtn.disabled = false;
+          sendBtn.textContent = dict.bookSend;
+          showBookMsg(dict.bookError || 'Session expired. Restart check-in.', true);
+          return;
+        }
         const body = await res.json().catch(() => ({}));
         const savedOk = Boolean(body.saved || body.success || res.ok);
         if (!savedOk) {

@@ -1,38 +1,45 @@
-# Hotel Canal Check-in — Blueprint Render
-# Produzione: plan starter + disk (richiede carta su Render).
-# Finché resti free: backup Gist (CHECKIN_BACKUP_*) + keep-alive workflow.
+# Hotel Canal Check-in — Blueprint Render (production)
 services:
   - type: web
     name: hotel-canal-checkin
     runtime: node
-    plan: free
+    plan: starter
     region: frankfurt
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
-    # Dopo upgrade a starter, decommenta:
-    # disk:
-    #   name: checkins-data
-    #   mountPath: /var/data
-    #   sizeGB: 1
+    disk:
+      name: checkins-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "20"
+      - key: NODE_ENV
+        value: production
       - key: HOTEL_NAME
         value: Hotel Canal
       - key: CRON_TZ
         value: Europe/Rome
       - key: DATABASE_PATH
-        value: ./data/checkins.db
+        value: /var/data/checkins.db
       - key: PUBLIC_URL
         sync: false
       - key: REPORT_EMAIL
+        sync: false
+      - key: TABLE_BOOKING_EMAIL
         sync: false
       - key: RESEND_API_KEY
         sync: false
       - key: SMTP_FROM
         sync: false
       - key: CRON_SECRET
+        sync: false
+      - key: GUEST_ACCESS_SECRET
+        sync: false
+      - key: COUPON_SECRET
+        sync: false
+      - key: REPORT_TRIGGER_TOKEN
         sync: false
       - key: WIFI_SSID
         sync: false
@@ -48,6 +55,13 @@ services:
         sync: false
       - key: CHECKIN_BACKUP_GITHUB_TOKEN
         sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+      - key: WHATSAPP_PAYEL
+        sync: false
 
-  # Report: .github/workflows/cron-reports.yml
-  # Keep-alive free: .github/workflows/keep-alive.yml
+  # Report notturno: .github/workflows/cron-reports.yml

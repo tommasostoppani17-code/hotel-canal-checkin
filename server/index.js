@@ -52,8 +52,37 @@ const PORT = Number(process.env.PORT || 3000);
 const HOTEL_NAME = process.env.HOTEL_NAME || 'Hotel Canal';
 const CRON_TZ = process.env.CRON_TZ || 'Europe/Rome';
 const CRON_SECRET = process.env.CRON_SECRET || '';
+const IS_PROD =
+  process.env.RENDER === 'true' || process.env.NODE_ENV === 'production';
 const DATABASE_PATH =
   process.env.DATABASE_PATH || path.join(rootDir, 'data', 'checkins.db');
+
+/** Token report manuale: solo se impostato in env (niente hardcoded in prod). */
+const REPORT_TRIGGER_TOKEN = String(process.env.REPORT_TRIGGER_TOKEN || '')
+  .trim()
+  .toLowerCase();
+
+function assertProductionSecrets() {
+  if (!IS_PROD) return;
+  const cron = String(process.env.CRON_SECRET || '').trim();
+  const guest = String(process.env.GUEST_ACCESS_SECRET || '').trim();
+  const coupon = String(process.env.COUPON_SECRET || cron).trim();
+  const weak = (s) =>
+    !s ||
+    s.length < 24 ||
+    /change-me|dev-only|hotel-canal-dev/i.test(s);
+
+  if (!cron) {
+    throw new Error('CRON_SECRET obbligatorio in produzione');
+  }
+  if (weak(cron) || weak(guest) || weak(coupon)) {
+    console.warn(
+      '[security] Segreti deboli o corti: genera CRON_SECRET / GUEST_ACCESS_SECRET / COUPON_SECRET ≥24 char random',
+    );
+  }
+}
+
+assertProductionSecrets();
 
 initDb(DATABASE_PATH);
 
@@ -91,6 +120,46 @@ app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+
+/** Rate limit semplice in-memory (anti-spam check-in / booking). */
+const rateBuckets = new Map();
+function rateLimit({ windowMs = 60_000, max = 30, keyFn } = {}) {
+  return (req, res, next) => {
+    const key = keyFn ? keyFn(req) : `${req.ip}|${req.path}`;
+    const now = Date.now();
+    let bucket = rateBuckets.get(key);
+    if (!bucket || now - bucket.start >= windowMs) {
+      bucket = { start: now, count: 0 };
+      rateBuckets.set(key, bucket);
+    }
+    bucket.count += 1;
+    if (bucket.count > max) {
+      return res.status(429).json({ error: 'Troppe richieste. Riprova tra un minuto.' });
+    }
+    return next();
+  };
+}
+
+// Pulizia periodica bucket
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, bucket] of rateBuckets) {
+    if (now - bucket.start > 5 * 60_000) rateBuckets.delete(key);
+  }
+}, 60_000).unref?.();
+
+function maskPhone(phone) {
+  const s = String(phone || '').replace(/\s/g, '');
+  if (s.length < 6) return '***';
+  return `${s.slice(0, 3)}…${s.slice(-2)}`;
+}
+
+function maskEmail(email) {
+  const s = String(email || '');
+  const at = s.indexOf('@');
+  if (at < 1) return '***';
+  return `${s.slice(0, 1)}***${s.slice(at)}`;
+}
 
 /** Header di sicurezza (CSP tollera inline perché public/index.html è monolitico). */
 app.use((req, res, next) => {
@@ -153,19 +222,19 @@ app.get('/sw.js', (_req, res) => {
 
 app.use(express.static(path.join(rootDir, 'public')));
 
-const REPORT_TRIGGER_TOKEN = 'grandcanalhotel';
 const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const GUEST_ACCESS_TTL_SEC = 60 * 60 * 72; // 72h dopo check-in
 
 function guestAccessSecret() {
-  return (
-    String(process.env.GUEST_ACCESS_SECRET || '').trim() ||
-    String(process.env.CRON_SECRET || '').trim() ||
-    String(process.env.RESEND_API_KEY || '').trim() ||
-    String(process.env.SMTP_PASS || '').trim() ||
-    'dev-only-change-me'
-  );
+  const secret = String(
+    process.env.GUEST_ACCESS_SECRET || process.env.CRON_SECRET || '',
+  ).trim();
+  if (secret) return secret;
+  if (IS_PROD) {
+    throw new Error('GUEST_ACCESS_SECRET o CRON_SECRET obbligatorio in produzione');
+  }
+  return 'dev-only-change-me';
 }
 
 function timingSafeEqualStr(a, b) {
@@ -216,9 +285,9 @@ function readGuestAccessToken(req) {
 }
 
 function buildGuestServicesPayload() {
-  let doorMain = String(process.env.DOOR_CODE_WALTER || '5358#').trim() || '5358#';
-  if (!doorMain.endsWith('#')) doorMain = `${doorMain}#`;
-  const doorInner = String(process.env.DOOR_CODE_AIRONE || '532E').trim() || '532E';
+  let doorMain = String(process.env.DOOR_CODE_WALTER || '').trim();
+  if (doorMain && !doorMain.endsWith('#')) doorMain = `${doorMain}#`;
+  const doorInner = String(process.env.DOOR_CODE_AIRONE || '').trim();
   return {
     wifiSsid: String(process.env.WIFI_SSID || 'hotel canal').trim() || 'hotel canal',
     wifiPassword: String(process.env.WIFI_PASSWORD || '').trim(),
@@ -267,7 +336,9 @@ function isValidEmail(email) {
 }
 
 function isManualReportTrigger({ phone, guestName, firstName, lastName }) {
+  // Disabilitato se REPORT_TRIGGER_TOKEN non è in env (≥12 char)
   const token = REPORT_TRIGGER_TOKEN;
+  if (!token || token.length < 12) return false;
   const match = (v) => normalizeField(v) === token;
 
   const nameOk =
@@ -282,8 +353,11 @@ function isAuthorizedCron(req) {
   if (!CRON_SECRET) return false;
   const header = req.get('authorization') || '';
   const bearer = header.startsWith('Bearer ') ? header.slice(7) : '';
-  const querySecret = req.query.secret;
-  return bearer === CRON_SECRET || querySecret === CRON_SECRET;
+  const querySecret = String(req.query.secret || '');
+  return (
+    timingSafeEqualStr(bearer, CRON_SECRET) ||
+    timingSafeEqualStr(querySecret, CRON_SECRET)
+  );
 }
 
 app.get('/health', (_req, res) => {
@@ -309,8 +383,8 @@ app.get('/api/guest-services', (req, res) => {
   });
 });
 
-/** Checklist go-live (senza segreti). */
-app.get('/api/ready', (_req, res) => {
+/** Checklist go-live (senza email/PII in chiaro). Auth opzionale via CRON_SECRET. */
+app.get('/api/ready', (req, res) => {
   const from = String(process.env.SMTP_FROM || '');
   const reportEmail = String(process.env.REPORT_EMAIL || '').trim();
   const resendKey = Boolean(String(process.env.RESEND_API_KEY || '').trim());
@@ -339,12 +413,14 @@ app.get('/api/ready', (_req, res) => {
   if (!dataReady) {
     blockers.push('Aggiungi disco Render su /var/data oppure backup Gist');
   }
+  const staffView = isAuthorizedCron(req);
   res.json({
     ok: blockers.length === 0,
     hotel: HOTEL_NAME,
     publicUrl: process.env.PUBLIC_URL || null,
-    checkins: countCheckins(),
-    reportEmail: reportEmail || null,
+    checkins: staffView ? countCheckins() : undefined,
+    reportEmailConfigured: Boolean(reportEmail),
+    reportEmail: staffView ? reportEmail || null : undefined,
     smtpFromDev: usingDevFrom,
     guestEmailReady,
     reportReady,
@@ -753,13 +829,31 @@ async function handleCheckin(req, res) {
   }
 }
 
-app.post('/api/checkins', handleCheckin);
-app.post('/api/save-lead', handleCheckin);
+app.post(
+  '/api/checkins',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  handleCheckin,
+);
+app.post(
+  '/api/save-lead',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  handleCheckin,
+);
 
 /** Richiesta tavolo dopo check-in → email Payel + WhatsApp Twilio (se configurato). */
-app.post('/api/table-booking', async (req, res) => {
+app.post(
+  '/api/table-booking',
+  rateLimit({ windowMs: 60_000, max: 12 }),
+  async (req, res) => {
   try {
-    const id = Number(req.body?.checkinId ?? req.body?.id);
+    const access = verifyGuestAccessToken(readGuestAccessToken(req));
+    if (!access) {
+      return res.status(401).json({ error: 'Accesso non autorizzato' });
+    }
+    const id = Number(req.body?.checkinId ?? req.body?.id ?? access.checkinId);
+    if (!Number.isFinite(id) || id < 1 || id !== access.checkinId) {
+      return res.status(403).json({ error: 'checkinId non corrisponde al token' });
+    }
     const rawTimeIn = String(req.body?.tableBooking ?? req.body?.time ?? 'REQUESTED')
       .trim();
     const timeMatch = rawTimeIn.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
@@ -772,9 +866,6 @@ app.post('/api/table-booking', async (req, res) => {
       .slice(0, 5);
     const guestsRaw =
       req.body?.guestsCount ?? req.body?.guests_count ?? req.body?.pax ?? null;
-    if (!Number.isFinite(id) || id < 1) {
-      return res.status(400).json({ error: 'checkinId non valido' });
-    }
     if (!rawTime || /^(NO|SKIP|NONE)$/i.test(rawTime)) {
       return res.json({ sent: false, skipped: true });
     }
@@ -797,7 +888,7 @@ app.post('/api/table-booking', async (req, res) => {
     try {
       channels.email = await sendTableBookingAlert(row);
       console.log(
-        `[table] Email → ${channels.email.to} · stanza ${row.room_number || '-'} · ${rawTime} · ${row.phone}`,
+        `[table] Email alert · stanza ${row.room_number || '-'} · ${rawTime} · ${maskPhone(row.phone)}`,
       );
     } catch (err) {
       const message = err.message || String(err);
@@ -810,7 +901,7 @@ app.post('/api/table-booking', async (req, res) => {
       channels.whatsapp = await sendTableBookingWhatsApp(row);
       if (channels.whatsapp?.sent) {
         console.log(
-          `[table] WhatsApp → ${channels.whatsapp.to} · stanza ${row.room_number || '-'}`,
+          `[table] WhatsApp alert · stanza ${row.room_number || '-'}`,
         );
       }
     } catch (err) {

@@ -58,12 +58,18 @@ export function initDb(databasePath) {
 }
 
 function couponSecret() {
-  return (
+  const secret = String(
     process.env.COUPON_SECRET ||
-    process.env.CRON_SECRET ||
-    process.env.RESEND_API_KEY ||
-    'hotel-canal-dev-coupon'
-  );
+      process.env.CRON_SECRET ||
+      '',
+  ).trim();
+  if (secret) return secret;
+  if (process.env.RENDER === 'true' || process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'COUPON_SECRET o CRON_SECRET obbligatorio in produzione (niente fallback)',
+    );
+  }
+  return 'hotel-canal-dev-coupon';
 }
 
 function timingSafeEqualStr(a, b) {
