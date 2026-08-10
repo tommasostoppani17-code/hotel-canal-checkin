@@ -1318,33 +1318,24 @@
     .guest-call {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-height: 56px;
-      padding: 11px 12px 11px 11px;
+      gap: var(--ios-gap-lg);
+      min-height: calc(var(--ios-touch) + 8px);
+      padding: 12px 14px 12px 12px;
       margin: 0;
       border: 1px solid rgba(18, 68, 83, 0.12);
-      border-radius: 16px;
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.92) 0%,
-          rgba(232, 240, 242, 0.88) 100%
-        );
+      border-radius: var(--radius-ios);
+      background: #FFFFFF;
       color: var(--canal-petroleum);
       text-decoration: none;
       box-sizing: border-box;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9) inset,
-        0 8px 22px rgba(18, 68, 83, 0.08);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.15s var(--ios-ease), box-shadow 0.15s var(--ios-ease);
+      transition: transform 0.2s var(--ios-ease), background-color 0.2s ease;
     }
 
     .guest-call:active {
-      transform: scale(0.985);
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.85) inset,
-        0 4px 12px rgba(18, 68, 83, 0.1);
+      transform: scale(0.97);
+      background: rgba(255, 255, 255, 0.92);
     }
 
     .guest-call .ga-call-icon {
@@ -1457,8 +1448,9 @@
 
     #step3 .book-field input,
     #step3 .book-field .book-select {
-      height: 44px;
-      font-size: 16px;
+      height: var(--ios-touch);
+      font-size: var(--type-body);
+      border-radius: var(--radius-ios);
     }
 
     #step3 .receipt-badge .time {
@@ -1582,7 +1574,7 @@
       z-index: 8;
       display: flex;
       flex-direction: column;
-      padding: 14px var(--ios-inset) 16px;
+      padding: 14px var(--ios-inset) 14px;
       box-sizing: border-box;
       background-color: var(--card-cream);
       background-image: linear-gradient(
@@ -1619,52 +1611,56 @@
       align-items: stretch;
       gap: 0;
       flex: 0 0 auto;
-      padding: 8px 2px 12px;
+      padding: var(--ios-2) 2px var(--ios-gap-lg);
       border-bottom: 1px solid rgba(18, 68, 83, 0.1);
     }
 
     .guest-sheet-back {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: var(--ios-gap);
       width: 100%;
+      height: var(--ios-touch);
       margin: 0;
-      padding: 12px 14px;
-      border: 1.5px solid rgba(18, 68, 83, 0.18);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.72);
-      font-family: inherit;
-      font-size: 15px;
-      font-weight: 600;
+      padding: 0 14px;
+      border: 0;
+      border-radius: var(--radius-ios);
+      background: transparent;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
       color: var(--canal-petroleum);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.2s var(--ios-ease), transform 0.2s var(--ios-ease);
     }
 
     .guest-sheet-back:active {
-      opacity: 0.7;
-      transform: scale(0.985);
+      opacity: 0.55;
+      transform: scale(0.97);
     }
 
     .guest-sheet-back-icon {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-style: solid;
       border-color: var(--canal-petroleum);
       border-width: 0 0 2px 2px;
       transform: rotate(45deg);
       margin: 0 0 1px;
       flex: 0 0 auto;
+      opacity: 0.85;
     }
 
     .guest-sheet-title {
       margin: 0;
       font-family: "Cinzel", Georgia, serif;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      line-height: 1.2;
+      font-size: var(--type-title);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
       color: var(--canal-petroleum);
       text-align: center;
     }
@@ -1675,17 +1671,22 @@
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 16px 2px 8px;
+      padding: var(--ios-gap-lg) 2px var(--ios-gap);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: var(--ios-gap);
       scrollbar-width: none;
     }
 
     .guest-sheet-footer {
       flex: 0 0 auto;
-      padding: 10px 2px 0;
+      padding: var(--ios-gap) 2px 2px;
       border-top: 1px solid rgba(18, 68, 83, 0.1);
+      background: linear-gradient(
+        180deg,
+        rgba(228, 238, 244, 0) 0%,
+        var(--card-cream-bottom) 36%
+      );
     }
 
     .guest-sheet-scroll::-webkit-scrollbar {
@@ -1695,7 +1696,7 @@
     .guest-sheet-panel {
       display: none;
       flex-direction: column;
-      gap: 12px;
+      gap: var(--ios-gap);
       width: 100%;
       animation: sheetPanelIn 420ms var(--slide-ease) both;
     }
@@ -1828,37 +1829,42 @@
     }
 
     #step3 .guest-call {
-      min-height: 46px;
-      gap: 10px;
-      padding: 9px 10px;
-      margin: 0 0 12px;
-      border-radius: 12px;
-      box-shadow: none;
+      min-height: calc(var(--ios-touch) + 8px);
+      gap: var(--ios-gap-lg);
+      padding: 12px 14px 12px 12px;
+      margin: 0 0 var(--ios-gap);
+      border-radius: var(--radius-ios);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     #step3 .guest-call .ga-call-icon {
-      width: 32px;
-      height: 32px;
-      box-shadow: 0 2px 6px rgba(18, 68, 83, 0.2);
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.18);
     }
 
     #step3 .guest-call .ga-call-icon svg {
-      width: 13px;
-      height: 13px;
+      width: 14px;
+      height: 14px;
     }
 
     #step3 .guest-call .ga-title {
-      font-size: 11.5px;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     #step3 .guest-call .ga-sub {
-      font-size: 9px;
-      letter-spacing: 0.05em;
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     #step3 .guest-call .ga-phone {
-      font-size: 11px;
-      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 12px;
     }
 
     #step3 .guest-action {
@@ -1900,20 +1906,22 @@
     }
 
     #step3 .guest-kv .v {
-      font-size: 14px;
+      font-size: var(--type-body);
     }
 
     #step3 .book-field label {
-      font-size: 10px;
+      font-size: var(--type-label);
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
     #step3 .book-submit {
-      border-radius: 12px;
+      border-radius: var(--radius-ios);
       font-weight: 600;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
+      height: var(--ios-touch);
+      font-size: var(--type-cta);
     }
 
     #step3 .reception-note {
@@ -2018,19 +2026,20 @@
     }
 
     .book-or {
-      margin: 2px 0 0;
-      font-size: 11px;
+      margin: var(--ios-1) 0 var(--ios-gap);
+      padding: 0 2px;
+      font-size: var(--type-label);
       font-weight: 700;
-      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #7A8791;
+      letter-spacing: 0.06em;
+      color: #8E8E93;
       text-align: center;
     }
 
     .book-fields {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: var(--ios-gap-lg);
       margin: 0;
       align-items: stretch;
     }
@@ -2038,13 +2047,13 @@
     .book-field {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: var(--ios-gap);
       min-width: 0;
     }
 
     .book-field label {
       display: block;
-      font-size: 10px;
+      font-size: var(--type-label);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -2055,25 +2064,38 @@
     .book-field input,
     .book-field .book-select {
       width: 100%;
-      height: 44px;
+      height: var(--ios-touch);
       box-sizing: border-box;
-      border: 1px solid rgba(18, 68, 83, 0.14);
-      border-radius: 12px;
-      background: #FFFFFF;
-      padding: 0 12px;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--canal-petroleum);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-ios);
+      background: #FFFFFF !important;
+      padding: 0 var(--ios-3);
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: var(--type-body);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
       -webkit-appearance: none;
       appearance: none;
+      transition: border-color 0.35s var(--ios-ease), box-shadow 0.35s var(--ios-ease);
+    }
+
+    .book-field input:focus,
+    .book-field .book-select:focus {
+      outline: none;
+      border-color: rgba(18, 68, 83, 0.28);
+      box-shadow: 0 0 0 3px rgba(18, 68, 83, 0.1);
     }
 
     .book-field .book-select {
       padding-right: 36px;
+      font-weight: 500;
+      color: var(--canal-petroleum);
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23124453' d='M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 12px center;
+      background-position: right 14px center;
+      background-color: #FFFFFF;
       cursor: pointer;
     }
 
@@ -2089,34 +2111,42 @@
 
     .book-submit {
       width: 100%;
-      height: 44px;
+      height: var(--ios-touch);
       border: 0;
-      border-radius: 12px;
+      border-radius: var(--radius-ios);
       background: var(--canal-petroleum);
-      color: #fff;
-      font-family: inherit;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
+      color: #FFFFFF;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: var(--type-cta);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-transform: none;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       -webkit-tap-highlight-color: transparent;
+      transition: transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1), background-color 0.25s var(--ios-ease);
     }
 
     .book-submit:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
+      background: var(--canal-petroleum-hover);
     }
 
     .book-submit:disabled {
       opacity: 0.55;
       cursor: default;
+      transform: none;
     }
 
     .book-done {
-      margin: 10px 0 0;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(18, 68, 83, 0.08);
-      border: 1px solid rgba(18, 68, 83, 0.14);
+      margin: var(--ios-gap) 0 0;
+      padding: 12px 14px;
+      border-radius: var(--radius-ios);
+      background: #FFFFFF;
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
       font-size: 13px;
       font-weight: 600;
       color: var(--canal-petroleum);
@@ -2139,30 +2169,33 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      padding: 12px 12px;
+      gap: var(--ios-gap-lg);
+      min-height: var(--ios-touch);
+      padding: 12px 14px;
       margin: 0;
-      border-radius: 12px;
+      border-radius: var(--radius-ios);
       background: #FFFFFF;
-      border: 1px solid rgba(18, 68, 83, 0.1);
-      font-size: 12px;
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+      font-size: var(--type-body);
+      box-sizing: border-box;
     }
 
     .guest-kv .k {
-      color: #6B7780;
-      font-weight: 600;
+      color: var(--canal-petroleum);
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-size: 10px;
+      letter-spacing: 0.06em;
+      font-size: var(--type-label);
       flex: 0 1 auto;
     }
 
     .guest-kv .v {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-weight: 700;
-      color: var(--canal-petroleum);
-      letter-spacing: 0.03em;
-      font-size: 14px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      font-size: var(--type-body);
       text-align: right;
       word-break: break-word;
       flex: 1 1 auto;
@@ -3106,7 +3139,7 @@
                     </select>
                   </div>
                 </div>
-                <button type="button" class="book-submit" id="btnBookSend">Invia richiesta</button>
+                <button type="button" class="btn-canal book-submit" id="btnBookSend">Invia richiesta</button>
                 <p class="book-done" id="bookDoneMsg" hidden></p>
               </div>
 
