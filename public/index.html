@@ -468,17 +468,17 @@
     }
 
     /*
-     * Altezza = contenuto (auto). min-height riempie la card se più alta.
-     * Overflow-y auto di sicurezza: niente elementi tagliati dal vetro.
+     * Layout step: header + scroll content + footer CTA sempre in vista.
+     * Se il contenuto è alto, scorre il body — Continua/Conferma non vengono mai tagliati.
      */
     .slide-step {
       flex: 0 0 33.333%;
       width: 33.333%;
       max-width: 33.333%;
       min-width: 33.333%;
-      height: auto;
+      height: 100%;
       min-height: 100%;
-      max-height: none;
+      max-height: 100%;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -491,17 +491,28 @@
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      overflow: hidden;
       pointer-events: none;
       opacity: 1;
       visibility: hidden;
     }
 
     .slide-step::-webkit-scrollbar {
+      display: none;
+    }
+
+    .step-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .step-scroll::-webkit-scrollbar {
       display: none;
     }
 
@@ -559,21 +570,30 @@
     .step-body {
       display: flex;
       flex-direction: column;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       min-height: 0;
       overflow: visible;
     }
 
     .step-footer-fixed {
-      padding-top: var(--ios-gap-lg);
-      padding-bottom: var(--ios-6);
+      flex: 0 0 auto;
       flex-shrink: 0;
-      margin-top: var(--ios-4);
+      width: 100%;
+      margin-top: auto;
+      padding-top: var(--ios-gap-lg);
+      padding-bottom: 4px;
       text-align: center;
+      position: relative;
+      z-index: 4;
+      background: linear-gradient(
+        180deg,
+        rgba(228, 238, 244, 0) 0%,
+        var(--card-cream-bottom) 28%
+      );
     }
 
     .step-footer-fixed .privacy-box {
-      margin: 20px 0 16px !important;
+      margin: 10px 0 10px !important;
       padding: 0 2px;
       width: 100%;
       box-sizing: border-box;
@@ -898,26 +918,18 @@
       padding-left: 34px;
     }
 
-    /* Step 2: Concierge Privilege — scheda istituzionale, niente marketing */
+    /* Step 2: stesso layout sticky-footer di Step 1 */
     #step2.slide-step {
       justify-content: flex-start;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      overflow: hidden;
       gap: 0;
       isolation: isolate;
-    }
-
-    #step2.slide-step::-webkit-scrollbar {
-      display: none;
     }
 
     #step2 .step-body {
       display: flex;
       flex-direction: column;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       width: 100%;
       min-height: 0;
       justify-content: flex-start;
@@ -925,6 +937,15 @@
       gap: 8px;
       position: relative;
       z-index: 1;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    #step2 .step-body::-webkit-scrollbar {
+      display: none;
     }
 
     #step2 .step2-top {
@@ -1124,8 +1145,8 @@
     }
 
     #step2 .step-footer-fixed {
-      margin: 2px 0 0;
-      padding: var(--ios-gap-lg) 0 var(--ios-6) 0;
+      margin: 0;
+      padding: 10px 0 2px;
       border-top: 1px solid rgba(18, 68, 83, 0.1);
       display: flex;
       flex-direction: column;
@@ -1133,8 +1154,13 @@
       gap: var(--ios-1);
       flex: 0 0 auto;
       position: relative;
-      z-index: 1;
+      z-index: 4;
       width: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba(228, 238, 244, 0) 0%,
+        var(--card-cream-bottom) 30%
+      );
     }
 
     #step2 .step-footer-fixed .btn-canal {
@@ -2861,7 +2887,7 @@
           <h1 id="lbl-title">Registrazione rapida</h1>
         </div>
 
-        <div class="step-body">
+        <div class="step-body step-scroll">
           <div class="form-grid-container">
             <div class="form-group">
               <label id="lbl-firstname" for="firstname">Nome *</label>
@@ -2881,7 +2907,9 @@
             </div>
           </div>
 
-          <div class="step-footer-fixed">
+        </div>
+
+        <div class="step-footer-fixed" id="step1Footer">
             <label class="privacy-box" id="privacyBox">
               <input type="checkbox" id="privacy" name="privacy" required aria-required="true">
               <span id="lbl-privacy" class="privacy-text">
@@ -2889,13 +2917,12 @@
               </span>
             </label>
             <button type="button" class="btn-canal" id="btnNext">Continua</button>
-          </div>
         </div>
       </section>
 
       <!-- STEP 2: Concierge Privilege — scheda servizi + pillole orario -->
       <section class="slide-step" id="step2" aria-hidden="true">
-        <div class="step-body">
+        <div class="step-body step-scroll">
           <div class="step2-top">
             <div class="concierge-photo-grid" aria-hidden="true">
               <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="680" height="420" decoding="async">
@@ -2955,11 +2982,12 @@
             </div>
           </div>
 
-          <div class="step-footer-fixed">
+        </div>
+
+        <div class="step-footer-fixed" id="step2Footer">
             <button type="button" class="btn-canal" id="btnSubmit">Conferma e ricevi coupon</button>
             <button type="button" class="btn-ghost" id="btnSkip">Salta, solo registrazione</button>
             <button type="button" class="btn-ghost" id="btnBack">Indietro</button>
-          </div>
         </div>
       </section>
 
@@ -3932,7 +3960,7 @@
         (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const dotsH =
         dots && !dots.classList.contains('hidden') && step !== TOTAL_STEPS
-          ? Math.ceil(dots.getBoundingClientRect().height) + 16
+          ? Math.ceil(dots.getBoundingClientRect().height) + 12
           : 0;
 
       const prev = {
@@ -3946,9 +3974,9 @@
         visibility: stepEl.style.visibility,
         zIndex: stepEl.style.zIndex,
         pointerEvents: stepEl.style.pointerEvents,
+        overflow: stepEl.style.overflow,
       };
 
-      // Misura fuori layout: niente min-height:100% della card alta
       const colW = Math.round(
         stepEl.getBoundingClientRect().width || card.clientWidth || 320,
       );
@@ -3962,8 +3990,25 @@
       stepEl.style.height = 'auto';
       stepEl.style.minHeight = '0';
       stepEl.style.maxHeight = 'none';
+      stepEl.style.overflow = 'visible';
       void stepEl.offsetHeight;
-      const inner = Math.ceil(stepEl.scrollHeight);
+
+      // Somma pezzi reali (header + scroll + footer) — evita scrollHeight tronca
+      let inner = 0;
+      const kids = [...stepEl.children];
+      if (kids.length) {
+        kids.forEach((kid) => {
+          const kh = Math.ceil(kid.scrollHeight || kid.getBoundingClientRect().height || 0);
+          const km = getComputedStyle(kid);
+          inner +=
+            kh +
+            (parseFloat(km.marginTop) || 0) +
+            (parseFloat(km.marginBottom) || 0);
+        });
+      } else {
+        inner = Math.ceil(stepEl.scrollHeight);
+      }
+
       stepEl.style.height = prev.height;
       stepEl.style.minHeight = prev.minHeight;
       stepEl.style.maxHeight = prev.maxHeight;
@@ -3974,8 +4019,30 @@
       stepEl.style.visibility = prev.visibility;
       stepEl.style.zIndex = prev.zIndex;
       stepEl.style.pointerEvents = prev.pointerEvents;
+      stepEl.style.overflow = prev.overflow;
 
-      return Math.ceil(padY + dotsH + inner + 8);
+      return Math.ceil(padY + dotsH + inner + 16);
+    }
+
+    /** Se Continua/Conferma escono dal vetro, forza rimisura subito. */
+    function ensurePrimaryCtaVisible() {
+      const card = document.getElementById('card');
+      if (!card) return;
+      const btn =
+        currentStep === 2
+          ? document.getElementById('btnSubmit')
+          : currentStep === 1
+            ? document.getElementById('btnNext')
+            : null;
+      if (!btn) return;
+      const cr = card.getBoundingClientRect();
+      const br = btn.getBoundingClientRect();
+      if (br.height < 8) return;
+      // Fuori dal vetro o quasi → ricresci card / risync
+      if (br.bottom > cr.bottom - 4 || br.top > cr.bottom) {
+        stepHeightCache[currentStep] = 0;
+        syncCardHeight(currentStep, { preferCache: false });
+      }
     }
 
     function computeCardHeightPx(step, { preferCache = true } = {}) {
@@ -4086,6 +4153,7 @@
       stepHeightCache[2] = 0;
       stepHeightCache[3] = 0;
       syncCardHeight(currentStep, { preferCache: false });
+      requestAnimationFrame(() => ensurePrimaryCtaVisible());
     }
 
     function normalizeBookTime(value) {
@@ -4148,6 +4216,7 @@
           syncCardHeight(step, { preferCache: false });
           applyParallax(toParallax, toScale);
           applyTrack(toSlide);
+          requestAnimationFrame(() => ensurePrimaryCtaVisible());
           return;
         }
 
@@ -4183,6 +4252,7 @@
         syncCardHeight(step, { preferCache: false });
         applyParallax(toParallax, toScale);
         applyTrack(toSlide);
+        requestAnimationFrame(() => ensurePrimaryCtaVisible());
       };
 
       if (sliding && !reduceMotion) {
@@ -4401,6 +4471,19 @@
       if (!msg) return false;
       if (/privacy|consenso|gdpr/.test(msg)) {
         setStep(1);
+    try {
+      document.fonts?.ready?.then?.(() => {
+        stepHeightCache[1] = 0;
+        stepHeightCache[2] = 0;
+        stepHeightCache[3] = 0;
+        syncCardHeight(currentStep, { preferCache: false });
+        ensurePrimaryCtaVisible();
+      });
+    } catch (_) {
+      /* ignore */
+    }
+    window.setTimeout(() => ensurePrimaryCtaVisible(), 120);
+    window.setTimeout(() => ensurePrimaryCtaVisible(), 400);
         showPrivacyError();
         return true;
       }
