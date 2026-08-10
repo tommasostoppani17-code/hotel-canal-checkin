@@ -165,12 +165,11 @@
       z-index: 2;
       width: 100%;
       max-width: 380px;
-      /* Altezza = misura JS del contenuto; tetto = viewport + safe-area */
-      height: var(--card-h);
-      max-height: min(var(--card-h), var(--card-max));
+      /* Fluida: cresce col viewport interno, tetto = schermo − safe-area */
+      height: auto;
+      max-height: var(--card-max);
       display: flex;
       flex-direction: column;
-      /* Crema → azzurro laguna */
       background-color: var(--card-cream);
       background-image: linear-gradient(
         180deg,
@@ -181,7 +180,7 @@
       -webkit-backdrop-filter: none;
       border: 1px solid rgba(255, 255, 255, 0.65);
       border-radius: 28px;
-      padding: 16px 0 20px;
+      padding: 16px 0 16px;
       box-sizing: border-box;
       box-shadow:
         0 20px 60px rgba(8, 48, 72, 0.18),
@@ -190,18 +189,11 @@
       isolation: isolate;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      will-change: height;
-      transition:
-        height var(--slide-ms) var(--height-ease),
-        max-height var(--slide-ms) var(--height-ease);
-      contain: layout style;
+      will-change: transform;
     }
 
-    /* Shrink: stessa curva dello slide — niente override che resetta il timing */
     .apple-card.is-height-shrink {
-      transition:
-        height var(--slide-ms) var(--height-ease),
-        max-height var(--slide-ms) var(--height-ease);
+      /* legacy no-op: altezza ora sul viewport */
     }
 
     /* Solo al primo load — mai dopo shake/rubber (altrimenti riparte da opacity 0) */
@@ -233,8 +225,9 @@
         width: 100%;
         margin-left: auto;
         margin-right: auto;
-        max-height: min(var(--card-h), var(--card-max));
-        padding: 14px 0 16px;
+        height: auto;
+        max-height: var(--card-max);
+        padding: 14px 0 14px;
         border-radius: 24px;
       }
 
@@ -294,7 +287,7 @@
       }
 
       .concierge-photo-grid {
-        height: 72px;
+        height: 56px;
         margin-bottom: 8px;
       }
 
@@ -433,27 +426,27 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Viewport passivo: riempie la card, MAI anima height */
+    /* Viewport: altezza biologica dello step attivo (JS). Card resta height:auto. */
     .slider-viewport {
       width: 100%;
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
-      height: 100%;
-      overflow: hidden !important;
+      height: auto;
+      overflow: hidden;
       position: relative;
-      transition: none !important;
-      /* Forza clip su Safari (senza preserve-3d) */
+      will-change: height;
+      transition: height 350ms cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
 
-    /* Binario 300%: solo transform orizzontale — content top-aligned (niente squash) */
     .slider-track {
       display: flex;
       flex-wrap: nowrap;
       align-items: flex-start;
       width: 300%;
-      height: 100%;
+      height: auto;
+      min-height: 100%;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
       transition: transform var(--slide-ms) var(--slide-ease);
@@ -463,26 +456,26 @@
       isolation: isolate;
       transform-style: flat;
       -webkit-transform-style: flat;
-      /* GPU: evita interpolazioni a scatti su Safari */
       -webkit-perspective: 1000;
     }
 
     /*
-     * Layout step: header + scroll content + footer CTA sempre in vista.
-     * Se il contenuto è alto, scorre il body — Continua/Conferma non vengono mai tagliati.
+     * Step a altezza naturale (niente height:100% che schiaccia i flex).
+     * Se il viewport è clampato, .is-active riempie e scrolla il body interno.
      */
     .slide-step {
       flex: 0 0 33.333%;
       width: 33.333%;
       max-width: 33.333%;
       min-width: 33.333%;
-      height: 100%;
-      min-height: 100%;
-      max-height: 100%;
+      height: auto;
+      min-height: 0;
+      max-height: none;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      align-self: flex-start;
       padding: 0 var(--ios-inset);
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
@@ -491,10 +484,18 @@
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
-      overflow: hidden;
+      overflow: visible;
       pointer-events: none;
       opacity: 1;
       visibility: hidden;
+    }
+
+    .slide-step.is-active,
+    .slide-step.is-sliding {
+      /* Quando il viewport ha altezza fissa, riempi senza comprimere i CTA */
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
     }
 
     .slide-step::-webkit-scrollbar {
@@ -963,10 +964,10 @@
     /* Vetrina editoriale HD — backdrop simmetrico, zero carosello */
     .concierge-photo-grid {
       display: grid;
-      grid-template-columns: 1.3fr 1fr 1fr;
-      gap: 6px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
       width: 100%;
-      height: 95px;
+      height: 65px;
       margin: 0 0 12px;
       flex: 0 0 auto;
     }
@@ -976,7 +977,7 @@
       height: 100%;
       object-fit: cover;
       object-position: center;
-      border-radius: var(--radius-ios);
+      border-radius: 12px;
       display: block;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
       background: #124453;
@@ -1080,8 +1081,8 @@
 
     @media (max-width: 480px) {
       .concierge-photo-grid {
-        height: 88px;
-        gap: 6px;
+        height: 65px;
+        gap: 8px;
         margin-bottom: var(--ios-gap);
       }
     }
@@ -1089,8 +1090,8 @@
     #step2 .form-grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      margin: 0;
-      padding: var(--ios-gap-lg);
+      margin: 4px 0 0;
+      padding: var(--ios-gap);
       gap: var(--ios-gap) var(--ios-gap-lg);
       flex-shrink: 0;
       position: relative;
@@ -3978,23 +3979,30 @@
       const bs = getComputedStyle(body);
       const pad =
         (parseFloat(bs.paddingTop) || 0) + (parseFloat(bs.paddingBottom) || 0);
-      // Tetto fluido: viewport hardware − padding safe-area − aria esterna
       return Math.max(280, Math.round(viewportH - pad - 8));
     }
 
-    /** Altezza naturale del contenuto dello step (indipendente dall’altezza attuale della card). */
-    function measureStepContentHeight(step) {
-      const stepEl = document.getElementById(`step${step}`);
+    /** Spazio verticale disponibile per #sliderViewport (card padding + dots). */
+    function availableViewportMax() {
       const card = document.getElementById('card');
-      if (!stepEl || !card) return null;
       const dots = document.getElementById('stepDots');
+      const maxCard = availableCardMax();
+      if (!card) return maxCard;
       const cs = getComputedStyle(card);
       const padY =
         (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const dotsH =
-        dots && !dots.classList.contains('hidden') && step !== TOTAL_STEPS
+        dots && !dots.classList.contains('hidden')
           ? Math.ceil(dots.getBoundingClientRect().height) + 12
           : 0;
+      return Math.max(220, Math.round(maxCard - padY - dotsH));
+    }
+
+    /** Altezza naturale dello step (senza vincoli del viewport). */
+    function measureStepContentHeight(step) {
+      const stepEl = document.getElementById(`step${step}`);
+      const card = document.getElementById('card');
+      if (!stepEl || !card) return null;
 
       const prev = {
         height: stepEl.style.height,
@@ -4026,12 +4034,13 @@
       stepEl.style.overflow = 'visible';
       void stepEl.offsetHeight;
 
-      // Somma pezzi reali (header + scroll + footer) — evita scrollHeight tronca
       let inner = 0;
       const kids = [...stepEl.children];
       if (kids.length) {
         kids.forEach((kid) => {
-          const kh = Math.ceil(kid.scrollHeight || kid.getBoundingClientRect().height || 0);
+          const kh = Math.ceil(
+            kid.scrollHeight || kid.getBoundingClientRect().height || 0,
+          );
           const km = getComputedStyle(kid);
           inner +=
             kh +
@@ -4042,150 +4051,110 @@
         inner = Math.ceil(stepEl.scrollHeight);
       }
 
-      stepEl.style.height = prev.height;
-      stepEl.style.minHeight = prev.minHeight;
-      stepEl.style.maxHeight = prev.maxHeight;
-      stepEl.style.position = prev.position;
-      stepEl.style.width = prev.width;
-      stepEl.style.left = prev.left;
-      stepEl.style.top = prev.top;
-      stepEl.style.visibility = prev.visibility;
-      stepEl.style.zIndex = prev.zIndex;
-      stepEl.style.pointerEvents = prev.pointerEvents;
-      stepEl.style.overflow = prev.overflow;
+      Object.keys(prev).forEach((k) => {
+        stepEl.style[k] = prev[k];
+      });
 
-      return Math.ceil(padY + dotsH + inner + 16);
+      return Math.ceil(inner + 8);
     }
 
-    /** Se Continua/Conferma escono dal vetro, forza rimisura subito. */
     function ensurePrimaryCtaVisible() {
-      const card = document.getElementById('card');
-      if (!card) return;
+      const viewport = document.getElementById('sliderViewport');
       const btn =
         currentStep === 2
           ? document.getElementById('btnSubmit')
           : currentStep === 1
             ? document.getElementById('btnNext')
             : null;
-      if (!btn) return;
-      const cr = card.getBoundingClientRect();
+      if (!viewport || !btn) return;
+      const vr = viewport.getBoundingClientRect();
       const br = btn.getBoundingClientRect();
       if (br.height < 8) return;
-      // Fuori dal vetro o quasi → ricresci card / risync
-      if (br.bottom > cr.bottom - 4 || br.top > cr.bottom) {
+      if (br.bottom > vr.bottom - 2 || br.top > vr.bottom) {
         stepHeightCache[currentStep] = 0;
-        syncCardHeight(currentStep, { preferCache: false });
+        syncViewportHeight(currentStep);
       }
+    }
+
+    /**
+     * Motore fluido: misura scrollHeight biologico → altezza #sliderViewport.
+     * La card resta height:auto (niente pixel fissi sul vetro).
+     */
+    function syncViewportHeight(stepNumber) {
+      const step = Number(stepNumber) || currentStep;
+      const viewport = document.getElementById('sliderViewport');
+      const card = document.getElementById('card');
+      if (!viewport) return;
+
+      // Pulisci eventuali altezze legacy sulla card
+      if (card) {
+        card.style.height = '';
+        card.style.maxHeight = '';
+        card.style.removeProperty('--card-h');
+        card.classList.remove('is-height-shrink');
+      }
+
+      const maxH = availableViewportMax();
+      let natural = measureStepContentHeight(step);
+      if (!Number.isFinite(natural) || natural < 200) {
+        const cached = stepHeightCache[step];
+        natural = cached >= 200 ? cached : Math.min(420, maxH);
+      }
+
+      const h = Math.min(Math.max(natural, 280), maxH);
+      stepHeightCache[step] = h;
+      if (step === 1) measuredStep1Height = h;
+      viewport.style.height = `${Math.round(h)}px`;
     }
 
     function computeCardHeightPx(step, { preferCache = true } = {}) {
-      const card = document.getElementById('card');
-      if (!card) return null;
-      const maxH = availableCardMax();
-      const softFloor = step === 2 ? 420 : step === 3 ? 400 : 380;
-
-      // Cache solo se ancora sotto il tetto viewport (evita misure stale su rotate)
+      const maxH = availableViewportMax();
       const cached = stepHeightCache[step];
-      if (preferCache && cached >= softFloor && cached <= maxH) {
-        return cached;
+      if (preferCache && cached >= 280 && cached <= maxH) return cached;
+      const natural = measureStepContentHeight(step);
+      if (!Number.isFinite(natural) || natural < 200) {
+        return cached >= 280 ? Math.min(cached, maxH) : Math.min(420, maxH);
       }
-
-      let natural = measureStepContentHeight(step);
-      if (!Number.isFinite(natural) || natural < 240) {
-        if (cached >= softFloor) return Math.min(cached, maxH);
-        return Math.min(softFloor + 40, maxH);
-      }
-
-      // Sheet aperti: lascia respirare un filo in più
-      const step3 = document.getElementById('step3');
-      const sheetBoost =
-        step === 3 && step3?.classList.contains('sheet-open') ? 24 : 8;
-      const h = Math.min(Math.max(natural + sheetBoost, softFloor), maxH);
-      stepHeightCache[step] = h;
-      if (step === 1) measuredStep1Height = h;
-      return h;
-    }
-
-    /** Alias Cupertino: misura biologica → --card-h (animata via CSS). */
-    function syncViewportHeight(stepNumber) {
-      const step = Number(stepNumber) || currentStep;
-      const h = computeCardHeightPx(step, { preferCache: false });
-      if (Number.isFinite(h)) applyCardHeightPx(h, { animate: true });
+      return Math.min(Math.max(natural, 280), maxH);
     }
 
     function applyCardHeightPx(h, { animate = false, shrink = false } = {}) {
+      // Compat: ora l'altezza vive sul viewport
+      const viewport = document.getElementById('sliderViewport');
       const card = document.getElementById('card');
-      if (!card || !Number.isFinite(h)) return;
-      const clamped = Math.min(Math.round(h), availableCardMax());
-      const px = `${clamped}px`;
+      if (!viewport || !Number.isFinite(h)) return;
+      const clamped = Math.min(Math.round(h), availableViewportMax());
+      if (card) {
+        card.style.height = '';
+        card.style.maxHeight = '';
+        card.classList.toggle('is-height-shrink', Boolean(shrink));
+      }
       if (!animate) {
-        card.classList.remove('is-height-shrink');
-        // Instant senza spezzare le transition future: un solo write
-        const prev = card.style.transition;
-        card.style.transition = 'none';
-        card.style.setProperty('--card-h', px);
-        card.style.height = px;
-        card.style.maxHeight = px;
-        // Force layout only once, then restore CSS transition from stylesheet
-        void card.offsetHeight;
-        card.style.transition = prev || '';
+        const prev = viewport.style.transition;
+        viewport.style.transition = 'none';
+        viewport.style.height = `${clamped}px`;
+        void viewport.offsetHeight;
+        viewport.style.transition = prev || '';
         return;
       }
-      card.classList.toggle('is-height-shrink', Boolean(shrink));
-      // Lascia la transition CSS (niente inline che combatte lo stylesheet)
-      if (card.style.transition === 'none') card.style.transition = '';
-      card.style.setProperty('--card-h', px);
-      card.style.height = px;
-      card.style.maxHeight = px;
+      if (viewport.style.transition === 'none') viewport.style.transition = '';
+      viewport.style.height = `${clamped}px`;
     }
 
     function syncCardHeight(step, { allowMicroAdjust = true, preferCache = false } = {}) {
-      const card = document.getElementById('card');
-      if (!card) return;
-
-      if (isPhoneViewport()) {
-        const h = computeCardHeightPx(step, { preferCache });
-        if (!Number.isFinite(h)) {
-          card.style.setProperty(
-            '--card-h',
-            CARD_HEIGHTS[step] || CARD_HEIGHTS[1],
-          );
-          card.style.height = '';
-          card.style.maxHeight = '';
-          return;
-        }
-        if (!allowMicroAdjust) {
-          const prev = Number.parseFloat(card.style.getPropertyValue('--card-h'));
-          if (Number.isFinite(prev) && Math.abs(prev - h) < 14) return;
-        }
-        stepHeightCache[step] = h;
-        applyCardHeightPx(h, { animate: false });
-        return;
-      }
-
-      // Desktop / tablet: stessa misura biologica del telefono
-      const h = computeCardHeightPx(step, { preferCache: false });
-      if (Number.isFinite(h)) {
-        applyCardHeightPx(h, { animate: false });
-        return;
-      }
-      card.style.height = '';
-      card.style.maxHeight = '';
-      card.style.setProperty('--card-h', CARD_HEIGHTS[step] || CARD_HEIGHTS[1]);
+      syncViewportHeight(step);
     }
 
-    /** Allinea --vvh all’altezza layout (Safari URL bar). */
     function syncAppViewportHeight() {
       const vv = window.visualViewport;
       const h = Math.round((vv && vv.height) || window.innerHeight || 0);
       if (h > 0) {
         document.documentElement.style.setProperty('--vvh', `${h}px`);
       }
-      // Svuota cache: dopo rotate / URL-bar Safari le misure vecchie mentono
       stepHeightCache[1] = 0;
       stepHeightCache[2] = 0;
       stepHeightCache[3] = 0;
-      syncCardHeight(currentStep, { preferCache: false });
+      syncViewportHeight(currentStep);
       requestAnimationFrame(() => ensurePrimaryCtaVisible());
     }
 
@@ -4244,45 +4213,32 @@
       freezeAmbient(true);
 
       const runMotion = () => {
-        if (hardCut && card) {
-          card.classList.remove('is-height-shrink');
-          syncCardHeight(step, { preferCache: false });
+        const viewport = document.getElementById('sliderViewport');
+        if (hardCut) {
+          syncViewportHeight(step);
           applyParallax(toParallax, toScale);
           applyTrack(toSlide);
           requestAnimationFrame(() => ensurePrimaryCtaVisible());
           return;
         }
 
-        if (sliding && card) {
-          const leavingH = Math.round(card.getBoundingClientRect().height);
-          if (leavingH >= 280) stepHeightCache[prev] = leavingH;
+        if (sliding && viewport) {
+          const leavingH = Math.round(viewport.getBoundingClientRect().height);
+          if (leavingH >= 200) stepHeightCache[prev] = leavingH;
 
           let nextH = computeCardHeightPx(step, { preferCache: true });
-          if (!Number.isFinite(nextH)) {
-            // Stima da CSS var senza rimisurare a caldo
-            const fallback = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
-            card.style.setProperty('--card-h', fallback);
-            nextH = leavingH;
-          }
-
-          const shrinking = nextH < leavingH - 6;
-          // Un solo gesto: altezza + binario nello stesso frame (niente transition:none → snap)
-          card.classList.toggle('is-height-shrink', shrinking);
-          if (card.style.transition === 'none') card.style.transition = '';
-          const px = `${Math.round(nextH)}px`;
-          card.style.setProperty('--card-h', px);
-          card.style.height = px;
-          card.style.maxHeight = px;
-          if (Number.isFinite(nextH) && nextH >= 280) {
-            stepHeightCache[step] = nextH;
-          }
+          if (!Number.isFinite(nextH)) nextH = leavingH || 420;
+          nextH = Math.min(Math.round(nextH), availableViewportMax());
+          stepHeightCache[step] = nextH;
+          if (viewport.style.transition === 'none') viewport.style.transition = '';
+          viewport.style.height = `${nextH}px`;
           applyParallax(toParallax, toScale);
           applyTrack(toSlide);
+          requestAnimationFrame(() => ensurePrimaryCtaVisible());
           return;
         }
 
-        card?.classList.remove('is-height-shrink');
-        syncCardHeight(step, { preferCache: false });
+        syncViewportHeight(step);
         applyParallax(toParallax, toScale);
         applyTrack(toSlide);
         requestAnimationFrame(() => ensurePrimaryCtaVisible());
@@ -4308,14 +4264,14 @@
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
         card?.classList.remove('is-height-shrink');
-        // Solo aggiorna cache — NIENTE seconda animazione altezza (era il “klunk”)
+        // Solo aggiorna cache — correzione silenziosa se fuori tolleranza
         const settled = computeCardHeightPx(step, { preferCache: false });
-        if (Number.isFinite(settled)) {
+        const viewport = document.getElementById('sliderViewport');
+        if (Number.isFinite(settled) && viewport) {
           stepHeightCache[step] = settled;
-          const cur = Math.round(card.getBoundingClientRect().height);
-          if (Math.abs(cur - settled) >= 36) {
-            // Correzione silenziosa solo se davvero fuori tolleranza
-            applyCardHeightPx(settled, { animate: false });
+          const cur = Math.round(viewport.getBoundingClientRect().height);
+          if (Math.abs(cur - settled) >= 24) {
+            syncViewportHeight(step);
           }
         }
       }, reduceMotion || hardCut ? 0 : SLIDE_MS + 40);
