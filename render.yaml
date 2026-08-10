@@ -1,17 +1,20 @@
 # Hotel Canal Check-in — Blueprint Render (production)
+# Starter + disk richiede carta su Render. Finché free: Gist backup + keep-alive.
+# Upgrade: Dashboard → plan Starter → attach disk → DATABASE_PATH=/var/data/checkins.db
 services:
   - type: web
     name: hotel-canal-checkin
     runtime: node
-    plan: starter
+    plan: free
     region: frankfurt
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
-    disk:
-      name: checkins-data
-      mountPath: /var/data
-      sizeGB: 1
+    # Dopo upgrade a starter (carta su Render), decommenta e cambia DATABASE_PATH:
+    # disk:
+    #   name: checkins-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "20"
@@ -22,7 +25,7 @@ services:
       - key: CRON_TZ
         value: Europe/Rome
       - key: DATABASE_PATH
-        value: /var/data/checkins.db
+        value: ./data/checkins.db
       - key: PUBLIC_URL
         sync: false
       - key: REPORT_EMAIL
