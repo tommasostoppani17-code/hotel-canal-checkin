@@ -4471,19 +4471,6 @@
       if (!msg) return false;
       if (/privacy|consenso|gdpr/.test(msg)) {
         setStep(1);
-    try {
-      document.fonts?.ready?.then?.(() => {
-        stepHeightCache[1] = 0;
-        stepHeightCache[2] = 0;
-        stepHeightCache[3] = 0;
-        syncCardHeight(currentStep, { preferCache: false });
-        ensurePrimaryCtaVisible();
-      });
-    } catch (_) {
-      /* ignore */
-    }
-    window.setTimeout(() => ensurePrimaryCtaVisible(), 120);
-    window.setTimeout(() => ensurePrimaryCtaVisible(), 400);
         showPrivacyError();
         return true;
       }
@@ -5593,6 +5580,19 @@
     setLanguage(currentLang);
     syncAppViewportHeight();
     setStep(1);
+    try {
+      document.fonts?.ready?.then?.(() => {
+        stepHeightCache[1] = 0;
+        stepHeightCache[2] = 0;
+        stepHeightCache[3] = 0;
+        syncCardHeight(currentStep, { preferCache: false });
+        ensurePrimaryCtaVisible();
+      });
+    } catch (_) {
+      /* ignore */
+    }
+    window.setTimeout(() => ensurePrimaryCtaVisible(), 120);
+    window.setTimeout(() => ensurePrimaryCtaVisible(), 400);
     startAmbientInertia();
     startCardSheen();
     // Intro una sola volta: altrimenti shake/rubber rimuovendo la class riparte cardIntro
