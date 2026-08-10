@@ -312,21 +312,21 @@
       }
 
       #step3 .form-grid-container {
-        padding: 10px;
-        gap: 8px 10px;
+        padding: 0;
+        gap: 12px;
       }
 
       .apple-input,
       #step3 .apple-input {
-        height: 40px;
-        font-size: 15px;
+        height: var(--ios-touch);
+        font-size: var(--type-body);
       }
 
       .btn-canal,
       #step2 .step-footer-fixed .btn-canal,
       #step3 .step-footer-fixed .btn-canal {
-        height: 42px;
-        font-size: 15px;
+        height: var(--ios-touch);
+        font-size: var(--type-cta);
       }
 
       .privacy-box {
@@ -1076,9 +1076,9 @@
     #step3 .form-grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      margin: 4px 0 0;
-      padding: 2px;
-      gap: 10px;
+      margin: 0;
+      padding: 0;
+      gap: 12px;
       width: 100%;
       box-sizing: border-box;
     }
@@ -1119,19 +1119,6 @@
       font-size: var(--type-body);
       background: #FFFFFF !important;
     }
-
-    /* Step 3 room form: stessi moduli dello Step 1 */
-    #step3 .form-grid-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      margin: 4px 0 0;
-      padding: 2px;
-      gap: 10px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    #step3 .form-group.span-2 { grid-column: span 2; }
 
     #step2 .step-footer-fixed {
       margin: 0;
