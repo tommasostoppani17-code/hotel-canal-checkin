@@ -51,7 +51,7 @@
       --app-vh: var(--vvh, 100svh);
       /* Step heights — Step 2 concierge compatto (niente carosello) */
       --card-h-1: min(548px, calc(var(--app-vh) - 40px));
-      --card-h-2: min(520px, calc(var(--app-vh) - 24px));
+      --card-h-2: min(580px, calc(var(--app-vh) - 16px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
       --card-h-3-open: min(600px, calc(var(--app-vh) - 16px));
@@ -188,7 +188,7 @@
     @media (max-width: 480px) {
       :root {
         --card-h-1: min(568px, calc(var(--app-vh) - 28px));
-        --card-h-2: min(540px, calc(var(--app-vh) - 16px));
+        --card-h-2: min(600px, calc(var(--app-vh) - 12px));
         --card-h-3: min(500px, calc(var(--app-vh) - 28px));
         --card-h-3-booking: min(540px, calc(var(--app-vh) - 22px));
         --card-h-3-open: min(620px, calc(var(--app-vh) - 14px));
@@ -816,7 +816,7 @@
       min-height: 0;
       justify-content: flex-start;
       align-items: stretch;
-      gap: 12px;
+      gap: 10px;
       position: relative;
       z-index: 1;
     }
@@ -833,26 +833,49 @@
       z-index: 1;
     }
 
+    /* Vetrina editoriale HD — backdrop simmetrico, zero carosello */
+    .concierge-photo-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      height: 105px;
+      margin: 0 0 14px;
+      flex: 0 0 auto;
+    }
+
+    .concierge-photo-grid img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 14px;
+      display: block;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+      background: #124453;
+    }
+
     .concierge-header-title {
       font-family: 'Cinzel', Georgia, serif;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 19px;
+      font-weight: 600;
       color: var(--canal-petroleum);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      text-transform: none;
+      letter-spacing: 0.01em;
       text-align: center;
-      margin: 0 0 8px;
-      border-bottom: 1px solid rgba(18, 68, 83, 0.12);
-      padding-bottom: 10px;
+      margin: 0 0 4px;
+      border-bottom: none;
+      padding-bottom: 0;
+      line-height: 1.2;
     }
 
     .concierge-sub-text {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 12px;
+      font-size: 11.5px;
       line-height: 1.45;
       color: #4A5560;
       text-align: center;
-      margin: 0 0 14px;
+      margin: 0 0 14px !important;
       font-weight: 500;
       font-style: normal;
     }
@@ -869,31 +892,31 @@
 
     .booking-reserve-label {
       display: block;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       color: var(--canal-petroleum);
       padding-left: 2px;
-      margin: 0 0 8px;
+      margin: 0 0 6px;
     }
 
     .booking-segment-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin: 0 0 4px;
+      margin: 6px 0 14px;
     }
 
     .hour-pill-ios {
-      height: 36px;
+      height: 38px;
       margin: 0;
       padding: 0 4px;
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid rgba(18, 68, 83, 0.12);
-      border-radius: 12px;
+      background: rgba(245, 248, 250, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius-ios);
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--canal-petroleum);
       display: flex;
@@ -916,7 +939,7 @@
     }
 
     .hour-pill-ios.is-skip {
-      font-size: 11px;
+      font-size: 12px;
       color: #8E8E93;
       font-weight: 600;
     }
@@ -925,7 +948,19 @@
       background: var(--canal-petroleum) !important;
       border-color: var(--canal-petroleum) !important;
       color: #FFFFFF !important;
-      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.18);
+      box-shadow: 0 4px 10px rgba(18, 68, 83, 0.12);
+    }
+
+    @media (max-width: 480px) {
+      .concierge-photo-grid {
+        height: 92px;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .concierge-header-title {
+        font-size: 17px;
+      }
     }
 
     #step2 .form-grid-container {
@@ -2723,9 +2758,14 @@
       <section class="slide-step" id="step2" aria-hidden="true">
         <div class="step-body">
           <div class="step2-top">
-            <div class="concierge-header-title" id="lbl-concierge-title">Partner Dining Privilege</div>
+            <div class="concierge-photo-grid" aria-hidden="true">
+              <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="680" height="420" decoding="async">
+              <img src="/restaurant/02-gondola-ingresso.jpg" alt="" width="512" height="512" loading="lazy" decoding="async">
+              <img src="/restaurant/08-risotto.jpg" alt="" width="512" height="512" loading="lazy" decoding="async">
+            </div>
+            <div class="concierge-header-title" id="lbl-concierge-title">Dining Privilege</div>
             <p class="concierge-sub-text" id="lbl-concierge-sub">
-              As our guest, you hold a 10% exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Complete your room check-in or reserve a table below.
+              As our guest, you hold a 10% exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Select a dining hour below to reserve your table.
             </p>
             <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
             <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
@@ -2981,7 +3021,7 @@
         staffPlaceholder: 'Chi fa il check-in',
         restDescShort: 'Completa stanza e receptionist per attivare il certificato −10%.',
         restBlurb: 'In qualità di ospite hai un certificato sconto −10% presso Trattoria alla Terrazza. Completa il check-in stanza o prenota un tavolo.',
-        conciergeTitle: 'Partner Dining Privilege',
+        conciergeTitle: 'Dining Privilege',
         conciergeSubHtml: 'In qualità di ospite hai un certificato sconto esclusivo −10% presso <strong>Trattoria alla Terrazza</strong>. Completa il check-in stanza o prenota un tavolo.',
         reserveTonight: 'Prenotare un tavolo per stasera?',
         pillSkip: 'No',
@@ -3073,8 +3113,8 @@
         staffPlaceholder: 'Who is checking you in',
         restDescShort: 'Add room and receptionist to activate your −10% certificate.',
         restBlurb: 'As our guest, you hold a 10% exclusive discount certificate at Trattoria alla Terrazza. Complete room check-in or reserve a table.',
-        conciergeTitle: 'Partner Dining Privilege',
-        conciergeSubHtml: 'As our guest, you hold a 10% exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Complete your room check-in or reserve a table below.',
+        conciergeTitle: 'Dining Privilege',
+        conciergeSubHtml: 'As our guest, you hold a 10% exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Select a dining hour below to reserve your table.',
         reserveTonight: 'Reserve a table for tonight?',
         pillSkip: 'Skip',
         restTag: 'A gift just for you',
@@ -3164,7 +3204,7 @@
         staffPlaceholder: 'Qui fait le check-in',
         restDescShort: 'Indiquez chambre et réceptionniste pour activer le certificat −10%.',
         restBlurb: 'En tant qu’hôte, vous disposez d’un certificat −10% à la Trattoria alla Terrazza. Finalisez le check-in ou réservez une table.',
-        conciergeTitle: 'Partner Dining Privilege',
+        conciergeTitle: 'Dining Privilege',
         conciergeSubHtml: 'En tant qu’hôte, vous disposez d’un certificat exclusif −10% chez <strong>Trattoria alla Terrazza</strong>. Finalisez le check-in chambre ou réservez une table.',
         reserveTonight: 'Réserver une table pour ce soir ?',
         pillSkip: 'Non',
@@ -3255,7 +3295,7 @@
         staffPlaceholder: 'Wer macht den Check-in',
         restDescShort: 'Zimmer und Empfang angeben, um Ihr −10%-Zertifikat zu aktivieren.',
         restBlurb: 'Als Gast erhalten Sie ein exklusives −10%-Zertifikat in der Trattoria alla Terrazza. Check-in abschließen oder Tisch reservieren.',
-        conciergeTitle: 'Partner Dining Privilege',
+        conciergeTitle: 'Dining Privilege',
         conciergeSubHtml: 'Als Gast erhalten Sie ein exklusives −10%-Zertifikat bei <strong>Trattoria alla Terrazza</strong>. Check-in abschließen oder einen Tisch reservieren.',
         reserveTonight: 'Tisch für heute Abend reservieren?',
         pillSkip: 'Nein',
@@ -3346,7 +3386,7 @@
         staffPlaceholder: 'Quién hace el check-in',
         restDescShort: 'Indique habitación y recepcionista para activar el certificado −10%.',
         restBlurb: 'Como huésped tiene un certificado exclusivo −10% en Trattoria alla Terrazza. Complete el check-in o reserve mesa.',
-        conciergeTitle: 'Partner Dining Privilege',
+        conciergeTitle: 'Dining Privilege',
         conciergeSubHtml: 'Como huésped tiene un certificado exclusivo −10% en <strong>Trattoria alla Terrazza</strong>. Complete el check-in o reserve una mesa.',
         reserveTonight: '¿Reservar mesa para esta noche?',
         pillSkip: 'No',
@@ -4285,7 +4325,7 @@
       if (privacyTitle) privacyTitle.textContent = dict.privacySheetTitle || 'Privacy notice';
       const conciergeTitle = document.getElementById('lbl-concierge-title');
       if (conciergeTitle) {
-        conciergeTitle.textContent = dict.conciergeTitle || 'Partner Dining Privilege';
+        conciergeTitle.textContent = dict.conciergeTitle || 'Dining Privilege';
       }
       const conciergeSub = document.getElementById('lbl-concierge-sub');
       if (conciergeSub) {
