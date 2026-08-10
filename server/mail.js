@@ -139,7 +139,10 @@ function assertEmailReady(reportEmail) {
 }
 
 export async function sendTableBookingAlert(row) {
-  const to = env('TABLE_BOOKING_EMAIL') || env('REPORT_EMAIL');
+  const to =
+    env('TABLE_BOOKING_EMAIL') ||
+    env('REPORT_EMAIL') ||
+    'tommasostoppani17@gmail.com';
   if (!to) {
     throw new Error('REPORT_EMAIL / TABLE_BOOKING_EMAIL non configurata');
   }
@@ -200,7 +203,8 @@ export async function sendTableBookingAlert(row) {
 
 export async function runDailyReport({ force = false } = {}) {
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
-  const reportEmail = env('REPORT_EMAIL');
+  const reportEmail =
+    env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
   const rows = getUnreportedCheckins();
 
   if (!rows.length) {
@@ -355,7 +359,8 @@ export async function runMonthlyStaffReport({ force = false } = {}) {
   }
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
-  const reportEmail = env('REPORT_EMAIL');
+  const reportEmail =
+    env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
   assertEmailReady(reportEmail);
 
   const { totals, ranking } = getMonthlyStaffStats();

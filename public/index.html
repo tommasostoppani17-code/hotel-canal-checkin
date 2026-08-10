@@ -50,7 +50,7 @@
       /* Viewport stabile su mobile; JS scrive --vvh da visualViewport */
       --app-vh: var(--vvh, 100svh);
       /* Step heights — Step 2 concierge compatto (niente carosello) */
-      --card-h-1: min(475px, calc(var(--app-vh) - 40px));
+      --card-h-1: min(520px, calc(var(--app-vh) - 28px));
       --card-h-2: min(575px, calc(var(--app-vh) - 12px));
       --card-h-3: min(480px, calc(var(--app-vh) - 32px));
       --card-h-3-booking: min(520px, calc(var(--app-vh) - 24px));
@@ -433,6 +433,13 @@
       cursor: text;
       -webkit-user-select: text;
       user-select: text;
+      touch-action: manipulation;
+    }
+
+    .slide-step button,
+    .slide-step .btn-canal,
+    .slide-step .btn-ghost {
+      pointer-events: auto !important;
       touch-action: manipulation;
     }
 
@@ -4369,7 +4376,7 @@
       }
       const reserveLbl = document.getElementById('lbl-reserve-tonight');
       if (reserveLbl) {
-        reserveLbl.textContent = dict.reserveTonight || 'Reserve a table for tonight?';
+        reserveLbl.textContent = dict.reserveTonight || 'Reserve a table for tonight? (optional)';
       }
       const pillSkip = document.getElementById('pillSkipTable');
       if (pillSkip) pillSkip.textContent = dict.pillSkip || 'Skip';
