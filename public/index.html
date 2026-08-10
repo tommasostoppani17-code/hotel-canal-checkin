@@ -32,12 +32,12 @@
       --input-white: #FFFFFF;
       --placeholder: #AEB3B8;
       --radius-ios: 14px;
-      --ios-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
-      --ios-snap: cubic-bezier(0.25, 0.1, 0.25, 1);
-      /* iOS-like: accel morbida + decelerazione lunga (meno “scatto”) */
-      --slide-ease: cubic-bezier(0.22, 0.9, 0.28, 1);
-      --slide-ms: 440ms;
-      --height-ease: cubic-bezier(0.22, 0.9, 0.28, 1);
+      --ios-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --ios-snap: cubic-bezier(0.32, 0.72, 0, 1);
+      /* iOS spring: decelerazione lunga, zero scatto iniziale */
+      --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --slide-ms: 520ms;
+      --height-ease: cubic-bezier(0.32, 0.72, 0, 1);
       /* Cupertino 8pt grid */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -166,13 +166,15 @@
       isolation: isolate;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      will-change: transform, height;
+      will-change: height;
       transition:
         height var(--slide-ms) var(--height-ease),
         max-height var(--slide-ms) var(--height-ease);
+      /* Evita paint a scatti durante lo slide */
+      contain: layout style;
     }
 
-    /* Shrink allineato allo slide (stessa curva/durata = più fluido) */
+    /* Shrink: stessa curva dello slide — niente override che resetta il timing */
     .apple-card.is-height-shrink {
       transition:
         height var(--slide-ms) var(--height-ease),
@@ -372,9 +374,10 @@
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       isolation: isolate;
-      /* flat: altrimenti iOS non clippa gli step vicini */
       transform-style: flat;
       -webkit-transform-style: flat;
+      /* GPU: evita interpolazioni a scatti su Safari */
+      -webkit-perspective: 1000;
     }
 
     /*
@@ -924,11 +927,11 @@
       justify-content: center;
       cursor: pointer;
       transition:
-        background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-        color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-        border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-        box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        background 0.28s var(--slide-ease),
+        color 0.28s var(--slide-ease),
+        border-color 0.28s var(--slide-ease),
+        transform 0.2s var(--slide-ease),
+        box-shadow 0.28s var(--slide-ease);
       -webkit-tap-highlight-color: transparent;
       appearance: none;
       -webkit-appearance: none;
@@ -3526,7 +3529,7 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 440;
+    const SLIDE_MS = 520;
 
     /** Orario tavolo scelto nello Step 2 (default Skip). */
     let selectedTableTime = 'NO';
@@ -3878,21 +3881,26 @@
     function applyCardHeightPx(h, { animate = false, shrink = false } = {}) {
       const card = document.getElementById('card');
       if (!card || !Number.isFinite(h)) return;
+      const px = `${Math.round(h)}px`;
       if (!animate) {
         card.classList.remove('is-height-shrink');
+        // Instant senza spezzare le transition future: un solo write
+        const prev = card.style.transition;
         card.style.transition = 'none';
-        card.style.setProperty('--card-h', `${h}px`);
-        card.style.height = `${h}px`;
-        card.style.maxHeight = `${h}px`;
+        card.style.setProperty('--card-h', px);
+        card.style.height = px;
+        card.style.maxHeight = px;
+        // Force layout only once, then restore CSS transition from stylesheet
         void card.offsetHeight;
-        card.style.transition = '';
+        card.style.transition = prev || '';
         return;
       }
       card.classList.toggle('is-height-shrink', Boolean(shrink));
-      card.style.transition = '';
-      card.style.setProperty('--card-h', `${h}px`);
-      card.style.height = `${h}px`;
-      card.style.maxHeight = `${h}px`;
+      // Lascia la transition CSS (niente inline che combatte lo stylesheet)
+      if (card.style.transition === 'none') card.style.transition = '';
+      card.style.setProperty('--card-h', px);
+      card.style.height = px;
+      card.style.maxHeight = px;
     }
 
     function syncCardHeight(step, { allowMicroAdjust = true, preferCache = false } = {}) {
@@ -3971,7 +3979,10 @@
       const prev = currentStep;
       currentStep = step;
       document.body.dataset.step = String(step);
-      pinCardInView();
+      // Niente scrollTo a ogni slide: su mobile crea un micro-scatto
+      if (instant || step === TOTAL_STEPS || prev === TOTAL_STEPS) {
+        pinCardInView();
+      }
 
       if (dots) {
         dots.classList.toggle('hidden', step === TOTAL_STEPS);
@@ -3996,43 +4007,63 @@
       }
 
       freezeAmbient(true);
-      if (hardCut && card) {
-        card.classList.remove('is-height-shrink');
-        syncCardHeight(step, { preferCache: false });
-      } else if (sliding && card) {
-        // Cache altezza dello step che lasciamo (misura affidabile a riposo)
-        const leavingH = Math.round(card.getBoundingClientRect().height);
-        if (leavingH >= 280) stepHeightCache[prev] = leavingH;
 
-        const curH = leavingH;
-        // Preferisci cache dello step destinazione (es. Indietro → step 1 già visto)
-        let nextH = computeCardHeightPx(step, { preferCache: true });
-        if (!Number.isFinite(nextH)) {
+      const runMotion = () => {
+        if (hardCut && card) {
+          card.classList.remove('is-height-shrink');
           syncCardHeight(step, { preferCache: false });
-          nextH = Math.round(card.getBoundingClientRect().height) || curH;
+          applyParallax(toParallax, toScale);
+          applyTrack(toSlide);
+          return;
         }
 
-        const shrinking = nextH < curH - 6;
-        card.classList.toggle('is-height-shrink', shrinking);
-        // Partenza nota → destinazione nello stesso frame dello slide
-        applyCardHeightPx(curH, { animate: false });
-        void card.offsetHeight;
-        applyCardHeightPx(nextH, { animate: true, shrink: shrinking });
-        if (Number.isFinite(nextH) && nextH >= 280) {
-          stepHeightCache[step] = nextH;
+        if (sliding && card) {
+          const leavingH = Math.round(card.getBoundingClientRect().height);
+          if (leavingH >= 280) stepHeightCache[prev] = leavingH;
+
+          let nextH = computeCardHeightPx(step, { preferCache: true });
+          if (!Number.isFinite(nextH)) {
+            // Stima da CSS var senza rimisurare a caldo
+            const fallback = CARD_HEIGHTS[step] || CARD_HEIGHTS[1];
+            card.style.setProperty('--card-h', fallback);
+            nextH = leavingH;
+          }
+
+          const shrinking = nextH < leavingH - 6;
+          // Un solo gesto: altezza + binario nello stesso frame (niente transition:none → snap)
+          card.classList.toggle('is-height-shrink', shrinking);
+          if (card.style.transition === 'none') card.style.transition = '';
+          const px = `${Math.round(nextH)}px`;
+          card.style.setProperty('--card-h', px);
+          card.style.height = px;
+          card.style.maxHeight = px;
+          if (Number.isFinite(nextH) && nextH >= 280) {
+            stepHeightCache[step] = nextH;
+          }
+          applyParallax(toParallax, toScale);
+          applyTrack(toSlide);
+          return;
         }
-      } else {
+
         card?.classList.remove('is-height-shrink');
         syncCardHeight(step, { preferCache: false });
+        applyParallax(toParallax, toScale);
+        applyTrack(toSlide);
+      };
+
+      if (sliding && !reduceMotion) {
+        // Double-rAF: parte dall’altezza corrente già paintata, poi anima
+        requestAnimationFrame(() => {
+          requestAnimationFrame(runMotion);
+        });
+      } else {
+        runMotion();
       }
-      // Ordine: prima parallasse (con transition), poi binario — stesso frame
-      applyParallax(toParallax, toScale);
-      applyTrack(toSlide);
 
       clearTimeout(ambientUnlockTimer);
       ambientUnlockTimer = setTimeout(
         () => freezeAmbient(false),
-        reduceMotion || hardCut ? 0 : SLIDE_MS + 40,
+        reduceMotion || hardCut ? 0 : SLIDE_MS + 60,
       );
 
       clearTimeout(slideRevealTimer);
@@ -4040,17 +4071,17 @@
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
         card?.classList.remove('is-height-shrink');
-        // Remisura a riposo e aggiorna cache (senza animazione extra se già a posto)
+        // Solo aggiorna cache — NIENTE seconda animazione altezza (era il “klunk”)
         const settled = computeCardHeightPx(step, { preferCache: false });
         if (Number.isFinite(settled)) {
           stepHeightCache[step] = settled;
           const cur = Math.round(card.getBoundingClientRect().height);
-          if (Math.abs(cur - settled) >= 14) {
-            applyCardHeightPx(settled, { animate: true, shrink: settled < cur });
-            setTimeout(() => card?.classList.remove('is-height-shrink'), SLIDE_MS);
+          if (Math.abs(cur - settled) >= 36) {
+            // Correzione silenziosa solo se davvero fuori tolleranza
+            applyCardHeightPx(settled, { animate: false });
           }
         }
-      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 20);
+      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 40);
     }
 
     /**
