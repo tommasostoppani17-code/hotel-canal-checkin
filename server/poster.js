@@ -153,9 +153,67 @@ export async function buildCheckinQrPng() {
   });
 }
 
+/** Ornamental diamond (hotel stationery) */
+function drawDiamond(doc, cx, cy, size = 3.5, color = CANAL) {
+  doc.save();
+  doc
+    .moveTo(cx, cy - size)
+    .lineTo(cx + size, cy)
+    .lineTo(cx, cy + size)
+    .lineTo(cx - size, cy)
+    .closePath()
+    .fillColor(color)
+    .fill();
+  doc.restore();
+}
+
+/** Elegant rule with centered diamond */
+function drawOrnamentRule(doc, y, pageW, side = 72) {
+  const mid = pageW / 2;
+  const gap = 14;
+  doc.save();
+  doc
+    .moveTo(side, y)
+    .lineTo(mid - gap, y)
+    .lineWidth(0.7)
+    .strokeColor(RULE)
+    .stroke();
+  doc
+    .moveTo(mid + gap, y)
+    .lineTo(pageW - side, y)
+    .stroke();
+  drawDiamond(doc, mid, y, 3.2, CANAL);
+  doc.restore();
+}
+
+/** Soft corner flourishes — page frame without a heavy “box” */
+function drawCornerFlourishes(doc, pageW, pageH, inset = 36) {
+  const len = 22;
+  doc.save();
+  doc.lineWidth(0.9).strokeColor('#A8BDC6').lineCap('square');
+  const corners = [
+    [inset, inset, 1, 1],
+    [pageW - inset, inset, -1, 1],
+    [inset, pageH - inset, 1, -1],
+    [pageW - inset, pageH - inset, -1, -1],
+  ];
+  for (const [x, y, dx, dy] of corners) {
+    doc
+      .moveTo(x, y + dy * len)
+      .lineTo(x, y)
+      .lineTo(x + dx * len, y)
+      .stroke();
+  }
+  doc.restore();
+}
+
+/** Thin petroleum top band */
+function drawTopAccent(doc, pageW) {
+  doc.rect(0, 0, pageW, 6).fill(CANAL);
+}
+
 /**
- * Clean reception A4 — no photo backdrop, no floating card.
- * Elegant paper, rounded QR in petroleum frame, line icons.
+ * Clean reception A4 — elegant stationery, rounded QR, balanced layout.
  */
 export async function buildPosterPdfBuffer({
   hotelName = 'Hotel Canal',
@@ -181,179 +239,185 @@ export async function buildPosterPdfBuffer({
 
     const pageW = doc.page.width;
     const pageH = doc.page.height;
-    const side = 64;
+    const side = 68;
 
-    // Quiet paper — reception print (no floating card, no photo backdrop)
+    // Quiet paper
     doc.rect(0, 0, pageW, pageH).fill(PAPER);
+    drawTopAccent(doc, pageW);
+    drawCornerFlourishes(doc, pageW, pageH, 34);
 
-    // Brand mark
-    drawGondolaMark(doc, pageW / 2, 70, 1.2);
+    // --- Header ---
+    drawGondolaMark(doc, pageW / 2, 58, 1.15);
 
-    let y = 102;
+    let y = 88;
     drawCentered(doc, String(hotelName).toUpperCase(), y, {
       font: 'Times-Bold',
-      size: 34,
+      size: 32,
       color: CANAL,
     });
-    y += 42;
+    y += 38;
     drawCentered(doc, 'V E N I C E   E X P E R I E N C E', y, {
       font: 'Times-Bold',
-      size: 10,
+      size: 9.5,
       color: MUTED,
     });
-    y += 22;
+    y += 18;
     drawCentered(doc, address, y, {
       font: 'Helvetica',
-      size: 9,
+      size: 8.5,
       color: MUTED,
     });
-    y += 28;
+    y += 26;
+    drawOrnamentRule(doc, y, pageW, side + 8);
+    y += 26;
 
-    doc
-      .moveTo(side + 48, y)
-      .lineTo(pageW - side - 48, y)
-      .lineWidth(0.7)
-      .strokeColor(RULE)
-      .stroke();
-    y += 28;
-
+    // --- Claim ---
     drawCentered(doc, 'Fast Digital Check-in', y, {
       font: 'Helvetica-Bold',
-      size: 18,
+      size: 17,
       color: TEXT,
     });
-    y += 28;
-
+    y += 24;
     doc
       .font('Helvetica')
-      .fontSize(11)
+      .fontSize(10.5)
       .fillColor(TEXT)
       .text(
         'Scan the code to register your room safely and receive Wi‑Fi, door access, and your dining privilege.',
-        side + 20,
+        side + 28,
         y,
-        { width: pageW - side * 2 - 40, align: 'center', lineGap: 4 },
+        { width: pageW - side * 2 - 56, align: 'center', lineGap: 3 },
       );
-    y += 44;
+    y += 42;
 
-    // QR — rounded square frame (--radius-ios) + clipped rounded QR
-    const qrSize = 228;
-    const framePad = 20;
+    // --- QR framed ---
+    const qrSize = 200;
+    const framePad = 18;
     const frame = qrSize + framePad * 2;
     const frameX = (pageW - frame) / 2;
     const frameY = y;
     const qrX = frameX + framePad;
     const qrY = frameY + framePad;
 
+    // Soft shadow under QR plate
+    doc.save();
+    doc
+      .roundedRect(frameX + 2, frameY + 3, frame, frame, RADIUS_IOS)
+      .fillColor('#000000')
+      .fillOpacity(0.06)
+      .fill();
+    doc.restore();
+
     doc
       .roundedRect(frameX, frameY, frame, frame, RADIUS_IOS)
       .fillColor('#FFFFFF')
       .fill();
-
     doc
       .roundedRect(frameX, frameY, frame, frame, RADIUS_IOS)
-      .lineWidth(1.7)
+      .lineWidth(1.55)
       .strokeColor(CANAL)
       .stroke();
-
     doc
-      .roundedRect(
-        frameX + 5,
-        frameY + 5,
-        frame - 10,
-        frame - 10,
-        RADIUS_IOS - 4,
-      )
-      .lineWidth(0.6)
+      .roundedRect(frameX + 5, frameY + 5, frame - 10, frame - 10, RADIUS_IOS - 4)
+      .lineWidth(0.55)
       .strokeColor(RULE)
       .stroke();
 
-    // Clip QR to rounded rect so corners match the frame
     doc.save();
-    doc
-      .roundedRect(qrX, qrY, qrSize, qrSize, RADIUS_IOS - 6)
-      .clip();
+    doc.roundedRect(qrX, qrY, qrSize, qrSize, RADIUS_IOS - 6).clip();
     doc.image(qrPng, qrX, qrY, { width: qrSize, height: qrSize });
     doc.restore();
+
+    // Tiny diamonds on QR frame mid-sides (jewelry detail)
+    drawDiamond(doc, frameX + frame / 2, frameY, 2.4, CANAL);
+    drawDiamond(doc, frameX + frame / 2, frameY + frame, 2.4, CANAL);
+    drawDiamond(doc, frameX, frameY + frame / 2, 2.4, CANAL);
+    drawDiamond(doc, frameX + frame, frameY + frame / 2, 2.4, CANAL);
 
     y = frameY + frame + 14;
     drawCentered(doc, 'SCAN WITH YOUR SMARTPHONE', y, {
       font: 'Helvetica-Bold',
-      size: 8.5,
+      size: 8,
       color: CANAL,
     });
-    y += 32;
 
-    const rows = [
-      {
-        draw: drawDoorIcon,
-        title: 'Door codes',
-        line: 'Access codes for your stay, delivered instantly',
-      },
-      {
-        draw: drawWifiIcon,
-        title: 'Wi‑Fi',
-        line: 'Network name and password right after check-in',
-      },
-      {
-        draw: drawDiningIcon,
-        title: '10% dining privilege',
-        line: 'Welcome voucher for Trattoria alla Terrazza',
-      },
-    ];
-
-    const rowW = pageW - side * 2;
-    const rowX = side;
-    rows.forEach((row, i) => {
-      const ry = y + i * 40;
-      if (i > 0) {
-        doc
-          .moveTo(rowX + 40, ry - 8)
-          .lineTo(rowX + rowW - 40, ry - 8)
-          .lineWidth(0.5)
-          .strokeColor(RULE)
-          .stroke();
-      }
-      row.draw(doc, rowX + 56, ry + 1, 1.05);
-      doc
-        .font('Helvetica-Bold')
-        .fontSize(10)
-        .fillColor(CANAL)
-        .text(row.title, rowX + 92, ry + 1, { width: rowW - 120 });
-      doc
-        .font('Helvetica')
-        .fontSize(9)
-        .fillColor(MUTED)
-        .text(row.line, rowX + 92, ry + 15, { width: rowW - 120 });
-    });
-
-    const footY = pageH - 70;
-    doc
-      .moveTo(side, footY)
-      .lineTo(pageW - side, footY)
-      .lineWidth(0.6)
-      .strokeColor(RULE)
-      .stroke();
-
+    // --- Footer first (anchor), then services sit just above it ---
+    const footY = pageH - 78;
+    drawOrnamentRule(doc, footY, pageW, side + 8);
     doc
       .font('Helvetica')
-      .fontSize(7.5)
+      .fontSize(7.3)
       .fillColor(MUTED)
       .text(
         'Private & secure · GDPR compliant · Data deleted automatically after 24 hours',
         side,
-        footY + 12,
+        footY + 14,
         { width: pageW - side * 2, align: 'center' },
       );
-    drawCentered(doc, `CANAL S.r.l. — ${address}`, footY + 28, {
+    drawCentered(doc, `CANAL S.r.l. — ${address}`, footY + 30, {
       font: 'Helvetica',
-      size: 7.5,
+      size: 7.3,
       color: MUTED,
     });
-    drawCentered(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 44, {
+    drawCentered(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 46, {
       font: 'Helvetica',
       size: 7,
       color: CANAL,
+    });
+
+    // --- Three service columns (anchored above footer, no dead air) ---
+    const servicesBlockH = 78;
+    const servicesY = footY - 22 - servicesBlockH;
+    drawOrnamentRule(doc, servicesY - 16, pageW, side + 24);
+
+    const cols = [
+      {
+        draw: drawDoorIcon,
+        title: 'Door codes',
+        line: 'Access codes\nfor your stay',
+      },
+      {
+        draw: drawWifiIcon,
+        title: 'Wi‑Fi',
+        line: 'Network name &\npassword after check-in',
+      },
+      {
+        draw: drawDiningIcon,
+        title: '10% dining',
+        line: 'Voucher at Trattoria\nalla Terrazza',
+      },
+    ];
+    const colW = (pageW - side * 2) / 3;
+    cols.forEach((col, i) => {
+      const cx = side + i * colW + colW / 2;
+      const iconX = cx - 10;
+      col.draw(doc, iconX, servicesY, 1.1);
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(9)
+        .fillColor(CANAL)
+        .text(col.title, side + i * colW + 6, servicesY + 26, {
+          width: colW - 12,
+          align: 'center',
+        });
+      doc
+        .font('Helvetica')
+        .fontSize(8.2)
+        .fillColor(MUTED)
+        .text(col.line, side + i * colW + 8, servicesY + 40, {
+          width: colW - 16,
+          align: 'center',
+          lineGap: 1.5,
+        });
+      if (i < 2) {
+        const vx = side + (i + 1) * colW;
+        doc
+          .moveTo(vx, servicesY + 4)
+          .lineTo(vx, servicesY + 68)
+          .lineWidth(0.5)
+          .strokeColor(RULE)
+          .stroke();
+      }
     });
 
     doc.end();
