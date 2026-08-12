@@ -52,11 +52,12 @@ function drawCenteredText(doc, text, y, { font, size, color } = {}) {
 }
 
 /**
- * True A4 PDF poster (210×297mm) — Step 1 identity, English, print-ready.
+ * True A4 PDF poster (210×297mm) — Premium reception sign.
+ * Print on white matte 200g; place in frosted/satin plexiglass for the glass-card look.
  */
 export async function buildPosterPdfBuffer({
   hotelName = 'Hotel Canal',
-  address = 'Santa Croce 553, 30135 Venezia (VE)',
+  address = 'Santa Croce 553, 30135 Venezia',
 } = {}) {
   const qrPng = await buildCheckinQrPng();
 
@@ -65,9 +66,9 @@ export async function buildPosterPdfBuffer({
       size: 'A4',
       margin: 0,
       info: {
-        Title: `${hotelName} — Reception QR Sign A4`,
+        Title: `${hotelName} — Premium Reception Poster A4`,
         Author: hotelName,
-        Subject: 'Fast Digital Check-in · Welcome Discount',
+        Subject: 'Fast Digital Check-in · Door codes · Wi-Fi · Dining privilege',
       },
     });
 
@@ -79,30 +80,36 @@ export async function buildPosterPdfBuffer({
     const pageW = doc.page.width; // 595.28
     const pageH = doc.page.height; // 841.89
     const side = 71; // ~25mm
+    const radiusIos = 20; // mirrors --radius-ios on Step 1 inputs
 
-    // Immacolato — nessuna banda colorata; solo tipografia Step 1
+    // Total-white — backdrop sync: frosted plexiglass supplies the lagoon glass look
     doc.rect(0, 0, pageW, pageH).fill('#FFFFFF');
 
-    // Brand monumentale (Cinzel → Times-Bold print fallback)
-    drawCenteredText(doc, String(hotelName).toUpperCase(), 78, {
+    // Monumental brand (Cinzel → Times-Bold print fallback)
+    drawCenteredText(doc, String(hotelName).toUpperCase(), 72, {
       font: 'Times-Bold',
-      size: 32,
+      size: 34,
       color: CANAL,
     });
-    drawCenteredText(doc, 'V E N I C E   E X P E R I E N C E', 120, {
+    drawCenteredText(doc, 'V E N I C E   E X P E R I E N C E', 116, {
       font: 'Times-Bold',
       size: 10,
       color: MUTED,
     });
+    drawCenteredText(doc, address, 136, {
+      font: 'Helvetica',
+      size: 9,
+      color: MUTED,
+    });
 
     doc
-      .moveTo(side + 40, 148)
-      .lineTo(pageW - side - 40, 148)
+      .moveTo(side + 48, 162)
+      .lineTo(pageW - side - 48, 162)
       .lineWidth(0.7)
       .strokeColor(RULE)
       .stroke();
 
-    drawCenteredText(doc, 'Fast Digital Check-in', 178, {
+    drawCenteredText(doc, 'Fast Digital Check-in', 186, {
       font: 'Helvetica-Bold',
       size: 18,
       color: TEXT_DARK,
@@ -110,25 +117,25 @@ export async function buildPosterPdfBuffer({
 
     doc
       .font('Helvetica')
-      .fontSize(11.5)
+      .fontSize(11)
       .fillColor(TEXT_DARK)
       .text(
-        'Scan the QR code with your smartphone to safely complete your room registration, access high-speed Wi-Fi, and unlock your exclusive 10% dining privilege.',
-        side + 18,
-        214,
-        { width: pageW - side * 2 - 36, align: 'center', lineGap: 5 },
+        'Scan the QR code with your smartphone to complete room registration and unlock front-desk services instantly.',
+        side + 22,
+        218,
+        { width: pageW - side * 2 - 44, align: 'center', lineGap: 4 },
       );
 
-    // QR plate — high-res PNG for sharp print through glass/plexiglass
-    const qrSize = 210;
-    const platePad = 18;
+    // QR plate — roundedRect radius = --radius-ios (20)
+    const qrSize = 216;
+    const platePad = 20;
     const plate = qrSize + platePad * 2;
     const plateX = (pageW - plate) / 2;
-    const plateY = 300;
+    const plateY = 278;
 
     doc
-      .roundedRect(plateX, plateY, plate, plate, 6)
-      .lineWidth(1.1)
+      .roundedRect(plateX, plateY, plate, plate, radiusIos)
+      .lineWidth(1.25)
       .strokeColor(CANAL)
       .stroke();
 
@@ -137,54 +144,41 @@ export async function buildPosterPdfBuffer({
       height: qrSize,
     });
 
-    drawCenteredText(doc, 'SCAN WITH YOUR SMARTPHONE', plateY + plate + 20, {
+    drawCenteredText(doc, 'SCAN WITH YOUR SMARTPHONE', plateY + plate + 18, {
       font: 'Helvetica-Bold',
       size: 9,
       color: CANAL,
     });
 
-    // Language chips (8 langs as in-app)
-    const langs = ['IT', 'EN', 'FR', 'DE', 'ES', 'ZH', 'JA', 'AR'];
-    const chipW = 30;
-    const chipH = 17;
-    const gap = 6;
-    const rowW = langs.length * chipW + (langs.length - 1) * gap;
-    let chipX = (pageW - rowW) / 2;
-    const chipY = plateY + plate + 48;
+    // Three front-desk benefits
+    const benefits = [
+      { title: 'DOOR CODES', line: 'Instant access codes for your stay' },
+      { title: 'HIGH-SPEED WI-FI', line: 'Network credentials right after check-in' },
+      { title: '10% DINING PRIVILEGE', line: 'Exclusive voucher at Trattoria alla Terrazza' },
+    ];
+    const colW = (pageW - side * 2) / 3;
+    const benY = plateY + plate + 48;
 
-    for (const lang of langs) {
-      doc
-        .roundedRect(chipX, chipY, chipW, chipH, 3)
-        .fillColor('#EEF3F4')
-        .fill();
+    benefits.forEach((b, i) => {
+      const x = side + i * colW;
       doc
         .font('Helvetica-Bold')
-        .fontSize(7.5)
+        .fontSize(8)
         .fillColor(CANAL)
-        .text(lang, chipX, chipY + 4.5, { width: chipW, align: 'center' });
-      chipX += chipW + gap;
-    }
-
-    // Guest benefit
-    const benefitY = chipY + 48;
-    drawCenteredText(doc, 'EXCLUSIVE GUEST BENEFIT', benefitY, {
-      font: 'Helvetica-Bold',
-      size: 10,
-      color: CANAL,
+        .text(b.title, x + 4, benY, { width: colW - 8, align: 'center' });
+      doc
+        .font('Helvetica')
+        .fontSize(8.5)
+        .fillColor(TEXT_DARK)
+        .text(b.line, x + 6, benY + 16, {
+          width: colW - 12,
+          align: 'center',
+          lineGap: 2,
+        });
     });
-    doc
-      .font('Helvetica')
-      .fontSize(10.5)
-      .fillColor(TEXT_DARK)
-      .text(
-        'Get an immediate 10% discount voucher for Trattoria alla Terrazza right after validation.',
-        side + 28,
-        benefitY + 22,
-        { width: pageW - side * 2 - 56, align: 'center', lineGap: 3 },
-      );
 
-    // Legal / GDPR footer
-    const footY = pageH - 92;
+    // GDPR seal
+    const footY = pageH - 88;
     doc
       .moveTo(side, footY)
       .lineTo(pageW - side, footY)
@@ -202,17 +196,12 @@ export async function buildPosterPdfBuffer({
         footY + 14,
         { width: pageW - side * 2, align: 'center' },
       );
-    drawCenteredText(
-      doc,
-      `CANAL S.r.l. — ${address}`,
-      footY + 34,
-      {
-        font: 'Helvetica',
-        size: 8,
-        color: FOOT,
-      },
-    );
-    drawCenteredText(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 52, {
+    drawCenteredText(doc, `CANAL S.r.l. — ${address}`, footY + 32, {
+      font: 'Helvetica',
+      size: 8,
+      color: FOOT,
+    });
+    drawCenteredText(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 50, {
       font: 'Helvetica',
       size: 7.5,
       color: MUTED,
@@ -283,7 +272,7 @@ export async function sendPosterEmail({ to } = {}) {
     html: buildPosterEmailHtml({ hotelName, pdfKb }),
     attachments: [
       {
-        filename: 'hotel-canal-reception-poster-a4.pdf',
+        filename: 'Hotel_Canal_Poster_Premium.pdf',
         content: pdf,
       },
     ],
