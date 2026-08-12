@@ -211,17 +211,15 @@ const bgRel = '../../public/venice-bg-poster.jpg';
 const posterHtml = fs
   .readFileSync(path.join(root, 'public', 'qr-poster.html'), 'utf8')
   .replace('src="/qr-checkin.png"', `src="${qrDataUrl}"`)
-  .replace(
-    'url("/venice-bg-poster.jpg")',
-    `url("${bgRel}")`,
-  )
+  .replace('src="/email/hero-01.jpg"', `src="../../public/email/hero-01.jpg"`)
+  .replace('src="/email/band-26.jpg"', `src="../../public/email/band-26.jpg"`)
   .replace('__PUBLIC_URL__', base.replace(/\/$/, ''));
 files.push(write('07-poster-reception.html', posterHtml));
 
 const posterPdf = await buildPosterPdfBuffer({ hotelName: 'Hotel Canal' });
-fs.writeFileSync(path.join(root, 'Hotel_Canal_Poster_Supremo.pdf'), posterPdf);
+fs.writeFileSync(path.join(root, 'Hotel_Canal_Cartello_Checkin.pdf'), posterPdf);
 console.log(
-  `✓ Hotel_Canal_Poster_Supremo.pdf (${Math.round(posterPdf.length / 1024)} KB)`,
+  `✓ Hotel_Canal_Cartello_Checkin.pdf (${Math.round(posterPdf.length / 1024)} KB)`,
 );
 
 files.push(
@@ -312,13 +310,13 @@ const index = `<!DOCTYPE html>
     </a>
     <a class="card" href="07-poster-reception.html" target="_blank">
       <div class="num">07B · Reception</div>
-      <div class="title">Poster A4 da stampare</div>
-      <div class="who">Foto Venezia · QR ticket · −10%</div>
+      <div class="title">Cartello check-in A4</div>
+      <div class="who">Hotel + ristorante · QR · tono normale</div>
     </a>
     <a class="card" href="08-poster-email.html" target="_blank">
       <div class="num">08 · Staff</div>
-      <div class="title">Email con PDF poster</div>
-      <div class="who">Mail istruzioni stampa</div>
+      <div class="title">Email cartello check-in</div>
+      <div class="who">Mail con PDF allegato</div>
     </a>
   </div>
 </body>
