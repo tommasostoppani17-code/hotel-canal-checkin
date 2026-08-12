@@ -39,11 +39,6 @@ export function buildWifiNetworks() {
   ];
 }
 
-/** Solo Hotel Canal in email welcome — niente Airone né appartamenti. */
-export function buildWifiNetworksForEmail() {
-  return buildWifiNetworks().filter((net) => net.id === 'canal');
-}
-
 export function buildGuestServicesPayload() {
   let doorWalter = String(env('DOOR_CODE_WALTER', '')).trim();
   if (doorWalter && !doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
