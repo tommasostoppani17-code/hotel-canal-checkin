@@ -43,6 +43,7 @@ import {
   pullCheckinsBackup,
   pushCheckinsBackup,
 } from './backup.js';
+import { buildTableBookingEmail } from './report.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -234,6 +235,27 @@ app.get('/sw.js', (_req, res) => {
   res.type('application/javascript');
   res.setHeader('Cache-Control', 'no-cache');
   res.sendFile(path.join(rootDir, 'public', 'sw.js'));
+});
+
+/** Preview locale email richiesta tavolo (stesso HTML inviato). */
+app.get('/preview/table-booking-email', (req, res) => {
+  if (IS_PROD && !isAuthorizedCron(req)) {
+    return res.status(404).end();
+  }
+  const { html } = buildTableBookingEmail({
+    hotelName: HOTEL_NAME,
+    row: {
+      guest_name: 'Ismary',
+      room_number: '17',
+      phone: '+34 600 000 000',
+      guests_count: 2,
+      receptionist: 'TOMMASO',
+      table_booking: '20:15',
+      coupon_token: 'preview',
+      coupon_sent_at: new Date().toISOString(),
+    },
+  });
+  res.type('html').send(html);
 });
 
 /** Niente backup / scrap in pubblico. */
