@@ -28,6 +28,10 @@ export function toWhatsAppAddress(value) {
 }
 
 export function whatsappConfigured() {
+  // Gate esplicito: niente alert Payel finché non abiliti ALLOW_PAYEL_WHATSAPP=true
+  if (env('ALLOW_PAYEL_WHATSAPP', 'false').toLowerCase() !== 'true') {
+    return false;
+  }
   return Boolean(
     env('TWILIO_ACCOUNT_SID') &&
       env('TWILIO_AUTH_TOKEN') &&

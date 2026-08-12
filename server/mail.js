@@ -139,12 +139,21 @@ function assertEmailReady(reportEmail) {
 }
 
 export async function sendTableBookingAlert(row) {
+  // Solo REPORT_EMAIL / TABLE_BOOKING_EMAIL — niente hotel di default
   const to =
     env('TABLE_BOOKING_EMAIL') ||
     env('REPORT_EMAIL') ||
-    'tommasostoppani17@gmail.com';
+    '';
   if (!to) {
     throw new Error('REPORT_EMAIL / TABLE_BOOKING_EMAIL non configurata');
+  }
+  if (
+    /@(hotelcanal\.|payel)/i.test(to) &&
+    env('ALLOW_HOTEL_MAIL', 'false').toLowerCase() !== 'true'
+  ) {
+    throw new Error(
+      'Destinatario hotel/Payel bloccato (ALLOW_HOTEL_MAIL non attivo)',
+    );
   }
   if (!resendConfigured() && !smtpConfigured()) {
     throw new Error('Email non configurata');

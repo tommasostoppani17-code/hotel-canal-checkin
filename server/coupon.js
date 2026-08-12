@@ -28,6 +28,26 @@ function getFrom() {
   );
 }
 
+/** Copia staff (tu): BCC welcome → REPORT_EMAIL / STAFF_NOTIFY_EMAIL. Mai hotel/Payel. */
+function staffNotifyBcc(to) {
+  if (env('STAFF_BCC', 'true').toLowerCase() === 'false') return '';
+  const staff = String(
+    env('STAFF_NOTIFY_EMAIL') || env('REPORT_EMAIL') || '',
+  )
+    .trim()
+    .toLowerCase();
+  const guest = String(to || '')
+    .trim()
+    .toLowerCase();
+  if (!staff || !guest || staff === guest) return '';
+  // Blocca destinazioni hotel/Payel finché non abilitate
+  if (/@(hotelcanal\.|checkin-hotelcanal\.it)/i.test(staff) &&
+      env('ALLOW_HOTEL_MAIL', 'false').toLowerCase() !== 'true') {
+    return '';
+  }
+  return staff;
+}
+
 /** Resend onboarding@resend.dev = solo email del proprietario account (test). */
 function isResendTestFrom(from = getFrom()) {
   return /@resend\.dev\b/i.test(String(from || ''));
@@ -804,9 +824,11 @@ async function sendMail({
 
   if (resendConfigured() && !preferSmtpOverResend()) {
     const resend = new Resend(env('RESEND_API_KEY').trim());
+    const bcc = staffNotifyBcc(to);
     const payload = {
       from: getFrom(),
       to: [to],
+      ...(bcc ? { bcc: [bcc] } : {}),
       subject,
       text,
       html,
@@ -835,6 +857,7 @@ async function sendMail({
       }
       throw new Error(msg);
     }
+    if (bcc) console.log(`[mail] BCC staff → ${bcc}`);
     return data;
   }
 
@@ -854,9 +877,11 @@ async function sendMail({
     auth: { user: env('SMTP_USER'), pass: env('SMTP_PASS') },
   });
 
+  const bcc = staffNotifyBcc(to);
   await transporter.sendMail({
     from: getFrom(),
     to,
+    ...(bcc ? { bcc } : {}),
     subject,
     text,
     html,
@@ -870,6 +895,7 @@ async function sendMail({
       contentDisposition: a.contentId ? 'inline' : 'attachment',
     })),
   });
+  if (bcc) console.log(`[mail] BCC staff → ${bcc}`);
 }
 
 /** Instant concierge welcome + restaurant coupon QR (always on registration). */
