@@ -2770,6 +2770,58 @@
       display: flex;
     }
 
+    .wifi-location-label {
+      margin: 0 0 8px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7A8690;
+    }
+
+    .wifi-location-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 14px;
+      width: 100%;
+    }
+
+    .wifi-pill {
+      flex: 1 1 calc(33.333% - 6px);
+      min-width: 92px;
+      height: 40px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(18, 68, 83, 0.22);
+      background: #FFFFFF;
+      color: var(--canal-petroleum);
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      line-height: 1.1;
+      cursor: pointer;
+      transition:
+        background 320ms var(--slide-ease),
+        color 320ms var(--slide-ease),
+        border-color 320ms var(--slide-ease),
+        box-shadow 320ms var(--slide-ease),
+        transform 240ms var(--slide-ease);
+    }
+
+    .wifi-pill:active {
+      transform: scale(0.97);
+    }
+
+    .wifi-pill.is-selected {
+      background: var(--canal-petroleum);
+      border-color: var(--canal-petroleum);
+      color: #FFFFFF;
+      box-shadow: 0 6px 16px rgba(18, 68, 83, 0.16);
+    }
+
     /* Monoblocco iOS Settings */
     .ios-group {
       width: 100%;
@@ -5200,12 +5252,12 @@
               <div class="guest-sheet-panel" id="doorsPanel" hidden>
                 <div class="ios-group">
                   <div class="ios-row">
-                    <span class="row-label" id="lbl-door-main">Entrata principale</span>
+                    <span class="row-label" id="lbl-door-main">Walter</span>
                     <span class="row-value" id="doorMain">-</span>
                     <button type="button" class="action-badge copy-btn" data-copy-from="doorMain" id="btnCopyDoorMain">Copia</button>
                   </div>
                   <div class="ios-row">
-                    <span class="row-label" id="lbl-door-inner">Porta interna</span>
+                    <span class="row-label" id="lbl-door-inner">Airone</span>
                     <span class="row-value" id="doorInner">-</span>
                     <button type="button" class="action-badge copy-btn" data-copy-from="doorInner" id="btnCopyDoorInner">Copia</button>
                   </div>
@@ -5213,6 +5265,12 @@
               </div>
 
               <div class="guest-sheet-panel" id="wifiPanel" hidden>
+                <p class="wifi-location-label" id="lbl-wifi-location">Sede</p>
+                <div class="wifi-location-pills" id="wifiLocationPills" role="tablist" aria-label="Wi-Fi location">
+                  <button type="button" class="wifi-pill is-selected" data-wifi-id="canal" role="tab" aria-selected="true">Hotel Canal</button>
+                  <button type="button" class="wifi-pill" data-wifi-id="airone" role="tab" aria-selected="false">Airone</button>
+                  <button type="button" class="wifi-pill" data-wifi-id="pisani" role="tab" aria-selected="false">Appartamenti</button>
+                </div>
                 <div class="ios-group">
                   <div class="ios-row">
                     <span class="row-label" id="lbl-wifi-net">Rete</span>
@@ -5336,11 +5394,15 @@
         actWifi: 'Accedi al Wi‑Fi',
         actWifiSub: 'Rete in tutta la struttura',
         actDoors: 'Codici della porta',
-        actDoorsSub: 'Entrata e porta interna',
+        actDoorsSub: 'Walter e Airone',
         wifiNet: 'Rete',
         wifiPass: 'Password',
-        doorMain: 'Entrata principale',
-        doorInner: 'Porta interna',
+        wifiLocation: 'Sede',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: 'Appartamenti',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         copy: 'Copia',
         copied: 'Copiato',
         receptionNote: 'Reception 24h. Passa quando vuoi.',
@@ -5439,11 +5501,15 @@
         actWifi: 'Join the Wi‑Fi',
         actWifiSub: 'Hotel network on property',
         actDoors: 'Door codes',
-        actDoorsSub: 'Main and inner door',
+        actDoorsSub: 'Walter and Airone',
         wifiNet: 'Network',
         wifiPass: 'Password',
-        doorMain: 'Main entrance',
-        doorInner: 'Inner door',
+        wifiLocation: 'Location',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: 'Apartments',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         copy: 'Copy',
         copied: 'Copied',
         receptionNote: 'Reception 24h. Come by anytime.',
@@ -5539,11 +5605,15 @@
         actWifi: 'Accéder au Wi‑Fi',
         actWifiSub: 'Réseau de l’hôtel partout',
         actDoors: 'Codes des portes',
-        actDoorsSub: 'Entrée principale et porte intérieure',
+        actDoorsSub: 'Walter et Airone',
         wifiNet: 'Réseau',
         wifiPass: 'Mot de passe',
-        doorMain: 'Entrée principale',
-        doorInner: 'Porte intérieure',
+        wifiLocation: 'Lieu',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: 'Appartements',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         receptionNote: 'Réception 24h. Passez quand vous voulez.',
         trattoriaPhoneAria: 'Appeler Trattoria alla Terrazza',
         askReception: 'Demandez à la réception',
@@ -5637,11 +5707,15 @@
         actWifi: 'Wi‑Fi verbinden',
         actWifiSub: 'Hotelnetz im ganzen Haus',
         actDoors: 'Türcodes',
-        actDoorsSub: 'Haupteingang und Innentür',
+        actDoorsSub: 'Walter und Airone',
         wifiNet: 'Netzwerk',
         wifiPass: 'Passwort',
-        doorMain: 'Haupteingang',
-        doorInner: 'Innentür',
+        wifiLocation: 'Standort',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: 'Apartments',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         receptionNote: 'Rezeption 24h. Kommen Sie jederzeit vorbei.',
         trattoriaPhoneAria: 'Trattoria alla Terrazza anrufen',
         askReception: 'An der Rezeption fragen',
@@ -5735,11 +5809,15 @@
         actWifi: 'Conectarse al Wi‑Fi',
         actWifiSub: 'Red del hotel en toda la estructura',
         actDoors: 'Códigos de la puerta',
-        actDoorsSub: 'Entrada principal y puerta interior',
+        actDoorsSub: 'Walter y Airone',
         wifiNet: 'Red',
         wifiPass: 'Contraseña',
-        doorMain: 'Entrada principal',
-        doorInner: 'Puerta interior',
+        wifiLocation: 'Ubicación',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: 'Apartamentos',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         receptionNote: 'Recepción 24h. Pase cuando quiera.',
         trattoriaPhoneAria: 'Llamar a Trattoria alla Terrazza',
         askReception: 'Pregunte en recepción',
@@ -5840,11 +5918,15 @@
         actWifi: '连接 Wi‑Fi',
         actWifiSub: '酒店全覆盖网络',
         actDoors: '门锁密码',
-        actDoorsSub: '大门与内门',
+        actDoorsSub: 'Walter 与 Airone',
         wifiNet: '网络',
         wifiPass: '密码',
-        doorMain: '主入口',
-        doorInner: '内门',
+        wifiLocation: '地点',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: '公寓',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         receptionNote: '前台 24 小时。随时欢迎光临。',
         trattoriaPhoneAria: '致电 Trattoria alla Terrazza',
         askReception: '请询问前台',
@@ -5945,11 +6027,15 @@
         actWifi: 'Wi‑Fi に接続',
         actWifiSub: '館内ネットワーク',
         actDoors: 'ドアコード',
-        actDoorsSub: '正面入口と内扉',
+        actDoorsSub: 'Walter と Airone',
         wifiNet: 'ネットワーク',
         wifiPass: 'パスワード',
-        doorMain: '正面入口',
-        doorInner: '内扉',
+        wifiLocation: '場所',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: 'アパート',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         receptionNote: 'フロント24時間。いつでもどうぞ。',
         trattoriaPhoneAria: 'Trattoria alla Terrazza に電話',
         askReception: 'フロントへお問い合わせ',
@@ -6052,11 +6138,15 @@
         actWifi: 'الاتصال بـ Wi‑Fi',
         actWifiSub: 'شبكة الفندق في كل المرافق',
         actDoors: 'رموز الأبواب',
-        actDoorsSub: 'المدخل الرئيسي والباب الداخلي',
+        actDoorsSub: 'Walter و Airone',
         wifiNet: 'الشبكة',
         wifiPass: 'كلمة المرور',
-        doorMain: 'المدخل الرئيسي',
-        doorInner: 'الباب الداخلي',
+        wifiLocation: 'الموقع',
+        wifiHotelCanal: 'Hotel Canal',
+        wifiAirone: 'Airone',
+        wifiApartments: 'الشقق',
+        doorMain: 'Walter',
+        doorInner: 'Airone',
         receptionNote: 'الاستقبال 24 ساعة. تفضّل في أي وقت.',
         trattoriaPhoneAria: 'اتصل بـ Trattoria alla Terrazza',
         askReception: 'اسأل الاستقبال',
@@ -6175,7 +6265,6 @@
       if (!mail) return false;
       const known = new Set([
         'tommasostoppani17@gmail.com',
-        'info@hotelcanal.com',
         'payel@hotelcanal.com',
         'mizan@hotelcanal.com',
       ]);
@@ -7479,6 +7568,37 @@
     }
 
     let guestServicesCache = null;
+    let selectedWifiId = 'canal';
+
+    function applyWifiNetwork(networks, dict) {
+      const ask = dict?.askReception || '-';
+      const list = Array.isArray(networks) && networks.length
+        ? networks
+        : guestServicesCache?.wifiSsid
+          ? [{ id: 'canal', ssid: guestServicesCache.wifiSsid, password: guestServicesCache.wifiPassword }]
+          : [];
+      if (!list.length) return;
+
+      const pillLabels = {
+        canal: dict?.wifiHotelCanal || 'Hotel Canal',
+        airone: dict?.wifiAirone || 'Airone',
+        pisani: dict?.wifiApartments || 'Appartamenti',
+      };
+      document.querySelectorAll('#wifiLocationPills .wifi-pill').forEach((btn) => {
+        const id = btn.getAttribute('data-wifi-id');
+        if (pillLabels[id]) btn.textContent = pillLabels[id];
+        const selected = id === selectedWifiId;
+        btn.classList.toggle('is-selected', selected);
+        btn.setAttribute('aria-selected', selected ? 'true' : 'false');
+      });
+
+      const current =
+        list.find((net) => net.id === selectedWifiId) || list[0];
+      const ssidEl = document.getElementById('wifiSsid');
+      const passEl = document.getElementById('wifiPass');
+      if (ssidEl) ssidEl.textContent = current?.ssid || ask;
+      if (passEl) passEl.textContent = current?.password || ask;
+    }
 
     function applyGuestActionLabels(dict, couponSent) {
       const setTxt = (id, value) => {
@@ -7512,6 +7632,7 @@
       setTxt('lbl-act-doors-sub', dict.actDoorsSub);
       setTxt('lbl-wifi-net', dict.wifiNet);
       setTxt('lbl-wifi-pass', dict.wifiPass);
+      setTxt('lbl-wifi-location', dict.wifiLocation);
       setTxt('lbl-door-main', dict.doorMain);
       setTxt('lbl-door-inner', dict.doorInner);
       document.querySelectorAll('.copy-btn').forEach((btn) => {
@@ -7532,6 +7653,7 @@
         tableAction.classList.add('is-book');
         tableAction.classList.remove('is-primary', 'is-static');
       }
+      applyWifiNetwork(guestServicesCache?.wifiNetworks, dict);
     }
 
     function applyTrattoriaPhone(data, dict) {
@@ -7572,14 +7694,11 @@
         }
         const data = guestServicesCache || {};
         const ask = dict.askReception || '-';
-        const ssidEl = document.getElementById('wifiSsid');
-        const passEl = document.getElementById('wifiPass');
         const mainEl = document.getElementById('doorMain');
         const innerEl = document.getElementById('doorInner');
-        if (ssidEl) ssidEl.textContent = data.wifiSsid || ask;
-        if (passEl) passEl.textContent = data.wifiPassword || ask;
-        if (mainEl) mainEl.textContent = data.doorMain || ask;
-        if (innerEl) innerEl.textContent = data.doorInner || ask;
+        if (mainEl) mainEl.textContent = data.doorMain || data.doorWalter || ask;
+        if (innerEl) innerEl.textContent = data.doorInner || data.doorAirone || ask;
+        applyWifiNetwork(data.wifiNetworks, dict);
         applyTrattoriaPhone(data, dict);
         applyGuestActionLabels(dict, lastCouponSent);
       } catch (_) {
@@ -7587,6 +7706,15 @@
         /* ignore — valori restano placeholder */
       }
     }
+
+    document.getElementById('wifiLocationPills')?.addEventListener('click', (e) => {
+      const pill = e.target.closest('.wifi-pill[data-wifi-id]');
+      if (!pill) return;
+      e.preventDefault();
+      selectedWifiId = pill.getAttribute('data-wifi-id') || 'canal';
+      playConfirmChime({ soft: true });
+      applyWifiNetwork(guestServicesCache?.wifiNetworks, t());
+    });
 
     document.getElementById('guestActions')?.addEventListener('click', (e) => {
       const btn = e.target.closest('.guest-action-btn[data-sheet]');

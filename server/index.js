@@ -50,6 +50,7 @@ import {
   pushCheckinsBackup,
 } from './backup.js';
 import { buildTableBookingEmail } from './report.js';
+import { buildGuestServicesPayload } from './guest-services.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -448,22 +449,6 @@ function readGuestAccessToken(req) {
   return String(req.get('x-guest-token') || '').trim();
 }
 
-function buildGuestServicesPayload() {
-  let doorMain = String(process.env.DOOR_CODE_WALTER || '').trim();
-  if (doorMain && !doorMain.endsWith('#')) doorMain = `${doorMain}#`;
-  const doorInner = String(process.env.DOOR_CODE_AIRONE || '').trim();
-  return {
-    wifiSsid: String(process.env.WIFI_SSID || 'hotel canal').trim() || 'hotel canal',
-    wifiPassword: String(process.env.WIFI_PASSWORD || '').trim(),
-    doorMain,
-    doorInner,
-    trattoriaPhone: String(process.env.TRATTORIA_PHONE || '+393282464972').trim(),
-    trattoriaPhoneDisplay: String(
-      process.env.TRATTORIA_PHONE_DISPLAY || '328 246 4972',
-    ).trim(),
-  };
-}
-
 /** Rimuove markup/script (XSS) da testo libero ospite. */
 function sanitizePlainText(value, maxLen = 80) {
   return String(value || '')
@@ -509,7 +494,6 @@ function normalizeEmail(value) {
 function testerEmailSet() {
   const defaults = [
     'tommasostoppani17@gmail.com',
-    'info@hotelcanal.com',
     'payel@hotelcanal.com',
     'mizan@hotelcanal.com',
   ];

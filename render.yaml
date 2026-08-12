@@ -48,6 +48,12 @@ services:
         sync: false
       - key: WIFI_PASSWORD
         sync: false
+      - key: WIFI_SSID_AIRONE
+        sync: false
+      - key: WIFI_SSID_APARTMENT
+        sync: false
+      - key: WIFI_PASSWORD_APARTMENT
+        sync: false
       - key: WIFI_TYPE
         value: WPA
       - key: DOOR_CODE_WALTER

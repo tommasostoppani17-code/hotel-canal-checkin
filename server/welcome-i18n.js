@@ -35,8 +35,8 @@ export const WELCOME_I18N = {
     doorsTitle: 'Codici di accesso',
     doorsDesc:
       'Per entrare in hotel di notte o quando la reception &egrave; chiusa, digita il codice sul tastierino della porta.',
-    doorMainLabel: 'Entrata principale',
-    doorInnerLabel: 'Porta interna',
+    doorMainLabel: 'Walter',
+    doorInnerLabel: 'Airone',
     routeTitle: 'A piedi verso la Terrazza',
     routeDesc:
       'Circa otto minuti dall&rsquo;hotel (Santa Croce 553) a Trattoria alla Terrazza, San Polo 2426. Meglio aprire anche Maps:',
@@ -139,8 +139,8 @@ export const WELCOME_I18N = {
     doorsTitle: 'Entrance access codes',
     doorsDesc:
       'To enter the hotel at night or when reception is closed, enter the code on the door keypad.',
-    doorMainLabel: 'Main entrance',
-    doorInnerLabel: 'Inner door',
+    doorMainLabel: 'Walter',
+    doorInnerLabel: 'Airone',
     routeTitle: 'Walk to the Terrazza',
     routeDesc:
       'About eight minutes from the hotel (Santa Croce 553) to Trattoria alla Terrazza, San Polo 2426. Open Maps too:',
@@ -243,8 +243,8 @@ export const WELCOME_I18N = {
     doorsTitle: 'Codes d&rsquo;acc&egrave;s',
     doorsDesc:
       'Pour entrer la nuit ou lorsque la r&eacute;ception est ferm&eacute;e, saisissez le code sur le clavier de la porte.',
-    doorMainLabel: 'Entr&eacute;e principale',
-    doorInnerLabel: 'Porte int&eacute;rieure',
+    doorMainLabel: 'Walter',
+    doorInnerLabel: 'Airone',
     routeTitle: 'À pied vers la Terrazza',
     routeDesc:
       'Environ huit minutes de l&rsquo;h&ocirc;tel (Santa Croce 553) &agrave; Trattoria alla Terrazza, San Polo 2426. Ouvrez aussi Maps :',
@@ -348,8 +348,8 @@ export const WELCOME_I18N = {
     doorsTitle: 'Zugangscodes',
     doorsDesc:
       'Um nachts oder bei geschlossener Rezeption einzutreten, geben Sie den Code auf der Tastatur der T&uuml;r ein.',
-    doorMainLabel: 'Haupteingang',
-    doorInnerLabel: 'Innent&uuml;r',
+    doorMainLabel: 'Walter',
+    doorInnerLabel: 'Airone',
     routeTitle: 'Zu Fuß zur Terrazza',
     routeDesc:
       'Etwa acht Minuten vom Hotel (Santa Croce 553) zur Trattoria alla Terrazza, San Polo 2426. Am besten auch Maps &ouml;ffnen:',
@@ -453,8 +453,8 @@ export const WELCOME_I18N = {
     doorsTitle: 'Códigos de acceso',
     doorsDesc:
       'Para entrar de noche o cuando la recepci&oacute;n est&aacute; cerrada, introduzca el c&oacute;digo en el teclado de la puerta.',
-    doorMainLabel: 'Entrada principal',
-    doorInnerLabel: 'Puerta interior',
+    doorMainLabel: 'Walter',
+    doorInnerLabel: 'Airone',
     routeTitle: 'A pie a la Terrazza',
     routeDesc:
       'Unos ocho minutos desde el hotel (Santa Croce 553) hasta Trattoria alla Terrazza, San Polo 2426. Abra tambi&eacute;n Maps:',

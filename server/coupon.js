@@ -1,3 +1,4 @@
+import { buildWifiNetworks } from './guest-services.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,6 +20,7 @@ import {
   emailDisplayStyle,
   emailEyebrowStyle,
 } from './email-type.js';
+import { isBlockedRecipient, assertSendableRecipient, sendableRecipientOrEmpty } from './recipient-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -44,20 +46,13 @@ function getFrom() {
 /** Copia staff (tu): BCC welcome → REPORT_EMAIL / STAFF_NOTIFY_EMAIL. Mai hotel/Payel. */
 function staffNotifyBcc(to) {
   if (env('STAFF_BCC', 'true').toLowerCase() === 'false') return '';
-  const staff = String(
+  const staff = sendableRecipientOrEmpty(
     env('STAFF_NOTIFY_EMAIL') || env('REPORT_EMAIL') || '',
-  )
-    .trim()
-    .toLowerCase();
+  );
   const guest = String(to || '')
     .trim()
     .toLowerCase();
   if (!staff || !guest || staff === guest) return '';
-  // Blocca destinazioni hotel/Payel finché non abilitate
-  if (/@(hotelcanal\.|checkin-hotelcanal\.it)/i.test(staff) &&
-      env('ALLOW_HOTEL_MAIL', 'false').toLowerCase() !== 'true') {
-    return '';
-  }
   return staff;
 }
 
@@ -207,7 +202,7 @@ function readEmailAsset(...parts) {
   return null;
 }
 
-function buildWelcomeHtml({
+export function buildWelcomeHtml({
   guestName,
   roomNumber,
   receptionist,
@@ -224,6 +219,7 @@ function buildWelcomeHtml({
   stickers = {},
   wifiSsid,
   wifiPassword,
+  wifiNetworks = [],
   doorWalter,
   doorAirone,
   lang = 'en',
@@ -239,15 +235,15 @@ function buildWelcomeHtml({
   const BRASS = '#6E868F';
   /* Scala tipografica = mail tavolo (Cormorant / EB Garamond / Cinzel / DM Sans) */
   const FS = {
-    section: '13px',
-    body: '14.5px',
-    bodySm: '13px',
-    itemTitle: '15px',
-    stepTitle: '15px',
-    stepLine: '13px',
-    label: '10px',
-    button: '12.5px',
-    legal: '9.5px',
+    section: '14px',
+    body: '16px',
+    bodySm: '14px',
+    itemTitle: '16px',
+    stepTitle: '16px',
+    stepLine: '14px',
+    label: '11px',
+    button: '13.5px',
+    legal: '10.5px',
   };
   const bodyStyle = emailBodyStyle({ size: FS.body, line: '1.55' });
   const bodySmStyle = emailBodyStyle({ size: FS.bodySm, line: '1.4' });
@@ -270,8 +266,23 @@ function buildWelcomeHtml({
   const terrace = escapeHtml(
     terraceSrc || gallerySrc || restaurantSrc,
   );
-  const wifiSsidSafe = escapeHtml(wifiSsid || 'hotel canal');
-  const wifiPasswordSafe = escapeHtml(wifiPassword || '—');
+  const wifiCards = (wifiNetworks.length ? wifiNetworks : [{ label: 'Hotel Canal', ssid: wifiSsid || 'hotel canal', password: wifiPassword || '' }])
+    .map(
+      (net) => `
+              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 12px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
+                <tr>
+                  <td align="center" style="padding:18px 16px;">
+                    <div style="${labelStyle};margin:0 0 10px;color:${C} !important;">${escapeHtml(net.label)}</div>
+                    <div style="${labelStyle};margin:0 0 6px;">${lp.networkLabel}</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:18px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 12px;">${escapeHtml(net.ssid)}</div>
+                    <div style="height:1px;line-height:1px;font-size:1px;background-color:#E8E4DC;margin:0 auto 12px;max-width:200px;">&nbsp;</div>
+                    <div style="${labelStyle};margin:0 0 6px;">${lp.passwordLabel}</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:18px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1.2;">${escapeHtml(net.password || '—')}</div>
+                  </td>
+                </tr>
+              </table>`,
+    )
+    .join('');
   const doorWalterSafe = escapeHtml(doorWalter || '—');
   const doorAironeSafe = escapeHtml(doorAirone || '—');
   /** Larghezza utile card (500 − padding 22×2). Pixel fissi → niente fascia grigia su Gmail desktop. */
@@ -393,7 +404,7 @@ function buildWelcomeHtml({
               </p>
               <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
                 <tr>
-                  <td style="padding:20px 18px;font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.65;color:#4A5560 !important;font-weight:400;">
+                  <td style="padding:20px 18px;font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.65;color:#4A5560 !important;font-weight:400;">
                     ${lp.ticketBox}<strong style="color:${C} !important;font-weight:600;font-style:italic;">${room}</strong>
                   </td>
                 </tr>
@@ -406,12 +417,12 @@ function buildWelcomeHtml({
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 0;">
                 <tr>
                   <td align="center" style="border-top:1px solid #E5E5EA;padding-top:24px;text-align:center;">
-                    <p style="font-family:${SANS};font-size:10px;color:#8E8E93 !important;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;line-height:1.4;">
+                    <p style="font-family:${SANS};font-size:${FS.label};color:#8E8E93 !important;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px 0;line-height:1.4;">
                       Hotel Canal<br>
                       Santa Croce 553, 30135 Venezia (VE) — Italy<br>
                       P.IVA / C.F.: 04711930273
                     </p>
-                    <p style="font-family:${SANS};font-size:9.5px;color:#AEAEB2 !important;font-weight:400;margin:0;line-height:1.5;padding:0 16px;">
+                    <p style="font-family:${SANS};font-size:${FS.legal};color:#AEAEB2 !important;font-weight:400;margin:0;line-height:1.5;padding:0 16px;">
                       ${lp.legalText}
                     </p>
                   </td>
@@ -552,7 +563,7 @@ function buildWelcomeHtml({
                 </tr>
               </table>
 
-              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">${lp.greeting(name)}</p>
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">${lp.greeting(name)}</p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
                 ${lp.welcome}
               </p>
@@ -562,7 +573,7 @@ function buildWelcomeHtml({
                   <td align="center" style="padding:18px 14px;">
                     ${iconCell(icons.door, 'Camera', 28)}
                     <div style="height:6px;line-height:6px;font-size:1px;">&nbsp;</div>
-                    <span style="font-family:${SANS};font-size:10px;font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.14em;display:block;margin-bottom:6px;">${lp.roomLabel}</span>
+                    <span style="font-family:${SANS};font-size:${FS.label};font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.14em;display:block;margin-bottom:6px;">${lp.roomLabel}</span>
                     <strong class="brand-title" style="font-family:${SERIF};font-size:26px;color:${C} !important;font-weight:700;letter-spacing:0.06em;line-height:1;text-transform:uppercase;">${lp.roomPrefix} ${room}</strong>
                   </td>
                 </tr>
@@ -578,18 +589,9 @@ function buildWelcomeHtml({
               <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 20px;text-align:center;">
                 ${lp.wifiDesc}
               </p>
-              <!-- Credenziali Wi-Fi: card pass -->
-              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
-                <tr>
-                  <td align="center" style="padding:20px 18px;">
-                    <div style="${labelStyle};margin:0 0 6px;">${lp.networkLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 14px;">${wifiSsidSafe}</div>
-                    <div style="height:1px;line-height:1px;font-size:1px;background-color:#E8E4DC;margin:0 auto 14px;max-width:200px;">&nbsp;</div>
-                    <div style="${labelStyle};margin:0 0 6px;">${lp.passwordLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1.2;">${wifiPasswordSafe}</div>
-                  </td>
-                </tr>
-              </table>
+              <!-- Credenziali Wi-Fi per sede -->
+              ${wifiCards}
+              <div style="height:12px;line-height:12px;font-size:1px;">&nbsp;</div>
 
               ${sectionTitle(lp.doorsTitle, icons.door, 'Porte')}
               <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 20px;text-align:center;">
@@ -601,7 +603,7 @@ function buildWelcomeHtml({
                     <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;">
                       <tr>
                         <td align="center" style="padding:16px 10px;">
-                          <div style="${labelStyle};margin:0 0 8px;">${lp.doorMainLabel || 'Entrata principale'}</div>
+                          <div style="${labelStyle};margin:0 0 8px;">${lp.doorMainLabel || 'Walter'}</div>
                           <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;line-height:1;">${doorWalterSafe}</div>
                         </td>
                       </tr>
@@ -611,7 +613,7 @@ function buildWelcomeHtml({
                     <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;">
                       <tr>
                         <td align="center" style="padding:16px 10px;">
-                          <div style="${labelStyle};margin:0 0 8px;">${lp.doorInnerLabel || 'Porta interna'}</div>
+                          <div style="${labelStyle};margin:0 0 8px;">${lp.doorInnerLabel || 'Airone'}</div>
                           <div class="brand-title" style="font-family:${SERIF};font-size:22px;font-weight:700;color:${C} !important;letter-spacing:0.08em;line-height:1;">${doorAironeSafe}</div>
                         </td>
                       </tr>
@@ -634,7 +636,7 @@ function buildWelcomeHtml({
                   </td>
                 </tr>
               </table>
-              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;${emailCtaStyle({ size: '13px' })};margin:0 0 48px;">
+              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;${emailCtaStyle({ size: FS.button })};margin:0 0 48px;">
                 ${lp.mapsBtn}
               </a>
 
@@ -657,7 +659,7 @@ function buildWelcomeHtml({
                 <tr>
                   <td class="voucher-body" align="center" style="padding:22px 20px 24px;background-color:#FFFFFF !important;">
                     <div class="brand-title" style="font-family:${SERIF};font-size:18px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;text-transform:uppercase;">${lp.voucherTitle}</div>
-                    <div style="font-family:${SANS};font-size:10px;color:#8E8E93 !important;font-weight:600;margin-top:6px;text-transform:uppercase;letter-spacing:0.08em;">${lp.voucherSub}</div>
+                    <div style="font-family:${SANS};font-size:${FS.label};color:#8E8E93 !important;font-weight:600;margin-top:6px;text-transform:uppercase;letter-spacing:0.08em;">${lp.voucherSub}</div>
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:18px auto 16px;">
                       <tr>
                         <td align="center" style="background:#FFFFFF;padding:0;line-height:0;font-size:0;">
@@ -668,17 +670,17 @@ function buildWelcomeHtml({
                     <table role="presentation" class="meta-row" width="100%" cellspacing="0" cellpadding="0" border="0" align="center" style="width:100%;max-width:100%;margin:0 auto;">
                       <tr>
                         <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
-                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:12px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
                             ${lp.metaCamera}: ${room}
                           </div>
                         </td>
                         <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
-                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:12px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
                             ${lp.metaCheckin}: ${staff}
                           </div>
                         </td>
                         <td class="meta-chip" width="33.33%" align="center" valign="middle" style="width:33.33%;padding:3px;">
-                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:11px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
+                          <div class="meta-chip-inner" style="font-family:${SANS};font-size:12px;font-weight:600;color:${C} !important;text-transform:uppercase;letter-spacing:0.04em;background:${BOX};padding:10px 6px;border-radius:999px;line-height:1.3;white-space:nowrap;">
                             ${lp.metaPax}: ${guests}
                           </div>
                         </td>
@@ -701,7 +703,7 @@ function buildWelcomeHtml({
                 </tr>
                 <tr>
                   <td align="center" style="padding:26px 22px 28px;background-color:#FFFFFF !important;">
-                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:#FFFFFF !important;color:${C} !important;text-decoration:none;padding:15px 18px;border-radius:14px;border:1.5px solid ${C};${emailCtaStyle({ size: '13px' })};letter-spacing:0.06em;">
+                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:#FFFFFF !important;color:${C} !important;text-decoration:none;padding:15px 18px;border-radius:14px;border:1.5px solid ${C};${emailCtaStyle({ size: FS.button })};letter-spacing:0.06em;">
                       ${lp.claimBtn}
                     </a>
                   </td>
@@ -738,14 +740,14 @@ function buildWelcomeHtml({
                 <tr>
                   <td align="center" style="text-align:center;padding:0;">
                     ${stickers.lion ? `<div style="margin:0 0 14px;line-height:0;font-size:0;">${stickerImg(stickers.lion, 52)}</div>` : ''}
-                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.55;text-align:center;">
+                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;letter-spacing:0.01em;line-height:1.55;text-align:center;">
                       ${lp.wishes}
                     </div>
                     <div style="width:36px;height:1px;line-height:1px;font-size:1px;background-color:${BRASS};margin:22px auto 16px;">&nbsp;</div>
-                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;text-align:center;">
+                    <div class="brand-title" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;text-align:center;">
                       ${lp.signatureLine1}
                     </div>
-                    <div class="brass" style="font-family:${SERIF};font-style:italic;font-size:13px;font-weight:600;color:${BRASS} !important;letter-spacing:0.06em;margin-top:8px;text-align:center;line-height:1.4;">
+                    <div class="brass" style="font-family:${SERIF};font-style:italic;font-size:14px;font-weight:600;color:${BRASS} !important;letter-spacing:0.06em;margin-top:8px;text-align:center;line-height:1.4;">
                       ${lp.signatureLine2}
                     </div>
                   </td>
@@ -841,6 +843,7 @@ async function sendMail({
   attachments = [],
   headers = {},
 }) {
+  assertSendableRecipient(to, 'ospite');
   assertInlineImages(html, attachments);
 
   const approxKb = attachments.reduce((sum, a) => {
@@ -947,6 +950,10 @@ export async function sendWelcomeEmail({
   language,
   includeCoupon = true,
 }) {
+  if (isBlockedRecipient(to)) {
+    console.warn(`[welcome] destinatario bloccato, skip: ${to}`);
+    return { sent: false, skipped: true, reason: 'blocked_recipient' };
+  }
   const resolvedLang = resolveWelcomeLang(lang || language);
   const lp = welcomeCopy(resolvedLang);
   const displayName = toTitleCase(guestName) || lp.guestFallback;
@@ -1022,8 +1029,9 @@ export async function sendWelcomeEmail({
     stickers[def.key] = publicAssetUrl('email', 'stickers', def.file);
   }
 
-  const wifiSsid = env('WIFI_SSID', 'hotel canal');
-  const wifiPassword = env('WIFI_PASSWORD', '');
+  const wifiNetworks = buildWifiNetworks();
+  const wifiSsid = wifiNetworks[0]?.ssid || env('WIFI_SSID', 'hotel canal');
+  const wifiPassword = wifiNetworks[0]?.password || env('WIFI_PASSWORD', '');
   // Walter: cancelletto (#) obbligatorio — in .env usare virgolette: DOOR_CODE_WALTER="…#"
   let doorWalter = env('DOOR_CODE_WALTER', '').trim();
   if (doorWalter && !doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
@@ -1049,6 +1057,7 @@ export async function sendWelcomeEmail({
     stickers,
     wifiSsid,
     wifiPassword,
+    wifiNetworks,
     doorWalter,
     doorAirone,
     lang: resolvedLang,
@@ -1092,7 +1101,10 @@ export async function sendWelcomeEmail({
       lp.textHours,
       `${lp.roomPrefix}: ${room}`,
       '',
-      `Wi-Fi: ${lp.networkLabel} "${wifiSsid}" · ${lp.passwordLabel}: ${wifiPassword || '-'}`,
+      ...wifiNetworks.map(
+        (net) =>
+          `Wi-Fi ${net.label}: ${lp.networkLabel} "${net.ssid}" · ${lp.passwordLabel}: ${net.password || '-'}`,
+      ),
       `Walter: ${doorWalter}`,
       `Airone: ${doorAirone}`,
       '',
