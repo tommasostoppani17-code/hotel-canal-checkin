@@ -1,15 +1,20 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 import { Resend } from 'resend';
 import { emailLightModeHead, emailLightBodyAttrs, EMAIL_FORCE_WHITE } from './email-light.js';
 import {
-  EMAIL_BODY as BODY,
   EMAIL_SANS as SANS,
   emailFontsHead,
   emailBodyStyle,
   emailDisplayStyle,
   emailEyebrowStyle,
 } from './email-type.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.join(__dirname, '..');
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
@@ -26,12 +31,20 @@ export function checkinPublicUrl() {
   return `${publicBaseUrl()}/`;
 }
 
-/* Step 1 brand: ottanio istituzionale + testo lavagna */
+/* Step 1 brand */
 const CANAL = '#164E5B';
 const TEXT_DARK = '#122226';
 const MUTED = '#5C7A82';
 const FOOT = '#6E868F';
-const RULE = '#D8E2E6';
+const RULE = '#C9D8DF';
+const CREAM_TOP = '#EEF5F9';
+const CREAM_BOTTOM = '#D7E6EF';
+
+function veniceBackdropPath() {
+  const poster = path.join(rootDir, 'public', 'venice-bg-poster.jpg');
+  if (fs.existsSync(poster)) return poster;
+  return path.join(rootDir, 'public', 'venice-bg.jpg');
+}
 
 export async function buildCheckinQrPng() {
   return QRCode.toBuffer(checkinPublicUrl(), {
@@ -43,23 +56,24 @@ export async function buildCheckinQrPng() {
   });
 }
 
-function drawCenteredText(doc, text, y, { font, size, color } = {}) {
+function drawCenteredText(doc, text, y, { font, size, color, width, x = 0 } = {}) {
+  const w = width ?? doc.page.width;
   doc
     .font(font)
     .fontSize(size)
     .fillColor(color)
-    .text(text, 0, y, { width: doc.page.width, align: 'center' });
+    .text(text, x, y, { width: w, align: 'center' });
 }
 
 /**
- * True A4 PDF poster (210×297mm) — Premium reception sign.
- * Print on white matte 200g; place in frosted/satin plexiglass for the glass-card look.
+ * A4 poster mirroring the check-in form: Venice backdrop + floating cream glass card.
  */
 export async function buildPosterPdfBuffer({
   hotelName = 'Hotel Canal',
   address = 'Santa Croce 553, 30135 Venezia',
 } = {}) {
   const qrPng = await buildCheckinQrPng();
+  const bgPath = veniceBackdropPath();
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -68,7 +82,7 @@ export async function buildPosterPdfBuffer({
       info: {
         Title: `${hotelName} — Premium Reception Poster A4`,
         Author: hotelName,
-        Subject: 'Fast Digital Check-in · Door codes · Wi-Fi · Dining privilege',
+        Subject: 'Fast Digital Check-in · Venice glass card',
       },
     });
 
@@ -77,65 +91,141 @@ export async function buildPosterPdfBuffer({
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    const pageW = doc.page.width; // 595.28
-    const pageH = doc.page.height; // 841.89
-    const side = 71; // ~25mm
-    const radiusIos = 20; // mirrors --radius-ios on Step 1 inputs
+    const pageW = doc.page.width;
+    const pageH = doc.page.height;
+    const radiusIos = 20;
 
-    // Total-white — backdrop sync: frosted plexiglass supplies the lagoon glass look
-    doc.rect(0, 0, pageW, pageH).fill('#FFFFFF');
+    // --- Full-bleed Venice (same photo as the digital form) ---
+    try {
+      const bg = doc.openImage(bgPath);
+      const scale = Math.max(pageW / bg.width, pageH / bg.height);
+      const bw = bg.width * scale;
+      const bh = bg.height * scale;
+      doc.image(bg, (pageW - bw) / 2, (pageH - bh) / 2, { width: bw, height: bh });
+    } catch (err) {
+      doc.rect(0, 0, pageW, pageH).fill('#074a63');
+      console.error('[poster] backdrop missing:', err.message || err);
+    }
 
-    // Monumental brand (Cinzel → Times-Bold print fallback)
-    drawCenteredText(doc, String(hotelName).toUpperCase(), 72, {
+    // Soft lagoon wash — keep Venice readable around the glass card
+    doc.save();
+    doc.fillColor('#074a63').fillOpacity(0.12);
+    doc.rect(0, 0, pageW, pageH).fill();
+    doc.restore();
+
+    // Soft top/bottom shade so the cream card pops (like the phone UI)
+    doc.save();
+    doc.fillColor('#053a4d').fillOpacity(0.28);
+    doc.rect(0, 0, pageW, 70).fill();
+    doc.rect(0, pageH - 80, pageW, 80).fill();
+    doc.restore();
+
+    // --- Floating glass card (apple-card cream gradient) ---
+    const cardW = pageW - 100;
+    const cardH = 620;
+    const cardX = (pageW - cardW) / 2;
+    const cardY = (pageH - cardH) / 2;
+    const cardR = 26;
+
+    // Soft drop shadow
+    doc.save();
+    doc.fillColor('#000000').fillOpacity(0.18);
+    doc.roundedRect(cardX + 4, cardY + 8, cardW, cardH, cardR).fill();
+    doc.restore();
+
+    // Cream body
+    doc.save();
+    const grad = doc.linearGradient(cardX, cardY, cardX, cardY + cardH);
+    grad.stop(0, CREAM_TOP).stop(1, CREAM_BOTTOM);
+    doc.roundedRect(cardX, cardY, cardW, cardH, cardR).fill(grad);
+    doc.restore();
+
+    // Glass rim
+    doc
+      .roundedRect(cardX, cardY, cardW, cardH, cardR)
+      .lineWidth(1.4)
+      .strokeColor('#FFFFFF')
+      .stroke();
+    doc
+      .roundedRect(cardX + 1.2, cardY + 1.2, cardW - 2.4, cardH - 2.4, cardR - 1)
+      .lineWidth(0.6)
+      .strokeColor('rgba(18, 68, 83, 0.12)')
+      .strokeColor('#B7CBD4')
+      .stroke();
+
+    const innerX = cardX + 28;
+    const innerW = cardW - 56;
+    let y = cardY + 36;
+
+    // Brand
+    drawCenteredText(doc, String(hotelName).toUpperCase(), y, {
       font: 'Times-Bold',
-      size: 34,
+      size: 30,
       color: CANAL,
+      width: innerW,
+      x: innerX,
     });
-    drawCenteredText(doc, 'V E N I C E   E X P E R I E N C E', 116, {
+    y += 38;
+    drawCenteredText(doc, 'V E N I C E   E X P E R I E N C E', y, {
       font: 'Times-Bold',
-      size: 10,
+      size: 9.5,
       color: MUTED,
+      width: innerW,
+      x: innerX,
     });
-    drawCenteredText(doc, address, 136, {
+    y += 20;
+    drawCenteredText(doc, address, y, {
       font: 'Helvetica',
-      size: 9,
+      size: 8.5,
       color: MUTED,
+      width: innerW,
+      x: innerX,
     });
+    y += 26;
 
     doc
-      .moveTo(side + 48, 162)
-      .lineTo(pageW - side - 48, 162)
+      .moveTo(innerX + 36, y)
+      .lineTo(innerX + innerW - 36, y)
       .lineWidth(0.7)
       .strokeColor(RULE)
       .stroke();
+    y += 22;
 
-    drawCenteredText(doc, 'Fast Digital Check-in', 186, {
+    drawCenteredText(doc, 'Fast Digital Check-in', y, {
       font: 'Helvetica-Bold',
-      size: 18,
+      size: 16,
       color: TEXT_DARK,
+      width: innerW,
+      x: innerX,
     });
+    y += 26;
 
     doc
       .font('Helvetica')
-      .fontSize(11)
+      .fontSize(10.5)
       .fillColor(TEXT_DARK)
       .text(
         'Scan the QR code with your smartphone to complete room registration and unlock front-desk services instantly.',
-        side + 22,
-        218,
-        { width: pageW - side * 2 - 44, align: 'center', lineGap: 4 },
+        innerX + 8,
+        y,
+        { width: innerW - 16, align: 'center', lineGap: 3 },
       );
+    y += 48;
 
-    // QR plate — roundedRect radius = --radius-ios (20)
-    const qrSize = 216;
-    const platePad = 20;
+    // QR plate — --radius-ios
+    const qrSize = 188;
+    const platePad = 16;
     const plate = qrSize + platePad * 2;
-    const plateX = (pageW - plate) / 2;
-    const plateY = 278;
+    const plateX = cardX + (cardW - plate) / 2;
+    const plateY = y;
 
+    // White QR nest
+    doc.save();
+    doc.roundedRect(plateX, plateY, plate, plate, radiusIos).fill('#FFFFFF');
+    doc.restore();
     doc
       .roundedRect(plateX, plateY, plate, plate, radiusIos)
-      .lineWidth(1.25)
+      .lineWidth(1.35)
       .strokeColor(CANAL)
       .stroke();
 
@@ -144,67 +234,73 @@ export async function buildPosterPdfBuffer({
       height: qrSize,
     });
 
-    drawCenteredText(doc, 'SCAN WITH YOUR SMARTPHONE', plateY + plate + 18, {
+    y = plateY + plate + 14;
+    drawCenteredText(doc, 'SCAN WITH YOUR SMARTPHONE', y, {
       font: 'Helvetica-Bold',
-      size: 9,
+      size: 8.5,
       color: CANAL,
+      width: innerW,
+      x: innerX,
     });
+    y += 28;
 
-    // Three front-desk benefits
+    // Three benefits
     const benefits = [
-      { title: 'DOOR CODES', line: 'Instant access codes for your stay' },
-      { title: 'HIGH-SPEED WI-FI', line: 'Network credentials right after check-in' },
-      { title: '10% DINING PRIVILEGE', line: 'Exclusive voucher at Trattoria alla Terrazza' },
+      { title: 'DOOR CODES', line: 'Instant access codes\nfor your stay' },
+      { title: 'HIGH-SPEED WI-FI', line: 'Network credentials\nright after check-in' },
+      { title: '10% DINING', line: 'Voucher at Trattoria\nalla Terrazza' },
     ];
-    const colW = (pageW - side * 2) / 3;
-    const benY = plateY + plate + 48;
-
+    const colW = innerW / 3;
     benefits.forEach((b, i) => {
-      const x = side + i * colW;
+      const x = innerX + i * colW;
       doc
         .font('Helvetica-Bold')
-        .fontSize(8)
+        .fontSize(7.5)
         .fillColor(CANAL)
-        .text(b.title, x + 4, benY, { width: colW - 8, align: 'center' });
+        .text(b.title, x + 2, y, { width: colW - 4, align: 'center' });
       doc
         .font('Helvetica')
-        .fontSize(8.5)
+        .fontSize(8)
         .fillColor(TEXT_DARK)
-        .text(b.line, x + 6, benY + 16, {
-          width: colW - 12,
+        .text(b.line, x + 4, y + 14, {
+          width: colW - 8,
           align: 'center',
-          lineGap: 2,
+          lineGap: 1.5,
         });
     });
 
-    // GDPR seal
-    const footY = pageH - 88;
+    // Footer inside card
+    const footY = cardY + cardH - 58;
     doc
-      .moveTo(side, footY)
-      .lineTo(pageW - side, footY)
+      .moveTo(innerX, footY)
+      .lineTo(innerX + innerW, footY)
       .lineWidth(0.6)
       .strokeColor(RULE)
       .stroke();
 
     doc
       .font('Helvetica')
-      .fontSize(8)
+      .fontSize(7.2)
       .fillColor(FOOT)
       .text(
-        'GDPR compliant & secure. Encrypted data pipeline with automatic 24h retention purge.',
-        side,
-        footY + 14,
-        { width: pageW - side * 2, align: 'center' },
+        'GDPR compliant · Encrypted pipeline · Automatic 24h data purge',
+        innerX,
+        footY + 10,
+        { width: innerW, align: 'center' },
       );
-    drawCenteredText(doc, `CANAL S.r.l. — ${address}`, footY + 32, {
+    drawCenteredText(doc, `CANAL S.r.l. — ${address}`, footY + 26, {
       font: 'Helvetica',
-      size: 8,
+      size: 7.2,
       color: FOOT,
+      width: innerW,
+      x: innerX,
     });
-    drawCenteredText(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 50, {
+    drawCenteredText(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 40, {
       font: 'Helvetica',
-      size: 7.5,
+      size: 7,
       color: MUTED,
+      width: innerW,
+      x: innerX,
     });
 
     doc.end();
@@ -235,8 +331,8 @@ ${emailLightModeHead({
 <div class="card force-white" bgcolor="${EMAIL_FORCE_WHITE}" style="background-color:${EMAIL_FORCE_WHITE} !important;">
 <div class="eyebrow">Reception · A4 poster</div>
 <h1>${brand}</h1>
-<p>Your A4 reception poster is attached as a PDF (Fast Digital Check-in · Welcome Discount · English).</p>
-<p>Open the attachment and print at <strong style="font-style:italic;color:${C} !important;">100% / actual size</strong> on A4 matte paper (160–200 g). Place in a glass frame or plexiglass stand at the desk.</p>
+<p>Your A4 reception poster is attached as a PDF (Venice backdrop · glass card · Welcome Discount).</p>
+<p>Print at <strong style="font-style:italic;color:${C} !important;">100% / actual size</strong> on A4 matte 160–200 g. Best in frosted plexiglass.</p>
 <p class="meta">File size ~${pdfKb} KB · QR → ${publicBaseUrl()}/</p>
 </div></body></html>`;
 }
