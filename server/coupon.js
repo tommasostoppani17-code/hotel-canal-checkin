@@ -274,6 +274,11 @@ function buildWelcomeHtml({
   const wifiPasswordSafe = escapeHtml(wifiPassword || '—');
   const doorWalterSafe = escapeHtml(doorWalter || '—');
   const doorAironeSafe = escapeHtml(doorAirone || '—');
+  /** Larghezza utile card (500 − padding 22×2). Pixel fissi → niente fascia grigia su Gmail desktop. */
+  const CW = 456;
+  const BAND_H = 254; // 1400×780 @ CW
+  const GRID = 224;
+  const GRID_GAP = 8;
   const preheader = escapeHtml(
     includeCoupon
       ? lp.preheader(firstNamePlain, roomNumber)
@@ -295,6 +300,13 @@ function buildWelcomeHtml({
     return `<img src="${escapeHtml(src)}" width="${size}" height="${size}" alt="" style="display:inline-block;width:${size}px;height:${size}px;border:0;">`;
   };
 
+  /** Immagine block-level a larghezza fissa (no % → evita gap grigio a destra su desktop). */
+  const emailImg = (src, alt, w, h = null) => {
+    const hAttr = h ? ` height="${h}"` : '';
+    const hStyle = h ? `height:${h}px;` : 'height:auto;';
+    return `<img src="${src}" width="${w}"${hAttr} alt="${alt}" style="display:block;width:${w}px;max-width:${w}px;${hStyle}border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">`;
+  };
+
   const sectionTitle = (label, iconSrc, iconAlt) => `
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:16px 0 16px;border-bottom:1px solid rgba(22,78,91,0.14);">
                 <tr>
@@ -307,17 +319,17 @@ function buildWelcomeHtml({
                 </tr>
               </table>`;
 
-  const postcard = (src, alt, bottom = 28) => `
-              <table role="presentation" class="email-postcard" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;width:100%;border-radius:20px;overflow:hidden;border:1px solid #E2E6E8;">
+  const postcard = (src, alt, bottom = 28, h = BAND_H) => `
+              <table role="presentation" class="email-postcard" width="${CW}" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;width:${CW}px;max-width:${CW}px;border-radius:20px;overflow:hidden;border:1px solid #E2E6E8;">
                 <tr>
-                  <td bgcolor="#FFFFFF" style="padding:0;line-height:0;font-size:0;background-color:#FFFFFF !important;mso-line-height-rule:exactly;">
-                    <img class="email-postcard-img" src="${src}" width="456" alt="${alt}" style="display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+                  <td width="${CW}" bgcolor="#FFFFFF" style="padding:0;line-height:0;font-size:0;width:${CW}px;background-color:#FFFFFF !important;mso-line-height-rule:exactly;">
+                    ${emailImg(src, alt, CW, h)}
                   </td>
                 </tr>
               </table>`;
 
-  /** Due bande ristorante: stessa altezza (stesso frame sorgente 1400×780). */
-  const postcardBand = (src, alt, bottom = 8) => postcard(src, alt, bottom);
+  /** Due bande ristorante: stesso frame (CW × BAND_H). */
+  const postcardBand = (src, alt, bottom = 8) => postcard(src, alt, bottom, BAND_H);
 
   const veniceGuideBlock = (() => {
     const items = [
@@ -406,12 +418,12 @@ function buildWelcomeHtml({
                 </tr>
               </table>`;
 
-  const photoCell = (src, alt, pad) => `
-                    <td class="taste-cell" width="50%" valign="top" style="${pad}width:50%;">
-                      <table role="presentation" class="taste-frame" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-radius:14px;overflow:hidden;border:1px solid #E2E6E8;">
+  const photoCell = (src, alt) => `
+                    <td width="${GRID}" valign="top" style="width:${GRID}px;max-width:${GRID}px;padding:0;margin:0;">
+                      <table role="presentation" width="${GRID}" cellspacing="0" cellpadding="0" border="0" style="width:${GRID}px;max-width:${GRID}px;border-radius:14px;overflow:hidden;border:1px solid #E2E6E8;">
                         <tr>
-                          <td class="taste-pad" align="center" style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
-                            <img class="taste-thumb" src="${src}" width="210" height="210" alt="${alt}" style="display:block;width:100%;max-width:100%;height:auto;aspect-ratio:1 / 1;object-fit:cover;border:0;border-radius:14px;">
+                          <td width="${GRID}" height="${GRID}" bgcolor="#FFFFFF" style="width:${GRID}px;height:${GRID}px;max-width:${GRID}px;padding:0;line-height:0;font-size:0;background-color:#FFFFFF !important;mso-line-height-rule:exactly;">
+                            ${emailImg(src, alt, GRID, GRID)}
                           </td>
                         </tr>
                       </table>
@@ -429,16 +441,23 @@ function buildWelcomeHtml({
       const b = list[i + 1];
       rows.push(`
                 <tr>
-                  ${photoCell(a.src, a.alt, 'padding:0 5px 10px 0;')}
+                  ${photoCell(a.src, a.alt)}
+                  <td width="${GRID_GAP}" style="width:${GRID_GAP}px;max-width:${GRID_GAP}px;padding:0;font-size:0;line-height:0;">&nbsp;</td>
                   ${
                     b
-                      ? photoCell(b.src, b.alt, 'padding:0 0 10px 5px;')
-                      : '<td class="taste-cell" width="50%" style="padding:0 0 10px 5px;width:50%;">&nbsp;</td>'
+                      ? photoCell(b.src, b.alt)
+                      : `<td width="${GRID}" style="width:${GRID}px;">&nbsp;</td>`
                   }
                 </tr>`);
+      if (i + 2 < list.length) {
+        rows.push(`
+                <tr>
+                  <td colspan="3" height="${GRID_GAP}" style="height:${GRID_GAP}px;line-height:${GRID_GAP}px;font-size:1px;padding:0;">&nbsp;</td>
+                </tr>`);
+      }
     }
     return `
-              <table role="presentation" class="taste-grid" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;width:100%;table-layout:fixed;">
+              <table role="presentation" class="taste-grid" width="${CW}" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;width:${CW}px;max-width:${CW}px;table-layout:fixed;">
                 ${rows.join('')}
               </table>`;
   };
@@ -479,30 +498,13 @@ function buildWelcomeHtml({
     canal: C,
     box: BOX,
     extraCss: `
-    img { display: block; max-width: 100%; height: auto; border: 0; outline: none; }
+    img { display: block; border: 0; outline: none; }
     .meta-row { width: 100% !important; max-width: 100% !important; }
     .meta-chip { width: 33.33% !important; }
     .meta-chip-inner {
       font-size: clamp(9px, 2.6vw, 11.5px) !important;
       letter-spacing: 0.04em !important;
       white-space: nowrap !important;
-    }
-    .taste-grid { width: 100% !important; table-layout: fixed !important; }
-    .taste-cell { width: 50% !important; vertical-align: top !important; }
-    .taste-thumb {
-      width: 100% !important;
-      max-width: 100% !important;
-      height: auto !important;
-      aspect-ratio: 1 / 1 !important;
-      object-fit: cover !important;
-      border-radius: 14px !important;
-    }
-    .email-postcard-img,
-    .email-hero-img {
-      width: 100% !important;
-      max-width: 100% !important;
-      height: auto !important;
-      display: block !important;
     }
     @media only screen and (max-width: 420px) {
       .meta-chip {
@@ -514,9 +516,6 @@ function buildWelcomeHtml({
       .meta-chip-inner {
         font-size: 11px !important;
         white-space: nowrap !important;
-      }
-      .taste-thumb {
-        border-radius: 12px !important;
       }
     }
     `,
@@ -535,10 +534,10 @@ function buildWelcomeHtml({
           <tr>
             <td class="email-content force-white" bgcolor="#FFFFFF" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
               <!-- TOP: foto + brand + saluto + stanza -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;width:100%;border-radius:16px;overflow:hidden;">
+              <table role="presentation" width="${CW}" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;width:${CW}px;max-width:${CW}px;border-radius:16px;overflow:hidden;">
                 <tr>
-                  <td bgcolor="#FFFFFF" style="padding:0;line-height:0;font-size:0;background-color:#FFFFFF !important;border-radius:16px;">
-                    <img class="email-hero-img" src="${hero}" width="456" alt="Hotel Canal - Venezia" style="display:block;width:100%;max-width:100%;height:auto;border:0;border-radius:16px;outline:none;">
+                  <td width="${CW}" bgcolor="#FFFFFF" style="padding:0;line-height:0;font-size:0;width:${CW}px;background-color:#FFFFFF !important;border-radius:16px;mso-line-height-rule:exactly;">
+                    ${emailImg(hero, 'Hotel Canal - Venezia', CW, Math.round((CW * 686) / 1200))}
                   </td>
                 </tr>
               </table>
@@ -626,7 +625,7 @@ function buildWelcomeHtml({
                 ${lp.routeDesc}
               </p>
 
-              ${postcard(gallery, 'Trattoria alla Terrazza', 16)}
+              ${postcard(gallery, 'Trattoria alla Terrazza', 16, Math.round((CW * 682) / 1020))}
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;border-top:1px solid #E8E4DC;">
                 <tr>
@@ -651,8 +650,8 @@ function buildWelcomeHtml({
               <!-- VOUCHER SCONTO -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px dashed ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
                 <tr>
-                  <td bgcolor="${C}" style="padding:0;line-height:0;font-size:0;background-color:${C};">
-                    <img class="email-postcard-img" src="${resto}" width="456" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;">
+                  <td width="${CW}" bgcolor="${C}" style="padding:0;line-height:0;font-size:0;width:${CW}px;background-color:${C};mso-line-height-rule:exactly;">
+                    ${emailImg(resto, 'Trattoria alla Terrazza', CW, BAND_H)}
                   </td>
                 </tr>
                 <tr>
@@ -696,8 +695,8 @@ function buildWelcomeHtml({
               </p>
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:22px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
                 <tr>
-                  <td bgcolor="${C}" style="padding:0;line-height:0;font-size:0;background-color:${C};">
-                    <img class="email-postcard-img" src="${resto}" width="456" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;">
+                  <td width="${CW}" bgcolor="${C}" style="padding:0;line-height:0;font-size:0;width:${CW}px;background-color:${C};mso-line-height-rule:exactly;">
+                    ${emailImg(resto, 'Trattoria alla Terrazza', CW, BAND_H)}
                   </td>
                 </tr>
                 <tr>
