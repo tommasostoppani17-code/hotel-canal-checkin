@@ -114,8 +114,8 @@ function emailAssetBaseUrl() {
     return publicBaseUrl();
   }
 
-  // Repo pubblico: CDN sempre caldo
-  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@main/public';
+  // Snapshot esatto delle foto email come alle 05:39 (commit cc73d63)
+  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@cc73d63/public';
 }
 
 /** Absolute URL for a file under /public (remote assets → email sotto 102KB Gmail). */
