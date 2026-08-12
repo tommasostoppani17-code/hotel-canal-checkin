@@ -340,6 +340,22 @@ export function mergeStaffMonthStatsFromCheckins() {
   return mergeStaffMonthStats([...map.values()]);
 }
 
+/** Elimina check-in attivi su una stanza (solo per account tester). */
+export function deleteCheckinsByRoom(roomNumber) {
+  const room = String(roomNumber || '').trim();
+  if (!room) return 0;
+  return db
+    .prepare(
+      `
+      DELETE FROM checkins
+      WHERE room_number IS NOT NULL
+        AND TRIM(room_number) != ''
+        AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
+    `,
+    )
+    .run({ room }).changes;
+}
+
 /** True se la stanza è già usata da un altro check-in attivo. */
 export function isRoomTaken(roomNumber, excludeId = null) {
   const room = String(roomNumber || '').trim();
@@ -391,6 +407,7 @@ export function insertCheckin({
   guestsCount,
   couponToken,
   withCoupon = false,
+  skipStaffStats = false,
 }) {
   const stmt = db.prepare(`
     INSERT INTO checkins (
@@ -411,13 +428,15 @@ export function insertCheckin({
     couponToken: couponToken || null,
   });
 
-  try {
-    bumpStaffMonthStats({
-      receptionist,
-      withCoupon: Boolean(withCoupon),
-    });
-  } catch (err) {
-    console.error('[stats] bumpStaffMonthStats failed:', err.message || err);
+  if (!skipStaffStats) {
+    try {
+      bumpStaffMonthStats({
+        receptionist,
+        withCoupon: Boolean(withCoupon),
+      });
+    } catch (err) {
+      console.error('[stats] bumpStaffMonthStats failed:', err.message || err);
+    }
   }
 
   return info.lastInsertRowid;

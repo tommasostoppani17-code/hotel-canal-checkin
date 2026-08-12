@@ -21,6 +21,7 @@ import {
   purgeCheckinsOlderThan24Hours,
   isRoomTaken,
   getActiveCheckinByRoom,
+  deleteCheckinsByRoom,
   exportStaffMonthStats,
   mergeStaffMonthStats,
   mergeStaffMonthStatsFromCheckins,
@@ -504,6 +505,71 @@ function normalizeEmail(value) {
   return trimmed || null;
 }
 
+/** Account staff per test ripetuti (Tommaso / Payel / Mizan). */
+function testerEmailSet() {
+  const defaults = [
+    'tommasostoppani17@gmail.com',
+    'info@hotelcanal.com',
+    'payel@hotelcanal.com',
+    'mizan@hotelcanal.com',
+  ];
+  const fromEnv = String(process.env.TESTER_EMAILS || '')
+    .split(/[,;\s]+/)
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const report = String(process.env.REPORT_EMAIL || '')
+    .trim()
+    .toLowerCase();
+  return new Set(
+    [...defaults, ...fromEnv, report].filter((e) => e && e.includes('@')),
+  );
+}
+
+function testerPhoneSet() {
+  const fromEnv = String(process.env.TESTER_PHONES || '')
+    .split(/[,;\s]+/)
+    .map((s) => cleanPhone(s))
+    .filter(Boolean);
+  const payel = cleanPhone(process.env.WHATSAPP_PAYEL || '');
+  return new Set([...fromEnv, payel].filter(Boolean));
+}
+
+function testerNameSet() {
+  const defaults = ['TOMMASO', 'PAYEL', 'MIZAN', 'STOPPANI'];
+  const fromEnv = String(process.env.TESTER_NAMES || '')
+    .split(/[,;]+/)
+    .map((s) => s.trim().toUpperCase())
+    .filter(Boolean);
+  return new Set([...defaults, ...fromEnv]);
+}
+
+function isTesterAccount({ email, phone, firstName, lastName, guestName } = {}) {
+  const mail = normalizeEmail(email);
+  if (mail && testerEmailSet().has(mail)) return true;
+
+  const tel = cleanPhone(phone);
+  if (tel && testerPhoneSet().has(tel)) return true;
+  // Match anche senza + / con 00
+  if (tel) {
+    const digits = tel.replace(/\D/g, '');
+    for (const allowed of testerPhoneSet()) {
+      const a = String(allowed).replace(/\D/g, '');
+      if (a && (a === digits || a.endsWith(digits) || digits.endsWith(a))) {
+        return true;
+      }
+    }
+  }
+
+  const names = testerNameSet();
+  const tokens = `${firstName || ''} ${lastName || ''} ${guestName || ''}`
+    .toUpperCase()
+    .split(/[^A-ZÀ-Ü]+/)
+    .filter(Boolean);
+  if (tokens.some((t) => names.has(t))) return true;
+
+  return false;
+}
+
 function isValidPhone(cleaned) {
   return PHONE_REGEX.test(cleaned);
 }
@@ -985,32 +1051,49 @@ async function handleCheckin(req, res) {
       receptionist = null;
     }
 
+    const tester = isTesterAccount({
+      email,
+      phone,
+      firstName,
+      lastName,
+      guestName,
+    });
+
     if (roomNumber && isRoomTaken(roomNumber)) {
-      const existing = getActiveCheckinByRoom(roomNumber);
-      const sameEmail =
-        existing?.email &&
-        normalizeEmail(existing.email) === email;
-      const samePhone =
-        existing?.phone &&
-        cleanPhone(existing.phone) === phone;
-      if (existing && (sameEmail || samePhone)) {
-        return res.status(200).json({
-          success: true,
-          alreadyRegistered: true,
-          id: existing.id,
-          guestAccessToken: issueGuestAccessToken(existing.id),
-          checkCode: `HC-${String(existing.id).padStart(4, '0')}`,
-          createdAt: existing.created_at || new Date().toISOString(),
-          welcomeSent: false,
-          couponSent: Boolean(existing.coupon_sent_at),
-          receptionist: existing.receptionist || null,
-          guestsCount: existing.guests_count ?? guestsCount,
+      if (tester) {
+        const removed = deleteCheckinsByRoom(roomNumber);
+        console.log(
+          `[tester] stanza ${roomNumber} liberata (${removed} check-in) per ${maskEmail(email)}`,
+        );
+      } else {
+        const existing = getActiveCheckinByRoom(roomNumber);
+        const sameEmail =
+          existing?.email &&
+          normalizeEmail(existing.email) === email;
+        const samePhone =
+          existing?.phone &&
+          cleanPhone(existing.phone) === phone;
+        if (existing && (sameEmail || samePhone)) {
+          return res.status(200).json({
+            success: true,
+            alreadyRegistered: true,
+            id: existing.id,
+            guestAccessToken: issueGuestAccessToken(existing.id),
+            checkCode: `HC-${String(existing.id).padStart(4, '0')}`,
+            createdAt: existing.created_at || new Date().toISOString(),
+            welcomeSent: false,
+            couponSent: Boolean(existing.coupon_sent_at),
+            receptionist: existing.receptionist || null,
+            guestsCount: existing.guests_count ?? guestsCount,
+            tester: false,
+            skipDeviceLock: false,
+          });
+        }
+        return res.status(409).json({
+          error: 'Stanza già registrata',
+          code: 'room_taken',
         });
       }
-      return res.status(409).json({
-        error: 'Stanza già registrata',
-        code: 'room_taken',
-      });
     }
 
     const couponToken = createCouponToken();
@@ -1026,16 +1109,33 @@ async function handleCheckin(req, res) {
         guestsCount,
         couponToken,
         withCoupon: includeCoupon,
+        skipStaffStats: tester,
       });
     } catch (err) {
       const msg = String(err?.message || err || '');
       if (/UNIQUE|idx_checkins_room_unique/i.test(msg)) {
-        return res.status(409).json({
-          error: 'Stanza già registrata',
-          code: 'room_taken',
-        });
+        if (tester && roomNumber) {
+          deleteCheckinsByRoom(roomNumber);
+          id = insertCheckin({
+            phone,
+            email,
+            guestName,
+            roomNumber,
+            receptionist,
+            guestsCount,
+            couponToken,
+            withCoupon: includeCoupon,
+            skipStaffStats: true,
+          });
+        } else {
+          return res.status(409).json({
+            error: 'Stanza già registrata',
+            code: 'room_taken',
+          });
+        }
+      } else {
+        throw err;
       }
-      throw err;
     }
 
     // Orario tavolo scelto nello Step 2 (opzionale)
@@ -1088,6 +1188,8 @@ async function handleCheckin(req, res) {
       couponSent: includeCoupon && welcomeSent,
       receptionist: receptionist || null,
       guestsCount,
+      tester: Boolean(tester),
+      skipDeviceLock: Boolean(tester),
     });
   } catch (err) {
     console.error('Errore check-in:', err?.message || err);

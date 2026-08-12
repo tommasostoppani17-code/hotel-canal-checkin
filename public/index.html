@@ -5149,7 +5149,22 @@
       }
     }
 
-    function shouldLockDevice() {
+    /** Email staff note per non bloccare il device (allineate al server). */
+    function isTesterEmailClient(email) {
+      const mail = String(email || '').trim().toLowerCase();
+      if (!mail) return false;
+      const known = new Set([
+        'tommasostoppani17@gmail.com',
+        'info@hotelcanal.com',
+        'payel@hotelcanal.com',
+        'mizan@hotelcanal.com',
+      ]);
+      return known.has(mail);
+    }
+
+    function shouldLockDevice(email) {
+      if (isTestMode()) return false;
+      if (isTesterEmailClient(email)) return false;
       return true;
     }
 
@@ -7036,24 +7051,38 @@
           return;
         }
 
-        if (shouldLockDevice(emailNormalized)) {
+        if (body.skipDeviceLock || body.tester || !shouldLockDevice(emailNormalized)) {
+          clearRegistrationLock();
+        } else {
           setRegistrationLock({
             checkinId: body.id,
             couponSent: Boolean(body.couponSent),
             guestAccessToken: body.guestAccessToken || null,
           });
-        } else {
-          clearRegistrationLock();
         }
         submitting = false;
         showSuccessStep({
           id: body.id,
           verifiedAt: body.createdAt,
           couponSent: Boolean(body.couponSent),
-          already: Boolean(body.alreadyRegistered),
+          already: Boolean(body.alreadyRegistered) && !body.tester,
           guestAccessToken: body.guestAccessToken || null,
-          quiet: Boolean(body.alreadyRegistered),
+          quiet: Boolean(body.alreadyRegistered) && !body.tester,
         });
+        // Tester: mostra sempre “Nuovo check-in” per ripetere i test
+        if (body.tester || body.skipDeviceLock) {
+          const reentry = document.getElementById('guestReentry');
+          const reentryBtn = document.getElementById('btnNewCheckin');
+          if (reentry) reentry.hidden = false;
+          if (reentryBtn) {
+            reentryBtn.textContent = t().newCheckin || 'Nuovo check-in';
+            reentryBtn.onclick = (e) => {
+              e.preventDefault();
+              playConfirmChime?.({ soft: true });
+              startFreshCheckin();
+            };
+          }
+        }
 
         // Prenotazione tavolo scelta nello Step 2 → stesso endpoint dello Step 3
         const tableTime = String(selectedTableTime || 'NO').trim().toUpperCase();
