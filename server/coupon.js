@@ -281,7 +281,6 @@ export function buildWelcomeHtml({
   /** Larghezza utile card (500 − padding 22×2). Pixel fissi → niente fascia grigia su Gmail desktop. */
   const CW = 456;
   const BAND_H = 254; // 1400×780 @ CW
-  const BAND_H_HALF = Math.round(BAND_H / 2);
   const GRID = 224;
   const GRID_GAP = 8;
   const preheader = escapeHtml(
@@ -691,7 +690,7 @@ export function buildWelcomeHtml({
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px dashed ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
                 <tr>
                   <td width="${CW}" bgcolor="${C}" style="padding:0;line-height:0;font-size:0;width:${CW}px;background-color:${C};mso-line-height-rule:exactly;">
-                    ${emailImg(resto, 'Trattoria alla Terrazza', CW, BAND_H_HALF)}
+                    ${emailImg(resto, 'Trattoria alla Terrazza', CW, BAND_H)}
                   </td>
                 </tr>
                 <tr>
@@ -710,7 +709,8 @@ export function buildWelcomeHtml({
                 ${lp.tastesDesc}
               </p>
               ${photoGrid(thumbs.slice(0, 4), 8)}
-              ${postcard(resto, 'Trattoria alla Terrazza', 36, BAND_H_HALF)}
+              ${postcardBand(terrace, 'Piatti della Terrazza', 8)}
+              ${postcardBand(dish, 'Cucina della Trattoria alla Terrazza', 36)}
 
               ${veniceGuideBlock}
               ${venicePdfFooter}
