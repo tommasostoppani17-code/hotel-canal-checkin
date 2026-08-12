@@ -765,64 +765,265 @@ export function buildCouponRedeemPage({
 }) {
   const staff = escapeHtml(receptionist || 'RECEPTION');
   const room = roomNumber ? escapeHtml(roomNumber) : '-';
-  const guest = guestName ? escapeHtml(guestName) : '';
+  const guest = guestName ? escapeHtml(guestName) : 'Ospite';
   const guests = guestsCount != null ? escapeHtml(String(guestsCount)) : '-';
+  const hero = escapeHtml(
+    `${publicBaseUrl()}/email/${encodeURIComponent('voucher-24.jpg')}`,
+  );
+  const year = new Date().getFullYear();
 
   return `<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sconto 10% - Trattoria alla Terrazza</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0A2D37">
+  <meta name="color-scheme" content="light only">
+  <title>−10% · Trattoria alla Terrazza</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Cinzel:wght@600;700&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --canal: #124453; }
+    :root {
+      --canal: #124453;
+      --canal-deep: #0A2D37;
+      --canal-soft: #E8F0F2;
+      --ink: #1A2B31;
+      --muted: #6B7C83;
+      --line: rgba(18, 68, 83, 0.14);
+      --cream: #F7F5F1;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center;
-      font-family: Montserrat, -apple-system, sans-serif; padding: 24px;
-      background: linear-gradient(160deg, #0A2D37 0%, #124453 55%, #1a5a6b 100%);
-      color: #1D1D1F; -webkit-font-smoothing: antialiased;
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,0.14), transparent 55%),
+        linear-gradient(165deg, #071F26 0%, var(--canal-deep) 42%, #124453 100%);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: max(12px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom));
     }
-    .card {
-      width: 100%; max-width: 380px; background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(24px); border-radius: 24px; padding: 36px 28px; text-align: center;
-      border: 1px solid rgba(255,255,255,0.7);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    .shell {
+      width: 100%;
+      max-width: 420px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: min(760px, calc(100dvh - 28px));
+      animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
     }
-    .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #5C7A82; margin-bottom: 10px; }
-    h1 { font-family: Cinzel, Georgia, serif; font-size: 22px; color: var(--canal); margin: 0 0 8px; }
-    .discount { font-size: 42px; font-weight: 700; color: var(--canal); margin: 18px 0 6px; letter-spacing: 0.02em; }
-    .meta { font-size: 13px; color: #515154; line-height: 1.55; margin: 0; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .ticket {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      background: var(--cream);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.35) inset,
+        0 28px 60px rgba(0,0,0,0.35);
+    }
+    .hero {
+      position: relative;
+      height: clamp(168px, 28vh, 220px);
+      flex: 0 0 auto;
+      background: #0E3844 center/cover no-repeat;
+      background-image: linear-gradient(180deg, rgba(7,31,38,0.15) 0%, rgba(7,31,38,0.72) 100%), url("${hero}");
+    }
+    .hero-brand {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 18px;
+      color: #fff;
+    }
+    .hero-brand .hotel {
+      margin: 0 0 4px;
+      font-family: Cinzel, Georgia, serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0.92;
+    }
+    .hero-brand h1 {
+      margin: 0;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: clamp(26px, 7vw, 32px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+    }
+    .body {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      padding: 22px 22px 20px;
+    }
+    .badge {
+      align-self: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(18,68,83,0.08);
+      color: var(--canal);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #1F8A5B;
+      box-shadow: 0 0 0 3px rgba(31,138,91,0.18);
+      animation: pulseSoft 2.4s ease-in-out infinite;
+    }
+    .discount-wrap {
+      margin: 18px 0 6px;
+      text-align: center;
+    }
+    .discount {
+      margin: 0;
+      font-family: Cinzel, Georgia, serif;
+      font-size: clamp(56px, 16vw, 72px);
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      color: var(--canal);
+    }
+    .discount-sub {
+      margin: 10px 0 0;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 18px;
+      font-style: italic;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .divider {
+      height: 1px;
+      margin: 18px 0;
+      background:
+        linear-gradient(90deg, transparent, var(--line) 12%, var(--line) 88%, transparent);
+    }
+    .meta {
+      display: grid;
+      gap: 10px;
+    }
+    .row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+    .row span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .row strong {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--canal);
+      text-align: right;
+      letter-spacing: 0.01em;
+      word-break: break-word;
+    }
     .staff {
-      margin-top: 22px; padding: 14px; border-radius: 12px;
-      background: rgba(18,68,83,0.06); border: 1px dashed var(--canal);
+      margin-top: auto;
+      padding-top: 16px;
     }
-    .staff strong { display: block; font-size: 18px; color: var(--canal); margin-top: 4px; letter-spacing: 0.04em; }
-    .staff span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748B; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; text-align: left; }
-    .cell { background: #F8FAFC; border-radius: 10px; padding: 10px 12px; border: 1px solid #E2E8F0; }
-    .cell span { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #64748B; }
-    .cell strong { font-size: 14px; color: var(--canal); }
+    .staff-box {
+      text-align: center;
+      padding: 16px 14px;
+      border-radius: 16px;
+      border: 1.5px dashed rgba(18,68,83,0.35);
+      background: rgba(18,68,83,0.04);
+    }
+    .staff-box span {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .staff-box strong {
+      display: block;
+      margin-top: 6px;
+      font-family: Cinzel, Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--canal);
+    }
+    .foot {
+      margin: 14px 0 0;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.72);
+    }
+    .foot strong { color: #fff; font-weight: 600; }
+    @media (prefers-reduced-motion: reduce) {
+      .shell, .badge-dot { animation: none !important; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="eyebrow">Trattoria alla Terrazza</div>
-    <h1>Coupon attivo</h1>
-    <p class="meta">Ristorante tipico veneziano con vista sul canale</p>
-    <div class="discount">−10%</div>
-    <p class="meta">${guest ? `Ospite: <strong>${guest}</strong>` : ''}</p>
-    <div class="grid">
-      <div class="cell"><span>Stanza</span><strong>${room}</strong></div>
-      <div class="cell"><span>Ospiti</span><strong>${guests}</strong></div>
-    </div>
-    <div class="staff">
-      <span>Presentato da</span>
-      <strong>${staff}</strong>
-    </div>
-  </div>
+  <main class="shell">
+    <article class="ticket" aria-label="Coupon sconto Trattoria alla Terrazza">
+      <div class="hero" role="img" aria-label="Trattoria alla Terrazza">
+        <div class="hero-brand">
+          <p class="hotel">Hotel Canal</p>
+          <h1>Trattoria alla Terrazza</h1>
+        </div>
+      </div>
+      <div class="body">
+        <div class="badge"><span class="badge-dot" aria-hidden="true"></span> Coupon attivo</div>
+        <div class="discount-wrap">
+          <p class="discount">−10%</p>
+          <p class="discount-sub">Sconto ospite Hotel Canal</p>
+        </div>
+        <div class="divider" aria-hidden="true"></div>
+        <div class="meta">
+          <div class="row"><span>Ospite</span><strong>${guest}</strong></div>
+          <div class="row"><span>Stanza</span><strong>${room}</strong></div>
+          <div class="row"><span>Ospiti</span><strong>${guests}</strong></div>
+        </div>
+        <div class="staff">
+          <div class="staff-box">
+            <span>Presentato da</span>
+            <strong>${staff}</strong>
+          </div>
+        </div>
+      </div>
+    </article>
+    <p class="foot">Mostra questa schermata al personale del ristorante · ${year}</p>
+  </main>
 </body>
 </html>`;
 }

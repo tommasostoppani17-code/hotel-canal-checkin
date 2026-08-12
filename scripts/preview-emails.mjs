@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 
 import {
   buildWelcomeHtml,
+  buildCouponRedeemPage,
   publicBaseUrl,
   couponRedeemUrl,
   couponClaimUrl,
@@ -189,7 +190,19 @@ files.push(write('06-alert-tavolo-Payel.html', booking.html));
 
 files.push(
   write(
-    '07-poster-supremo.html',
+    '07-pagina-qr-voucher.html',
+    buildCouponRedeemPage({
+      receptionist: 'TOMMASO',
+      roomNumber: '17',
+      guestName: 'Tommaso Stoppani',
+      guestsCount: 2,
+    }),
+  ),
+);
+
+files.push(
+  write(
+    '08-poster-supremo.html',
     buildPosterEmailHtml({ hotelName: 'Hotel Canal', pdfKb: 420 }),
   ),
 );
@@ -231,8 +244,8 @@ const index = `<!DOCTYPE html>
 </head>
 <body>
   <header>
-    <h1>Hotel Canal — tutte le email</h1>
-    <p>Anteprime generate dal codice locale (font aggiornati). Clicca per aprire.</p>
+    <h1>Hotel Canal — anteprime</h1>
+    <p>Email + pagina QR voucher. Clicca per aprire.</p>
   </header>
   <div class="grid">
     <a class="card" href="01-welcome-ospite-IT.html" target="_blank">
@@ -265,8 +278,13 @@ const index = `<!DOCTYPE html>
       <div class="title">Alert richiesta tavolo</div>
       <div class="who">Trattoria · chiama ospite</div>
     </a>
-    <a class="card" href="07-poster-supremo.html" target="_blank">
-      <div class="num">07 · Staff</div>
+    <a class="card" href="07-pagina-qr-voucher.html" target="_blank">
+      <div class="num">07 · QR scan</div>
+      <div class="title">Pagina coupon dopo scan QR</div>
+      <div class="who">Schermata che apre il QR nell’email</div>
+    </a>
+    <a class="card" href="08-poster-supremo.html" target="_blank">
+      <div class="num">08 · Staff</div>
       <div class="title">Poster Supremo (PDF allegato)</div>
       <div class="who">Mail con istruzioni stampa A4</div>
     </a>
