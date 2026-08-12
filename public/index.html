@@ -5358,31 +5358,18 @@
               <div class="guest-sheet-panel" id="wifiPanel" hidden>
                 <p class="wifi-location-label" id="lbl-wifi-location">Sede</p>
                 <div class="wifi-location-pills" id="wifiLocationPills" role="tablist" aria-label="Wi-Fi location">
-                  <button type="button" class="wifi-pill is-selected" data-wifi-id="hotel" role="tab" aria-selected="true">Hotel</button>
+                  <button type="button" class="wifi-pill is-selected" data-wifi-id="canal" role="tab" aria-selected="true">Hotel Canal</button>
+                  <button type="button" class="wifi-pill" data-wifi-id="airone" role="tab" aria-selected="false">Airone</button>
                   <button type="button" class="wifi-pill" data-wifi-id="pisani" role="tab" aria-selected="false">Appartamenti</button>
                 </div>
-                <div class="ios-group" id="wifiHotelBlock">
+                <div class="ios-group" id="wifiActiveBlock">
                   <div class="ios-row">
-                    <span class="row-label wifi-network-name" id="lbl-wifi-hotel-canal">Hotel Canal</span>
-                    <span class="row-value" id="wifiCanalSsid">-</span>
-                  </div>
-                  <div class="ios-row">
-                    <span class="row-label wifi-network-name" id="lbl-wifi-airone">Airone</span>
-                    <span class="row-value" id="wifiAironeSsid">-</span>
+                    <span class="row-label" id="lbl-wifi-net">Rete</span>
+                    <span class="row-value" id="wifiActiveSsid">-</span>
                   </div>
                   <div class="ios-row">
                     <span class="row-label" id="lbl-wifi-pass">Password</span>
-                    <span class="row-value" id="wifiHotelPass">-</span>
-                  </div>
-                </div>
-                <div class="ios-group" id="wifiAptBlock" hidden>
-                  <div class="ios-row">
-                    <span class="row-label" id="lbl-wifi-net">Rete</span>
-                    <span class="row-value" id="wifiAptSsid">-</span>
-                  </div>
-                  <div class="ios-row">
-                    <span class="row-label" id="lbl-wifi-pass-apt">Password</span>
-                    <span class="row-value" id="wifiAptPass">-</span>
+                    <span class="row-value" id="wifiActivePass">-</span>
                   </div>
                 </div>
               </div>
@@ -7676,7 +7663,7 @@
     }
 
     let guestServicesCache = null;
-    let selectedWifiId = 'hotel';
+    let selectedWifiId = 'canal';
 
     function applyWifiNetwork(networks, dict) {
       const ask = dict?.askReception || '-';
@@ -7687,12 +7674,12 @@
           : [];
       if (!list.length) return;
 
-      const canal = list.find((net) => net.id === 'canal');
-      const airone = list.find((net) => net.id === 'airone');
-      const pisani = list.find((net) => net.id === 'pisani');
+      const byId = Object.fromEntries(list.map((net) => [net.id, net]));
+      const active = byId[selectedWifiId] || byId.canal || list[0];
 
       const pillLabels = {
-        hotel: dict?.wifiHotel || 'Hotel',
+        canal: dict?.wifiHotelCanal || 'Hotel Canal',
+        airone: dict?.wifiAirone || 'Airone',
         pisani: dict?.wifiApartments || 'Appartamenti',
       };
       document.querySelectorAll('#wifiLocationPills .wifi-pill').forEach((btn) => {
@@ -7703,24 +7690,10 @@
         btn.setAttribute('aria-selected', selected ? 'true' : 'false');
       });
 
-      const hotelBlock = document.getElementById('wifiHotelBlock');
-      const aptBlock = document.getElementById('wifiAptBlock');
-      const showHotel = selectedWifiId === 'hotel';
-      if (hotelBlock) hotelBlock.hidden = !showHotel;
-      if (aptBlock) aptBlock.hidden = showHotel;
-
-      const canalEl = document.getElementById('wifiCanalSsid');
-      const aironeEl = document.getElementById('wifiAironeSsid');
-      const hotelPassEl = document.getElementById('wifiHotelPass');
-      const aptSsidEl = document.getElementById('wifiAptSsid');
-      const aptPassEl = document.getElementById('wifiAptPass');
-      if (canalEl) canalEl.textContent = canal?.ssid || ask;
-      if (aironeEl) aironeEl.textContent = airone?.ssid || ask;
-      if (hotelPassEl) {
-        hotelPassEl.textContent = canal?.password || airone?.password || ask;
-      }
-      if (aptSsidEl) aptSsidEl.textContent = pisani?.ssid || ask;
-      if (aptPassEl) aptPassEl.textContent = pisani?.password || ask;
+      const ssidEl = document.getElementById('wifiActiveSsid');
+      const passEl = document.getElementById('wifiActivePass');
+      if (ssidEl) ssidEl.textContent = active?.ssid || ask;
+      if (passEl) passEl.textContent = active?.password || ask;
     }
 
     function applyGuestActionLabels(dict, couponSent) {
@@ -7755,10 +7728,7 @@
       setTxt('lbl-act-doors-sub', dict.actDoorsSub);
       setTxt('lbl-wifi-net', dict.wifiNet);
       setTxt('lbl-wifi-pass', dict.wifiPass);
-      setTxt('lbl-wifi-pass-apt', dict.wifiPass);
       setTxt('lbl-wifi-location', dict.wifiLocation);
-      setTxt('lbl-wifi-hotel-canal', dict.wifiHotelCanal);
-      setTxt('lbl-wifi-airone', dict.wifiAirone);
       setTxt('lbl-act-tripadvisor', dict.actTripAdvisor);
       setTxt('lbl-act-tripadvisor-btn', dict.actTripAdvisorBtn);
       setTxt('lbl-door-main', dict.doorMain);
@@ -7850,7 +7820,7 @@
       const pill = e.target.closest('.wifi-pill[data-wifi-id]');
       if (!pill) return;
       e.preventDefault();
-      selectedWifiId = pill.getAttribute('data-wifi-id') || 'hotel';
+      selectedWifiId = pill.getAttribute('data-wifi-id') || 'canal';
       playConfirmChime({ soft: true });
       applyWifiNetwork(guestServicesCache?.wifiNetworks, t());
     });

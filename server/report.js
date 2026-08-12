@@ -615,9 +615,9 @@ export function buildTableBookingEmail({ hotelName, row }) {
   const hero = escapeHtml(publicAssetUrl('email', 'band-26.jpg'));
   const dish = escapeHtml(publicAssetUrl('email', 'band-27.jpg'));
 
+  // band-26/27 = 1400×780 → a 456px width the natural height is ~254 (not half)
   const CW = 456;
   const BAND_H = 254;
-  const BAND_H_HALF = Math.round(BAND_H / 2);
   const emailImg = (src, alt, w, h) =>
     `<img src="${src}" width="${w}" height="${h}" alt="${alt}" style="display:block;width:${w}px;max-width:${w}px;height:${h}px;border:0;outline:none;-ms-interpolation-mode:bicubic;">`;
 
@@ -678,7 +678,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
           <tr>
             <td class="email-content force-white" bgcolor="#FFFFFF" style="padding:20px 22px 34px;background-color:#FFFFFF !important;">
 
-              ${postcardBleed(hero, 'Trattoria alla Terrazza', 16, CW, BAND_H_HALF)}
+              ${postcardBleed(hero, 'Trattoria alla Terrazza', 16, CW, BAND_H)}
 
               <p style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${BRASS};margin:0 0 6px;text-align:center;">
                 ${escapeHtml(brand)}
@@ -766,7 +766,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
               <p style="${bodyCopy};color:#5C6670 !important;margin:0 0 12px;text-align:left;font-family:${BODY};font-style:italic;">
                 Cena sulla terrazza del canale, per gli ospiti ${escapeHtml(hotel)}.
               </p>
-              ${postcardBleed(dish, 'Piatto della Terrazza', 24, CW, BAND_H_HALF)}
+              ${postcardBleed(dish, 'Piatto della Terrazza', 24, CW, BAND_H)}
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #E8E4DC;margin-top:4px;">
                 <tr>
