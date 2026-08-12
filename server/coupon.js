@@ -960,18 +960,17 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Catalogo numerato — file versionati (grid-29, voucher-24…) per bust cache Gmail.
-  // Hero #1 · Walk #14 · Voucher #24 · Griglia #29 #27 #11 #5 · Due grandi #26 #27
+  // Griglia 2×2: #30 (basso) · #5 · #12 · #23
   const requiredRemote = [
     ['email', 'hero-01.jpg'],
     ['restaurant', '01-terrazza-canale.jpg'],
     ['email', 'voucher-24.jpg'],
     ['email', 'band-26.jpg'],
     ['email', 'band-27.jpg'],
-    ['email', 'grid-29.jpg'],
-    ['email', 'grid-27.jpg'],
-    ['email', 'grid-11.jpg'],
+    ['email', 'grid-30.jpg'],
     ['email', 'grid-05.jpg'],
+    ['email', 'grid-12.jpg'],
+    ['email', 'grid-23.jpg'],
   ];
   for (const parts of requiredRemote) {
     if (!readEmailAsset(...parts)) {
@@ -985,10 +984,10 @@ export async function sendWelcomeEmail({
   const terraceSrc = publicAssetUrl('email', 'band-26.jpg'); // #26
   const dishSrc = publicAssetUrl('email', 'band-27.jpg'); // #27
   const thumbs = [
-    { src: publicAssetUrl('email', 'grid-29.jpg'), alt: 'Guazzetto di mare' }, // #29
-    { src: publicAssetUrl('email', 'grid-27.jpg'), alt: 'Pesce grigliato' }, // #27
-    { src: publicAssetUrl('email', 'grid-11.jpg'), alt: 'Pesce della Terrazza' }, // #11
+    { src: publicAssetUrl('email', 'grid-30.jpg'), alt: 'Astice alla Terrazza' }, // #30 basso
     { src: publicAssetUrl('email', 'grid-05.jpg'), alt: 'Risotto di mare' }, // #5
+    { src: publicAssetUrl('email', 'grid-12.jpg'), alt: 'Guazzetto di mare' }, // #12
+    { src: publicAssetUrl('email', 'grid-23.jpg'), alt: 'Polenta e granchio' }, // #23
   ];
 
   const iconDefs = [
