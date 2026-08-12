@@ -54,7 +54,7 @@ function emailAssetBaseUrl() {
   if (mode === 'render' || mode === 'public' || mode === 'off') {
     return publicBaseUrl();
   }
-  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@cc73d63/public';
+  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@main/public';
 }
 
 function publicAssetUrl(...parts) {
@@ -582,8 +582,8 @@ export function buildTableBookingEmail({ hotelName, row }) {
     .filter((line) => line != null)
     .join('\n');
 
-  const hero = escapeHtml(publicAssetUrl('restaurant', '01-terrazza-canale.jpg'));
-  const dish = escapeHtml(publicAssetUrl('restaurant', '14-pesce-grigliato.jpg'));
+  const hero = escapeHtml(publicAssetUrl('email', 'postcard-terrazza.jpg'));
+  const dish = escapeHtml(publicAssetUrl('email', 'postcard-dish.jpg'));
   const iconCloche = escapeHtml(publicAssetUrl('email', 'icons', 'cloche.png'));
   const iconWine = escapeHtml(publicAssetUrl('email', 'icons', 'wine.png'));
 
