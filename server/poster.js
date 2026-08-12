@@ -51,17 +51,28 @@ function drawCentered(doc, text, y, { font, size, color, width, x = 0 } = {}) {
   });
 }
 
-function roundedImage(doc, imgPath, x, y, w, h, radius = 14) {
+/** Cover-crop in a rounded frame (no stretch / letterbox). */
+function roundedCoverImage(doc, imgPath, x, y, w, h, radius = 14) {
   if (!fs.existsSync(imgPath)) return;
+  const img = doc.openImage(imgPath);
+  const scale = Math.max(w / img.width, h / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+  const dx = x + (w - dw) / 2;
+  const dy = y + (h - dh) / 2;
   doc.save();
   doc.roundedRect(x, y, w, h, radius).clip();
-  doc.image(imgPath, x, y, {
-    cover: [w, h],
-    align: 'center',
-    valign: 'center',
-  });
+  doc.image(img, dx, dy, { width: dw, height: dh });
   doc.restore();
   doc.roundedRect(x, y, w, h, radius).lineWidth(0.8).strokeColor(BORDER).stroke();
+}
+
+function drawIcon(doc, iconPath, cx, cy, size = 22) {
+  if (!fs.existsSync(iconPath)) return;
+  doc.image(iconPath, cx - size / 2, cy - size / 2, {
+    width: size,
+    height: size,
+  });
 }
 
 export async function buildCheckinQrPng() {
@@ -76,7 +87,7 @@ export async function buildCheckinQrPng() {
 
 /**
  * Cartello A4 — stesso linguaggio visuale dell’email welcome
- * (petroleum, card bordate, brand Cormorant-like, QR tipo access-card).
+ * (petroleum, card bordate, brand, icone email, QR tipo access-card).
  */
 export async function buildPosterPdfBuffer({
   hotelName = 'Hotel Canal',
@@ -86,6 +97,14 @@ export async function buildPosterPdfBuffer({
   const hotelPhoto = path.join(rootDir, 'public', 'email', 'hero-01.jpg');
   const hotelDetail = path.join(rootDir, 'public', 'email', 'postcard-ingresso.jpg');
   const restoPhoto = path.join(rootDir, 'public', 'email', 'band-26.jpg');
+  const iconDir = path.join(rootDir, 'public', 'email', 'icons');
+  const ico = {
+    gondola: path.join(iconDir, 'gondola.png'),
+    bricola: path.join(iconDir, 'bricola.png'),
+    door: path.join(iconDir, 'door.png'),
+    cloche: path.join(iconDir, 'cloche.png'),
+    qr: path.join(iconDir, 'qr.png'),
+  };
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -110,13 +129,15 @@ export async function buildPosterPdfBuffer({
 
     doc.rect(0, 0, pageW, pageH).fill(PAPER);
 
-    // Hero postcard (come email)
-    let y = 28;
-    const heroH = 148;
-    roundedImage(doc, hotelPhoto, side, y, contentW, heroH, 16);
-    y += heroH + 22;
+    // Hero postcard — cover crop
+    let y = 26;
+    const heroH = 142;
+    roundedCoverImage(doc, hotelPhoto, side, y, contentW, heroH, 16);
+    y += heroH + 16;
 
-    // Brand block
+    // Brand + gondola icon
+    drawIcon(doc, ico.gondola, pageW / 2, y + 12, 26);
+    y += 28;
     drawCentered(doc, String(hotelName).toUpperCase(), y, {
       font: 'Times-Bold',
       size: 26,
@@ -128,16 +149,15 @@ export async function buildPosterPdfBuffer({
       size: 9,
       color: BRASS,
     });
-    y += 18;
+    y += 16;
     doc
       .moveTo(side + 24, y)
       .lineTo(pageW - side - 24, y)
       .lineWidth(0.8)
       .strokeColor(RULE)
       .stroke();
-    y += 16;
+    y += 14;
 
-    // Intro italic
     doc
       .font('Times-Italic')
       .fontSize(12.5)
@@ -148,47 +168,50 @@ export async function buildPosterPdfBuffer({
         y,
         { width: contentW - 36, align: 'center', lineGap: 2 },
       );
-    y += 36;
+    y += 34;
 
-    // Duo hotel + restaurant
+    // Duo hotel + restaurant — cover crop
     const gap = 10;
-    const duoH = 102;
+    const duoH = 108;
     const duoW = (contentW - gap) / 2;
-    roundedImage(doc, hotelDetail, side, y, duoW, duoH, 14);
-    roundedImage(doc, restoPhoto, side + duoW + gap, y, duoW, duoH, 14);
-    y += duoH + 22;
+    roundedCoverImage(doc, hotelDetail, side, y, duoW, duoH, 14);
+    roundedCoverImage(doc, restoPhoto, side + duoW + gap, y, duoW, duoH, 14);
+    y += duoH + 18;
 
-    // Section title
+    // Section with icon
+    drawIcon(doc, ico.qr, side + 10, y + 6, 18);
     doc
-      .moveTo(side, y + 16)
-      .lineTo(pageW - side, y + 16)
+      .font('Helvetica-Bold')
+      .fontSize(11)
+      .fillColor(C)
+      .text('DIGITAL CHECK-IN', side + 34, y, {
+        width: contentW - 44,
+        align: 'left',
+      });
+    doc
+      .moveTo(side, y + 18)
+      .lineTo(pageW - side, y + 18)
       .lineWidth(0.7)
-      .strokeColor('rgba(22,78,91,0.14)')
       .strokeColor(RULE)
       .stroke();
-    drawCentered(doc, 'DIGITAL CHECK-IN', y, {
-      font: 'Helvetica-Bold',
-      size: 11,
-      color: C,
-    });
-    y += 24;
+    y += 26;
     doc
       .font('Times-Italic')
       .fontSize(11)
       .fillColor(SOFT)
       .text(
         'Wi‑Fi, door codes and a welcome note for Trattoria alla Terrazza — all after you scan.',
-        side + 20,
+        side + 16,
         y,
-        { width: contentW - 40, align: 'center', lineGap: 2 },
+        { width: contentW - 32, align: 'center', lineGap: 2 },
       );
-    y += 34;
+    y += 30;
 
     // QR access-card
-    const qrSize = 168;
+    const qrSize = 158;
     const pad = 14;
     const cardW = qrSize + pad * 2;
-    const cardH = qrSize + pad * 2 + 36;
+    const cardH = qrSize + pad * 2 + 34;
     const cardX = (pageW - cardW) / 2;
     doc.roundedRect(cardX, y, cardW, cardH, 18).fill(PAPER);
     doc
@@ -197,7 +220,7 @@ export async function buildPosterPdfBuffer({
       .strokeColor(C)
       .stroke();
 
-    drawCentered(doc, 'SCAN WITH YOUR PHONE', y + 12, {
+    drawCentered(doc, 'SCAN WITH YOUR PHONE', y + 11, {
       font: 'Helvetica-Bold',
       size: 8,
       color: LABEL,
@@ -206,13 +229,13 @@ export async function buildPosterPdfBuffer({
     });
 
     const qrX = cardX + pad;
-    const qrY = y + 26;
+    const qrY = y + 24;
     doc.save();
     doc.roundedRect(qrX, qrY, qrSize, qrSize, 8).clip();
     doc.image(qrPng, qrX, qrY, { width: qrSize, height: qrSize });
     doc.restore();
 
-    drawCentered(doc, 'CHECK-IN HOTEL CANAL', qrY + qrSize + 8, {
+    drawCentered(doc, 'CHECK-IN HOTEL CANAL', qrY + qrSize + 7, {
       font: 'Times-Bold',
       size: 11,
       color: C,
@@ -220,34 +243,38 @@ export async function buildPosterPdfBuffer({
       x: cardX,
     });
 
-    y += cardH + 20;
+    y += cardH + 16;
 
-    // Benefit chips (come meta email)
+    // Benefit chips + email icons
     const chips = [
-      { k: 'WI-FI', v: 'Network &\npassword' },
-      { k: 'DOORS', v: 'Access\ncodes' },
-      { k: 'DINING', v: 'Trattoria\nwelcome' },
+      { k: 'WI-FI', v: 'Network &\npassword', icon: ico.bricola },
+      { k: 'DOORS', v: 'Access\ncodes', icon: ico.door },
+      { k: 'DINING', v: 'Trattoria\nwelcome', icon: ico.cloche },
     ];
     const chipGap = 8;
     const chipW = (contentW - chipGap * 2) / 3;
-    const chipH = 58;
+    const chipH = 72;
     chips.forEach((chip, i) => {
       const x = side + i * (chipW + chipGap);
       doc.roundedRect(x, y, chipW, chipH, 12).fill(BOX);
       doc.roundedRect(x, y, chipW, chipH, 12).lineWidth(0.8).strokeColor(BORDER).stroke();
+      drawIcon(doc, chip.icon, x + chipW / 2, y + 18, 22);
       doc
         .font('Helvetica-Bold')
         .fontSize(7.5)
         .fillColor(LABEL)
-        .text(chip.k, x + 4, y + 10, { width: chipW - 8, align: 'center' });
+        .text(chip.k, x + 4, y + 32, { width: chipW - 8, align: 'center' });
       doc
         .font('Times-Bold')
-        .fontSize(11)
+        .fontSize(10.5)
         .fillColor(C)
-        .text(chip.v, x + 6, y + 24, { width: chipW - 12, align: 'center', lineGap: 1 });
+        .text(chip.v, x + 6, y + 44, {
+          width: chipW - 12,
+          align: 'center',
+          lineGap: 0.5,
+        });
     });
 
-    // Footer
     const footY = pageH - 48;
     doc
       .moveTo(side, footY)

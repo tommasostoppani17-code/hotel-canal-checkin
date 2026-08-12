@@ -19,6 +19,7 @@
       --muted: #4A5560;
       --soft: #5C6670;
       --paper: #FFFFFF;
+      --label: #8A949C;
     }
 
     html, body {
@@ -44,35 +45,50 @@
       height: 297mm;
       box-sizing: border-box;
       background: var(--paper);
-      padding: 14mm 16mm 12mm;
+      padding: 12mm 15mm 11mm;
       display: flex;
       flex-direction: column;
       box-shadow: 0 12px 40px rgba(22, 78, 91, 0.12);
       border: 1px solid var(--border);
-      border-radius: 4px;
     }
 
-    .hero {
+    .frame {
       width: 100%;
-      height: 52mm;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--box);
+      line-height: 0;
+    }
+
+    .frame img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       object-position: center;
-      border-radius: 16px;
       display: block;
-      border: 1px solid var(--border);
     }
+
+    .hero.frame { height: 48mm; }
 
     .brand {
       text-align: center;
-      padding: 10mm 0 6mm;
+      padding: 7mm 0 5mm;
       border-bottom: 1px solid var(--rule);
-      margin-bottom: 6mm;
+      margin-bottom: 5mm;
+    }
+
+    .brand .ico {
+      width: 28px;
+      height: 28px;
+      display: block;
+      margin: 0 auto 8px;
     }
 
     .brand h1 {
       margin: 0;
       font-family: "Cormorant Garamond", Georgia, serif;
-      font-size: 28px;
+      font-size: 27px;
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -90,10 +106,10 @@
     }
 
     .intro {
-      margin: 0 0 6mm;
+      margin: 0 0 5mm;
       font-family: "EB Garamond", Georgia, serif;
       font-style: italic;
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.5;
       color: var(--muted);
       text-align: center;
@@ -103,30 +119,29 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 7mm;
+      margin-bottom: 6mm;
     }
 
-    .duo img {
-      width: 100%;
-      height: 36mm;
-      object-fit: cover;
-      border-radius: 16px;
-      display: block;
-      border: 1px solid var(--border);
-    }
+    .duo .frame { height: 38mm; border-radius: 14px; }
 
     .section {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin: 0 0 4mm;
+      margin: 0 0 3mm;
       padding-bottom: 8px;
       border-bottom: 1px solid rgba(22, 78, 91, 0.14);
     }
 
+    .section img {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
     .section span {
       font-family: Cinzel, Georgia, serif;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -134,10 +149,10 @@
     }
 
     .section-sub {
-      margin: 0 0 5mm;
+      margin: 0 0 4mm;
       font-family: "EB Garamond", Georgia, serif;
       font-style: italic;
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.45;
       color: var(--soft);
       text-align: center;
@@ -146,11 +161,11 @@
     .qr-card {
       align-self: center;
       width: 100%;
-      max-width: 78mm;
+      max-width: 76mm;
       background: var(--paper);
       border: 1.5px solid var(--c);
       border-radius: 18px;
-      padding: 14px 14px 12px;
+      padding: 12px 14px 10px;
       text-align: center;
       box-sizing: border-box;
     }
@@ -160,22 +175,22 @@
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #8A949C;
+      color: var(--label);
       margin: 0 0 8px;
     }
 
     .qr {
-      width: 58mm;
-      height: 58mm;
+      width: 56mm;
+      height: 56mm;
       display: block;
       margin: 0 auto;
       border-radius: 8px;
     }
 
     .qr-card .ssid {
-      margin: 10px 0 0;
+      margin: 8px 0 0;
       font-family: "Cormorant Garamond", Georgia, serif;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       letter-spacing: 0.06em;
       color: var(--c);
@@ -187,15 +202,22 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
-      padding-top: 7mm;
+      padding-top: 5mm;
     }
 
     .chip {
       background: var(--box);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px 8px;
+      padding: 10px 8px 12px;
       text-align: center;
+    }
+
+    .chip .ico {
+      width: 22px;
+      height: 22px;
+      display: block;
+      margin: 0 auto 6px;
     }
 
     .chip .k {
@@ -203,13 +225,14 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #8A949C;
-      margin: 0 0 6px;
+      color: var(--label);
+      margin: 0 0 4px;
     }
 
     .chip .v {
+      margin: 0;
       font-family: "Cormorant Garamond", Georgia, serif;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--c);
       letter-spacing: 0.02em;
@@ -217,8 +240,8 @@
     }
 
     .foot {
-      margin-top: 6mm;
-      padding-top: 10px;
+      margin-top: 5mm;
+      padding-top: 8px;
       border-top: 1px solid var(--rule);
       text-align: center;
     }
@@ -231,7 +254,7 @@
     }
 
     .foot .url {
-      margin-top: 5px;
+      margin-top: 4px;
       font-family: "Cormorant Garamond", Georgia, serif;
       font-size: 13px;
       font-weight: 600;
@@ -241,15 +264,18 @@
 
     @media print {
       body { background: none; }
-      .poster { box-shadow: none; border: 0; border-radius: 0; }
+      .poster { box-shadow: none; border: 0; }
     }
   </style>
 </head>
 <body>
   <article class="poster" aria-label="Hotel Canal cartello check-in">
-    <img class="hero" src="/email/hero-01.jpg" alt="Hotel Canal Venezia">
+    <div class="hero frame">
+      <img src="/email/hero-01.jpg" alt="Hotel Canal Venezia">
+    </div>
 
     <header class="brand">
+      <img class="ico" src="/email/icons/gondola.png" alt="">
       <h1>Hotel Canal</h1>
       <p class="eyebrow">Santa Croce 553 · Venezia</p>
     </header>
@@ -257,11 +283,14 @@
     <p class="intro">Welcome. Scan the code below to complete a quick digital check-in for your room.</p>
 
     <div class="duo">
-      <img src="/email/postcard-ingresso.jpg" alt="Hotel Canal">
-      <img src="/email/band-26.jpg" alt="Trattoria alla Terrazza">
+      <div class="frame"><img src="/email/postcard-ingresso.jpg" alt="Hotel Canal"></div>
+      <div class="frame"><img src="/email/band-26.jpg" alt="Trattoria alla Terrazza"></div>
     </div>
 
-    <div class="section"><span>Digital check-in</span></div>
+    <div class="section">
+      <img src="/email/icons/qr.png" alt="">
+      <span>Digital check-in</span>
+    </div>
     <p class="section-sub">Wi‑Fi, door codes and a welcome note for Trattoria alla Terrazza — all after you scan.</p>
 
     <div class="qr-card">
@@ -272,14 +301,17 @@
 
     <div class="benefits">
       <div class="chip">
+        <img class="ico" src="/email/icons/bricola.png" alt="">
         <p class="k">Wi‑Fi</p>
         <p class="v">Network &amp; password</p>
       </div>
       <div class="chip">
+        <img class="ico" src="/email/icons/door.png" alt="">
         <p class="k">Doors</p>
         <p class="v">Access codes</p>
       </div>
       <div class="chip">
+        <img class="ico" src="/email/icons/cloche.png" alt="">
         <p class="k">Dining</p>
         <p class="v">Trattoria welcome</p>
       </div>

@@ -211,9 +211,7 @@ const bgRel = '../../public/venice-bg-poster.jpg';
 const posterHtml = fs
   .readFileSync(path.join(root, 'public', 'qr-poster.html'), 'utf8')
   .replace('src="/qr-checkin.png"', `src="${qrDataUrl}"`)
-  .replace('src="/email/hero-01.jpg"', `src="../../public/email/hero-01.jpg"`)
-  .replace('src="/email/postcard-ingresso.jpg"', `src="../../public/email/postcard-ingresso.jpg"`)
-  .replace('src="/email/band-26.jpg"', `src="../../public/email/band-26.jpg"`)
+  .replaceAll('src="/email/', 'src="../../public/email/')
   .replace('__PUBLIC_URL__', base.replace(/\/$/, ''));
 files.push(write('07-poster-reception.html', posterHtml));
 
