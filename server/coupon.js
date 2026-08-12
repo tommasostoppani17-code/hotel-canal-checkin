@@ -684,9 +684,9 @@ function buildWelcomeHtml({
               <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 20px;text-align:center;">
                 ${lp.tastesDesc}
               </p>
-              ${photoGrid(thumbs.slice(0, 4), 16)}
-              ${postcard(terrace, 'Terrazza sul canale', 16)}
-              ${postcard(dish, 'Cucina della Trattoria alla Terrazza', 24)}
+              ${photoGrid(thumbs.slice(0, 4), 8)}
+              ${postcard(terrace, 'Terrazza sul canale', 8)}
+              ${postcard(dish, 'Cucina della Trattoria alla Terrazza', 8)}
 
               ${veniceGuideBlock}
               ${venicePdfFooter}
@@ -930,18 +930,15 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Foto email: crop landscape/square in /email (layout Gmail stabile).
-  // Sorgenti HQ da /restaurant + venice-bg, ma aspect ratio fissi da cartolina.
+  // Foto HQ da /public/restaurant + venice-bg (mai i thumb compressi in /email).
   const requiredRemote = [
-    ['email', 'hero-venice.jpg'],
-    ['email', 'postcard-tavolo.jpg'],
-    ['email', 'postcard-ingresso.jpg'],
-    ['email', 'postcard-terrazza.jpg'],
-    ['email', 'postcard-dish.jpg'],
-    ['email', 'thumb-ingresso.jpg'],
-    ['email', 'thumb-pesce.jpg'],
-    ['email', 'thumb-risotto.jpg'],
-    ['email', 'thumb-linguine.jpg'],
+    ['venice-bg.jpg'],
+    ['restaurant', '12-tavolo-terrazza-pasta.jpg'],
+    ['restaurant', '02-gondola-ingresso.jpg'],
+    ['restaurant', '01-terrazza-canale.jpg'],
+    ['restaurant', '14-pesce-grigliato.jpg'],
+    ['restaurant', '16-guazzetto-mare.jpg'],
+    ['restaurant', '06-linguine-granchio.jpg'],
   ];
   for (const parts of requiredRemote) {
     if (!readEmailAsset(...parts)) {
@@ -949,27 +946,27 @@ export async function sendWelcomeEmail({
     }
   }
 
-  const heroSrc = publicAssetUrl('email', 'hero-venice.jpg');
-  const restaurantSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
-  const gallerySrc = publicAssetUrl('email', 'postcard-ingresso.jpg');
+  const heroSrc = publicAssetUrl('venice-bg.jpg');
+  const restaurantSrc = publicAssetUrl('restaurant', '12-tavolo-terrazza-pasta.jpg');
+  const gallerySrc = publicAssetUrl('restaurant', '02-gondola-ingresso.jpg');
   /* Stessa terrazza panoramica usata nell’alert Payel */
-  const terraceSrc = publicAssetUrl('email', 'postcard-terrazza.jpg');
-  const dishSrc = publicAssetUrl('email', 'postcard-dish.jpg');
+  const terraceSrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
+  const dishSrc = publicAssetUrl('restaurant', '14-pesce-grigliato.jpg');
   const thumbs = [
     {
-      src: publicAssetUrl('email', 'thumb-ingresso.jpg'),
+      src: publicAssetUrl('restaurant', '02-gondola-ingresso.jpg'),
       alt: 'Ingresso della Terrazza',
     },
     {
-      src: publicAssetUrl('email', 'thumb-pesce.jpg'),
+      src: publicAssetUrl('restaurant', '14-pesce-grigliato.jpg'),
       alt: 'Pesce grigliato',
     },
     {
-      src: publicAssetUrl('email', 'thumb-risotto.jpg'),
+      src: publicAssetUrl('restaurant', '16-guazzetto-mare.jpg'),
       alt: 'Guazzetto di mare',
     },
     {
-      src: publicAssetUrl('email', 'thumb-linguine.jpg'),
+      src: publicAssetUrl('restaurant', '06-linguine-granchio.jpg'),
       alt: 'Linguine al granchio',
     },
   ];
