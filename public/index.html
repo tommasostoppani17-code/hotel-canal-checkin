@@ -973,7 +973,7 @@
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
-      margin: 0 0 14px;
+      margin: 0 0 var(--ios-gap-lg);
       border-radius: 14px;
       overflow: hidden;
       background: #124453;
@@ -1239,7 +1239,7 @@
     .dining-book .dining-section-rule {
       width: 100%;
       height: 0;
-      margin: 2px 0;
+      margin: var(--step-stack) 0;
       border: 0;
       border-top: 1px solid rgba(18, 68, 83, 0.12);
       flex: 0 0 auto;
@@ -1315,9 +1315,12 @@
       color: #64748B !important;
     }
     @media (max-height: 720px) {
-      .dining-hero { aspect-ratio: 2 / 1; margin-bottom: 12px; }
+      .dining-hero { aspect-ratio: 2 / 1; margin-bottom: var(--ios-gap); }
       .dining-mosaic { gap: 8px; }
       .dining-book-sub { max-width: 32ch; font-size: 12.5px; }
+      #step2 .dining-story { gap: var(--ios-gap-lg); }
+      #step2 .dining-copy { gap: 10px; }
+      .dining-book .dining-section-rule { margin: var(--ios-gap-lg) 0; }
       #step2 .step-body,
       #step3 .step-body.dining-book {
         gap: var(--step-stack);
@@ -2021,7 +2024,7 @@
     #step2 .dining-story {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: var(--step-stack);
       margin: 0;
       padding: 0;
       flex: 0 0 auto;
@@ -2046,9 +2049,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       margin: 0;
-      padding: 2px 8px 0;
+      padding: 4px 8px 0;
       flex: 0 0 auto;
       text-align: center;
     }
