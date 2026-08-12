@@ -613,11 +613,11 @@ export function buildTableBookingEmail({ hotelName, row }) {
 
   // Hero landscape (sala) + dish square — height:auto so Gmail non schiaccia
   const hero = escapeHtml(publicAssetUrl('email', 'booking-hero-v3.jpg'));
-  const dish = escapeHtml(publicAssetUrl('email', 'booking-dish-v3.jpg'));
+  const dish = escapeHtml(publicAssetUrl('email', 'booking-dish-v4.jpg'));
 
   const CW = 456;
   const HERO_H = Math.round((CW * 780) / 1400); // ~254
-  const DISH_H = CW; // quadrato
+  const DISH_H = HERO_H; // stesso frame landscape della sala
   const emailImg = (src, alt, w, h) =>
     `<img src="${src}" width="${w}" height="${h}" alt="${alt}" style="display:block;width:100%;max-width:${w}px;height:auto;border:0;outline:none;-ms-interpolation-mode:bicubic;">`;
 
