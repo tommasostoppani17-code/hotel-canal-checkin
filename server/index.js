@@ -652,7 +652,7 @@ app.get('/poster-a4.pdf', async (_req, res) => {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
-      'inline; filename="Hotel_Canal_Poster_Premium.pdf"',
+      'inline; filename="Hotel_Canal_Poster_Supremo.pdf"',
     );
     res.setHeader('Cache-Control', 'public, max-age=300');
     return res.send(pdf);

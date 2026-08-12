@@ -25,11 +25,14 @@ export function checkinPublicUrl() {
   return `${publicBaseUrl()}/`;
 }
 
+/* Apple Store × Hotel Canal — Supremo print palette */
 const CANAL = '#164E5B';
-const TEXT = '#1A2B32';
-const MUTED = '#5C7A82';
-const RULE = '#D5E0E5';
-const PAPER = '#F7FAFC';
+const GOLD = '#C5A059';
+const TEXT = '#164E5B';
+const MUTED = '#6E868F';
+const RULE = '#DCE6EA';
+const PAPER = '#FFFFFF';
+const CREAM = '#F7FAFB';
 const RADIUS_IOS = 20;
 
 function drawCentered(doc, text, y, { font, size, color, width, x = 0 } = {}) {
@@ -40,87 +43,80 @@ function drawCentered(doc, text, y, { font, size, color, width, x = 0 } = {}) {
   });
 }
 
-/** Line-icon: gondola (brand mark) */
+/** Abstract gondola mark — pure vector */
 function drawGondolaMark(doc, cx, cy, scale = 1) {
   doc.save();
-  doc.lineWidth(1.4 * scale).strokeColor(CANAL).lineCap('round').lineJoin('round');
-  // hull
+  doc.lineWidth(1.55 * scale).strokeColor(CANAL).lineCap('round').lineJoin('round');
   doc
-    .moveTo(cx - 22 * scale, cy + 4 * scale)
+    .moveTo(cx - 24 * scale, cy + 5 * scale)
     .bezierCurveTo(
-      cx - 10 * scale,
-      cy + 14 * scale,
-      cx + 10 * scale,
-      cy + 14 * scale,
-      cx + 22 * scale,
-      cy + 4 * scale,
+      cx - 8 * scale,
+      cy + 16 * scale,
+      cx + 8 * scale,
+      cy + 16 * scale,
+      cx + 24 * scale,
+      cy + 5 * scale,
     )
     .stroke();
-  // ferro
   doc
-    .moveTo(cx - 20 * scale, cy + 3 * scale)
-    .lineTo(cx - 24 * scale, cy - 10 * scale)
-    .lineTo(cx - 18 * scale, cy - 4 * scale)
+    .moveTo(cx - 22 * scale, cy + 4 * scale)
+    .lineTo(cx - 27 * scale, cy - 12 * scale)
+    .lineTo(cx - 19 * scale, cy - 5 * scale)
     .stroke();
-  // water ripples
-  doc.lineWidth(1 * scale).strokeColor(MUTED);
+  doc.lineWidth(1.1 * scale).strokeColor(GOLD);
   doc
-    .moveTo(cx - 14 * scale, cy + 18 * scale)
+    .moveTo(cx - 16 * scale, cy + 20 * scale)
     .bezierCurveTo(
       cx - 4 * scale,
-      cy + 22 * scale,
+      cy + 24 * scale,
       cx + 4 * scale,
-      cy + 14 * scale,
-      cx + 14 * scale,
-      cy + 18 * scale,
+      cy + 16 * scale,
+      cx + 16 * scale,
+      cy + 20 * scale,
     )
     .stroke();
   doc.restore();
 }
 
-/** Line-icon: door / key */
-function drawDoorIcon(doc, x, y, s = 1) {
+function drawDoorIcon(doc, cx, cy, s = 1) {
+  const x = cx - 9 * s;
+  const y = cy - 10 * s;
   doc.save();
-  doc.lineWidth(1.35 * s).strokeColor(CANAL).lineCap('round').lineJoin('round');
+  doc.lineWidth(1.4 * s).strokeColor(CANAL).lineCap('round').lineJoin('round');
   doc.roundedRect(x, y, 14 * s, 18 * s, 2 * s).stroke();
   doc
-    .moveTo(x + 14 * s, y + 9 * s)
-    .lineTo(x + 18 * s, y + 9 * s)
-    .stroke();
-  doc
-    .circle(x + 11 * s, y + 9 * s, 1.2 * s)
+    .circle(x + 10.5 * s, y + 9 * s, 1.15 * s)
     .fillColor(CANAL)
     .fill();
   doc.restore();
 }
 
-/** Line-icon: wifi arcs */
-function drawWifiIcon(doc, x, y, s = 1) {
+function drawWifiIcon(doc, cx, cy, s = 1) {
   doc.save();
-  doc.lineWidth(1.35 * s).strokeColor(CANAL).lineCap('round');
-  const cx = x + 10 * s;
-  const cy = y + 16 * s;
+  doc.lineWidth(1.4 * s).strokeColor(CANAL).lineCap('round');
+  const baseY = cy + 7 * s;
   for (const r of [5, 9, 13]) {
     doc
-      .moveTo(cx - r * s * 0.7, cy - r * s * 0.35)
+      .moveTo(cx - r * s * 0.72, baseY - r * s * 0.35)
       .bezierCurveTo(
         cx - r * s * 0.35,
-        cy - r * s,
+        baseY - r * s,
         cx + r * s * 0.35,
-        cy - r * s,
-        cx + r * s * 0.7,
-        cy - r * s * 0.35,
+        baseY - r * s,
+        cx + r * s * 0.72,
+        baseY - r * s * 0.35,
       )
       .stroke();
   }
-  doc.circle(cx, cy, 1.4 * s).fillColor(CANAL).fill();
+  doc.circle(cx, baseY + 1 * s, 1.35 * s).fillColor(CANAL).fill();
   doc.restore();
 }
 
-/** Line-icon: dining cloche */
-function drawDiningIcon(doc, x, y, s = 1) {
+function drawDiningIcon(doc, cx, cy, s = 1) {
+  const x = cx - 10 * s;
+  const y = cy - 8 * s;
   doc.save();
-  doc.lineWidth(1.35 * s).strokeColor(CANAL).lineCap('round').lineJoin('round');
+  doc.lineWidth(1.4 * s).strokeColor(CANAL).lineCap('round').lineJoin('round');
   doc
     .moveTo(x, y + 14 * s)
     .lineTo(x + 20 * s, y + 14 * s)
@@ -136,10 +132,31 @@ function drawDiningIcon(doc, x, y, s = 1) {
       y + 14 * s,
     )
     .stroke();
+  doc.circle(x + 10 * s, y + 2 * s, 1.45 * s).fillColor(GOLD).fill();
+  doc.restore();
+}
+
+function drawGoldDiamond(doc, cx, cy, size = 3) {
+  doc.save();
   doc
-    .circle(x + 10 * s, y + 2 * s, 1.5 * s)
-    .fillColor(CANAL)
+    .moveTo(cx, cy - size)
+    .lineTo(cx + size, cy)
+    .lineTo(cx, cy + size)
+    .lineTo(cx - size, cy)
+    .closePath()
+    .fillColor(GOLD)
     .fill();
+  doc.restore();
+}
+
+function drawOrnamentRule(doc, y, pageW, side = 78) {
+  const mid = pageW / 2;
+  const gap = 12;
+  doc.save();
+  doc.lineWidth(0.7).strokeColor(RULE);
+  doc.moveTo(side, y).lineTo(mid - gap, y).stroke();
+  doc.moveTo(mid + gap, y).lineTo(pageW - side, y).stroke();
+  drawGoldDiamond(doc, mid, y, 3);
   doc.restore();
 }
 
@@ -153,67 +170,9 @@ export async function buildCheckinQrPng() {
   });
 }
 
-/** Ornamental diamond (hotel stationery) */
-function drawDiamond(doc, cx, cy, size = 3.5, color = CANAL) {
-  doc.save();
-  doc
-    .moveTo(cx, cy - size)
-    .lineTo(cx + size, cy)
-    .lineTo(cx, cy + size)
-    .lineTo(cx - size, cy)
-    .closePath()
-    .fillColor(color)
-    .fill();
-  doc.restore();
-}
-
-/** Elegant rule with centered diamond */
-function drawOrnamentRule(doc, y, pageW, side = 72) {
-  const mid = pageW / 2;
-  const gap = 14;
-  doc.save();
-  doc
-    .moveTo(side, y)
-    .lineTo(mid - gap, y)
-    .lineWidth(0.7)
-    .strokeColor(RULE)
-    .stroke();
-  doc
-    .moveTo(mid + gap, y)
-    .lineTo(pageW - side, y)
-    .stroke();
-  drawDiamond(doc, mid, y, 3.2, CANAL);
-  doc.restore();
-}
-
-/** Soft corner flourishes — page frame without a heavy “box” */
-function drawCornerFlourishes(doc, pageW, pageH, inset = 36) {
-  const len = 22;
-  doc.save();
-  doc.lineWidth(0.9).strokeColor('#A8BDC6').lineCap('square');
-  const corners = [
-    [inset, inset, 1, 1],
-    [pageW - inset, inset, -1, 1],
-    [inset, pageH - inset, 1, -1],
-    [pageW - inset, pageH - inset, -1, -1],
-  ];
-  for (const [x, y, dx, dy] of corners) {
-    doc
-      .moveTo(x, y + dy * len)
-      .lineTo(x, y)
-      .lineTo(x + dx * len, y)
-      .stroke();
-  }
-  doc.restore();
-}
-
-/** Thin petroleum top band */
-function drawTopAccent(doc, pageW) {
-  doc.rect(0, 0, pageW, 6).fill(CANAL);
-}
-
 /**
- * Clean reception A4 — elegant stationery, rounded QR, balanced layout.
+ * Hotel_Canal_Poster_Supremo — A4 reception print.
+ * Cream QR vault + Venetian gold rim + petroleum type + aligned privilege grid.
  */
 export async function buildPosterPdfBuffer({
   hotelName = 'Hotel Canal',
@@ -226,9 +185,9 @@ export async function buildPosterPdfBuffer({
       size: 'A4',
       margin: 0,
       info: {
-        Title: `${hotelName} — Reception Check-in Sign`,
+        Title: `${hotelName} — Poster Supremo A4`,
         Author: hotelName,
-        Subject: 'Fast Digital Check-in',
+        Subject: 'Fast Digital Check-in · Reception sign',
       },
     });
 
@@ -239,27 +198,29 @@ export async function buildPosterPdfBuffer({
 
     const pageW = doc.page.width;
     const pageH = doc.page.height;
-    const side = 68;
+    const side = 72;
 
-    // Quiet paper
+    // Total-white — frosted plexiglass supplies the lagoon glass look
     doc.rect(0, 0, pageW, pageH).fill(PAPER);
-    drawTopAccent(doc, pageW);
-    drawCornerFlourishes(doc, pageW, pageH, 34);
 
-    // --- Header ---
-    drawGondolaMark(doc, pageW / 2, 58, 1.15);
+    // Fine gold top hairline (luxury accent, not a heavy band)
+    doc.rect(0, 0, pageW, 3).fill(GOLD);
+    doc.rect(0, 3, pageW, 1.2).fill(CANAL);
+
+    // Brand mark
+    drawGondolaMark(doc, pageW / 2, 56, 1.2);
 
     let y = 88;
     drawCentered(doc, String(hotelName).toUpperCase(), y, {
       font: 'Times-Bold',
-      size: 32,
+      size: 33,
       color: CANAL,
     });
-    y += 38;
+    y += 40;
     drawCentered(doc, 'V E N I C E   E X P E R I E N C E', y, {
       font: 'Times-Bold',
       size: 9.5,
-      color: MUTED,
+      color: GOLD,
     });
     y += 18;
     drawCentered(doc, address, y, {
@@ -268,10 +229,9 @@ export async function buildPosterPdfBuffer({
       color: MUTED,
     });
     y += 26;
-    drawOrnamentRule(doc, y, pageW, side + 8);
+    drawOrnamentRule(doc, y, pageW, side);
     y += 26;
 
-    // --- Claim ---
     drawCentered(doc, 'Fast Digital Check-in', y, {
       font: 'Helvetica-Bold',
       size: 17,
@@ -284,55 +244,61 @@ export async function buildPosterPdfBuffer({
       .fillColor(TEXT)
       .text(
         'Scan the code to register your room safely and receive Wi‑Fi, door access, and your dining privilege.',
-        side + 28,
+        side + 24,
         y,
-        { width: pageW - side * 2 - 56, align: 'center', lineGap: 3 },
+        { width: pageW - side * 2 - 48, align: 'center', lineGap: 3 },
       );
-    y += 42;
+    y += 40;
 
-    // --- QR framed ---
-    const qrSize = 200;
-    const framePad = 18;
+    // --- QR vault: cream plate + gold rim + iOS radius ---
+    const qrSize = 204;
+    const framePad = 20;
     const frame = qrSize + framePad * 2;
     const frameX = (pageW - frame) / 2;
     const frameY = y;
     const qrX = frameX + framePad;
     const qrY = frameY + framePad;
 
-    // Soft shadow under QR plate
+    // Soft shadow
     doc.save();
     doc
-      .roundedRect(frameX + 2, frameY + 3, frame, frame, RADIUS_IOS)
-      .fillColor('#000000')
-      .fillOpacity(0.06)
+      .roundedRect(frameX + 2.5, frameY + 3.5, frame, frame, RADIUS_IOS)
+      .fillColor('#164E5B')
+      .fillOpacity(0.07)
       .fill();
     doc.restore();
 
+    // Cream vault
     doc
       .roundedRect(frameX, frameY, frame, frame, RADIUS_IOS)
-      .fillColor('#FFFFFF')
+      .fillColor(CREAM)
       .fill();
+
+    // Venetian gold rim
     doc
       .roundedRect(frameX, frameY, frame, frame, RADIUS_IOS)
-      .lineWidth(1.55)
-      .strokeColor(CANAL)
-      .stroke();
-    doc
-      .roundedRect(frameX + 5, frameY + 5, frame - 10, frame - 10, RADIUS_IOS - 4)
-      .lineWidth(0.55)
-      .strokeColor(RULE)
+      .lineWidth(1.8)
+      .strokeColor(GOLD)
       .stroke();
 
+    // Inner petroleum hairline
+    doc
+      .roundedRect(frameX + 6, frameY + 6, frame - 12, frame - 12, RADIUS_IOS - 5)
+      .lineWidth(0.65)
+      .strokeColor('#8FA8B2')
+      .stroke();
+
+    // Rounded QR clip
     doc.save();
     doc.roundedRect(qrX, qrY, qrSize, qrSize, RADIUS_IOS - 6).clip();
     doc.image(qrPng, qrX, qrY, { width: qrSize, height: qrSize });
     doc.restore();
 
-    // Tiny diamonds on QR frame mid-sides (jewelry detail)
-    drawDiamond(doc, frameX + frame / 2, frameY, 2.4, CANAL);
-    drawDiamond(doc, frameX + frame / 2, frameY + frame, 2.4, CANAL);
-    drawDiamond(doc, frameX, frameY + frame / 2, 2.4, CANAL);
-    drawDiamond(doc, frameX + frame, frameY + frame / 2, 2.4, CANAL);
+    // Gold diamond jewelry on vault midpoints
+    drawGoldDiamond(doc, frameX + frame / 2, frameY, 2.6);
+    drawGoldDiamond(doc, frameX + frame / 2, frameY + frame, 2.6);
+    drawGoldDiamond(doc, frameX, frameY + frame / 2, 2.6);
+    drawGoldDiamond(doc, frameX + frame, frameY + frame / 2, 2.6);
 
     y = frameY + frame + 14;
     drawCentered(doc, 'SCAN WITH YOUR SMARTPHONE', y, {
@@ -340,38 +306,37 @@ export async function buildPosterPdfBuffer({
       size: 8,
       color: CANAL,
     });
-    const scanBottom = y + 18;
+    const scanBottom = y + 16;
 
-    // --- Footer anchor ---
-    const footY = pageH - 78;
-    drawOrnamentRule(doc, footY, pageW, side + 8);
+    // Footer first
+    const footY = pageH - 72;
+    drawOrnamentRule(doc, footY, pageW, side);
     doc
       .font('Helvetica')
-      .fontSize(7.3)
+      .fontSize(7.2)
       .fillColor(MUTED)
       .text(
         'Private & secure · GDPR compliant · Data deleted automatically after 24 hours',
         side,
-        footY + 14,
+        footY + 12,
         { width: pageW - side * 2, align: 'center' },
       );
-    drawCentered(doc, `CANAL S.r.l. — ${address}`, footY + 30, {
+    drawCentered(doc, `CANAL S.r.l. — ${address}`, footY + 28, {
       font: 'Helvetica',
-      size: 7.3,
+      size: 7.2,
       color: MUTED,
     });
-    drawCentered(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 46, {
+    drawCentered(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 44, {
       font: 'Helvetica',
       size: 7,
       color: CANAL,
     });
 
-    // --- Services: evenly between QR caption and footer (no dead air) ---
-    const servicesBlockH = 78;
-    const maxServicesY = footY - 24 - servicesBlockH;
-    const idealServicesY = scanBottom + 28;
-    const servicesY = Math.min(idealServicesY, maxServicesY);
-    drawOrnamentRule(doc, servicesY - 16, pageW, side + 24);
+    // Privilege grid — millimeter-aligned columns
+    const blockH = 86;
+    const maxY = footY - 20 - blockH;
+    const servicesY = Math.min(scanBottom + 22, maxY);
+    drawOrnamentRule(doc, servicesY - 14, pageW, side + 16);
 
     const cols = [
       {
@@ -390,34 +355,38 @@ export async function buildPosterPdfBuffer({
         line: 'Voucher at Trattoria\nalla Terrazza',
       },
     ];
-    const colW = (pageW - side * 2) / 3;
+    const gridLeft = side + 8;
+    const gridRight = pageW - side - 8;
+    const gridW = gridRight - gridLeft;
+    const colW = gridW / 3;
+
     cols.forEach((col, i) => {
-      const cx = side + i * colW + colW / 2;
-      const iconX = cx - 10;
-      col.draw(doc, iconX, servicesY, 1.1);
+      const colLeft = gridLeft + i * colW;
+      const cx = colLeft + colW / 2;
+      col.draw(doc, cx, servicesY + 10, 1.15);
       doc
         .font('Helvetica-Bold')
         .fontSize(9)
         .fillColor(CANAL)
-        .text(col.title, side + i * colW + 6, servicesY + 26, {
-          width: colW - 12,
+        .text(col.title, colLeft + 8, servicesY + 30, {
+          width: colW - 16,
           align: 'center',
         });
       doc
         .font('Helvetica')
-        .fontSize(8.2)
+        .fontSize(8)
         .fillColor(MUTED)
-        .text(col.line, side + i * colW + 8, servicesY + 40, {
-          width: colW - 16,
+        .text(col.line, colLeft + 10, servicesY + 44, {
+          width: colW - 20,
           align: 'center',
           lineGap: 1.5,
         });
       if (i < 2) {
-        const vx = side + (i + 1) * colW;
+        const vx = gridLeft + (i + 1) * colW;
         doc
-          .moveTo(vx, servicesY + 4)
-          .lineTo(vx, servicesY + 68)
-          .lineWidth(0.5)
+          .moveTo(vx, servicesY + 2)
+          .lineTo(vx, servicesY + 74)
+          .lineWidth(0.55)
           .strokeColor(RULE)
           .stroke();
       }
@@ -430,7 +399,7 @@ export async function buildPosterPdfBuffer({
 function buildPosterEmailHtml({ hotelName, pdfKb }) {
   const brand = String(hotelName || 'Hotel Canal');
   const C = '#164E5B';
-  const BRASS = '#6E868F';
+  const BRASS = '#C5A059';
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 ${emailFontsHead()}
@@ -443,17 +412,17 @@ ${emailLightModeHead({
     h1{${emailDisplayStyle({ size: '22px', color: C, tracking: '0.1em' })};margin:0 0 8px;text-align:center;}
     .eyebrow{${emailEyebrowStyle({ color: BRASS })};margin:0 0 18px;text-align:center;}
     p{${emailBodyStyle()};color:#4A5560 !important;margin:0 0 14px;}
-    .meta{font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:${BRASS} !important;margin:18px 0 0;}
+    .meta{font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#6E868F !important;margin:18px 0 0;}
   `,
 })}
 </head>
 <body ${emailLightBodyAttrs()}>
 <div class="card force-white" bgcolor="${EMAIL_FORCE_WHITE}" style="background-color:${EMAIL_FORCE_WHITE} !important;">
-<div class="eyebrow">Reception · A4 poster</div>
+<div class="eyebrow">Reception · Poster Supremo</div>
 <h1>${brand}</h1>
-<p>Your clean A4 reception sign is attached (rounded QR frame · line icons · no photo backdrop).</p>
-<p>Print at <strong style="font-style:italic;color:${C} !important;">100% / actual size</strong> on A4 matte 160–200 g.</p>
-<p class="meta">File size ~${pdfKb} KB · QR → ${publicBaseUrl()}/</p>
+<p>Your A4 <strong style="color:${C} !important;">Poster Supremo</strong> is attached (cream QR vault · Venetian gold · aligned privilege grid).</p>
+<p>Print at <strong style="font-style:italic;color:${C} !important;">100% / actual size</strong> on matte 200–240 g. Best in frosted plexiglass.</p>
+<p class="meta">File ~${pdfKb} KB · QR → ${publicBaseUrl()}/</p>
 </div></body></html>`;
 }
 
@@ -478,17 +447,17 @@ export async function sendPosterEmail({ to } = {}) {
   const { data, error } = await resend.emails.send({
     from,
     to: [recipient],
-    subject: `${hotelName} — A4 Reception Poster (PDF)`,
+    subject: `${hotelName} — Poster Supremo A4 (PDF)`,
     text: [
-      `${hotelName} — A4 Reception Poster`,
+      `${hotelName} — Poster Supremo A4`,
       ``,
-      `PDF attached. Print at 100% / actual size on A4.`,
+      `PDF attached. Print at 100% / actual size on A4 matte.`,
       `Check-in URL: ${checkinPublicUrl()}`,
     ].join('\n'),
     html: buildPosterEmailHtml({ hotelName, pdfKb }),
     attachments: [
       {
-        filename: 'Hotel_Canal_Poster_Premium.pdf',
+        filename: 'Hotel_Canal_Poster_Supremo.pdf',
         content: pdf,
       },
     ],
