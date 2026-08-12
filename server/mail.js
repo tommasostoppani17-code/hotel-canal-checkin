@@ -167,12 +167,18 @@ export async function sendTableBookingAlert(row) {
   });
   const rawTime = String(row.table_booking || '').trim();
 
-  const from =
+  const baseFrom =
+    env('TABLE_BOOKING_FROM') ||
     env('REPORT_FROM') ||
-    env('SMTP_FROM', 'Hotel Canal Front Desk <onboarding@resend.dev>').replace(
-      /Welcome to Hotel Canal/i,
-      'Hotel Canal Front Desk',
-    );
+    env('SMTP_FROM', 'Hotel Canal Front Desk <onboarding@resend.dev>');
+  // Mittente notifica tavolo = Trattoria (non Front Desk)
+  const from = String(baseFrom).replace(
+    /^[^<]*(?=<)/,
+    'Trattoria alla Terrazza ',
+  ).replace(
+    /^(?!.*<)(.+)$/,
+    'Trattoria alla Terrazza <$1>',
+  );
 
   if (resendConfigured()) {
     const resend = getResendClient();

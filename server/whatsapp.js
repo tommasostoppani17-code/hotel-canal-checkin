@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import twilio from 'twilio';
+import { buildTableBookingHeadline } from './report.js';
 
 /** Short-lived CSV blobs for Twilio mediaUrl fetch (in-memory). */
 const mediaStore = new Map();
@@ -161,30 +162,26 @@ export async function sendTableBookingWhatsApp(row) {
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
   const rawTime = String(row.table_booking || '').trim();
-  const timeLabel =
-    !rawTime || /REQUESTED|CALL|TAVOLO/i.test(rawTime)
-      ? 'da confermare'
-      : `ore ${rawTime}`;
+  const headline = buildTableBookingHeadline(rawTime);
   const room = row.room_number || '-';
   const phone = row.phone || '-';
   const name = row.guest_name || 'Ospite';
   const pax = row.guests_count ?? 2;
   const staff = row.receptionist || '-';
   const coupon = row.coupon_sent_at || row.coupon_token ? 'SÌ' : 'no';
-  const lang = String(row.guest_lang || '').slice(0, 2).toUpperCase() || '-';
 
   const body = [
-    `Buongiorno,`,
+    `Richiesta di prenotazione ${headline.whenPhrase}`,
+    headline.brand,
     ``,
-    `Nuova richiesta dalla stanza ${room}.`,
-    `Ospite: ${name}`,
-    `Orario: ${timeLabel}`,
+    `Stanza ${room} · ${name}`,
     `Persone: ${pax}`,
     `Tel: ${phone}`,
     coupon === 'SÌ' ? `Coupon −10% già inviato.` : null,
     staff && staff !== '-' ? `Receptionist: ${staff}` : null,
     ``,
     `Chiamare per confermare la disponibilità.`,
+    `(ospite ${hotelName})`,
   ]
     .filter((line) => line != null)
     .join('\n');

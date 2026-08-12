@@ -236,6 +236,82 @@ export function formatRomeDate(date = new Date()) {
   }).format(date);
 }
 
+/** Parti data/ora a Venezia (Europe/Rome). */
+function romeParts(date = new Date()) {
+  const fmt = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const map = Object.fromEntries(
+    fmt.formatToParts(date).map((p) => [p.type, p.value]),
+  );
+  return {
+    year: Number(map.year),
+    month: Number(map.month),
+    day: Number(map.day),
+    hour: Number(map.hour),
+    minute: Number(map.minute),
+  };
+}
+
+/**
+ * Giorno relativo della cena (oggi / domani / gg/mm) + orario.
+ * Le prenotazioni check-in sono per il servizio serale a Venezia.
+ */
+export function formatTableBookingWhen(rawTime, now = new Date()) {
+  const raw = String(rawTime || '').trim();
+  const isOpen =
+    !raw || /REQUESTED|CALL|TAVOLO/i.test(raw) || !/^\d{1,2}:\d{2}$/.test(raw);
+
+  if (isOpen) {
+    return {
+      dayLabel: 'oggi',
+      timeLabel: 'da confermare',
+      timeDisplay: 'Da confermare',
+      whenPhrase: 'per oggi (orario da confermare)',
+      subjectWhen: 'per oggi · orario da confermare',
+    };
+  }
+
+  const [hh, mm] = raw.split(':').map((n) => Number(n));
+  const timeLabel = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+  const nowR = romeParts(now);
+  const nowMins = nowR.hour * 60 + nowR.minute;
+  const bookMins = hh * 60 + mm;
+  // Se l'orario richiesto è già passato oggi (fuso Roma) → cena di domani
+  const dayOffset = bookMins <= nowMins ? 1 : 0;
+
+  let dayLabel = 'oggi';
+  if (dayOffset === 1) dayLabel = 'domani';
+  if (dayOffset > 1) {
+    const target = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
+    dayLabel = formatRomeDate(target).slice(0, 5);
+  }
+
+  return {
+    dayLabel,
+    timeLabel,
+    timeDisplay: timeLabel,
+    whenPhrase: `per ${dayLabel} alle ${timeLabel}`,
+    subjectWhen: `per ${dayLabel} alle ${timeLabel}`,
+  };
+}
+
+/** Subject / headline notifica tavolo → Trattoria (non Front Desk). */
+export function buildTableBookingHeadline(rawTime, now = new Date()) {
+  const when = formatTableBookingWhen(rawTime, now);
+  return {
+    ...when,
+    subject: `Richiesta di prenotazione ${when.subjectWhen} · Trattoria alla Terrazza`,
+    brand: 'Trattoria alla Terrazza',
+  };
+}
+
 /**
  * Righe persona: stanza a sinistra, dati a destra.
  * Nessuna card/riquadro — solo divider tra ospiti. nowrap per non spezzare su mobile.
@@ -465,14 +541,12 @@ export function buildMonthlyStaffEmail({
  */
 export function buildTableBookingEmail({ hotelName, row }) {
   const rawTime = String(row?.table_booking || '').trim();
-  const timeLabel =
-    !rawTime || /REQUESTED|CALL|TAVOLO/i.test(rawTime)
-      ? 'Da confermare'
-      : rawTime;
-  const timeDisplay =
-    timeLabel === 'Da confermare' ? 'Da confermare' : timeLabel;
+  const headline = buildTableBookingHeadline(rawTime);
+  const timeDisplay = headline.timeDisplay;
   const timeHeadline =
-    timeLabel === 'Da confermare' ? 'Da confermare' : `Ore ${timeLabel}`;
+    headline.timeLabel === 'da confermare'
+      ? 'Da confermare'
+      : `alle ${headline.timeLabel}`;
   const room = cleanCell(row?.room_number) || '-';
   const phone = cleanCell(row?.phone) || '-';
   const phoneTel = String(row?.phone || '').replace(/[\s\-()]/g, '');
@@ -481,16 +555,19 @@ export function buildTableBookingEmail({ hotelName, row }) {
   const staff = cleanCell(row?.receptionist) || '-';
   const hasCoupon = Boolean(row?.coupon_sent_at || row?.coupon_token);
   const hotel = cleanCell(hotelName) || 'Hotel Canal';
+  const brand = headline.brand;
 
-  const subject = `Nuova richiesta tavolo · Stanza ${room} · ${timeHeadline}`;
-  const preheader = `Buongiorno — stanza ${room}, ${name}, ${timeHeadline}. Chiamare per confermare.`;
+  const subject = headline.subject;
+  const preheader = `${brand} — ${headline.whenPhrase}. Stanza ${room}, ${name}. Chiamare per confermare.`;
 
   const text = [
     `Buongiorno,`,
     ``,
-    `nuova richiesta di tavolo dalla stanza ${room}.`,
+    `Richiesta di prenotazione ${headline.whenPhrase}`,
+    brand,
     ``,
     `Ospite: ${name}`,
+    `Stanza: ${room}`,
     `Orario: ${timeHeadline}`,
     `Persone: ${pax}`,
     `Telefono: ${phone}`,
@@ -499,7 +576,8 @@ export function buildTableBookingEmail({ hotelName, row }) {
     ``,
     `Chiamare per confermare la disponibilità.`,
     ``,
-    `Il front desk — ${hotel}`,
+    brand,
+    `(ospite ${hotel})`,
   ]
     .filter((line) => line != null)
     .join('\n');
@@ -568,18 +646,19 @@ export function buildTableBookingEmail({ hotelName, row }) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
                 <tr>
                   <td align="center" style="padding:2px 0 16px 0;border-bottom:1px solid #E8E4DC;">
-                    <div style="${emailDisplayStyle({ size: '22px', color: C, tracking: '0.1em' })}">Trattoria alla Terrazza</div>
-                    <div class="brass" style="${emailEyebrowStyle({ color: BRASS, tracking: '0.22em' })};margin-top:8px;">Partner · ${escapeHtml(hotel)}</div>
+                    <div style="${emailDisplayStyle({ size: '22px', color: C, tracking: '0.1em' })}">${escapeHtml(brand)}</div>
+                    <div class="brass" style="${emailEyebrowStyle({ color: BRASS, tracking: '0.22em' })};margin-top:8px;">Prenotazione · ospite ${escapeHtml(hotel)}</div>
                   </td>
                 </tr>
               </table>
 
               <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">Buongiorno,</p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
-                nuova richiesta di tavolo dalla
-                <strong style="color:${C} !important;font-weight:600;font-style:italic;">stanza ${escapeHtml(room)}</strong>.
-                Ospite <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(name)}</strong>,
-                per le <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(timeHeadline)}</strong>
+                richiesta di prenotazione
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(headline.whenPhrase)}</strong>
+                presso <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(brand)}</strong>.
+                Stanza <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(room)}</strong>,
+                ospite <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(name)}</strong>
                 (${escapeHtml(String(pax))} pers.).
                 Chiamare per confermare la disponibilit&agrave;.
               </p>
@@ -592,7 +671,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                         ? `<img src="${iconCloche}" width="28" height="28" alt="" style="display:inline-block;width:28px;height:28px;border:0;margin:0 0 8px;">`
                         : ''
                     }
-                    <span style="${emailLabelStyle({ size: '10px', color: '#7A8690' })};display:block;margin-bottom:6px;">Orario richiesto</span>
+                    <span style="${emailLabelStyle({ size: '10px', color: '#7A8690' })};display:block;margin-bottom:6px;">${escapeHtml(headline.dayLabel)} · orario richiesto</span>
                     <strong class="brand-title" style="font-family:${SERIF};font-size:28px;color:${C} !important;font-weight:700;letter-spacing:0.06em;line-height:1;text-transform:uppercase;">${escapeHtml(timeDisplay)}</strong>
                     <div style="font-family:${SANS};font-size:12px;font-weight:600;color:#7A8690 !important;letter-spacing:0.03em;margin-top:10px;">
                       Stanza ${escapeHtml(room)} · ${escapeHtml(String(pax))} ospiti
@@ -631,7 +710,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                     : escapeHtml(phone),
                 )}
                 ${fact('Persone', escapeHtml(String(pax)))}
-                ${fact('Orario', escapeHtml(timeHeadline))}
+                ${fact('Quando', escapeHtml(headline.whenPhrase))}
                 ${fact('Receptionist', escapeHtml(staff))}
                 ${fact('Coupon −10%', hasCoupon ? 'Già inviato all’ospite' : 'Non inviato')}
               </table>
@@ -668,10 +747,10 @@ export function buildTableBookingEmail({ hotelName, row }) {
                   <td align="center" style="padding:28px 0 0;text-align:center;">
                     <div style="width:28px;height:1px;line-height:1px;font-size:1px;background-color:${BRASS};margin:0 auto 14px;">&nbsp;</div>
                     <div style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;margin:0 0 6px;">
-                      Il front desk
+                      ${escapeHtml(brand)}
                     </div>
                     <div style="font-family:${SERIF};font-style:italic;font-size:13px;font-weight:600;color:${BRASS} !important;letter-spacing:0.06em;line-height:1.4;">
-                      ${escapeHtml(hotel)}
+                      Partner di ${escapeHtml(hotel)}
                     </div>
                   </td>
                 </tr>
