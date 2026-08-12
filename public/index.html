@@ -47,18 +47,22 @@
       /* Altezza card: un filo più lenta dello slide = morph fluido */
       --height-ms: 780ms;
       --height-ease: cubic-bezier(0.22, 1, 0.36, 1);
-      /* Cupertino 8pt grid + ritmo moduli */
+      /* Cupertino 8pt grid — ritmo unico Apple HIG */
       --ios-1: 4px;
       --ios-2: 8px;
       --ios-3: 12px;
       --ios-4: 16px;
       --ios-5: 20px;
       --ios-6: 24px;
+      --ios-7: 28px;
+      --ios-8: 32px;
       --ios-gap: 12px;
       --ios-gap-lg: 16px;
-      /* Ritmo verticale unico tra step 1/2/3 */
+      /* Blocchi tra sezioni (titolo↔copy, copy↔separator, separator↔form) */
       --step-stack: 20px;
       --step-stack-lg: 24px;
+      /* Aria intorno ai hairline separator (mai < 16px) */
+      --rule-gap: 24px;
       /* 44px: testo a due righe + tap safe (40px tagliava ga-sub) */
       --ios-touch: 44px;
       --ios-inset: 24px;
@@ -603,8 +607,8 @@
       flex-shrink: 0;
       width: 100%;
       margin-top: auto;
-      padding-top: var(--step-stack);
-      padding-bottom: 4px;
+      padding-top: var(--step-stack-lg);
+      padding-bottom: var(--ios-2);
       text-align: center;
       position: relative;
       z-index: 4;
@@ -1187,7 +1191,7 @@
       padding: 0;
     }
     .dining-book-kicker {
-      margin: 0 0 8px;
+      margin: 0 0 var(--ios-2);
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 10px;
       font-weight: 700;
@@ -1205,7 +1209,7 @@
       line-height: 1.2;
     }
     .dining-book-sub {
-      margin: 12px auto 0;
+      margin: var(--ios-3) auto 0;
       max-width: 34ch;
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 13px;
@@ -1228,7 +1232,7 @@
       border-radius: 0;
     }
     .dining-book .booking-reserve-label {
-      margin-bottom: 12px;
+      margin-bottom: var(--ios-3);
       text-transform: uppercase;
       letter-spacing: 0.06em;
       font-size: var(--type-label);
@@ -1243,7 +1247,7 @@
     .dining-book .dining-section-rule {
       width: 100%;
       height: 0;
-      margin: var(--step-stack) 0;
+      margin: var(--rule-gap) 0;
       border: 0;
       border-top: 1px solid rgba(18, 68, 83, 0.12);
       flex: 0 0 auto;
@@ -1324,7 +1328,7 @@
       .dining-book-sub { max-width: 32ch; font-size: 12.5px; }
       #step2 .dining-story { gap: var(--ios-gap-lg); }
       #step2 .dining-copy { gap: 10px; }
-      .dining-book .dining-section-rule { margin: var(--ios-gap-lg) 0; }
+      .dining-book .dining-section-rule { margin: var(--rule-gap) 0; }
       #step2 .step-body,
       #step3 .step-body.dining-book {
         gap: var(--step-stack);
@@ -1564,8 +1568,8 @@
       flex-shrink: 0;
       width: 100%;
       margin-top: auto;
-      padding-top: var(--step-stack);
-      padding-bottom: 4px;
+      padding-top: var(--step-stack-lg);
+      padding-bottom: var(--ios-2);
       text-align: center;
       position: relative;
       z-index: 4;
@@ -1931,7 +1935,7 @@
 
     #step2 .step-footer-fixed {
       margin: 0;
-      padding: var(--step-stack) 0 2px;
+      padding: var(--step-stack-lg) 0 var(--ios-2);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2080,7 +2084,7 @@
 
     .booking-reserve-block {
       width: 100%;
-      margin: 0 0 2px;
+      margin: 0;
     }
 
     .booking-reserve-label {
@@ -2091,14 +2095,14 @@
       letter-spacing: 0.06em;
       color: var(--canal-petroleum);
       padding-left: 2px;
-      margin: 0 0 var(--ios-gap);
+      margin: 0 0 var(--ios-3);
     }
 
     .booking-segment-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: var(--ios-gap);
-      margin: 6px 0 var(--ios-gap-lg) !important;
+      margin: 0 !important;
     }
 
     .hour-pill-ios {
@@ -2212,7 +2216,7 @@
 
     #step2 .step-footer-fixed {
       margin: 0;
-      padding: var(--step-stack) 0 2px;
+      padding: var(--step-stack-lg) 0 var(--ios-2);
       border-top: 1px solid rgba(18, 68, 83, 0.1);
       display: flex;
       flex-direction: column;
@@ -2893,7 +2897,7 @@
     }
 
     #step4 .reception-note {
-      margin-top: var(--ios-gap-lg);
+      margin-top: var(--step-stack);
       margin-bottom: var(--ios-1);
       font-size: var(--type-label);
       font-weight: 600;
@@ -3232,7 +3236,7 @@
       font-weight: 700;
       letter-spacing: 0.04em;
       color: var(--canal-petroleum);
-      margin: 0 0 var(--ios-1);
+      margin: 0 0 var(--ios-2);
       display: block;
       line-height: 1.15;
     }
@@ -3244,7 +3248,7 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: #5C7A82;
-      margin: 0 0 var(--ios-3);
+      margin: 0 0 var(--ios-4);
       display: block;
       line-height: 1.3;
     }

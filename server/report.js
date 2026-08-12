@@ -84,7 +84,7 @@ function sectionTitle(label) {
 }
 
 function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
-  const hero = escapeHtml(publicAssetUrl('venice-bg.jpg'));
+  const hero = escapeHtml(publicAssetUrl('email', 'hero-venice.jpg'));
   return `
 <!DOCTYPE html>
 <html lang="it" xmlns="http://www.w3.org/1999/xhtml">
@@ -504,8 +504,8 @@ export function buildTableBookingEmail({ hotelName, row }) {
     .filter((line) => line != null)
     .join('\n');
 
-  const hero = escapeHtml(publicAssetUrl('restaurant', '01-terrazza-canale.jpg'));
-  const dish = escapeHtml(publicAssetUrl('restaurant', '14-pesce-grigliato.jpg'));
+  const hero = escapeHtml(publicAssetUrl('email', 'postcard-terrazza.jpg'));
+  const dish = escapeHtml(publicAssetUrl('email', 'postcard-dish.jpg'));
   const iconCloche = escapeHtml(publicAssetUrl('email', 'icons', 'cloche.png'));
   const iconWine = escapeHtml(publicAssetUrl('email', 'icons', 'wine.png'));
 
