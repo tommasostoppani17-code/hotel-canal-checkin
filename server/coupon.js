@@ -1,4 +1,3 @@
-import { buildWifiNetworks, buildWifiNetworksForEmail } from './guest-services.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -219,7 +218,6 @@ export function buildWelcomeHtml({
   stickers = {},
   wifiSsid,
   wifiPassword,
-  wifiNetworks = [],
   doorWalter,
   doorAirone,
   lang = 'en',
@@ -266,23 +264,18 @@ export function buildWelcomeHtml({
   const terrace = escapeHtml(
     terraceSrc || gallerySrc || restaurantSrc,
   );
-  const wifiCards = (wifiNetworks.length ? wifiNetworks : [{ label: 'Hotel Canal', ssid: wifiSsid || 'hotel canal', password: wifiPassword || '' }])
-    .map(
-      (net) => `
-              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 12px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
+  const wifiCards = `
+              <table role="presentation" class="access-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 36px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
                 <tr>
-                  <td align="center" style="padding:18px 16px;">
-                    <div style="${labelStyle};margin:0 0 10px;color:${C} !important;">${escapeHtml(net.label)}</div>
+                  <td align="center" style="padding:20px 18px;">
                     <div style="${labelStyle};margin:0 0 6px;">${lp.networkLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:18px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 12px;">${escapeHtml(net.ssid)}</div>
-                    <div style="height:1px;line-height:1px;font-size:1px;background-color:#E8E4DC;margin:0 auto 12px;max-width:200px;">&nbsp;</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 14px;">${escapeHtml(wifiSsid || 'hotel canal')}</div>
+                    <div style="height:1px;line-height:1px;font-size:1px;background-color:#E8E4DC;margin:0 auto 14px;max-width:200px;">&nbsp;</div>
                     <div style="${labelStyle};margin:0 0 6px;">${lp.passwordLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:18px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1.2;">${escapeHtml(net.password || '—')}</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1.2;">${escapeHtml(wifiPassword || '—')}</div>
                   </td>
                 </tr>
-              </table>`,
-    )
-    .join('');
+              </table>`;
   const doorWalterSafe = escapeHtml(doorWalter || '—');
   const doorAironeSafe = escapeHtml(doorAirone || '—');
   /** Larghezza utile card (500 − padding 22×2). Pixel fissi → niente fascia grigia su Gmail desktop. */
@@ -590,9 +583,8 @@ export function buildWelcomeHtml({
               <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 20px;text-align:center;">
                 ${lp.wifiDesc}
               </p>
-              <!-- Credenziali Wi-Fi per sede -->
+              <!-- Credenziali Wi-Fi -->
               ${wifiCards}
-              <div style="height:12px;line-height:12px;font-size:1px;">&nbsp;</div>
 
               ${sectionTitle(lp.doorsTitle, icons.door, 'Porte')}
               <p class="text-muted" style="${bodyStyle};color:#5C6670 !important;margin:0 0 20px;text-align:center;">
@@ -1029,9 +1021,8 @@ export async function sendWelcomeEmail({
     stickers[def.key] = publicAssetUrl('email', 'stickers', def.file);
   }
 
-  const wifiNetworks = buildWifiNetworksForEmail();
-  const wifiSsid = wifiNetworks[0]?.ssid || env('WIFI_SSID', 'hotel canal');
-  const wifiPassword = wifiNetworks[0]?.password || env('WIFI_PASSWORD', '');
+  const wifiSsid = env('WIFI_SSID', 'hotel canal').trim() || 'hotel canal';
+  const wifiPassword = env('WIFI_PASSWORD', '').trim();
   // Walter: cancelletto (#) obbligatorio — in .env usare virgolette: DOOR_CODE_WALTER="…#"
   let doorWalter = env('DOOR_CODE_WALTER', '').trim();
   if (doorWalter && !doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
@@ -1057,7 +1048,6 @@ export async function sendWelcomeEmail({
     stickers,
     wifiSsid,
     wifiPassword,
-    wifiNetworks,
     doorWalter,
     doorAirone,
     lang: resolvedLang,
@@ -1101,10 +1091,7 @@ export async function sendWelcomeEmail({
       lp.textHours,
       `${lp.roomPrefix}: ${room}`,
       '',
-      ...wifiNetworks.map(
-        (net) =>
-          `Wi-Fi ${net.label}: ${lp.networkLabel} "${net.ssid}" · ${lp.passwordLabel}: ${net.password || '-'}`,
-      ),
+      `Wi-Fi: ${lp.networkLabel} "${wifiSsid}" · ${lp.passwordLabel}: ${wifiPassword || '-'}`,
       `Walter: ${doorWalter}`,
       `Airone: ${doorAirone}`,
       '',
