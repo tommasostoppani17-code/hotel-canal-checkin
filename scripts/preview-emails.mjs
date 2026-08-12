@@ -20,7 +20,11 @@ import {
   buildMonthlyStaffEmail,
   buildTableBookingEmail,
 } from '../server/report.js';
-import { buildPosterEmailHtml } from '../server/poster.js';
+import {
+  buildPosterEmailHtml,
+  buildPosterPdfBuffer,
+  buildCheckinQrPng,
+} from '../server/poster.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -200,10 +204,33 @@ files.push(
   ),
 );
 
+// Print poster preview (A4 visual) + regenerate PDF on disk
+const qrPng = await buildCheckinQrPng();
+const qrDataUrl = `data:image/png;base64,${qrPng.toString('base64')}`;
+const bgRel = '../../public/venice-bg-poster.jpg';
+const posterHtml = fs
+  .readFileSync(path.join(root, 'public', 'qr-poster.html'), 'utf8')
+  .replace('src="/qr-checkin.png"', `src="${qrDataUrl}"`)
+  .replace(
+    'url("/venice-bg-poster.jpg")',
+    `url("${bgRel}")`,
+  )
+  .replace('__PUBLIC_URL__', base.replace(/\/$/, ''));
+files.push(write('07-poster-reception.html', posterHtml));
+
+const posterPdf = await buildPosterPdfBuffer({ hotelName: 'Hotel Canal' });
+fs.writeFileSync(path.join(root, 'Hotel_Canal_Poster_Supremo.pdf'), posterPdf);
+console.log(
+  `✓ Hotel_Canal_Poster_Supremo.pdf (${Math.round(posterPdf.length / 1024)} KB)`,
+);
+
 files.push(
   write(
-    '08-poster-supremo.html',
-    buildPosterEmailHtml({ hotelName: 'Hotel Canal', pdfKb: 420 }),
+    '08-poster-email.html',
+    buildPosterEmailHtml({
+      hotelName: 'Hotel Canal',
+      pdfKb: Math.max(1, Math.round(posterPdf.length / 1024)),
+    }),
   ),
 );
 
@@ -245,7 +272,7 @@ const index = `<!DOCTYPE html>
 <body>
   <header>
     <h1>Hotel Canal — anteprime</h1>
-    <p>Email + pagina QR voucher. Clicca per aprire.</p>
+    <p>Email, pagina QR voucher e poster reception. Clicca per aprire.</p>
   </header>
   <div class="grid">
     <a class="card" href="01-welcome-ospite-IT.html" target="_blank">
@@ -283,10 +310,15 @@ const index = `<!DOCTYPE html>
       <div class="title">Pagina coupon dopo scan QR</div>
       <div class="who">Schermata che apre il QR nell’email</div>
     </a>
-    <a class="card" href="08-poster-supremo.html" target="_blank">
+    <a class="card" href="07-poster-reception.html" target="_blank">
+      <div class="num">07B · Reception</div>
+      <div class="title">Poster A4 da stampare</div>
+      <div class="who">Foto Venezia · QR ticket · −10%</div>
+    </a>
+    <a class="card" href="08-poster-email.html" target="_blank">
       <div class="num">08 · Staff</div>
-      <div class="title">Poster Supremo (PDF allegato)</div>
-      <div class="who">Mail con istruzioni stampa A4</div>
+      <div class="title">Email con PDF poster</div>
+      <div class="who">Mail istruzioni stampa</div>
     </a>
   </div>
 </body>
