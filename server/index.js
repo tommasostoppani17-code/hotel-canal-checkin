@@ -1030,8 +1030,9 @@ async function handleCheckin(req, res) {
     }
 
     const includeCoupon = Boolean(wantCoupon && roomNumber && receptionist);
+    // Stanza serve sempre a Payel (tavolo) — non azzerarla se manca il coupon.
+    // Solo il receptionist resta legato al flusso coupon.
     if (!includeCoupon) {
-      roomNumber = null;
       receptionist = null;
     }
 
