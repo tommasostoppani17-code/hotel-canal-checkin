@@ -122,7 +122,7 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px;">
                 <tr>
                   <td align="center" style="padding:2px 0 18px 0;border-bottom:1px solid #E8E4DC;">
-                    <div style="font-family:${SERIF};font-size:24px;font-weight:700;letter-spacing:0.12em;color:${C} !important;text-transform:uppercase;line-height:1.2;">
+                    <div style="font-family:${SERIF};font-size:24px;font-weight:700;letter-spacing:0.12em;color:${C} !important;text-transform:uppercase;line-height:1.15;mso-line-height-rule:exactly;">
                       ${escapeHtml(hotelName)}
                     </div>
                     <div style="font-family:${SANS};font-size:9.5px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">
@@ -319,7 +319,7 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   ].join('\n');
 
   const bodyHtml = `
-              <p style="font-family:${SERIF};font-size:18px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${C} !important;margin:0 0 14px;text-align:left;line-height:1.3;">
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
                 Gentile Payel,
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
@@ -402,7 +402,7 @@ export function buildMonthlyStaffEmail({
     .join('\n')}\n`;
 
   const bodyHtml = `
-              <p style="font-family:${SERIF};font-size:18px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${C} !important;margin:0 0 14px;text-align:left;line-height:1.3;">
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
                 Gentile Payel,
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">

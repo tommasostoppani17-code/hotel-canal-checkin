@@ -63,6 +63,17 @@ export function initDb(databasePath) {
       ON checkins (created_at);
   `);
 
+  // Contatori mensili senza PII (sopravvivono al purge GDPR 24h)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS staff_month_stats (
+      year_month TEXT NOT NULL,
+      receptionist TEXT NOT NULL,
+      checkins INTEGER NOT NULL DEFAULT 0,
+      coupons INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (year_month, receptionist)
+    );
+  `);
+
   return db;
 }
 
@@ -166,6 +177,41 @@ export function resolveCouponFromToken(token) {
   };
 }
 
+function romeYearMonthNow() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+  }).formatToParts(new Date());
+  const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+  return `${map.year}-${map.month}`;
+}
+
+function normalizeReceptionist(value) {
+  const name = String(value || '').trim();
+  return name || 'RECEPTION';
+}
+
+/** Incrementa contatori mensili (niente telefono/email/nome). */
+export function bumpStaffMonthStats({
+  receptionist,
+  withCoupon = false,
+  yearMonth = romeYearMonthNow(),
+} = {}) {
+  const ym = String(yearMonth || romeYearMonthNow());
+  const staff = normalizeReceptionist(receptionist);
+  const couponInc = withCoupon ? 1 : 0;
+  db.prepare(
+    `
+    INSERT INTO staff_month_stats (year_month, receptionist, checkins, coupons)
+    VALUES (@ym, @staff, 1, @couponInc)
+    ON CONFLICT(year_month, receptionist) DO UPDATE SET
+      checkins = checkins + 1,
+      coupons = coupons + @couponInc
+  `,
+  ).run({ ym, staff, couponInc });
+}
+
 export function insertCheckin({
   phone,
   email,
@@ -193,6 +239,15 @@ export function insertCheckin({
     guestsCount: guestsCount ?? null,
     couponToken: couponToken || null,
   });
+
+  try {
+    bumpStaffMonthStats({
+      receptionist,
+      withCoupon: Boolean(couponToken),
+    });
+  } catch (err) {
+    console.error('[stats] bumpStaffMonthStats failed:', err.message || err);
+  }
 
   return info.lastInsertRowid;
 }
@@ -326,8 +381,37 @@ export function markReported(ids) {
   return result.changes;
 }
 
-/** Stats for current calendar month in Europe/Rome via SQLite localtime */
-export function getMonthlyStaffStats() {
+/** Stats for a calendar month (YYYY-MM). Prefer rollup table (GDPR-safe). */
+export function getMonthlyStaffStats(yearMonth = null) {
+  const ym = String(yearMonth || romeYearMonthNow());
+
+  const rollupRanking = db
+    .prepare(
+      `
+      SELECT
+        receptionist,
+        checkins AS totale_registrati,
+        coupons AS coupon_emessi
+      FROM staff_month_stats
+      WHERE year_month = ?
+      ORDER BY checkins DESC, coupons DESC, receptionist ASC
+    `,
+    )
+    .all(ym);
+
+  if (rollupRanking.length) {
+    const totals = rollupRanking.reduce(
+      (acc, row) => {
+        acc.totale_mese += Number(row.totale_registrati) || 0;
+        acc.totale_coupon += Number(row.coupon_emessi) || 0;
+        return acc;
+      },
+      { totale_mese: 0, totale_coupon: 0 },
+    );
+    return { totals, ranking: rollupRanking, yearMonth: ym, source: 'rollup' };
+  }
+
+  // Fallback: check-in ancora in DB (utile in locale / primi giorni)
   const totals = db
     .prepare(
       `
@@ -340,10 +424,10 @@ export function getMonthlyStaffStats() {
           END
         ) AS totale_coupon
       FROM checkins
-      WHERE strftime('%Y-%m', created_at) = strftime('%Y-%m', 'now')
+      WHERE strftime('%Y-%m', created_at) = ?
     `,
     )
-    .get();
+    .get(ym);
 
   const ranking = db
     .prepare(
@@ -358,14 +442,14 @@ export function getMonthlyStaffStats() {
           END
         ) AS coupon_emessi
       FROM checkins
-      WHERE strftime('%Y-%m', created_at) = strftime('%Y-%m', 'now')
+      WHERE strftime('%Y-%m', created_at) = ?
       GROUP BY COALESCE(NULLIF(TRIM(receptionist), ''), 'RECEPTION')
       ORDER BY totale_registrati DESC, coupon_emessi DESC
     `,
     )
-    .all();
+    .all(ym);
 
-  return { totals, ranking };
+  return { totals, ranking, yearMonth: ym, source: 'checkins' };
 }
 
 export function countCheckins() {

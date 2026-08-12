@@ -1038,7 +1038,10 @@ app.post(
   }
 
   try {
-    const result = await runMonthlyStaffReport({ force: true });
+    const force =
+      String(req.query.force || '').trim() === '1' ||
+      req.body?.force === true;
+    const result = await runMonthlyStaffReport({ force });
     return res.json(publicReportSummary(result));
   } catch (err) {
     console.error('Errore report mensile:', err);
@@ -1076,14 +1079,14 @@ cron.schedule(
 );
 
 cron.schedule(
-  '59 23 * * *',
+  '5 0 1 * *',
   async () => {
-    console.log(`[cron] Check report mensile staff…`);
+    console.log(`[cron] Report mensile staff (1° del mese)…`);
     try {
       const result = await runMonthlyStaffReport();
       if (result.sent) {
         console.log(
-          `[cron] Report mensile inviato (${result.count} anagrafiche, ${result.staff} staff) → ${result.to}`,
+          `[cron] Report mensile inviato (${result.count} anagrafiche, ${result.staff} staff, ${result.yearMonth}) → ${result.to}`,
         );
       } else {
         console.log(`[cron] Report mensile saltato: ${result.reason}`);
@@ -1100,7 +1103,7 @@ app.listen(PORT, async () => {
   console.log(
     `Cron report: 00:00 ${CRON_TZ} → email ${process.env.REPORT_EMAIL || '(off)'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
   );
-  console.log(`Cron staff: 23:59 ultimo giorno del mese (${CRON_TZ})`);
+  console.log(`Cron staff: 00:05 il 1° del mese (${CRON_TZ}) → mese precedente`);
   await restoreCheckinsBackupIfNeeded();
   try {
     const purged = purgeCheckinsOlderThanHours(24);

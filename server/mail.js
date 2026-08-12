@@ -336,7 +336,44 @@ export async function runDailyReport({ force = false } = {}) {
   };
 }
 
-/** True if `date` is the last calendar day of its month in Europe/Rome. */
+/** True if `date` is the 1st calendar day of the month in Europe/Rome. */
+export function isFirstDayOfMonthRome(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    day: '2-digit',
+  }).formatToParts(date);
+  const day = parts.find((p) => p.type === 'day')?.value;
+  return Number(day) === 1;
+}
+
+/** Previous calendar month in Europe/Rome → { year, month, yearMonth, monthLabel }. */
+export function previousMonthRome(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+  let year = Number(map.year);
+  let month = Number(map.month) - 1;
+  if (month < 1) {
+    month = 12;
+    year -= 1;
+  }
+  const yearMonth = `${year}-${String(month).padStart(2, '0')}`;
+  // Label IT from a mid-month UTC date in that month
+  const labelDate = new Date(Date.UTC(year, month - 1, 15, 12, 0, 0));
+  const monthLabel = new Intl.DateTimeFormat('it-IT', {
+    timeZone: 'UTC',
+    month: 'long',
+  })
+    .format(labelDate)
+    .toUpperCase();
+  return { year, month, yearMonth, monthLabel };
+}
+
+/** @deprecated use isFirstDayOfMonthRome — kept for compatibility */
 export function isLastDayOfMonthRome(date = new Date()) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Rome',
@@ -354,8 +391,8 @@ export function isLastDayOfMonthRome(date = new Date()) {
 }
 
 export async function runMonthlyStaffReport({ force = false } = {}) {
-  if (!force && !isLastDayOfMonthRome()) {
-    return { sent: false, reason: 'not_month_end' };
+  if (!force && !isFirstDayOfMonthRome()) {
+    return { sent: false, reason: 'not_month_start' };
   }
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
@@ -363,34 +400,28 @@ export async function runMonthlyStaffReport({ force = false } = {}) {
     env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
   assertEmailReady(reportEmail);
 
-  const { totals, ranking } = getMonthlyStaffStats();
+  const prev = previousMonthRome();
+  const { totals, ranking } = getMonthlyStaffStats(prev.yearMonth);
   const totaleMese = Number(totals?.totale_mese || 0);
 
   if (!totaleMese) {
-    return { sent: false, reason: 'no_month_data', count: 0 };
+    return {
+      sent: false,
+      reason: 'no_month_data',
+      count: 0,
+      yearMonth: prev.yearMonth,
+    };
   }
-
-  const now = new Date();
-  const monthLabel = new Intl.DateTimeFormat('it-IT', {
-    timeZone: 'Europe/Rome',
-    month: 'long',
-  })
-    .format(now)
-    .toUpperCase();
-  const year = new Intl.DateTimeFormat('en', {
-    timeZone: 'Europe/Rome',
-    year: 'numeric',
-  }).format(now);
 
   const { subject, text, html, csv } = buildMonthlyStaffEmail({
     hotelName,
-    monthLabel,
-    year,
+    monthLabel: prev.monthLabel,
+    year: String(prev.year),
     totals,
     ranking,
   });
 
-  const filename = `performance_staff_${monthLabel.toLowerCase()}_${year}.csv`;
+  const filename = `performance_staff_${prev.monthLabel.toLowerCase()}_${prev.year}.csv`;
   const provider = resendConfigured() ? 'resend' : 'smtp';
 
   await sendReportMail({
@@ -409,5 +440,6 @@ export async function runMonthlyStaffReport({ force = false } = {}) {
     to: reportEmail,
     provider,
     force,
+    yearMonth: prev.yearMonth,
   };
 }

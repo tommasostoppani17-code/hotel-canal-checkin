@@ -5,8 +5,8 @@ on:
   schedule:
     # 00:00 Europe/Rome ≈ 22:00 UTC (ora legale)
     - cron: "0 22 * * *"
-    # fine mese: ogni sera ~23:59 Rome; il server salta se non è ultimo giorno
-    - cron: "59 21 * * *"
+    # 1° del mese ~00:05 Europe/Rome ≈ 22:05 UTC del giorno 1 (CEST)
+    - cron: "5 22 1 * *"
   workflow_dispatch:
     inputs:
       kind:
@@ -39,11 +39,15 @@ jobs:
           KIND="daily"
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             KIND="$INPUT_KIND"
-          elif [ "$SCHEDULE" = "59 21 * * *" ]; then
+          elif [ "$SCHEDULE" = "5 22 1 * *" ]; then
             KIND="monthly"
           fi
           if [ "$KIND" = "monthly" ]; then
             PATH_API="/api/cron/monthly-staff-report"
+            # Manuale: consente invio anche fuori dal 1°
+            if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+              PATH_API="${PATH_API}?force=1"
+            fi
           else
             PATH_API="/api/cron/daily-report"
           fi
