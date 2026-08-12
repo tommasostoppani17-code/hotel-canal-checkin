@@ -102,9 +102,17 @@ export function publicBaseUrl() {
 
 /**
  * Base URL per foto/icone email (remote, zero allegati).
- * Default: jsDelivr su GitHub — i proxy Gmail/Apple non dipendono dal cold-start Render.
+ * Pin al commit Render → URL nuove a ogni deploy (Gmail mobile non riusa cache @main).
  * Override: EMAIL_ASSET_BASE=https://...  oppure EMAIL_ASSETS_CDN=render|jsdelivr
  */
+function emailAssetCommit() {
+  const pinned = env('EMAIL_ASSET_COMMIT', '').trim();
+  if (pinned) return pinned.replace(/^@/, '');
+  const renderSha = env('RENDER_GIT_COMMIT', '').trim();
+  if (renderSha && /^[0-9a-f]{7,40}$/i.test(renderSha)) return renderSha.slice(0, 40);
+  return 'main';
+}
+
 function emailAssetBaseUrl() {
   const custom = env('EMAIL_ASSET_BASE', '').trim().replace(/\/$/, '');
   if (custom) return custom;
@@ -114,8 +122,8 @@ function emailAssetBaseUrl() {
     return publicBaseUrl();
   }
 
-  // Repo pubblico: CDN sempre caldo (postcards /email su main)
-  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@main/public';
+  const rev = emailAssetCommit();
+  return `https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@${rev}/public`;
 }
 
 /** Absolute URL for a file under /public (remote assets → email sotto 102KB Gmail). */
@@ -953,18 +961,18 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Catalogo https://checkin-hotelcanal.it/email-photo-catalog.html
+  // Catalogo numerato — file versionati (grid-29, voucher-24…) per bust cache Gmail.
   // Hero #1 · Walk #14 · Voucher #24 · Griglia #29 #27 #11 #5 · Due grandi #26 #27
   const requiredRemote = [
-    ['email', 'hero-venice.jpg'],
+    ['email', 'hero-01.jpg'],
     ['restaurant', '01-terrazza-canale.jpg'],
-    ['email', 'postcard-tavolo.jpg'],
-    ['email', 'postcard-large-a.jpg'],
-    ['email', 'postcard-large-b.jpg'],
-    ['email', 'thumb-ingresso.jpg'],
-    ['email', 'thumb-pesce.jpg'],
-    ['email', 'thumb-risotto.jpg'],
-    ['email', 'thumb-linguine.jpg'],
+    ['email', 'voucher-24.jpg'],
+    ['email', 'band-26.jpg'],
+    ['email', 'band-27.jpg'],
+    ['email', 'grid-29.jpg'],
+    ['email', 'grid-27.jpg'],
+    ['email', 'grid-11.jpg'],
+    ['email', 'grid-05.jpg'],
   ];
   for (const parts of requiredRemote) {
     if (!readEmailAsset(...parts)) {
@@ -972,31 +980,16 @@ export async function sendWelcomeEmail({
     }
   }
 
-  const heroSrc = publicAssetUrl('email', 'hero-venice.jpg'); // #1
-  /* Voucher #24 (11-tavolo-canale → landscape) */
-  const restaurantSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
-  /* Walk #14 */
-  const gallerySrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
-  /* Due grandi #26 + #27 (stesso frame 1400×780) */
-  const terraceSrc = publicAssetUrl('email', 'postcard-large-a.jpg');
-  const dishSrc = publicAssetUrl('email', 'postcard-large-b.jpg');
+  const heroSrc = publicAssetUrl('email', 'hero-01.jpg'); // #1
+  const restaurantSrc = publicAssetUrl('email', 'voucher-24.jpg'); // #24
+  const gallerySrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg'); // #14
+  const terraceSrc = publicAssetUrl('email', 'band-26.jpg'); // #26
+  const dishSrc = publicAssetUrl('email', 'band-27.jpg'); // #27
   const thumbs = [
-    {
-      src: publicAssetUrl('email', 'thumb-ingresso.jpg'), // #29
-      alt: 'Guazzetto di mare',
-    },
-    {
-      src: publicAssetUrl('email', 'thumb-pesce.jpg'), // #27
-      alt: 'Pesce grigliato',
-    },
-    {
-      src: publicAssetUrl('email', 'thumb-risotto.jpg'), // #11
-      alt: 'Pesce della Terrazza',
-    },
-    {
-      src: publicAssetUrl('email', 'thumb-linguine.jpg'), // #5
-      alt: 'Risotto di mare',
-    },
+    { src: publicAssetUrl('email', 'grid-29.jpg'), alt: 'Guazzetto di mare' }, // #29
+    { src: publicAssetUrl('email', 'grid-27.jpg'), alt: 'Pesce grigliato' }, // #27
+    { src: publicAssetUrl('email', 'grid-11.jpg'), alt: 'Pesce della Terrazza' }, // #11
+    { src: publicAssetUrl('email', 'grid-05.jpg'), alt: 'Risotto di mare' }, // #5
   ];
 
   const iconDefs = [
