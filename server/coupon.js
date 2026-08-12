@@ -716,7 +716,7 @@ function buildWelcomeHtml({
               </p>
               ${photoGrid(thumbs.slice(0, 4), 8)}
               ${postcardBand(terrace, 'Piatti della Terrazza', 8)}
-              ${postcardBand(dish, 'Cucina della Trattoria alla Terrazza', 8)}
+              ${postcardBand(dish, 'Cucina della Trattoria alla Terrazza', 36)}
 
               ${veniceGuideBlock}
               ${venicePdfFooter}
