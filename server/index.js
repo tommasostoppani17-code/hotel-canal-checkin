@@ -20,6 +20,7 @@ import {
   getCheckinById,
   purgeCheckinsOlderThan24Hours,
   isRoomTaken,
+  getActiveCheckinByRoom,
 } from './db.js';
 import {
   runDailyReport,
@@ -177,8 +178,8 @@ function rateLimit({ windowMs = 60_000, max = 30, keyFn } = {}) {
   };
 }
 
-/** Check-in / lead: max 5 richieste / 15 minuti per IP (bancario). */
-const checkinRateLimit = rateLimit({ windowMs: 15 * 60_000, max: 5 });
+/** Check-in / lead: max 20 richieste / 15 minuti per IP (test reception + ospiti). */
+const checkinRateLimit = rateLimit({ windowMs: 15 * 60_000, max: 20 });
 
 // Pulizia periodica bucket (finestre fino a 15m)
 setInterval(() => {
@@ -962,6 +963,27 @@ async function handleCheckin(req, res) {
     }
 
     if (roomNumber && isRoomTaken(roomNumber)) {
+      const existing = getActiveCheckinByRoom(roomNumber);
+      const sameEmail =
+        existing?.email &&
+        normalizeEmail(existing.email) === email;
+      const samePhone =
+        existing?.phone &&
+        cleanPhone(existing.phone) === phone;
+      if (existing && (sameEmail || samePhone)) {
+        return res.status(200).json({
+          success: true,
+          alreadyRegistered: true,
+          id: existing.id,
+          guestAccessToken: issueGuestAccessToken(existing.id),
+          checkCode: `HC-${String(existing.id).padStart(4, '0')}`,
+          createdAt: existing.created_at || new Date().toISOString(),
+          welcomeSent: false,
+          couponSent: Boolean(existing.coupon_sent_at),
+          receptionist: existing.receptionist || null,
+          guestsCount: existing.guests_count ?? guestsCount,
+        });
+      }
       return res.status(409).json({
         error: 'Stanza già registrata',
         code: 'room_taken',

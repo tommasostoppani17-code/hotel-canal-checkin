@@ -2940,11 +2940,34 @@
       background: rgba(18, 68, 83, 0.06);
     }
 
+    .guest-action-btn .ga-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+    }
+
+    .guest-action-btn .ga-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .guest-action.is-book .guest-action-btn .ga-icon {
+      background: rgba(18, 68, 83, 0.12);
+    }
+
     .guest-action-btn .ga-label {
       display: flex;
       flex-direction: column;
       gap: 1px;
       min-width: 0;
+      flex: 1 1 auto;
     }
 
     .guest-action-btn .ga-title {
@@ -2970,6 +2993,24 @@
       flex-shrink: 0;
       opacity: 0.55;
       transition: opacity 0.2s var(--ios-ease);
+    }
+
+    #step4 .guest-reentry {
+      margin: 14px 0 0;
+      text-align: center;
+    }
+
+    #step4 .guest-reentry[hidden] {
+      display: none !important;
+    }
+
+    #step4 .guest-reentry .btn-ghost {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      opacity: 0.78;
+      min-height: 40px;
+      padding: 8px 12px;
     }
 
     .guest-action-btn:active .ga-chevron {
@@ -4035,6 +4076,11 @@
               <div class="guest-actions" id="guestActions" hidden>
                 <div class="guest-action is-book" id="actionTable">
                   <button type="button" class="guest-action-btn" data-sheet="tablePanel" id="btnTable" aria-expanded="false" aria-controls="tablePanel">
+                    <span class="ga-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 10h16"/><path d="M6 10v8"/><path d="M18 10v8"/><path d="M9 14h6"/><path d="M12 10V7"/>
+                      </svg>
+                    </span>
                     <span class="ga-label">
                       <span class="ga-title" id="lbl-act-table">Prenota un tavolo</span>
                       <span class="ga-sub" id="lbl-act-table-sub">Scegli orario · ti richiamiamo</span>
@@ -4045,6 +4091,11 @@
 
                 <div class="guest-action" id="actionDoors">
                   <button type="button" class="guest-action-btn" data-sheet="doorsPanel" id="btnDoors" aria-expanded="false" aria-controls="doorsPanel">
+                    <span class="ga-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="3" width="11" height="18" rx="1.5"/><path d="M14.5 12h.01"/><path d="M16 8h3v8h-3"/>
+                      </svg>
+                    </span>
                     <span class="ga-label">
                       <span class="ga-title" id="lbl-act-doors">Codici della porta</span>
                       <span class="ga-sub" id="lbl-act-doors-sub">Entrata e porta interna</span>
@@ -4055,6 +4106,11 @@
 
                 <div class="guest-action" id="actionWifi">
                   <button type="button" class="guest-action-btn" data-sheet="wifiPanel" id="btnWifi" aria-expanded="false" aria-controls="wifiPanel">
+                    <span class="ga-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12.5a9 9 0 0 1 14 0"/><path d="M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor" stroke="none"/>
+                      </svg>
+                    </span>
                     <span class="ga-label">
                       <span class="ga-title" id="lbl-act-wifi">Accedi al Wi‑Fi</span>
                       <span class="ga-sub" id="lbl-act-wifi-sub">Rete in tutta la struttura</span>
@@ -4067,6 +4123,9 @@
               <p class="reception-note" id="lbl-reception-note">
                 Reception 24h. Passa quando vuoi.
               </p>
+              <div class="guest-reentry" id="guestReentry" hidden>
+                <button type="button" class="btn-ghost" id="btnNewCheckin"></button>
+              </div>
             </div>
           </div>
 
@@ -4282,7 +4341,8 @@
         submitError: 'Errore durante l\'invio. Riprova.',
         networkError: 'Errore di connessione.',
         alreadyRegisteredTitle: 'Sei già registrato',
-        alreadyRegisteredSub: 'Il tuo dispositivo è collegato ai servizi digitali. Buon soggiorno a Venezia.',
+        alreadyRegisteredSub: 'Apri i menu qui sotto per Wi‑Fi, codici porta e tavolo. Buon soggiorno a Venezia.',
+        newCheckin: 'Nuovo check-in',
         networkErrorTitle: 'Errore di connessione',
         networkErrorSub: 'Problema di rete o troppi dispositivi collegati. Riprova tra poco.',
         retry: 'Riprova',
@@ -4382,7 +4442,8 @@
         submitError: 'Could not submit. Please try again.',
         networkError: 'Connection error.',
         alreadyRegisteredTitle: 'Already registered',
-        alreadyRegisteredSub: 'Your device is connected to our digital services. Enjoy your stay in Venice.',
+        alreadyRegisteredSub: 'Open the menus below for Wi‑Fi, door codes and table booking. Enjoy your stay in Venice.',
+        newCheckin: 'New check-in',
         networkErrorTitle: 'Connection error',
         networkErrorSub: 'Network issue or too many devices connected. Please try again shortly.',
         retry: 'Try again',
@@ -4479,7 +4540,8 @@
         submitError: 'Erreur d\'envoi. Réessayez.',
         networkError: 'Erreur de connexion.',
         alreadyRegisteredTitle: 'Déjà enregistré',
-        alreadyRegisteredSub: 'Votre appareil est connecté à nos services numériques. Bon séjour à Venise.',
+        alreadyRegisteredSub: 'Ouvrez les menus ci-dessous pour le Wi‑Fi, les codes d’accès et la table. Bon séjour à Venise.',
+        newCheckin: 'Nouvel enregistrement',
         networkErrorTitle: 'Erreur de connexion',
         networkErrorSub: 'Problème réseau ou trop d\'appareils connectés. Réessayez bientôt.',
         retry: 'Réessayer',
@@ -4576,7 +4638,8 @@
         submitError: 'Senden fehlgeschlagen.',
         networkError: 'Verbindungsfehler.',
         alreadyRegisteredTitle: 'Bereits registriert',
-        alreadyRegisteredSub: 'Ihr Gerät ist mit unseren digitalen Diensten verbunden. Genießen Sie Venedig.',
+        alreadyRegisteredSub: 'Öffnen Sie die Menüs unten für Wi‑Fi, Türcodes und Tischreservierung. Genießen Sie Venedig.',
+        newCheckin: 'Neuer Check-in',
         networkErrorTitle: 'Verbindungsfehler',
         networkErrorSub: 'Netzwerkproblem oder zu viele Geräte. Bitte später erneut versuchen.',
         retry: 'Erneut versuchen',
@@ -4673,7 +4736,8 @@
         submitError: 'Error al enviar. Inténtelo de nuevo.',
         networkError: 'Error de conexión.',
         alreadyRegisteredTitle: 'Ya registrado',
-        alreadyRegisteredSub: 'Su dispositivo está conectado a nuestros servicios digitales. Disfrute Venecia.',
+        alreadyRegisteredSub: 'Abra los menús de abajo para Wi‑Fi, códigos de puerta y mesa. Disfrute Venecia.',
+        newCheckin: 'Nuevo check-in',
         networkErrorTitle: 'Error de conexión',
         networkErrorSub: 'Problema de red o demasiados dispositivos. Inténtelo de nuevo en breve.',
         retry: 'Reintentar',
@@ -4777,7 +4841,8 @@
         submitError: '提交失败，请重试。',
         networkError: '网络连接错误。',
         alreadyRegisteredTitle: '已登记',
-        alreadyRegisteredSub: '您的设备已连接数字服务。祝您在威尼斯愉快。',
+        alreadyRegisteredSub: '打开下方菜单查看 Wi‑Fi、门锁密码和订座。祝您在威尼斯愉快。',
+        newCheckin: '新的登记',
         networkErrorTitle: '连接错误',
         networkErrorSub: '网络异常或设备过多。请稍后重试。',
         retry: '重试',
@@ -4882,7 +4947,8 @@
         networkError: '接続エラー。',
         alreadyRegisteredTitle: '登録済みです',
         alreadyRegisteredSub:
-          'お使いの端末はデジタルサービスに接続済みです。ヴェネツィアをお楽しみください。',
+          '下のメニューから Wi‑Fi・ドアコード・席予約をご利用ください。ヴェネツィアをお楽しみください。',
+        newCheckin: '新規チェックイン',
         networkErrorTitle: '接続エラー',
         networkErrorSub:
           'ネットワークの問題、または端末が多すぎます。しばらくしてから再試行してください。',
@@ -4988,7 +5054,8 @@
         networkError: 'خطأ في الاتصال.',
         alreadyRegisteredTitle: 'مسجّل مسبقًا',
         alreadyRegisteredSub:
-          'جهازك متصل بخدماتنا الرقمية. نتمنى لك إقامة سعيدة في البندقية.',
+          'افتح القوائم أدناه لـ Wi‑Fi ورموز الباب وحجز الطاولة. نتمنى لك إقامة سعيدة في البندقية.',
+        newCheckin: 'تسجيل جديد',
         networkErrorTitle: 'خطأ في الاتصال',
         networkErrorSub:
           'مشكلة شبكة أو أجهزة كثيرة متصلة. حاول مجددًا بعد قليل.',
@@ -5000,6 +5067,7 @@
     };
 
     const STORAGE_KEY = 'hotel_canal_registered';
+    const SESSION_KEY = 'hotel_canal_guest_session';
     /** Lock dispositivo allineato alla retention GDPR (24h): poi il telefono può rifare check-in. */
     const LOCK_TTL_MS = 24 * 60 * 60 * 1000;
     const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
@@ -5016,14 +5084,39 @@
     function clearRegistrationLock() {
       try {
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(SESSION_KEY);
       } catch (_) {
         /* ignore */
       }
     }
 
-    function setRegistrationLock() {
+    function readGuestSession() {
       try {
-        localStorage.setItem(STORAGE_KEY, String(Date.now()));
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== 'object') return null;
+        return data;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function setRegistrationLock(session = null) {
+      try {
+        const ts = Date.now();
+        localStorage.setItem(STORAGE_KEY, String(ts));
+        if (session && typeof session === 'object') {
+          localStorage.setItem(
+            SESSION_KEY,
+            JSON.stringify({
+              ts,
+              checkinId: session.checkinId ?? null,
+              couponSent: Boolean(session.couponSent),
+              guestAccessToken: session.guestAccessToken || null,
+            }),
+          );
+        }
       } catch (_) {
         /* ignore */
       }
@@ -6127,26 +6220,38 @@
       });
     }
 
+    function startFreshCheckin() {
+      clearRegistrationLock();
+      guestAccessToken = null;
+      lastCheckinId = null;
+      lastCouponSent = false;
+      guestServicesCache = null;
+      closeGuestSheet();
+      const reentry = document.getElementById('guestReentry');
+      if (reentry) reentry.hidden = true;
+      window.location.href = `${location.pathname}${location.search || ''}${location.hash || ''}`;
+    }
+
     function showAlreadyRegisteredScreen() {
-      formMode = false;
       const dict = t();
-      const allowReset = isTestMode();
-      card.innerHTML = `
-        <div style="padding: 28px 32px 12px; text-align: center;">
-          <div class="success-check" aria-hidden="true"></div>
-          <h1 style="font-family:Cinzel,Georgia,serif;font-size:21px;color:#124453;margin:0 0 12px;">${dict.alreadyRegisteredTitle}</h1>
-          <p style="font-size:12.5px;color:#515154;line-height:1.5;margin:0;font-weight:500;">${dict.alreadyRegisteredSub}</p>
-          ${
-            allowReset
-              ? `<button type="button" class="btn-ghost" id="btnTestReset" style="margin-top:22px;">Nuovo check-in (test)</button>`
-              : ''
-          }
-        </div>
-      `;
-      document.getElementById('btnTestReset')?.addEventListener('click', () => {
-        clearRegistrationLock();
-        window.location.href = `${location.pathname}?test=1`;
+      const session = readGuestSession() || {};
+      showSuccessStep({
+        id: session.checkinId,
+        verifiedAt: session.ts || Date.now(),
+        couponSent: Boolean(session.couponSent),
+        already: true,
+        guestAccessToken: session.guestAccessToken || null,
+        quiet: true,
       });
+      const reentryBtn = document.getElementById('btnNewCheckin');
+      if (reentryBtn) {
+        reentryBtn.textContent = dict.newCheckin || 'Nuovo check-in';
+        reentryBtn.onclick = (e) => {
+          e.preventDefault();
+          playConfirmChime?.({ soft: true });
+          startFreshCheckin();
+        };
+      }
     }
 
     function showNetworkErrorScreen() {
@@ -6203,6 +6308,7 @@
       couponSent,
       already = false,
       guestAccessToken: accessToken = null,
+      quiet = false,
     }) {
       const dict = t();
       const checkCode = formatCheckCode(id);
@@ -6237,9 +6343,20 @@
       const actions = document.getElementById('guestActions');
       const note = document.getElementById('lbl-reception-note');
       if (note) note.textContent = dict.receptionNote || '';
-      // Solo dopo check-in riuscito
+      // Menu a tendina sempre disponibili (anche se già registrato)
       if (actions) {
-        actions.hidden = Boolean(already);
+        actions.hidden = false;
+      }
+      const reentry = document.getElementById('guestReentry');
+      const reentryBtn = document.getElementById('btnNewCheckin');
+      if (reentry) reentry.hidden = !already;
+      if (reentryBtn) {
+        reentryBtn.textContent = dict.newCheckin || 'Nuovo check-in';
+        reentryBtn.onclick = (e) => {
+          e.preventDefault();
+          playConfirmChime?.({ soft: true });
+          startFreshCheckin();
+        };
       }
       closeGuestSheet();
       const bookTime = document.getElementById('bookTime');
@@ -6266,11 +6383,16 @@
       }
       void loadGuestServices(dict);
 
-      playSuccessKinetics(() => {
+      const goSuccess = () => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => setStep(TOTAL_STEPS));
         });
-      });
+      };
+      if (quiet) {
+        goSuccess();
+      } else {
+        playSuccessKinetics(goSuccess);
+      }
     }
 
     let guestServicesCache = null;
@@ -6919,7 +7041,11 @@
         }
 
         if (shouldLockDevice(emailNormalized)) {
-          setRegistrationLock();
+          setRegistrationLock({
+            checkinId: body.id,
+            couponSent: Boolean(body.couponSent),
+            guestAccessToken: body.guestAccessToken || null,
+          });
         } else {
           clearRegistrationLock();
         }
@@ -6928,12 +7054,15 @@
           id: body.id,
           verifiedAt: body.createdAt,
           couponSent: Boolean(body.couponSent),
+          already: Boolean(body.alreadyRegistered),
           guestAccessToken: body.guestAccessToken || null,
+          quiet: Boolean(body.alreadyRegistered),
         });
 
         // Prenotazione tavolo scelta nello Step 2 → stesso endpoint dello Step 3
         const tableTime = String(selectedTableTime || 'NO').trim().toUpperCase();
         if (
+          !body.alreadyRegistered &&
           tableTime &&
           tableTime !== 'NO' &&
           tableTime !== 'SKIP' &&

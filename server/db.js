@@ -260,6 +260,28 @@ export function isRoomTaken(roomNumber, excludeId = null) {
   return true;
 }
 
+/** Check-in attivo per numero stanza (email/telefono già decifrati). */
+export function getActiveCheckinByRoom(roomNumber) {
+  const room = String(roomNumber || '').trim();
+  if (!room) return null;
+  const row = db
+    .prepare(
+      `
+      SELECT
+        id, phone, email, guest_name, room_number, receptionist, guests_count,
+        coupon_token, coupon_sent_at, table_booking, created_at, reported_at
+      FROM checkins
+      WHERE room_number IS NOT NULL
+        AND TRIM(room_number) != ''
+        AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
+      ORDER BY id DESC
+      LIMIT 1
+    `,
+    )
+    .get({ room });
+  return row ? decryptCheckinRow(row) : null;
+}
+
 export function insertCheckin({
   phone,
   email,
