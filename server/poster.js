@@ -26,16 +26,17 @@ export function checkinPublicUrl() {
   return `${publicBaseUrl()}/`;
 }
 
-const CANAL = '#124453';
-const GOLD = '#C5A059';
-const MUTED = '#515154';
-const FOOT = '#8E8E93';
-const RULE = '#1D1D1F';
+/* Step 1 brand: ottanio istituzionale + testo lavagna */
+const CANAL = '#164E5B';
+const TEXT_DARK = '#122226';
+const MUTED = '#5C7A82';
+const FOOT = '#6E868F';
+const RULE = '#D8E2E6';
 
 export async function buildCheckinQrPng() {
   return QRCode.toBuffer(checkinPublicUrl(), {
     type: 'png',
-    width: 640,
+    width: 900,
     margin: 1,
     errorCorrectionLevel: 'H',
     color: { dark: CANAL, light: '#FFFFFF' },
@@ -51,11 +52,11 @@ function drawCenteredText(doc, text, y, { font, size, color } = {}) {
 }
 
 /**
- * True A4 PDF poster (210×297mm) — English, Welcome Discount, vector layout.
+ * True A4 PDF poster (210×297mm) — Step 1 identity, English, print-ready.
  */
 export async function buildPosterPdfBuffer({
   hotelName = 'Hotel Canal',
-  address = 'Santa Croce 553 · Venice',
+  address = 'Santa Croce 553, 30135 Venezia (VE)',
 } = {}) {
   const qrPng = await buildCheckinQrPng();
 
@@ -64,9 +65,9 @@ export async function buildPosterPdfBuffer({
       size: 'A4',
       margin: 0,
       info: {
-        Title: `${hotelName} — Reception Poster A4`,
+        Title: `${hotelName} — Reception QR Sign A4`,
         Author: hotelName,
-        Subject: 'Fast Check-in & Welcome Discount',
+        Subject: 'Fast Digital Check-in · Welcome Discount',
       },
     });
 
@@ -77,65 +78,57 @@ export async function buildPosterPdfBuffer({
 
     const pageW = doc.page.width; // 595.28
     const pageH = doc.page.height; // 841.89
-    const side = 72; // ~25mm margins
+    const side = 71; // ~25mm
 
-    // Top canal band
-    doc.rect(0, 0, pageW, 14).fill(CANAL);
+    // Immacolato — nessuna banda colorata; solo tipografia Step 1
+    doc.rect(0, 0, pageW, pageH).fill('#FFFFFF');
 
-    // Brand
-    drawCenteredText(doc, String(hotelName).toUpperCase(), 88, {
+    // Brand monumentale (Cinzel → Times-Bold print fallback)
+    drawCenteredText(doc, String(hotelName).toUpperCase(), 78, {
       font: 'Times-Bold',
-      size: 34,
+      size: 32,
       color: CANAL,
     });
-    drawCenteredText(doc, String(address).toUpperCase(), 132, {
+    drawCenteredText(doc, 'V E N I C E   E X P E R I E N C E', 120, {
       font: 'Times-Bold',
-      size: 9,
-      color: GOLD,
+      size: 10,
+      color: MUTED,
     });
 
-    // Hairline rule
-    const ruleY = 168;
     doc
-      .moveTo(side, ruleY)
-      .lineTo(pageW - side, ruleY)
-      .lineWidth(0.8)
+      .moveTo(side + 40, 148)
+      .lineTo(pageW - side - 40, 148)
+      .lineWidth(0.7)
       .strokeColor(RULE)
       .stroke();
 
-    // Claim
-    drawCenteredText(doc, 'FAST CHECK-IN &', 210, {
-      font: 'Times-Bold',
-      size: 22,
-      color: CANAL,
-    });
-    drawCenteredText(doc, 'WELCOME DISCOUNT', 238, {
-      font: 'Times-Bold',
-      size: 22,
-      color: CANAL,
+    drawCenteredText(doc, 'Fast Digital Check-in', 178, {
+      font: 'Helvetica-Bold',
+      size: 18,
+      color: TEXT_DARK,
     });
 
     doc
       .font('Helvetica')
-      .fontSize(11)
-      .fillColor(MUTED)
+      .fontSize(11.5)
+      .fillColor(TEXT_DARK)
       .text(
-        "Scan the code to activate your room's digital services instantly and unlock a 10% welcome discount for Trattoria alla Terrazza.",
-        side + 24,
-        280,
-        { width: pageW - side * 2 - 48, align: 'center', lineGap: 4 },
+        'Scan the QR code with your smartphone to safely complete your room registration, access high-speed Wi-Fi, and unlock your exclusive 10% dining privilege.',
+        side + 18,
+        214,
+        { width: pageW - side * 2 - 36, align: 'center', lineGap: 5 },
       );
 
-    // QR plate
-    const qrSize = 196;
-    const platePad = 16;
+    // QR plate — high-res PNG for sharp print through glass/plexiglass
+    const qrSize = 210;
+    const platePad = 18;
     const plate = qrSize + platePad * 2;
     const plateX = (pageW - plate) / 2;
-    const plateY = 360;
+    const plateY = 300;
 
     doc
-      .roundedRect(plateX, plateY, plate, plate, 4)
-      .lineWidth(1)
+      .roundedRect(plateX, plateY, plate, plate, 6)
+      .lineWidth(1.1)
       .strokeColor(CANAL)
       .stroke();
 
@@ -144,52 +137,85 @@ export async function buildPosterPdfBuffer({
       height: qrSize,
     });
 
-    drawCenteredText(doc, 'SCAN WITH YOUR SMARTPHONE', plateY + plate + 22, {
+    drawCenteredText(doc, 'SCAN WITH YOUR SMARTPHONE', plateY + plate + 20, {
       font: 'Helvetica-Bold',
-      size: 9.5,
+      size: 9,
       color: CANAL,
     });
 
-    // Language chips
-    const langs = ['IT', 'EN', 'FR', 'DE', 'ES'];
-    const chipW = 36;
-    const chipH = 18;
-    const gap = 8;
+    // Language chips (8 langs as in-app)
+    const langs = ['IT', 'EN', 'FR', 'DE', 'ES', 'ZH', 'JA', 'AR'];
+    const chipW = 30;
+    const chipH = 17;
+    const gap = 6;
     const rowW = langs.length * chipW + (langs.length - 1) * gap;
     let chipX = (pageW - rowW) / 2;
-    const chipY = plateY + plate + 52;
+    const chipY = plateY + plate + 48;
 
     for (const lang of langs) {
       doc
-        .roundedRect(chipX, chipY, chipW, chipH, 2)
+        .roundedRect(chipX, chipY, chipW, chipH, 3)
         .fillColor('#EEF3F4')
         .fill();
       doc
         .font('Helvetica-Bold')
-        .fontSize(8)
+        .fontSize(7.5)
         .fillColor(CANAL)
-        .text(lang, chipX, chipY + 5, { width: chipW, align: 'center' });
+        .text(lang, chipX, chipY + 4.5, { width: chipW, align: 'center' });
       chipX += chipW + gap;
     }
 
-    // Footer
-    const footY = pageH - 78;
+    // Guest benefit
+    const benefitY = chipY + 48;
+    drawCenteredText(doc, 'EXCLUSIVE GUEST BENEFIT', benefitY, {
+      font: 'Helvetica-Bold',
+      size: 10,
+      color: CANAL,
+    });
+    doc
+      .font('Helvetica')
+      .fontSize(10.5)
+      .fillColor(TEXT_DARK)
+      .text(
+        'Get an immediate 10% discount voucher for Trattoria alla Terrazza right after validation.',
+        side + 28,
+        benefitY + 22,
+        { width: pageW - side * 2 - 56, align: 'center', lineGap: 3 },
+      );
+
+    // Legal / GDPR footer
+    const footY = pageH - 92;
     doc
       .moveTo(side, footY)
       .lineTo(pageW - side, footY)
       .lineWidth(0.6)
-      .strokeColor('#E5E5EA')
+      .strokeColor(RULE)
       .stroke();
 
-    drawCenteredText(doc, 'EXCLUSIVE PARTNER · TRATTORIA ALLA TERRAZZA, VENICE', footY + 16, {
+    doc
+      .font('Helvetica')
+      .fontSize(8)
+      .fillColor(FOOT)
+      .text(
+        'GDPR compliant & secure. Encrypted data pipeline with automatic 24h retention purge.',
+        side,
+        footY + 14,
+        { width: pageW - side * 2, align: 'center' },
+      );
+    drawCenteredText(
+      doc,
+      `CANAL S.r.l. — ${address}`,
+      footY + 34,
+      {
+        font: 'Helvetica',
+        size: 8,
+        color: FOOT,
+      },
+    );
+    drawCenteredText(doc, checkinPublicUrl().replace(/\/$/, ''), footY + 52, {
       font: 'Helvetica',
-      size: 8.5,
-      color: FOOT,
-    });
-    drawCenteredText(doc, '10% WELCOME DISCOUNT FOR REGISTERED GUESTS', footY + 34, {
-      font: 'Helvetica-Bold',
-      size: 9,
-      color: CANAL,
+      size: 7.5,
+      color: MUTED,
     });
 
     doc.end();
@@ -220,8 +246,8 @@ ${emailLightModeHead({
 <div class="card force-white" bgcolor="${EMAIL_FORCE_WHITE}" style="background-color:${EMAIL_FORCE_WHITE} !important;">
 <div class="eyebrow">Reception · A4 poster</div>
 <h1>${brand}</h1>
-<p>Your A4 reception poster is attached as a PDF (Welcome Discount · English).</p>
-<p>Open the attachment and print at <strong style="font-style:italic;color:${C} !important;">100% / actual size</strong> on A4. No browser scaling.</p>
+<p>Your A4 reception poster is attached as a PDF (Fast Digital Check-in · Welcome Discount · English).</p>
+<p>Open the attachment and print at <strong style="font-style:italic;color:${C} !important;">100% / actual size</strong> on A4 matte paper (160–200 g). Place in a glass frame or plexiglass stand at the desk.</p>
 <p class="meta">File size ~${pdfKb} KB · QR → ${publicBaseUrl()}/</p>
 </div></body></html>`;
 }
