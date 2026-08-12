@@ -247,7 +247,7 @@ export async function buildPosterPdfBuffer({
     // Three benefits
     const benefits = [
       { title: 'DOOR CODES', line: 'Instant access codes\nfor your stay' },
-      { title: 'HIGH-SPEED WI-FI', line: 'Network credentials\nright after check-in' },
+      { title: 'WI-FI', line: 'Network name & password\nright after check-in' },
       { title: '10% DINING', line: 'Voucher at Trattoria\nalla Terrazza' },
     ];
     const colW = innerW / 3;
