@@ -3734,13 +3734,15 @@
       background: #FFFFFF;
     }
 
-    /* Toast SOLO rete/server — mai per campi non validi (label+bordo+shake) */
+    /* Toast SOLO rete/server — mai per campi non validi (label+bordo+shake).
+       In alto sotto i dots: non deve mai coprire CTA / Skip / Back. */
     .error {
       display: none;
       position: absolute;
       left: 28px;
       right: 28px;
-      bottom: 18px;
+      top: 28px;
+      bottom: auto;
       z-index: 30;
       margin: 0;
       padding: 10px 14px;
@@ -5976,13 +5978,7 @@
         )
       ) {
         setStep(3);
-        markFieldError(roomEl);
-        try {
-          roomEl?.focus({ preventScroll: true });
-        } catch (_) {}
-        pinCardInView();
-        shakeCard();
-        showServerToast(t().roomTaken || message);
+        showFieldError(roomEl);
         return true;
       }
       if (/privacy|consenso|gdpr/.test(msg)) {

@@ -1,0 +1,34 @@
+---
+description: UX errori iOS su tutte le schermate del check-in Hotel Canal
+globs: public/**/*.{html,css,js}
+alwaysApply: true
+---
+
+# Errori UI — regola ferrea (tutte le schermate)
+
+## Validazione campi (obbligatorio / formato / stanza presa / privacy)
+
+Usare **solo** questo pattern iOS. Mai banner, mai toast, mai testo rosso flottante che copre CTA o link.
+
+1. Label del campo in rosso (`#C62828` / `.label-error-state`)
+2. Bordo rosso sul campo (`.is-invalid`)
+3. Micro-shake della card (`.ios-shake` / `shakeCard()`)
+
+Helper obbligatori: `showFieldError()`, `showFieldsError()`, `showPrivacyError()`.
+
+Per errori API mappabili a un campo (es. `room_taken`, email, telefono): `applyApiValidationError()` → `showFieldError(...)`. **Non** chiamare `showServerToast`.
+
+## Toast `#error` / `showServerToast`
+
+Consentito **solo** per errori di rete/server generici non attribuibili a un campo.
+
+- Mai per validazione
+- Mai in basso sulla card (coprirebbe Skip / Back / CTA)
+- Posizione: in alto sotto i step dots
+
+## Vietato
+
+- Messaggi tipo “This room is already registered…” come banner overlay
+- Qualsiasi testo di errore che si sovrappone a footer, bottoni o link
+- Inventare un terzo stile di errore “per questa schermata”
+---
