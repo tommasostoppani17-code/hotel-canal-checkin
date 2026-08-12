@@ -11,7 +11,7 @@ import {
   getUnreportedCheckins,
   markReported,
   getMonthlyStaffStats,
-  purgeCheckinsOlderThanHours,
+  purgeCheckinsOlderThan24Hours,
   exportAllCheckins,
 } from './db.js';
 import {
@@ -219,7 +219,7 @@ export async function runDailyReport({ force = false } = {}) {
   if (!rows.length) {
     let purged = 0;
     try {
-      purged = purgeCheckinsOlderThanHours(24);
+      purged = purgeCheckinsOlderThan24Hours();
       if (purged > 0) {
         console.log(
           `[GDPR] Eliminati ${purged} check-in più vecchi di 24 ore (retention)`,
@@ -314,12 +314,13 @@ export async function runDailyReport({ force = false } = {}) {
   const ids = rows.map((row) => row.id);
   markReported(ids);
 
+  // Privacy by design: un attimo dopo l'invio riuscito del CSV → epurazione 24h.
   let purged = 0;
   try {
-    purged = purgeCheckinsOlderThanHours(24);
+    purged = purgeCheckinsOlderThan24Hours();
     if (purged > 0) {
       console.log(
-        `[GDPR] Eliminati ${purged} check-in più vecchi di 24 ore (retention)`,
+        `[GDPR] Post-report: eliminati ${purged} check-in >24h (retention)`,
       );
     }
     const { pushCheckinsBackup } = await import('./backup.js');
@@ -330,7 +331,7 @@ export async function runDailyReport({ force = false } = {}) {
       await pushCheckinsBackup(exportAllCheckins());
     }
   } catch (err) {
-    console.error('[backup] post-report sync failed:', err.message || err);
+    console.error('[GDPR] post-report purge/backup failed:', err.message || err);
   }
 
   return {

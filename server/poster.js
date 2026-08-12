@@ -2,6 +2,14 @@ import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 import { Resend } from 'resend';
 import { emailLightModeHead, emailLightBodyAttrs, EMAIL_FORCE_WHITE } from './email-light.js';
+import {
+  EMAIL_BODY as BODY,
+  EMAIL_SANS as SANS,
+  emailFontsHead,
+  emailBodyStyle,
+  emailDisplayStyle,
+  emailEyebrowStyle,
+} from './email-type.js';
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
@@ -190,26 +198,31 @@ export async function buildPosterPdfBuffer({
 
 function buildPosterEmailHtml({ hotelName, pdfKb }) {
   const brand = String(hotelName || 'Hotel Canal');
+  const C = '#164E5B';
+  const BRASS = '#6E868F';
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+${emailFontsHead()}
 ${emailLightModeHead({
-  canal: '#124453',
-  box: '#F4F7F9',
+  canal: C,
+  box: '#E9EEF0',
   extraCss: `
-    body{font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;margin:0;padding:32px 20px;}
-    .card{max-width:480px;margin:0 auto;border:1px solid #E5E5EA;border-top:5px solid #124453;padding:28px 24px;background:#FFFFFF !important;}
-    h1{font-family:Georgia,serif;font-size:22px;color:#124453 !important;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 10px;}
-    p{font-size:14px;line-height:1.55;color:#515154 !important;margin:0 0 12px;}
-    .meta{font-size:12px;color:#8E8E93 !important;}
+    body{font-family:${SANS};margin:0;padding:32px 20px;background:#FFFFFF !important;}
+    .card{max-width:480px;margin:0 auto;border:1px solid #E2E6E8;border-radius:24px;padding:28px 24px;background:#FFFFFF !important;}
+    h1{${emailDisplayStyle({ size: '22px', color: C, tracking: '0.1em' })};margin:0 0 8px;text-align:center;}
+    .eyebrow{${emailEyebrowStyle({ color: BRASS })};margin:0 0 18px;text-align:center;}
+    p{${emailBodyStyle()};color:#4A5560 !important;margin:0 0 14px;}
+    .meta{font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:${BRASS} !important;margin:18px 0 0;}
   `,
 })}
 </head>
 <body ${emailLightBodyAttrs()}>
 <div class="card force-white" bgcolor="${EMAIL_FORCE_WHITE}" style="background-color:${EMAIL_FORCE_WHITE} !important;">
+<div class="eyebrow">Reception · A4 poster</div>
 <h1>${brand}</h1>
 <p>Your A4 reception poster is attached as a PDF (Welcome Discount · English).</p>
-<p>Open the attachment and print at <strong>100% / actual size</strong> on A4. No browser scaling.</p>
-<p class="meta">File size ~${pdfKb} KB · QR points to ${publicBaseUrl()}/</p>
+<p>Open the attachment and print at <strong style="font-style:italic;color:${C} !important;">100% / actual size</strong> on A4. No browser scaling.</p>
+<p class="meta">File size ~${pdfKb} KB · QR → ${publicBaseUrl()}/</p>
 </div></body></html>`;
 }
 

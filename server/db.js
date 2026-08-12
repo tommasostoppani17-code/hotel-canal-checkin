@@ -14,9 +14,23 @@ export function getDb() {
   return db;
 }
 
-function ensureColumn(name, ddl) {
+function ensureColumn(name) {
+  // Allowlist ferrea: niente DDL da input utente (anti SQL injection su ALTER).
+  const ALLOWED = {
+    email: 'email TEXT',
+    receptionist: 'receptionist TEXT',
+    guests_count: 'guests_count INTEGER',
+    coupon_token: 'coupon_token TEXT',
+    coupon_sent_at: 'coupon_sent_at TEXT',
+    table_booking: 'table_booking TEXT',
+  };
+  const ddl = ALLOWED[name];
+  if (!ddl) {
+    throw new Error(`[db] colonna non consentita: ${String(name).slice(0, 40)}`);
+  }
   const cols = db.prepare(`PRAGMA table_info(checkins)`).all();
   if (!cols.some((c) => c.name === name)) {
+    // ddl è letterale dalla mappa, mai interpolato da request
     db.exec(`ALTER TABLE checkins ADD COLUMN ${ddl}`);
   }
 }
@@ -45,12 +59,12 @@ export function initDb(databasePath) {
       ON checkins (reported_at);
   `);
 
-  ensureColumn('email', 'email TEXT');
-  ensureColumn('receptionist', 'receptionist TEXT');
-  ensureColumn('guests_count', 'guests_count INTEGER');
-  ensureColumn('coupon_token', 'coupon_token TEXT');
-  ensureColumn('coupon_sent_at', 'coupon_sent_at TEXT');
-  ensureColumn('table_booking', 'table_booking TEXT');
+  ensureColumn('email');
+  ensureColumn('receptionist');
+  ensureColumn('guests_count');
+  ensureColumn('coupon_token');
+  ensureColumn('coupon_sent_at');
+  ensureColumn('table_booking');
 
   db.exec(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_coupon_token
@@ -62,6 +76,20 @@ export function initDb(databasePath) {
     CREATE INDEX IF NOT EXISTS idx_checkins_created_at
       ON checkins (created_at);
   `);
+
+  // Max 1 check-in attivo per stanza (dopo purge GDPR 24h la stanza si libera)
+  try {
+    db.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_room_unique
+        ON checkins (UPPER(TRIM(room_number)))
+        WHERE room_number IS NOT NULL AND TRIM(room_number) != '';
+    `);
+  } catch (err) {
+    console.warn(
+      '[db] idx_checkins_room_unique non creato (possibili duplicati esistenti):',
+      err.message || err,
+    );
+  }
 
   // Contatori mensili senza PII (sopravvivono al purge GDPR 24h)
   db.exec(`
@@ -210,6 +238,26 @@ export function bumpStaffMonthStats({
       coupons = coupons + @couponInc
   `,
   ).run({ ym, staff, couponInc });
+}
+
+/** True se la stanza è già usata da un altro check-in attivo. */
+export function isRoomTaken(roomNumber, excludeId = null) {
+  const room = String(roomNumber || '').trim();
+  if (!room) return false;
+  const row = db
+    .prepare(
+      `
+      SELECT id FROM checkins
+      WHERE room_number IS NOT NULL
+        AND TRIM(room_number) != ''
+        AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
+      LIMIT 1
+    `,
+    )
+    .get({ room });
+  if (!row) return false;
+  if (excludeId != null && Number(row.id) === Number(excludeId)) return false;
+  return true;
 }
 
 export function insertCheckin({
@@ -371,13 +419,19 @@ export function getUnreportedCheckins() {
 }
 
 export function markReported(ids) {
-  if (!ids.length) return 0;
-  const placeholders = ids.map(() => '?').join(',');
+  if (!Array.isArray(ids) || !ids.length) return 0;
+  // Solo id numerici; placeholder bound — mai concatenare valori nel SQL.
+  const safeIds = ids
+    .map((id) => Number(id))
+    .filter((id) => Number.isInteger(id) && id > 0)
+    .slice(0, 5000);
+  if (!safeIds.length) return 0;
+  const placeholders = safeIds.map(() => '?').join(',');
   const result = db
     .prepare(
       `UPDATE checkins SET reported_at = datetime('now') WHERE id IN (${placeholders})`,
     )
-    .run(...ids);
+    .run(...safeIds);
   return result.changes;
 }
 
@@ -485,14 +539,26 @@ export function exportAllCheckins() {
 /**
  * GDPR retention: elimina check-in più vecchi di `hours` ore.
  * Default 24h — dopo report notturno il caveau si svuota.
+ * Offset sempre bound come parametro (?), mai interpolato.
  */
 export function purgeCheckinsOlderThanHours(hours = 24) {
-  const h = Math.max(1, Number(hours) || 24);
+  const h = Math.max(1, Math.min(168, Number(hours) || 24));
+  const result = db
+    .prepare(`DELETE FROM checkins WHERE created_at < datetime('now', ?)`)
+    .run(`-${h} hours`);
+  return result.changes || 0;
+}
+
+/**
+ * Retention ferrea 24h (letterale SQL fisso, nessun input runtime).
+ * Chiamare subito dopo l'invio riuscito del report CSV.
+ */
+export function purgeCheckinsOlderThan24Hours() {
   const result = db
     .prepare(
-      `DELETE FROM checkins WHERE created_at < datetime('now', ?)`,
+      `DELETE FROM checkins WHERE created_at < datetime('now', '-24 hours')`,
     )
-    .run(`-${h} hours`);
+    .run();
   return result.changes || 0;
 }
 

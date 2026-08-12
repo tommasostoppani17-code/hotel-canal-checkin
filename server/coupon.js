@@ -6,6 +6,19 @@ import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
 import { resolveWelcomeLang, welcomeCopy } from './welcome-i18n.js';
 import { emailLightModeHead, emailLightBodyAttrs } from './email-light.js';
+import {
+  EMAIL_SERIF as SERIF,
+  EMAIL_BODY as BODY,
+  EMAIL_SANS as SANS,
+  EMAIL_CINZEL as CINZEL,
+  emailFontsHead,
+  emailBodyStyle,
+  emailLabelStyle,
+  emailSectionStyle,
+  emailCtaStyle,
+  emailDisplayStyle,
+  emailEyebrowStyle,
+} from './email-type.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -216,25 +229,21 @@ function buildWelcomeHtml({
   const WHITE = '#FFFFFF';
   /* Accento freddo canal (niente oro/giallino) */
   const BRASS = '#6E868F';
-  const SERIF = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
-  const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
-  const SANS = "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-  const CINZEL = "'Cinzel',Georgia,'Times New Roman',serif";
-  /* Scala tipografica ferrea (welcome email) */
+  /* Scala tipografica = mail tavolo (Cormorant / EB Garamond / Cinzel / DM Sans) */
   const FS = {
-    section: '12px',
-    body: '13px',
-    bodySm: '12px',
-    itemTitle: '12.5px',
-    stepTitle: '13px',
-    stepLine: '12px',
-    label: '9.5px',
-    button: '11.5px',
-    legal: '9px',
+    section: '13px',
+    body: '14.5px',
+    bodySm: '13px',
+    itemTitle: '15px',
+    stepTitle: '15px',
+    stepLine: '13px',
+    label: '10px',
+    button: '12.5px',
+    legal: '9.5px',
   };
-  const bodyStyle = `font-family:${BODY};font-style:italic;font-size:${FS.body};line-height:1.45;font-weight:400`;
-  const bodySmStyle = `font-family:${BODY};font-style:italic;font-size:${FS.bodySm};line-height:1.4;font-weight:400`;
-  const labelStyle = `font-family:${SANS};font-size:${FS.label};font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
+  const bodyStyle = emailBodyStyle({ size: FS.body, line: '1.55' });
+  const bodySmStyle = emailBodyStyle({ size: FS.bodySm, line: '1.4' });
+  const labelStyle = emailLabelStyle({ size: FS.label });
 
   const name = escapeHtml(guestName || lp.guestFallback);
   const firstNamePlain = String(guestName || lp.guestFallback)
@@ -285,7 +294,7 @@ function buildWelcomeHtml({
                     ${iconCell(iconSrc, iconAlt || label, 20)}
                   </td>
                   <td valign="middle" style="padding:0 0 12px 0;">
-                    <div class="brand-title" style="font-family:${CINZEL};font-size:${FS.section};font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                    <div class="brand-title" style="${emailSectionStyle({ size: FS.section, color: C })}">${label}</div>
                   </td>
                 </tr>
               </table>`;
@@ -366,7 +375,7 @@ function buildWelcomeHtml({
                   </td>
                 </tr>
               </table>
-              <a href="https://cda.ve.it" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 36px;">
+              <a href="https://cda.ve.it" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;${emailCtaStyle({ size: FS.button })};margin:0 0 36px;">
                 ${lp.ticketBtn}
               </a>`;
 
@@ -454,9 +463,7 @@ function buildWelcomeHtml({
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>${escapeHtml(lp.htmlTitle)}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  ${emailFontsHead()}
   ${emailLightModeHead({
     canal: C,
     box: BOX,
@@ -509,8 +516,8 @@ function buildWelcomeHtml({
                 <tr>
                   <td align="center" style="padding:2px 0 16px 0;border-bottom:1px solid #E8E4DC;">
                     ${stickers.mask ? `<div style="margin:0 0 8px;line-height:0;font-size:0;">${stickerImg(stickers.mask, 40)}</div>` : ''}
-                    <div style="font-family:${SERIF};font-size:24px;font-weight:700;letter-spacing:0.12em;color:${C} !important;text-transform:uppercase;line-height:1.15;mso-line-height-rule:exactly;">HOTEL CANAL</div>
-                    <div class="brass" style="font-family:${SANS};font-size:9.5px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">SANTA CROCE 553 · VENEZIA</div>
+                    <div style="${emailDisplayStyle({ color: C })}">HOTEL CANAL</div>
+                    <div class="brass" style="${emailEyebrowStyle({ color: BRASS })};margin-top:8px;">SANTA CROCE 553 · VENEZIA</div>
                   </td>
                 </tr>
               </table>
@@ -597,7 +604,7 @@ function buildWelcomeHtml({
                   </td>
                 </tr>
               </table>
-              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 48px;">
+              <a href="${maps}" target="_blank" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;${emailCtaStyle({ size: '13px' })};margin:0 0 48px;">
                 ${lp.mapsBtn}
               </a>
 
@@ -664,7 +671,7 @@ function buildWelcomeHtml({
                 </tr>
                 <tr>
                   <td align="center" style="padding:26px 22px 28px;background-color:#FFFFFF !important;">
-                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:#FFFFFF !important;color:${C} !important;text-decoration:none;padding:15px 18px;border-radius:14px;border:1.5px solid ${C};font-family:${SANS};font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;">
+                    <a href="${claim}" target="_blank" style="display:block;text-align:center;background-color:#FFFFFF !important;color:${C} !important;text-decoration:none;padding:15px 18px;border-radius:14px;border:1.5px solid ${C};${emailCtaStyle({ size: '13px' })};letter-spacing:0.06em;">
                       ${lp.claimBtn}
                     </a>
                   </td>

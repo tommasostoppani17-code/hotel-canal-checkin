@@ -1,6 +1,20 @@
 /** Report email per Payel — stile Hotel Canal, leggibile su telefono */
 
 import { emailLightModeHead, emailLightBodyAttrs } from './email-light.js';
+import {
+  EMAIL_SERIF as SERIF,
+  EMAIL_BODY as BODY,
+  EMAIL_SANS as SANS,
+  EMAIL_CINZEL as CINZEL,
+  emailFontsHead,
+  emailBodyStyle,
+  emailLabelStyle,
+  emailSectionStyle,
+  emailValueStyle,
+  emailCtaStyle,
+  emailDisplayStyle,
+  emailEyebrowStyle,
+} from './email-type.js';
 
 function csvEscape(value) {
   const raw = value == null ? '' : String(value);
@@ -55,20 +69,15 @@ const C = '#164E5B';
 const BOX = '#E9EEF0';
 const WHITE = '#FFFFFF';
 const BRASS = '#6E868F';
-const SERIF = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
-const BODY = "'EB Garamond',Georgia,'Times New Roman',serif";
-const SANS =
-  "'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-const CINZEL = "'Cinzel',Georgia,'Times New Roman',serif";
-const bodyStyle = `font-family:${BODY};font-style:italic;font-size:14.5px;line-height:1.55;font-weight:400`;
-const labelStyle = `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
+const bodyStyle = emailBodyStyle();
+const labelStyle = emailLabelStyle();
 
 function sectionTitle(label) {
   return `
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 12px;border-bottom:1px solid rgba(22,78,91,0.14);">
                 <tr>
                   <td style="padding:0 0 10px 0;">
-                    <div style="font-family:${CINZEL};font-size:13px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                    <div style="${emailSectionStyle({ color: C })}">${label}</div>
                   </td>
                 </tr>
               </table>`;
@@ -83,9 +92,7 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(title)}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  ${emailFontsHead()}
   ${emailLightModeHead({
     canal: C,
     box: BOX,
@@ -122,10 +129,10 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px;">
                 <tr>
                   <td align="center" style="padding:2px 0 18px 0;border-bottom:1px solid #E8E4DC;">
-                    <div style="font-family:${SERIF};font-size:24px;font-weight:700;letter-spacing:0.12em;color:${C} !important;text-transform:uppercase;line-height:1.15;mso-line-height-rule:exactly;">
+                    <div style="${emailDisplayStyle({ color: C })}">
                       ${escapeHtml(hotelName)}
                     </div>
-                    <div style="font-family:${SANS};font-size:9.5px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">
+                    <div style="${emailEyebrowStyle({ color: BRASS })};margin-top:8px;">
                       ${escapeHtml(eyebrow)}
                     </div>
                   </td>
@@ -264,18 +271,18 @@ function buildDailyGuestRows(rows) {
             ${escapeHtml(room)}
           </td>
           <td valign="top" style="padding:18px 0;border-bottom:${border};vertical-align:top;">
-            <div style="font-family:${SANS};font-size:12.5px;font-weight:600;color:#1D1D1F !important;letter-spacing:0.01em;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">
+            <div style="${emailValueStyle({ size: '17px', color: C })};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">
               ${escapeHtml(name)}
             </div>
-            <div style="font-family:${SANS};font-size:12px;font-weight:500;color:#334155 !important;line-height:1.4;margin-top:5px;white-space:nowrap;">
+            <div style="font-family:${SERIF};font-size:14px;font-weight:500;color:#334155 !important;letter-spacing:0.01em;line-height:1.4;margin-top:5px;white-space:nowrap;">
               ${escapeHtml(phone)}
             </div>
             ${
               email
-                ? `<div style="font-family:${SANS};font-size:11px;color:#8A949C !important;line-height:1.4;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">${escapeHtml(email)}</div>`
+                ? `<div style="font-family:${BODY};font-style:italic;font-size:12.5px;color:#8A949C !important;line-height:1.4;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">${escapeHtml(email)}</div>`
                 : ''
             }
-            <div style="font-family:${SANS};font-size:10px;font-weight:600;letter-spacing:0.03em;color:#5C6670 !important;line-height:1.4;margin-top:8px;white-space:nowrap;">
+            <div style="${emailLabelStyle({ size: '9.5px', color: '#5C6670' })};margin-top:10px;letter-spacing:0.06em;white-space:nowrap;">
               ${escapeHtml(staff)}&nbsp;&nbsp;·&nbsp;&nbsp;${escapeHtml(pax)} pax&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${offerColor} !important;">${offer}</span>${
                 tableTime
                   ? `&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${C} !important;">Tavolo ${escapeHtml(tableTime)}</span>`
@@ -386,7 +393,7 @@ export function buildMonthlyStaffEmail({
       return `
         <tr>
           <td width="36" style="width:36px;padding:16px 8px 16px 0;border-bottom:${border};font-family:${SERIF};font-weight:700;font-size:14px;color:${C};white-space:nowrap;${bg}">${pos}</td>
-          <td style="padding:16px 8px;border-bottom:${border};font-family:${SANS};font-size:12.5px;font-weight:600;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${bg}">${escapeHtml(row.receptionist)}</td>
+          <td style="padding:16px 8px;border-bottom:${border};font-family:${SERIF};font-size:15px;font-weight:600;letter-spacing:0.01em;color:${C};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${bg}">${escapeHtml(row.receptionist)}</td>
           <td align="right" style="padding:16px 0 16px 8px;border-bottom:${border};text-align:right;font-family:${SERIF};font-weight:700;font-size:14px;color:${C};white-space:nowrap;${bg}">${row.totale_registrati}</td>
           <td align="right" style="padding:16px 0 16px 8px;border-bottom:${border};text-align:right;font-family:${SANS};font-weight:600;font-size:12.5px;color:${C};white-space:nowrap;${bg}">${row.coupon_emessi}</td>
         </tr>
@@ -502,14 +509,14 @@ export function buildTableBookingEmail({ hotelName, row }) {
   const iconCloche = escapeHtml(publicAssetUrl('email', 'icons', 'cloche.png'));
   const iconWine = escapeHtml(publicAssetUrl('email', 'icons', 'wine.png'));
 
-  const bodyStyle = `font-family:${BODY};font-style:italic;font-size:13px;line-height:1.45;font-weight:400`;
-  const labelStyle = `font-family:${SANS};font-size:9.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important`;
+  const bodyStyle = emailBodyStyle({ size: '14.5px', line: '1.55' });
+  const labelStyle = emailLabelStyle({ size: '10px' });
 
   const sectionTitle = (label) => `
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0 14px;border-bottom:1px solid rgba(22,78,91,0.14);">
                 <tr>
                   <td style="padding:0 0 10px 0;">
-                    <div class="brand-title" style="font-family:${CINZEL};font-size:12px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">${label}</div>
+                    <div class="brand-title" style="${emailSectionStyle({ size: '13px', color: C })}">${label}</div>
                   </td>
                 </tr>
               </table>`;
@@ -527,7 +534,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 <tr>
                   <td style="padding:11px 0;border-bottom:1px solid #E8E4DC;">
                     <div style="${labelStyle};margin:0 0 4px;">${label}</div>
-                    <div class="text-main" style="font-family:${SERIF};font-size:16px;font-weight:600;color:${C} !important;letter-spacing:0.02em;line-height:1.3;">${valueHtml}</div>
+                    <div class="text-main" style="${emailValueStyle({ color: C })}">${valueHtml}</div>
                   </td>
                 </tr>`;
 
@@ -538,9 +545,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(subject)}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  ${emailFontsHead()}
   ${emailLightModeHead({
     canal: C,
     box: BOX,
@@ -563,8 +568,8 @@ export function buildTableBookingEmail({ hotelName, row }) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
                 <tr>
                   <td align="center" style="padding:2px 0 16px 0;border-bottom:1px solid #E8E4DC;">
-                    <div style="font-family:${SERIF};font-size:22px;font-weight:700;letter-spacing:0.1em;color:${C} !important;text-transform:uppercase;line-height:1.15;mso-line-height-rule:exactly;">Trattoria alla Terrazza</div>
-                    <div class="brass" style="font-family:${SANS};font-size:9.5px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:${BRASS} !important;margin-top:8px;">Partner · ${escapeHtml(hotel)}</div>
+                    <div style="${emailDisplayStyle({ size: '22px', color: C, tracking: '0.1em' })}">Trattoria alla Terrazza</div>
+                    <div class="brass" style="${emailEyebrowStyle({ color: BRASS, tracking: '0.22em' })};margin-top:8px;">Partner · ${escapeHtml(hotel)}</div>
                   </td>
                 </tr>
               </table>
@@ -587,7 +592,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                         ? `<img src="${iconCloche}" width="28" height="28" alt="" style="display:inline-block;width:28px;height:28px;border:0;margin:0 0 8px;">`
                         : ''
                     }
-                    <span style="font-family:${SANS};font-size:10px;font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.14em;display:block;margin-bottom:6px;">Orario richiesto</span>
+                    <span style="${emailLabelStyle({ size: '10px', color: '#7A8690' })};display:block;margin-bottom:6px;">Orario richiesto</span>
                     <strong class="brand-title" style="font-family:${SERIF};font-size:28px;color:${C} !important;font-weight:700;letter-spacing:0.06em;line-height:1;text-transform:uppercase;">${escapeHtml(timeDisplay)}</strong>
                     <div style="font-family:${SANS};font-size:12px;font-weight:600;color:#7A8690 !important;letter-spacing:0.03em;margin-top:10px;">
                       Stanza ${escapeHtml(room)} · ${escapeHtml(String(pax))} ospiti
@@ -599,16 +604,16 @@ export function buildTableBookingEmail({ hotelName, row }) {
               ${
                 phoneTel
                   ? `
-              <a href="tel:${escapeHtml(phoneTel)}" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;font-family:${SANS};font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">
+              <a href="tel:${escapeHtml(phoneTel)}" style="display:block;text-align:center;background-color:${C};color:#FFFFFF !important;text-decoration:none;padding:15px;border-radius:14px;${emailCtaStyle()};margin:0 0 8px;">
                 Chiama ${escapeHtml(name)}
               </a>
-              <p style="font-family:${SANS};font-size:12px;font-weight:600;color:${BRASS} !important;text-align:center;margin:0 0 28px;letter-spacing:0.02em;">
+              <p style="font-family:${SERIF};font-size:15px;font-weight:600;color:${BRASS} !important;text-align:center;margin:0 0 28px;letter-spacing:0.02em;">
                 ${escapeHtml(phone)}
               </p>`
                   : `
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;background-color:${BOX};border-radius:14px;border:1px solid #E2E6E8;">
                 <tr>
-                  <td style="padding:15px 18px;font-family:${BODY};font-style:italic;font-size:14px;color:#4A5560 !important;line-height:1.45;text-align:center;">
+                  <td style="padding:15px 18px;${emailBodyStyle({ size: '14px', line: '1.45' })};color:#4A5560 !important;text-align:center;">
                     Contatto ospite non disponibile — chiedere in reception.
                   </td>
                 </tr>
@@ -642,7 +647,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                         ? `<img src="${iconWine}" width="24" height="24" alt="" style="display:inline-block;width:24px;height:24px;border:0;margin:0 0 8px;">`
                         : ''
                     }
-                    <div class="brand-title" style="font-family:${CINZEL};font-size:12px;font-weight:700;color:${C} !important;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">Coupon &minus;10%</div>
+                    <div class="brand-title" style="${emailSectionStyle({ size: '12px', color: C })};margin:0 0 8px;">Coupon &minus;10%</div>
                     <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0;text-align:center;">
                       Gi&agrave; inviato all&rsquo;ospite via email. In chiamata puoi ricordarglielo.
                     </p>

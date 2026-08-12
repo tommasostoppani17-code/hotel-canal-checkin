@@ -18,7 +18,8 @@ import {
   countCheckins,
   setTableBooking,
   getCheckinById,
-  purgeCheckinsOlderThanHours,
+  purgeCheckinsOlderThan24Hours,
+  isRoomTaken,
 } from './db.js';
 import {
   runDailyReport,
@@ -58,6 +59,19 @@ const IS_PROD =
   process.env.RENDER === 'true' || process.env.NODE_ENV === 'production';
 const DATABASE_PATH =
   process.env.DATABASE_PATH || path.join(rootDir, 'data', 'checkins.db');
+
+{
+  const resolvedDb = path.resolve(DATABASE_PATH);
+  const publicRoot = path.resolve(rootDir, 'public');
+  if (
+    resolvedDb === publicRoot ||
+    resolvedDb.startsWith(`${publicRoot}${path.sep}`)
+  ) {
+    throw new Error(
+      'DATABASE_PATH non può trovarsi sotto public/ (esposizione web vietata)',
+    );
+  }
+}
 
 /** Token report manuale: solo se impostato in env (niente hardcoded in prod). */
 const REPORT_TRIGGER_TOKEN = String(process.env.REPORT_TRIGGER_TOKEN || '')
@@ -139,7 +153,7 @@ app.set('trust proxy', 1);
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
-/** Rate limit semplice in-memory (anti-spam check-in / booking). */
+/** Rate limit in-memory (anti brute-force / DoS su rotte PII). */
 const rateBuckets = new Map();
 function rateLimit({ windowMs = 60_000, max = 30, keyFn } = {}) {
   return (req, res, next) => {
@@ -152,17 +166,25 @@ function rateLimit({ windowMs = 60_000, max = 30, keyFn } = {}) {
     }
     bucket.count += 1;
     if (bucket.count > max) {
-      return res.status(429).json({ error: 'Troppe richieste. Riprova tra un minuto.' });
+      const retryMin = Math.max(1, Math.ceil(windowMs / 60_000));
+      res.setHeader('Retry-After', String(Math.ceil(windowMs / 1000)));
+      return res.status(429).json({
+        error: `Troppe richieste. Riprova tra ${retryMin} minut${retryMin === 1 ? 'o' : 'i'}.`,
+        code: 'rate_limited',
+      });
     }
     return next();
   };
 }
 
-// Pulizia periodica bucket
+/** Check-in / lead: max 5 richieste / 15 minuti per IP (bancario). */
+const checkinRateLimit = rateLimit({ windowMs: 15 * 60_000, max: 5 });
+
+// Pulizia periodica bucket (finestre fino a 15m)
 setInterval(() => {
   const now = Date.now();
   for (const [key, bucket] of rateBuckets) {
-    if (now - bucket.start > 5 * 60_000) rateBuckets.delete(key);
+    if (now - bucket.start > 20 * 60_000) rateBuckets.delete(key);
   }
 }, 60_000).unref?.();
 
@@ -181,9 +203,12 @@ function maskEmail(email) {
 
 /** Header di sicurezza (CSP tollera inline perché public/index.html è monolitico). */
 app.use((req, res, next) => {
+  const proto = String(req.get('x-forwarded-proto') || req.protocol || '');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-XSS-Protection', '0'); // browser moderni: CSP > legacy XSS auditor
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   res.setHeader(
     'Permissions-Policy',
     'camera=(), microphone=(), geolocation=(), payment=()',
@@ -201,9 +226,9 @@ app.use((req, res, next) => {
       "img-src 'self' data: blob:",
       "connect-src 'self'",
       "object-src 'none'",
+      ...(proto === 'https' ? ['upgrade-insecure-requests'] : []),
     ].join('; '),
   );
-  const proto = String(req.get('x-forwarded-proto') || req.protocol || '');
   if (proto === 'https') {
     res.setHeader(
       'Strict-Transport-Security',
@@ -213,6 +238,21 @@ app.use((req, res, next) => {
   next();
 });
 
+/** Blocca esplicitamente DB / dump / path data (mai da cartella public). */
+app.use((req, res, next) => {
+  const p = String(req.path || '').toLowerCase();
+  if (
+    /\.(db|sqlite3?|sql|bak|dump)$/i.test(p) ||
+    p === '/data' ||
+    p.startsWith('/data/') ||
+    p.includes('checkins.db') ||
+    p.includes('.env')
+  ) {
+    return res.status(404).end();
+  }
+  return next();
+});
+
 // Cache lunga su asset email: i proxy Gmail/Apple rifetchano spesso
 app.use(
   '/email',
@@ -220,8 +260,12 @@ app.use(
     maxAge: '7d',
     etag: true,
     lastModified: true,
+    dotfiles: 'deny',
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      // Client mail cross-origin devono poter caricare le immagini
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
     },
   }),
 );
@@ -313,10 +357,20 @@ app.get(['/cartello-reception.html', '/qr-poster.html'], (req, res) => {
   }
 });
 
-app.use(express.static(path.join(rootDir, 'public')));
+app.use(
+  express.static(path.join(rootDir, 'public'), {
+    dotfiles: 'deny',
+    index: ['index.html'],
+    setHeaders(res) {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+    },
+  }),
+);
 
-const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^\+?[0-9]{7,15}$/;
+const EMAIL_REGEX =
+  /^[A-Za-z0-9._%+-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
 const GUEST_ACCESS_TTL_SEC = 60 * 60 * 72; // 72h dopo check-in
 
 function guestAccessSecret() {
@@ -392,30 +446,44 @@ function buildGuestServicesPayload() {
   };
 }
 
-/** Nome receptionist a testo libero (maiuscolo, spazi normalizzati). */
-function normalizeReceptionist(raw) {
-  const key = String(raw || '')
-    .trim()
+/** Rimuove markup/script (XSS) da testo libero ospite. */
+function sanitizePlainText(value, maxLen = 80) {
+  return String(value || '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/[<>"'`\\]/g, '')
+    .replace(/[\u0000-\u001F\u007F]/g, '')
     .replace(/\s+/g, ' ')
-    .toUpperCase();
+    .trim()
+    .slice(0, maxLen);
+}
+
+/** Nome receptionist a testo libero (maiuscolo, spazi normalizzati, no HTML). */
+function normalizeReceptionist(raw) {
+  const key = sanitizePlainText(raw, 60).toUpperCase();
   return key || null;
 }
 
+/** Solo cifre e un eventuale + iniziale (00… → +…). */
 function cleanPhone(phone) {
-  return String(phone || '').replace(/[\s\-\(\)\.]/g, '');
+  let s = String(phone || '').replace(/[^\d+]/g, '');
+  if (!s) return '';
+  if (s.startsWith('00')) s = `+${s.slice(2)}`;
+  const hasPlus = s.startsWith('+');
+  s = s.replace(/\+/g, '');
+  return hasPlus ? `+${s}` : s;
 }
 
 function normalizeField(value) {
-  return String(value || '').trim().toLowerCase();
+  return sanitizePlainText(value, 120).toLowerCase();
 }
 
 function toUpperOrNull(value) {
-  const trimmed = String(value || '').trim();
+  const trimmed = sanitizePlainText(value, 80);
   return trimmed ? trimmed.toUpperCase() : null;
 }
 
 function normalizeEmail(value) {
-  const trimmed = String(value || '').trim().toLowerCase();
+  const trimmed = sanitizePlainText(value, 254).toLowerCase();
   return trimmed || null;
 }
 
@@ -424,7 +492,7 @@ function isValidPhone(cleaned) {
 }
 
 function isValidEmail(email) {
-  return EMAIL_REGEX.test(email);
+  return Boolean(email) && email.length <= 254 && EMAIL_REGEX.test(email);
 }
 
 function isManualReportTrigger({ phone, guestName, firstName, lastName }) {
@@ -702,6 +770,16 @@ app.post('/coupon/claim/:token', (req, res) => {
     );
   }
 
+  if (isRoomTaken(roomNumber, row.id || null)) {
+    return res.status(409).type('html').send(
+      buildCouponClaimPage({
+        token,
+        guestName: row.guest_name,
+        error: 'Questa stanza è già registrata. Contatta la reception.',
+      }),
+    );
+  }
+
   if (row.id) {
     updateCheckinCouponDetails(row.id, { roomNumber, receptionist });
     markCouponSent(row.id);
@@ -715,15 +793,30 @@ app.post('/coupon/claim/:token', (req, res) => {
     return res.status(400).type('html').send(couponLinkGonePage());
   }
   const redeemToken = createCouponToken();
-  const id = insertCheckin({
-    phone,
-    email: row.email || payload?.e || null,
-    guestName: row.guest_name || payload?.g || null,
-    roomNumber,
-    receptionist,
-    guestsCount: row.guests_count ?? payload?.n ?? 2,
-    couponToken: redeemToken,
-  });
+  let id;
+  try {
+    id = insertCheckin({
+      phone,
+      email: row.email || payload?.e || null,
+      guestName: row.guest_name || payload?.g || null,
+      roomNumber,
+      receptionist,
+      guestsCount: row.guests_count ?? payload?.n ?? 2,
+      couponToken: redeemToken,
+    });
+  } catch (err) {
+    const msg = String(err?.message || err || '');
+    if (/UNIQUE|idx_checkins_room_unique/i.test(msg)) {
+      return res.status(409).type('html').send(
+        buildCouponClaimPage({
+          token,
+          guestName: row.guest_name,
+          error: 'Questa stanza è già registrata. Contatta la reception.',
+        }),
+      );
+    }
+    throw err;
+  }
   markCouponSent(id);
   void syncCheckinsBackup('coupon-claim');
 
@@ -868,17 +961,36 @@ async function handleCheckin(req, res) {
       receptionist = null;
     }
 
+    if (roomNumber && isRoomTaken(roomNumber)) {
+      return res.status(409).json({
+        error: 'Stanza già registrata',
+        code: 'room_taken',
+      });
+    }
+
     const couponToken = createCouponToken();
 
-    const id = insertCheckin({
-      phone,
-      email,
-      guestName,
-      roomNumber,
-      receptionist,
-      guestsCount,
-      couponToken,
-    });
+    let id;
+    try {
+      id = insertCheckin({
+        phone,
+        email,
+        guestName,
+        roomNumber,
+        receptionist,
+        guestsCount,
+        couponToken,
+      });
+    } catch (err) {
+      const msg = String(err?.message || err || '');
+      if (/UNIQUE|idx_checkins_room_unique/i.test(msg)) {
+        return res.status(409).json({
+          error: 'Stanza già registrata',
+          code: 'room_taken',
+        });
+      }
+      throw err;
+    }
 
     // Orario tavolo scelto nello Step 2 (opzionale)
     const tableRaw = String(
@@ -932,21 +1044,13 @@ async function handleCheckin(req, res) {
       guestsCount,
     });
   } catch (err) {
-    console.error('Errore check-in:', err);
+    console.error('Errore check-in:', err?.message || err);
     return res.status(500).json({ error: 'Errore interno server' });
   }
 }
 
-app.post(
-  '/api/checkins',
-  rateLimit({ windowMs: 60_000, max: 20 }),
-  handleCheckin,
-);
-app.post(
-  '/api/save-lead',
-  rateLimit({ windowMs: 60_000, max: 20 }),
-  handleCheckin,
-);
+app.post('/api/checkins', checkinRateLimit, handleCheckin);
+app.post('/api/save-lead', checkinRateLimit, handleCheckin);
 
 /** Richiesta tavolo dopo check-in → email Payel + WhatsApp Twilio (se configurato). */
 app.post(
@@ -1128,7 +1232,7 @@ app.listen(PORT, async () => {
   console.log(`Cron staff: 00:05 il 1° del mese (${CRON_TZ}) → mese precedente`);
   await restoreCheckinsBackupIfNeeded();
   try {
-    const purged = purgeCheckinsOlderThanHours(24);
+    const purged = purgeCheckinsOlderThan24Hours();
     if (purged > 0) {
       console.log(`[GDPR] Boot purge: eliminati ${purged} check-in >24h`);
       void syncCheckinsBackup('gdpr-purge');

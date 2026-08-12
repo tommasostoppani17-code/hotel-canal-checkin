@@ -87,7 +87,7 @@ export const WELCOME_I18N = {
     ticketDesc:
       'Come ospite dell&rsquo;<strong style="font-style:italic;">Hotel Canal</strong>, sei legalmente esentato dal pagamento del ticket giornaliero di accesso a Venezia. Registra la presenza per ottenere il QR ufficiale del Comune.',
     ticketBox:
-      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Dati per il sito del Comune</span>Motivo: ospite in struttura ricettiva a Venezia<br>Struttura: Hotel Canal (Santa Croce 553)<br>Riferimento: Stanza ',
+      '<span style="font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Dati per il sito del Comune</span>Motivo: ospite in struttura ricettiva a Venezia<br>Struttura: Hotel Canal (Santa Croce 553)<br>Riferimento: Stanza ',
     ticketBtn: 'Richiedi QR municipalit&agrave;',
     legalText:
       'Questa e-mail &egrave; stata inviata automaticamente dal sistema di check-in dell&rsquo;Hotel Canal. I tuoi dati sono trattati in conformit&agrave; al Regolamento UE 2016/679 (GDPR) per le finalit&agrave; legate al tuo soggiorno. Informativa completa al banco o su hotelcanal.com.',
@@ -191,7 +191,7 @@ export const WELCOME_I18N = {
     ticketDesc:
       'As a guest of <strong style="font-style:italic;">Hotel Canal</strong>, you are legally exempt from Venice&rsquo;s daily access fee. Register your stay to receive the official municipal QR code.',
     ticketBox:
-      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Details for the municipal website</span>Reason: guest in an accommodation facility in Venice<br>Property: Hotel Canal (Santa Croce 553)<br>Reference: Room ',
+      '<span style="font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Details for the municipal website</span>Reason: guest in an accommodation facility in Venice<br>Property: Hotel Canal (Santa Croce 553)<br>Reference: Room ',
     ticketBtn: 'Request municipal QR',
     legalText:
       'This e-mail was sent automatically by the Hotel Canal check-in system. Your personal data is processed under EU Regulation 2016/679 (GDPR) for hospitality purposes related to your stay. Full privacy notice at the desk or on hotelcanal.com.',
@@ -296,7 +296,7 @@ export const WELCOME_I18N = {
     ticketDesc:
       'En tant qu&rsquo;hôte de l&rsquo;<strong>Hotel Canal</strong>, vous êtes totalement exonéré du droit d&rsquo;accès journalier à Venise. Il vous suffit d&rsquo;enregistrer votre séjour pour obtenir le QR Code officiel de la municipalité.',
     ticketBox:
-      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Donn&eacute;es pour le site municipal</span>Motif : client d&rsquo;un &eacute;tablissement d&rsquo;h&eacute;bergement &agrave; Venise<br>Structure : Hotel Canal (Santa Croce 553)<br>R&eacute;f&eacute;rence : Chambre ',
+      '<span style="font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Donn&eacute;es pour le site municipal</span>Motif : client d&rsquo;un &eacute;tablissement d&rsquo;h&eacute;bergement &agrave; Venise<br>Structure : Hotel Canal (Santa Croce 553)<br>R&eacute;f&eacute;rence : Chambre ',
     ticketBtn: 'Obtenir le QR Code d&rsquo;exonération',
     legalText:
       'Cet e-mail a été envoyé automatiquement par le système de check-in de l&rsquo;Hotel Canal. Vos données sont traitées conformément au Règlement UE 2016/679 (RGPD) pour les finalités liées à votre séjour. Vous pouvez consulter notre politique de confidentialité à la réception ou sur hotelcanal.com.',
@@ -401,7 +401,7 @@ export const WELCOME_I18N = {
     ticketDesc:
       'Als Gast des <strong>Hotel Canal</strong> sind Sie vollständig von der täglichen Zutrittsgebühr für Venedig befreit. Sie müssen Ihren Aufenthalt nur registrieren, um den offiziellen QR-Code der Stadt zu erhalten.',
     ticketBox:
-      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Angaben f&uuml;r die Stadt-Website</span>Grund: Gast in einer Unterkunft in Venedig<br>Unterkunft: Hotel Canal (Santa Croce 553)<br>Referenz: Zimmer ',
+      '<span style="font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Angaben f&uuml;r die Stadt-Website</span>Grund: Gast in einer Unterkunft in Venedig<br>Unterkunft: Hotel Canal (Santa Croce 553)<br>Referenz: Zimmer ',
     ticketBtn: 'Offiziellen Befreiungs-QR-Code holen',
     legalText:
       'Diese E-Mail wurde automatisch vom Check-in-System des Hotel Canal gesendet. Ihre Daten werden gemäß EU-Verordnung 2016/679 (DSGVO) für Zwecke Ihres Aufenthalts verarbeitet. Die vollständige Datenschutzerklärung finden Sie an der Rezeption oder auf hotelcanal.com.',
@@ -506,7 +506,7 @@ export const WELCOME_I18N = {
     ticketDesc:
       'Como huésped del <strong>Hotel Canal</strong>, está totalmente exento del pago de la tasa diaria de acceso a Venecia. Solo debe registrar su estancia para obtener el código QR oficial del Ayuntamiento.',
     ticketBox:
-      '<span style="font-family:\'DM Sans\',sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Datos para el sitio municipal</span>Motivo: hu&eacute;sped en establecimiento de alojamiento en Venecia<br>Establecimiento: Hotel Canal (Santa Croce 553)<br>Referencia: Habitaci&oacute;n ',
+      '<span style="font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;font-style:normal;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8A949C !important;display:block;margin:0 0 10px;">Datos para el sitio municipal</span>Motivo: hu&eacute;sped en establecimiento de alojamiento en Venecia<br>Establecimiento: Hotel Canal (Santa Croce 553)<br>Referencia: Habitaci&oacute;n ',
     ticketBtn: 'Obtener código QR de exención',
     legalText:
       'Este correo se envió automáticamente desde el sistema de check-in del Hotel Canal. Sus datos se tratan conforme al Reglamento UE 2016/679 (RGPD) para fines relacionados con su estancia. Puede consultar la política de privacidad en recepción o en hotelcanal.com.',
