@@ -396,11 +396,11 @@ function buildWelcomeHtml({
               </table>`;
 
   const photoCell = (src, alt, pad) => `
-                    <td width="50%" valign="top" style="${pad}">
-                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:14px;overflow:hidden;border:1px solid #E2E6E8;">
+                    <td class="taste-cell" width="50%" valign="top" style="${pad}width:50%;">
+                      <table role="presentation" class="taste-frame" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-radius:14px;overflow:hidden;border:1px solid #E2E6E8;">
                         <tr>
-                          <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
-                            <img src="${src}" width="210" alt="${alt}" style="display:block;width:100%;max-width:210px;height:auto;border:0;">
+                          <td class="taste-pad" align="center" style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
+                            <img class="taste-thumb" src="${src}" width="210" height="210" alt="${alt}" style="display:block;width:100%;max-width:100%;height:auto;aspect-ratio:1 / 1;object-fit:cover;border:0;border-radius:14px;">
                           </td>
                         </tr>
                       </table>
@@ -422,12 +422,12 @@ function buildWelcomeHtml({
                   ${
                     b
                       ? photoCell(b.src, b.alt, 'padding:0 0 10px 5px;')
-                      : '<td width="50%" style="padding:0 0 10px 5px;">&nbsp;</td>'
+                      : '<td class="taste-cell" width="50%" style="padding:0 0 10px 5px;width:50%;">&nbsp;</td>'
                   }
                 </tr>`);
     }
     return `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;">
+              <table role="presentation" class="taste-grid" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;width:100%;table-layout:fixed;">
                 ${rows.join('')}
               </table>`;
   };
@@ -476,6 +476,16 @@ function buildWelcomeHtml({
       letter-spacing: 0.04em !important;
       white-space: nowrap !important;
     }
+    .taste-grid { width: 100% !important; table-layout: fixed !important; }
+    .taste-cell { width: 50% !important; vertical-align: top !important; }
+    .taste-thumb {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 1 / 1 !important;
+      object-fit: cover !important;
+      border-radius: 14px !important;
+    }
     @media only screen and (max-width: 420px) {
       .meta-chip {
         display: block !important;
@@ -486,6 +496,9 @@ function buildWelcomeHtml({
       .meta-chip-inner {
         font-size: 11px !important;
         white-space: nowrap !important;
+      }
+      .taste-thumb {
+        border-radius: 12px !important;
       }
     }
     `,
@@ -930,17 +943,17 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Foto HQ: venice-bg + /restaurant (niente thumb compressi /email).
-  // Layout “era così”: walk = gondola landscape · voucher = terrazza landscape.
-  // Mai i portrait (12-tavolo, terrazza.jpg) sul voucher — spezzano Gmail.
+  // Foto HQ landscape: venice-bg + /restaurant.
+  // Griglia 2×2: solo crop quadrati /email/thumb-* (mai rettangoli HQ grezzi).
   const requiredRemote = [
     ['venice-bg.jpg'],
     ['restaurant', '01-terrazza-canale.jpg'],
     ['restaurant', '02-gondola-ingresso.jpg'],
-    ['restaurant', '14-pesce-grigliato.jpg'],
-    ['restaurant', '16-guazzetto-mare.jpg'],
     ['restaurant', '05-pesce-al-forno.jpg'],
-    ['restaurant', '08-risotto.jpg'],
+    ['email', 'thumb-ingresso.jpg'],
+    ['email', 'thumb-pesce.jpg'],
+    ['email', 'thumb-risotto.jpg'],
+    ['email', 'thumb-linguine.jpg'],
   ];
   for (const parts of requiredRemote) {
     if (!readEmailAsset(...parts)) {
@@ -958,20 +971,20 @@ export async function sendWelcomeEmail({
   const dishSrc = publicAssetUrl('restaurant', '05-pesce-al-forno.jpg');
   const thumbs = [
     {
-      src: publicAssetUrl('restaurant', '02-gondola-ingresso.jpg'),
+      src: publicAssetUrl('email', 'thumb-ingresso.jpg'),
       alt: 'Ingresso della Terrazza',
     },
     {
-      src: publicAssetUrl('restaurant', '14-pesce-grigliato.jpg'),
+      src: publicAssetUrl('email', 'thumb-pesce.jpg'),
       alt: 'Pesce grigliato',
     },
     {
-      src: publicAssetUrl('restaurant', '16-guazzetto-mare.jpg'),
+      src: publicAssetUrl('email', 'thumb-risotto.jpg'),
       alt: 'Guazzetto di mare',
     },
     {
-      src: publicAssetUrl('restaurant', '08-risotto.jpg'),
-      alt: 'Risotto di mare',
+      src: publicAssetUrl('email', 'thumb-linguine.jpg'),
+      alt: 'Linguine al granchio',
     },
   ];
 
