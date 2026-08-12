@@ -19,6 +19,8 @@
   <link rel="preload" as="image" href="/venice-bg.jpg">
   <link rel="preload" as="image" href="/restaurant/01-terrazza-canale.jpg">
   <link rel="preload" as="image" href="/restaurant/12-tavolo-terrazza-pasta.jpg">
+  <link rel="preload" as="image" href="/restaurant/14-pesce-grigliato.jpg">
+  <link rel="preload" as="image" href="/restaurant/16-guazzetto-mare.jpg">
   <style>
     :root {
       color-scheme: light only;
@@ -41,8 +43,10 @@
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
       /* iOS-like continuous: decelerazione lunga, zero rimbalzo */
       --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --slide-ms: 720ms;
-      --height-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      --slide-ms: 640ms;
+      /* Altezza card: un filo più lenta dello slide = morph fluido */
+      --height-ms: 780ms;
+      --height-ease: cubic-bezier(0.22, 1, 0.36, 1);
       /* Cupertino 8pt grid + ritmo moduli */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -453,7 +457,7 @@
       overflow: hidden;
       position: relative;
       will-change: height;
-      transition: height var(--slide-ms) var(--height-ease);
+      transition: height var(--height-ms) var(--height-ease);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
@@ -1414,7 +1418,7 @@
       overflow: hidden;
       position: relative;
       will-change: height;
-      transition: height var(--slide-ms) var(--height-ease);
+      transition: height var(--height-ms) var(--height-ease);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
@@ -5219,7 +5223,15 @@
     let targetAmbY = 0;
     let breathT = 0;
     let ambientFrozen = false;
-    const SLIDE_MS = 580;
+    const cssMs = (name, fallback) => {
+      const raw = getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+      const n = Number.parseFloat(raw);
+      return Number.isFinite(n) ? n : fallback;
+    };
+    const SLIDE_MS = cssMs('--slide-ms', 640);
+    const HEIGHT_MS = cssMs('--height-ms', 780);
 
     /** Orario tavolo scelto nello Step 3 (default: no tavolo). */
     let selectedTableTime = 'NO';
@@ -5602,11 +5614,30 @@
       }
     }
 
+    function applyViewportHeightPx(h, { animate = true } = {}) {
+      const viewport = document.getElementById('sliderViewport');
+      if (!viewport || !Number.isFinite(h)) return;
+      const clamped = Math.min(
+        Math.max(Math.round(h), 280),
+        availableViewportMax(),
+      );
+      if (!animate || reduceMotion) {
+        const prev = viewport.style.transition;
+        viewport.style.transition = 'none';
+        viewport.style.height = `${clamped}px`;
+        void viewport.offsetHeight;
+        viewport.style.transition = prev || '';
+        return;
+      }
+      if (viewport.style.transition === 'none') viewport.style.transition = '';
+      viewport.style.height = `${clamped}px`;
+    }
+
     /**
      * Motore fluido: misura scrollHeight biologico → altezza #sliderViewport.
      * La card resta height:auto (niente pixel fissi sul vetro).
      */
-    function syncViewportHeight(stepNumber) {
+    function syncViewportHeight(stepNumber, { animate = false } = {}) {
       const step = Number(stepNumber) || currentStep;
       const viewport = document.getElementById('sliderViewport');
       const card = document.getElementById('card');
@@ -5630,7 +5661,7 @@
       const h = Math.min(Math.max(natural, 280), maxH);
       stepHeightCache[step] = h;
       if (step === 1) measuredStep1Height = h;
-      viewport.style.height = `${Math.round(h)}px`;
+      applyViewportHeightPx(h, { animate });
     }
 
     function computeCardHeightPx(step, { preferCache = true } = {}) {
@@ -5645,30 +5676,18 @@
     }
 
     function applyCardHeightPx(h, { animate = false, shrink = false } = {}) {
-      // Compat: ora l'altezza vive sul viewport
-      const viewport = document.getElementById('sliderViewport');
       const card = document.getElementById('card');
-      if (!viewport || !Number.isFinite(h)) return;
-      const clamped = Math.min(Math.round(h), availableViewportMax());
       if (card) {
         card.style.height = '';
         card.style.maxHeight = '';
         card.classList.toggle('is-height-shrink', Boolean(shrink));
       }
-      if (!animate) {
-        const prev = viewport.style.transition;
-        viewport.style.transition = 'none';
-        viewport.style.height = `${clamped}px`;
-        void viewport.offsetHeight;
-        viewport.style.transition = prev || '';
-        return;
-      }
-      if (viewport.style.transition === 'none') viewport.style.transition = '';
-      viewport.style.height = `${clamped}px`;
+      applyViewportHeightPx(h, { animate });
     }
 
-    function syncCardHeight(step, { allowMicroAdjust = true, preferCache = false } = {}) {
-      syncViewportHeight(step);
+    function syncCardHeight(step, { preferCache = false, animate = false } = {}) {
+      if (!preferCache) stepHeightCache[Number(step) || currentStep] = 0;
+      syncViewportHeight(step, { animate });
     }
 
     function syncAppViewportHeight() {
@@ -5681,7 +5700,7 @@
       stepHeightCache[2] = 0;
       stepHeightCache[3] = 0;
       stepHeightCache[4] = 0;
-      syncViewportHeight(currentStep);
+      syncViewportHeight(currentStep, { animate: false });
       requestAnimationFrame(() => ensurePrimaryCtaVisible());
     }
 
@@ -5745,7 +5764,7 @@
       const runMotion = () => {
         const viewport = document.getElementById('sliderViewport');
         if (hardCut) {
-          syncViewportHeight(step);
+          syncViewportHeight(step, { animate: false });
           applyParallax(toParallax, toScale);
           applyTrack(toSlide);
           requestAnimationFrame(() => ensurePrimaryCtaVisible());
@@ -5756,19 +5775,24 @@
           const leavingH = Math.round(viewport.getBoundingClientRect().height);
           if (leavingH >= 200) stepHeightCache[prev] = leavingH;
 
-          let nextH = computeCardHeightPx(step, { preferCache: true });
+          // Misura fresca dello step target (cache stale = scatto)
+          let nextH = computeCardHeightPx(step, { preferCache: false });
           if (!Number.isFinite(nextH)) nextH = leavingH || 420;
           nextH = Math.min(Math.round(nextH), availableViewportMax());
           stepHeightCache[step] = nextH;
-          if (viewport.style.transition === 'none') viewport.style.transition = '';
-          viewport.style.height = `${nextH}px`;
-          applyParallax(toParallax, toScale);
-          applyTrack(toSlide);
-          requestAnimationFrame(() => ensurePrimaryCtaVisible());
+
+          // Partenza esplicita dall’altezza corrente → morph continuo
+          applyViewportHeightPx(leavingH || nextH, { animate: false });
+          requestAnimationFrame(() => {
+            applyViewportHeightPx(nextH, { animate: true });
+            applyParallax(toParallax, toScale);
+            applyTrack(toSlide);
+            requestAnimationFrame(() => ensurePrimaryCtaVisible());
+          });
           return;
         }
 
-        syncViewportHeight(step);
+        syncViewportHeight(step, { animate: true });
         applyParallax(toParallax, toScale);
         applyTrack(toSlide);
         requestAnimationFrame(() => ensurePrimaryCtaVisible());
@@ -5786,7 +5810,7 @@
       clearTimeout(ambientUnlockTimer);
       ambientUnlockTimer = setTimeout(
         () => freezeAmbient(false),
-        reduceMotion || hardCut ? 0 : SLIDE_MS + 60,
+        reduceMotion || hardCut ? 0 : Math.max(SLIDE_MS, HEIGHT_MS) + 80,
       );
 
       clearTimeout(slideRevealTimer);
@@ -5794,17 +5818,18 @@
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
         card?.classList.remove('is-height-shrink');
-        // Solo aggiorna cache — correzione silenziosa se fuori tolleranza
+        // Soft settle: riallinea sempre con morph (niente scatto a fine slide)
         const settled = computeCardHeightPx(step, { preferCache: false });
         const viewport = document.getElementById('sliderViewport');
         if (Number.isFinite(settled) && viewport) {
           stepHeightCache[step] = settled;
           const cur = Math.round(viewport.getBoundingClientRect().height);
-          if (Math.abs(cur - settled) >= 24) {
-            syncViewportHeight(step);
+          if (Math.abs(cur - settled) >= 2) {
+            applyViewportHeightPx(settled, { animate: !reduceMotion });
           }
         }
-      }, reduceMotion || hardCut ? 0 : SLIDE_MS + 40);
+        ensurePrimaryCtaVisible();
+      }, reduceMotion || hardCut ? 0 : Math.max(SLIDE_MS, HEIGHT_MS) + 48);
     }
 
     /**
@@ -7301,6 +7326,21 @@
     window.addEventListener('orientationchange', () => {
       setTimeout(syncAppViewportHeight, 120);
     });
+
+    // Foto dining: se caricano dopo la misura, riallinea senza scatto
+    document.querySelectorAll('#step2 .dining-showcase img').forEach((img) => {
+      const softSync = () => {
+        if (currentStep !== 2) {
+          stepHeightCache[2] = 0;
+          return;
+        }
+        stepHeightCache[2] = 0;
+        syncViewportHeight(2, { animate: !reduceMotion });
+      };
+      if (img.complete && img.naturalHeight > 0) return;
+      img.addEventListener('load', softSync, { once: true });
+    });
+
     const prefEmail = bootParams.get('email');
     if (prefEmail && emailEl && !isRegistrationLocked()) emailEl.value = prefEmail;
 
