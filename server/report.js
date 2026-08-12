@@ -698,6 +698,33 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 </tr>
               </table>
 
+              ${
+                phoneTel
+                  ? `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
+                <tr>
+                  <td align="center" style="padding:0;text-align:center;">
+                    <a href="tel:${escapeHtml(phoneTel)}" style="text-decoration:none;display:inline-block;">
+                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto;">
+                        <tr>
+                          <td width="64" height="64" align="center" valign="middle" bgcolor="${C}" style="width:64px;height:64px;background-color:${C};border-radius:32px;text-align:center;line-height:64px;font-size:28px;color:#FFFFFF !important;">
+                            &#9742;
+                          </td>
+                        </tr>
+                      </table>
+                      <div style="font-family:${SANS};font-size:12px;font-weight:600;color:${C} !important;margin-top:10px;letter-spacing:0.02em;">
+                        ${escapeHtml(phone)}
+                      </div>
+                      <div style="font-family:${SANS};font-size:10px;font-weight:600;color:#8A949C !important;margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">
+                        Tocca per chiamare l&rsquo;ospite
+                      </div>
+                    </a>
+                  </td>
+                </tr>
+              </table>`
+                  : ''
+              }
+
               ${sectionTitleLocal('Dettagli richiesta')}
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px;border-top:1px solid #E8E4DC;">
                 ${fact('Ospite', escapeHtml(name))}
