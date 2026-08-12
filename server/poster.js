@@ -9,6 +9,7 @@ import {
   emailDisplayStyle,
   emailEyebrowStyle,
 } from './email-type.js';
+import { assertSendableRecipient, sendableRecipientOrEmpty } from './recipient-guard.js';
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
@@ -396,7 +397,7 @@ export async function buildPosterPdfBuffer({
   });
 }
 
-function buildPosterEmailHtml({ hotelName, pdfKb }) {
+export function buildPosterEmailHtml({ hotelName, pdfKb }) {
   const brand = String(hotelName || 'Hotel Canal');
   const C = '#164E5B';
   const BRASS = '#C5A059';
@@ -412,7 +413,7 @@ ${emailLightModeHead({
     h1{${emailDisplayStyle({ size: '22px', color: C, tracking: '0.1em' })};margin:0 0 8px;text-align:center;}
     .eyebrow{${emailEyebrowStyle({ color: BRASS })};margin:0 0 18px;text-align:center;}
     p{${emailBodyStyle()};color:#4A5560 !important;margin:0 0 14px;}
-    .meta{font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#6E868F !important;margin:18px 0 0;}
+    .meta{font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#6E868F !important;margin:18px 0 0;}
   `,
 })}
 </head>
@@ -430,10 +431,16 @@ export async function sendPosterEmail({ to } = {}) {
   const apiKey = env('RESEND_API_KEY').trim();
   if (!apiKey) throw new Error('RESEND_API_KEY non configurata');
 
-  const recipient = String(
+  const recipientRaw = String(
     to || env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com',
   ).trim();
-  if (!recipient) throw new Error('Destinatario poster non configurato');
+  const recipient = sendableRecipientOrEmpty(recipientRaw);
+  if (!recipient) {
+    throw new Error(
+      `Destinatario poster bloccato (info@ / hotelcanal): ${recipientRaw}`,
+    );
+  }
+  assertSendableRecipient(recipient, 'poster');
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
   const pdf = await buildPosterPdfBuffer({ hotelName });

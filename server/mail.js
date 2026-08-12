@@ -16,9 +16,10 @@ import {
   exportStaffMonthStats,
 } from './db.js';
 import {
-  sendDailyWhatsAppReport,
-  whatsappConfigured,
-} from './whatsapp.js';
+  isBlockedRecipient,
+  assertSendableRecipient,
+  sendableRecipientOrEmpty,
+} from './recipient-guard.js';
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
@@ -115,6 +116,7 @@ async function sendViaSmtp({ to, subject, text, html, filename, csv, from }) {
 }
 
 async function sendReportMail(payload) {
+  assertSendableRecipient(payload.to, 'report');
   const reportFrom =
     env('REPORT_FROM') ||
     env('SMTP_FROM', 'Hotel Canal Front Desk <onboarding@resend.dev>').replace(
@@ -132,6 +134,11 @@ function assertEmailReady(reportEmail) {
   if (!reportEmail) {
     throw new Error('REPORT_EMAIL non configurata');
   }
+  if (isBlockedRecipient(reportEmail)) {
+    throw new Error(
+      `REPORT_EMAIL bloccato (non inviare a info@ / hotelcanal): ${reportEmail}`,
+    );
+  }
   if (!resendConfigured() && !smtpConfigured()) {
     throw new Error(
       'Email non configurata: imposta RESEND_API_KEY oppure SMTP_HOST/USER/PASS',
@@ -141,11 +148,17 @@ function assertEmailReady(reportEmail) {
 
 export async function sendTableBookingAlert(row) {
   // Solo REPORT_EMAIL / TABLE_BOOKING_EMAIL — niente hotel di default
-  const to =
+  const rawTo =
     env('TABLE_BOOKING_EMAIL') ||
     env('REPORT_EMAIL') ||
     '';
+  const to = sendableRecipientOrEmpty(rawTo);
   if (!to) {
+    if (isBlockedRecipient(rawTo)) {
+      throw new Error(
+        `Destinatario tavolo bloccato (info@ / hotelcanal): ${rawTo}`,
+      );
+    }
     throw new Error('REPORT_EMAIL / TABLE_BOOKING_EMAIL non configurata');
   }
   if (
@@ -219,8 +232,14 @@ export async function sendTableBookingAlert(row) {
 
 export async function runDailyReport({ force = false } = {}) {
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
-  const reportEmail =
+  const reportEmailRaw =
     env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
+  const reportEmail = sendableRecipientOrEmpty(reportEmailRaw);
+  if (!reportEmail && isBlockedRecipient(reportEmailRaw)) {
+    console.warn(
+      `[report] REPORT_EMAIL bloccato, skip email: ${reportEmailRaw}`,
+    );
+  }
   const rows = getUnreportedCheckins();
 
   if (!rows.length) {
@@ -416,8 +435,17 @@ export async function runMonthlyStaffReport({ force = false } = {}) {
   }
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
-  const reportEmail =
+  const reportEmailRaw =
     env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
+  const reportEmail = sendableRecipientOrEmpty(reportEmailRaw);
+  if (!reportEmail) {
+    if (isBlockedRecipient(reportEmailRaw)) {
+      throw new Error(
+        `REPORT_EMAIL bloccato (non inviare a info@ / hotelcanal): ${reportEmailRaw}`,
+      );
+    }
+    throw new Error('REPORT_EMAIL non configurata');
+  }
   assertEmailReady(reportEmail);
 
   // Allinea rollup ai check-in ancora in DB (mesi storici restano dal backup).

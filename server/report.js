@@ -169,14 +169,14 @@ function closingFooter(hotelName, note, signOff = 'La Direzione &amp; lo Staff',
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #E8E4DC;margin-top:12px;">
                 <tr>
                   <td align="center" style="padding:28px 0 0;text-align:center;">
-                    <p style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;font-size:13px;">
+                    <p style="${bodyStyle};color:#5C6670 !important;margin:0 0 16px;">
                       ${note}
                     </p>
                     <div style="width:28px;height:1px;line-height:1px;font-size:1px;background-color:${BRASS};margin:0 auto 14px;">&nbsp;</div>
-                    <div style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;margin:0 0 6px;">
+                    <div style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;letter-spacing:0.02em;line-height:1.45;margin:0 0 6px;">
                       ${signOff}
                     </div>
-                    <div style="font-family:${SERIF};font-style:italic;font-size:13px;font-weight:600;color:${BRASS} !important;letter-spacing:0.06em;line-height:1.4;">
+                    <div style="font-family:${SERIF};font-style:italic;font-size:14px;font-weight:600;color:${BRASS} !important;letter-spacing:0.06em;line-height:1.4;">
                       ${escapeHtml(hotelName)}
                     </div>
                   </td>
@@ -329,7 +329,7 @@ function buildDailyGuestRows(rows) {
   if (!rows.length) {
     return `
       <tr>
-        <td colspan="2" style="padding:18px 0;border-bottom:1px solid #E8E4DC;color:#8E8E93;text-align:center;font-size:13px;font-family:${BODY};font-style:italic;">
+        <td colspan="2" style="padding:18px 0;border-bottom:1px solid #E8E4DC;color:#8E8E93;text-align:center;font-size:14px;font-family:${BODY};font-style:italic;">
           Nessuna registrazione in questo periodo
         </td>
       </tr>
@@ -352,22 +352,22 @@ function buildDailyGuestRows(rows) {
 
       return `
         <tr>
-          <td width="48" valign="top" style="width:48px;max-width:48px;padding:18px 12px 18px 0;border-bottom:${border};font-family:${SERIF};font-size:15px;font-weight:700;color:${C} !important;line-height:1.25;white-space:nowrap;vertical-align:top;">
+          <td width="48" valign="top" style="width:48px;max-width:48px;padding:18px 12px 18px 0;border-bottom:${border};font-family:${SERIF};font-size:16px;font-weight:700;color:${C} !important;line-height:1.25;white-space:nowrap;vertical-align:top;">
             ${escapeHtml(room)}
           </td>
           <td valign="top" style="padding:18px 0;border-bottom:${border};vertical-align:top;">
-            <div style="${emailValueStyle({ size: '17px', color: C })};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">
+            <div style="${emailValueStyle({ size: '18px', color: C })};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">
               ${escapeHtml(name)}
             </div>
-            <div style="font-family:${SERIF};font-size:14px;font-weight:500;color:#334155 !important;letter-spacing:0.01em;line-height:1.4;margin-top:5px;white-space:nowrap;">
+            <div style="font-family:${SERIF};font-size:15px;font-weight:500;color:#334155 !important;letter-spacing:0.01em;line-height:1.4;margin-top:5px;white-space:nowrap;">
               ${escapeHtml(phone)}
             </div>
             ${
               email
-                ? `<div style="font-family:${BODY};font-style:italic;font-size:12.5px;color:#8A949C !important;line-height:1.4;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">${escapeHtml(email)}</div>`
+                ? `<div style="font-family:${BODY};font-style:italic;font-size:13.5px;color:#8A949C !important;line-height:1.4;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">${escapeHtml(email)}</div>`
                 : ''
             }
-            <div style="${emailLabelStyle({ size: '9.5px', color: '#5C6670' })};margin-top:10px;letter-spacing:0.06em;white-space:nowrap;">
+            <div style="${emailLabelStyle({ color: '#5C6670' })};margin-top:10px;letter-spacing:0.06em;white-space:nowrap;">
               ${escapeHtml(staff)}&nbsp;&nbsp;·&nbsp;&nbsp;${escapeHtml(pax)} pax&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${offerColor} !important;">${offer}</span>${
                 tableTime
                   ? `&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${C} !important;">Tavolo ${escapeHtml(tableTime)}</span>`
@@ -397,6 +397,13 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
     .filter(Boolean)
     .join(', ');
 
+  const listaEmail = rows
+    .map((row) => row.email)
+    .filter(Boolean)
+    .join(', ');
+
+  const copyBlockStyle = `display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 28px;padding:14px 16px;background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:16px;font-family:${SERIF};font-size:15px;font-weight:500;line-height:1.55;color:${C} !important;-webkit-user-select:text;user-select:text;resize:none;letter-spacing:0.01em;`;
+
   const introPlain = `in allegato il report contatti di oggi (${dateLabel}): ${statsLine}. Il CSV è pronto per Excel.`;
 
   const text = [
@@ -407,11 +414,14 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
     `Numeri WhatsApp:`,
     listaSoloNumeri || '-',
     ``,
+    `Email:`,
+    listaEmail || '-',
+    ``,
     `Front Desk — ${hotelName}`,
   ].join('\n');
 
   const bodyHtml = `
-              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
                 Gentile Payel,
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
@@ -431,10 +441,16 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
               </table>
 
               ${sectionTitle('Numeri WhatsApp')}
-              <p style="font-family:${SANS};font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C !important;margin:0 0 10px;line-height:1.4;">
+              <p style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C !important;margin:0 0 10px;line-height:1.4;">
                 Tieni premuto per copiare
               </p>
-              <textarea class="utility-textarea" readonly rows="3" style="display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 28px;padding:14px 14px;background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:12px;font-family:${SANS};font-size:12px;line-height:1.55;color:#1D1D1F !important;-webkit-user-select:text;user-select:text;resize:none;">${escapeHtml(listaSoloNumeri || '-')}</textarea>
+              <textarea class="utility-textarea" readonly rows="3" style="${copyBlockStyle}">${escapeHtml(listaSoloNumeri || '-')}</textarea>
+
+              ${sectionTitle('Email')}
+              <p style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C !important;margin:0 0 10px;line-height:1.4;">
+                Tieni premuto per copiare
+              </p>
+              <textarea class="utility-textarea" readonly rows="3" style="${copyBlockStyle}">${escapeHtml(listaEmail || '-')}</textarea>
 
               ${closingFooter(
                 hotelName,
@@ -477,10 +493,10 @@ export function buildMonthlyStaffEmail({
         index === ranking.length - 1 ? '0' : '1px solid #E8E4DC';
       return `
         <tr>
-          <td width="36" style="width:36px;padding:14px 8px 14px 0;border-bottom:${border};font-family:${SERIF};font-weight:700;font-size:13px;color:${C};white-space:nowrap;${bg}">${pos}</td>
-          <td style="padding:14px 8px;border-bottom:${border};font-family:${SERIF};font-size:14px;font-weight:600;letter-spacing:0.01em;color:${C};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${bg}">${escapeHtml(row.receptionist)}</td>
-          <td width="72" align="center" style="width:72px;padding:14px 4px;border-bottom:${border};text-align:center;font-family:${SERIF};font-weight:700;font-size:14px;color:${C};white-space:nowrap;${bg}">${row.totale_registrati}</td>
-          <td width="72" align="center" style="width:72px;padding:14px 4px;border-bottom:${border};text-align:center;font-family:${SERIF};font-weight:700;font-size:14px;color:${C};white-space:nowrap;${bg}">${row.coupon_emessi}</td>
+          <td width="36" style="width:36px;padding:14px 8px 14px 0;border-bottom:${border};font-family:${SERIF};font-weight:700;font-size:14px;color:${C};white-space:nowrap;${bg}">${pos}</td>
+          <td style="padding:14px 8px;border-bottom:${border};font-family:${SERIF};font-size:15px;font-weight:600;letter-spacing:0.01em;color:${C};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${bg}">${escapeHtml(row.receptionist)}</td>
+          <td width="72" align="center" style="width:72px;padding:14px 4px;border-bottom:${border};text-align:center;font-family:${SERIF};font-weight:700;font-size:15px;color:${C};white-space:nowrap;${bg}">${row.totale_registrati}</td>
+          <td width="72" align="center" style="width:72px;padding:14px 4px;border-bottom:${border};text-align:center;font-family:${SERIF};font-weight:700;font-size:15px;color:${C};white-space:nowrap;${bg}">${row.coupon_emessi}</td>
         </tr>
       `;
     })
@@ -494,7 +510,7 @@ export function buildMonthlyStaffEmail({
     .join('\n')}\n`;
 
   const bodyHtml = `
-              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:18px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
                 Gentile Payel,
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
@@ -507,14 +523,14 @@ export function buildMonthlyStaffEmail({
               ${sectionTitle('Classifica staff')}
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 12px;border-top:1px solid #E8E4DC;">
                 <tr>
-                  <td width="36" style="padding:12px 8px 12px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">#</td>
-                  <td style="padding:12px 8px;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">Reception</td>
-                  <td width="72" align="center" style="width:72px;padding:12px 4px;border-bottom:1px solid #E8E4DC;text-align:center;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8A949C;">Check-in</td>
-                  <td width="72" align="center" style="width:72px;padding:12px 4px;border-bottom:1px solid #E8E4DC;text-align:center;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8A949C;">Referral</td>
+                  <td width="36" style="padding:12px 8px 12px 0;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">#</td>
+                  <td style="padding:12px 8px;border-bottom:1px solid #E8E4DC;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;">Reception</td>
+                  <td width="72" align="center" style="width:72px;padding:12px 4px;border-bottom:1px solid #E8E4DC;text-align:center;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8A949C;">Check-in</td>
+                  <td width="72" align="center" style="width:72px;padding:12px 4px;border-bottom:1px solid #E8E4DC;text-align:center;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8A949C;">Referral</td>
                 </tr>
                 ${rowsHtml}
               </table>
-              <p style="font-family:${SANS};font-size:11px;font-weight:500;color:#8A949C !important;margin:0 0 28px;line-height:1.45;">
+              <p style="font-family:${SANS};font-size:12px;font-weight:500;color:#8A949C !important;margin:0 0 28px;line-height:1.45;">
                 Referral = ospiti che hanno ricevuto il voucher &minus;10% Trattoria alla Terrazza.
               </p>
 
@@ -595,22 +611,23 @@ export function buildTableBookingEmail({ hotelName, row }) {
     .filter((line) => line != null)
     .join('\n');
 
-  const hero = escapeHtml(publicAssetUrl('email', 'booking-hero-26.jpg'));
-  const dish = escapeHtml(publicAssetUrl('email', 'booking-square-27.jpg'));
+  const hero = escapeHtml(publicAssetUrl('email', 'voucher-24.jpg'));
+  const dish = escapeHtml(publicAssetUrl('email', 'voucher-24.jpg'));
 
   const CW = 456;
   const BAND_H = 254;
+  const BAND_H_HALF = Math.round(BAND_H / 2);
   const emailImg = (src, alt, w, h) =>
     `<img src="${src}" width="${w}" height="${h}" alt="${alt}" style="display:block;width:${w}px;max-width:${w}px;height:${h}px;border:0;outline:none;-ms-interpolation-mode:bicubic;">`;
 
-  const bodyCopy = emailBodyStyle({ size: '14px', line: '1.55' });
-  const labelStyleLocal = emailLabelStyle({ size: '10px' });
+  const bodyCopy = emailBodyStyle({ size: '16px', line: '1.55' });
+  const labelStyleLocal = emailLabelStyle();
 
   const sectionTitleLocal = (label) => `
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0 12px;border-bottom:1px solid rgba(22,78,91,0.12);">
                 <tr>
                   <td style="padding:0 0 8px 0;">
-                    <div style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${C};">${label}</div>
+                    <div style="font-family:${SANS};font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${C};">${label}</div>
                   </td>
                 </tr>
               </table>`;
@@ -628,7 +645,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 <tr>
                   <td style="padding:10px 0;border-bottom:1px solid #E8E4DC;">
                     <div style="${labelStyleLocal};margin:0 0 3px;color:#8A949C;">${label}</div>
-                    <div style="font-family:${BODY};font-style:italic;font-size:15px;font-weight:500;color:${C} !important;line-height:1.35;">${valueHtml}</div>
+                    <div style="font-family:${BODY};font-style:italic;font-size:16px;font-weight:500;color:${C} !important;line-height:1.35;">${valueHtml}</div>
                   </td>
                 </tr>`;
 
@@ -660,16 +677,16 @@ export function buildTableBookingEmail({ hotelName, row }) {
           <tr>
             <td class="email-content force-white" bgcolor="#FFFFFF" style="padding:20px 22px 34px;background-color:#FFFFFF !important;">
 
-              ${postcardBleed(hero, 'Trattoria alla Terrazza', 16, CW, BAND_H)}
+              ${postcardBleed(hero, 'Trattoria alla Terrazza', 16, CW, BAND_H_HALF)}
 
-              <p style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${BRASS};margin:0 0 6px;text-align:center;">
+              <p style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${BRASS};margin:0 0 6px;text-align:center;">
                 ${escapeHtml(brand)}
               </p>
-              <p style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C;margin:0 0 22px;text-align:center;">
+              <p style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C;margin:0 0 22px;text-align:center;">
                 Richiesta tavolo · ospite ${escapeHtml(hotel)}
               </p>
 
-              <p style="font-family:${BODY};font-style:italic;font-size:16px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
+              <p style="font-family:${BODY};font-style:italic;font-size:17px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;line-height:1.4;">
                 Gentile Payel,
               </p>
               <p style="${bodyCopy};color:#4A5560 !important;margin:0 0 18px;text-align:left;font-family:${BODY};font-style:italic;">
@@ -682,7 +699,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 Ti chiedo di confermare la disponibilit&agrave; del tavolo telefonando all&rsquo;ospite.
               </p>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:26px;">
                 <tr>
                   <td align="center" style="padding:18px 16px;background-color:#FFFFFF !important;">
                     ${
@@ -691,28 +708,28 @@ export function buildTableBookingEmail({ hotelName, row }) {
                     <a href="tel:${escapeHtml(phoneTel)}" style="text-decoration:none;display:inline-block;margin:0 0 16px;">
                       <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto;">
                         <tr>
-                          <td width="64" height="64" align="center" valign="middle" bgcolor="${C}" style="width:64px;height:64px;background-color:${C};border-radius:32px;text-align:center;line-height:64px;font-size:28px;color:#FFFFFF !important;">
+                          <td width="64" height="64" align="center" valign="middle" bgcolor="${C}" style="width:64px;height:64px;background-color:${C};border-radius:20px;text-align:center;line-height:64px;font-size:28px;color:#FFFFFF !important;">
                             &#9742;
                           </td>
                         </tr>
                       </table>
-                      <div style="font-family:${SANS};font-size:12px;font-weight:600;color:${C} !important;margin-top:10px;letter-spacing:0.02em;">
+                      <div style="font-family:${SANS};font-size:13px;font-weight:600;color:${C} !important;margin-top:10px;letter-spacing:0.02em;">
                         ${escapeHtml(phone)}
                       </div>
-                      <div style="font-family:${SANS};font-size:10px;font-weight:600;color:#8A949C !important;margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">
+                      <div style="font-family:${SANS};font-size:11px;font-weight:600;color:#8A949C !important;margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">
                         Tocca per chiamare l&rsquo;ospite
                       </div>
                     </a>
                     <div style="height:1px;line-height:1px;background-color:#E8E4DC;margin:0 0 16px;font-size:1px;">&nbsp;</div>`
                         : ''
                     }
-                    <div style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;margin:0 0 6px;">
+                    <div style="font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;margin:0 0 6px;">
                       ${escapeHtml(headline.dayLabel)} · orario richiesto
                     </div>
                     <div style="font-family:${BODY};font-style:italic;font-size:22px;font-weight:600;color:${C} !important;letter-spacing:0.02em;line-height:1.2;">
                       ${escapeHtml(timeDisplay)}
                     </div>
-                    <div style="font-family:${SANS};font-size:12px;font-weight:500;color:#7A8690 !important;margin-top:8px;">
+                    <div style="font-family:${SANS};font-size:13px;font-weight:500;color:#7A8690 !important;margin-top:8px;">
                       Stanza ${escapeHtml(room)} · ${escapeHtml(String(pax))} ospiti
                     </div>
                   </td>
@@ -748,15 +765,15 @@ export function buildTableBookingEmail({ hotelName, row }) {
               <p style="${bodyCopy};color:#5C6670 !important;margin:0 0 12px;text-align:left;font-family:${BODY};font-style:italic;">
                 Cena sulla terrazza del canale, per gli ospiti ${escapeHtml(hotel)}.
               </p>
-              ${postcardBleed(dish, 'Piatto della Terrazza', 24, CW, CW)}
+              ${postcardBleed(dish, 'Piatto della Terrazza', 24, CW, BAND_H_HALF)}
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #E8E4DC;margin-top:4px;">
                 <tr>
                   <td align="center" style="padding:22px 0 0;text-align:center;">
-                    <div style="font-family:${BODY};font-style:italic;font-size:15px;font-weight:500;color:${C} !important;margin:0 0 4px;">
+                    <div style="font-family:${BODY};font-style:italic;font-size:16px;font-weight:500;color:${C} !important;margin:0 0 4px;">
                       Grazie, Payel
                     </div>
-                    <div style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:${BRASS};">
+                    <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:${BRASS};">
                       Front Desk · ${escapeHtml(hotel)}
                     </div>
                   </td>

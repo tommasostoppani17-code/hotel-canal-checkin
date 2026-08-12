@@ -1,4 +1,4 @@
-import { buildWifiNetworks } from './guest-services.js';
+import { buildWifiNetworks, buildWifiNetworksForEmail } from './guest-services.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -288,6 +288,7 @@ export function buildWelcomeHtml({
   /** Larghezza utile card (500 − padding 22×2). Pixel fissi → niente fascia grigia su Gmail desktop. */
   const CW = 456;
   const BAND_H = 254; // 1400×780 @ CW
+  const BAND_H_HALF = Math.round(BAND_H / 2);
   const GRID = 224;
   const GRID_GAP = 8;
   const preheader = escapeHtml(
@@ -695,10 +696,10 @@ export function buildWelcomeHtml({
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 18px;text-align:center;">
                 ${lp.claimDesc}
               </p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:22px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px dashed ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
                 <tr>
                   <td width="${CW}" bgcolor="${C}" style="padding:0;line-height:0;font-size:0;width:${CW}px;background-color:${C};mso-line-height-rule:exactly;">
-                    ${emailImg(resto, 'Trattoria alla Terrazza', CW, BAND_H)}
+                    ${emailImg(resto, 'Trattoria alla Terrazza', CW, BAND_H_HALF)}
                   </td>
                 </tr>
                 <tr>
@@ -717,8 +718,7 @@ export function buildWelcomeHtml({
                 ${lp.tastesDesc}
               </p>
               ${photoGrid(thumbs.slice(0, 4), 8)}
-              ${postcardBand(terrace, 'Piatti della Terrazza', 8)}
-              ${postcardBand(dish, 'Cucina della Trattoria alla Terrazza', 36)}
+              ${postcard(resto, 'Trattoria alla Terrazza', 36, BAND_H_HALF)}
 
               ${veniceGuideBlock}
               ${venicePdfFooter}
@@ -1029,7 +1029,7 @@ export async function sendWelcomeEmail({
     stickers[def.key] = publicAssetUrl('email', 'stickers', def.file);
   }
 
-  const wifiNetworks = buildWifiNetworks();
+  const wifiNetworks = buildWifiNetworksForEmail();
   const wifiSsid = wifiNetworks[0]?.ssid || env('WIFI_SSID', 'hotel canal');
   const wifiPassword = wifiNetworks[0]?.password || env('WIFI_PASSWORD', '');
   // Walter: cancelletto (#) obbligatorio — in .env usare virgolette: DOOR_CODE_WALTER="…#"

@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="/venice-bg.jpg">
-  <link rel="preload" as="image" href="/restaurant/01-terrazza-canale.jpg">
+  <link rel="preload" as="image" href="/restaurant/11-tavolo-canale.jpg">
   <link rel="preload" as="image" href="/restaurant/12-tavolo-terrazza-pasta.jpg">
   <link rel="preload" as="image" href="/restaurant/14-pesce-grigliato.jpg">
   <link rel="preload" as="image" href="/restaurant/16-guazzetto-mare.jpg">
@@ -2858,6 +2858,8 @@
 
     .ios-row-call {
       display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .ios-row-stack {
@@ -2865,7 +2867,7 @@
       flex-direction: column;
       gap: 2px;
       min-width: 0;
-      flex: 1 1 auto;
+      flex: 1 1 0;
     }
 
     .row-label {
@@ -2904,24 +2906,31 @@
       -webkit-appearance: none;
       border: 0;
       font-family: inherit;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--canal-petroleum);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       background: #F2F2F7;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 8px 18px;
+      border-radius: 10px;
       cursor: pointer;
       user-select: none;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 32px;
-      flex-shrink: 0;
+      min-height: 36px;
+      min-width: 76px;
+      flex: 0 0 auto;
+      white-space: nowrap;
+      box-sizing: border-box;
       transition: background-color 0.12s ease, transform 0.12s ease;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    #tablePanel .ios-row-call .action-badge {
+      margin-left: auto;
     }
 
     .action-badge-call {
@@ -2937,6 +2946,20 @@
       background: rgba(18, 68, 83, 0.12);
     }
 
+    #tablePanel {
+      gap: 20px;
+    }
+
+    #tablePanel .table-panel-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #tablePanel .table-panel-divider {
+      padding: 4px 0 2px;
+    }
+
     #tablePanel .book-or {
       margin: 0;
       text-align: center;
@@ -2947,11 +2970,17 @@
       color: var(--canal-petroleum);
     }
 
+    #tablePanel .table-panel-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
     #tablePanel .book-fields {
       margin: 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: var(--ios-3);
+      gap: var(--ios-4);
     }
 
     #tablePanel .book-field label {
@@ -2977,10 +3006,56 @@
     }
 
     #tablePanel .book-submit {
-      margin-top: var(--ios-2);
+      margin-top: 0;
       height: 52px;
       border-radius: var(--radius-ios);
       font-size: 16px;
+    }
+
+    .ios-row-link {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .ios-row-link:active {
+      opacity: 0.72;
+    }
+
+    .ios-row-tripadvisor .ta-rating-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .ios-row-tripadvisor .ta-stars {
+      color: #00AF87;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    .ios-row-tripadvisor .ta-score {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .action-badge-ta {
+      background: #E8F7F2 !important;
+      color: #00704A;
+    }
+
+    #wifiPanel .wifi-network-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #636366;
+      text-transform: none;
+      letter-spacing: 0;
     }
 
     @keyframes sheetPanelIn {
@@ -5017,7 +5092,7 @@
           <div class="dining-story">
             <div class="dining-showcase" aria-hidden="true">
               <div class="dining-hero">
-                <img src="/restaurant/01-terrazza-canale.jpg" alt="" width="1020" height="682" decoding="async">
+                <img src="/restaurant/11-tavolo-canale.jpg" alt="" width="1024" height="768" decoding="async">
                 <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
               </div>
               <div class="dining-mosaic dining-mosaic-row">
@@ -5194,59 +5269,77 @@
             </div>
             <div class="guest-sheet-scroll">
               <div class="guest-sheet-panel" id="tablePanel" hidden>
-                <div class="ios-group">
-                  <div class="ios-row ios-row-call">
-                    <div class="ios-row-stack">
-                      <span class="row-label" id="lbl-act-call-sub">Trattoria alla Terrazza</span>
-                      <span class="row-value" id="lbl-call-phone">328 246 4972</span>
+                <div class="table-panel-contact">
+                  <div class="ios-group">
+                    <div class="ios-row ios-row-call">
+                      <div class="ios-row-stack">
+                        <span class="row-label" id="lbl-act-call-sub">Trattoria alla Terrazza</span>
+                        <span class="row-value" id="lbl-call-phone">328 246 4972</span>
+                      </div>
+                      <a class="action-badge action-badge-link action-badge-call" id="btnCallTrattoria" href="tel:+393282464972">
+                        <span id="lbl-act-call">Chiama</span>
+                      </a>
                     </div>
-                    <a class="action-badge action-badge-link action-badge-call" id="btnCallTrattoria" href="tel:+393282464972">
-                      <span id="lbl-act-call">Chiama</span>
+                  </div>
+                  <div class="ios-group">
+                    <a class="ios-row ios-row-call ios-row-link ios-row-tripadvisor" id="btnTripAdvisor" href="https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html" target="_blank" rel="noopener noreferrer">
+                      <div class="ios-row-stack">
+                        <span class="row-label" id="lbl-act-tripadvisor">TripAdvisor</span>
+                        <span class="ta-rating-line">
+                          <span class="ta-stars" aria-hidden="true">★★★★☆</span>
+                          <span class="ta-score" id="tripAdvisorRating">4.3</span>
+                        </span>
+                      </div>
+                      <span class="action-badge action-badge-link action-badge-ta" id="lbl-act-tripadvisor-btn">Vedi</span>
                     </a>
                   </div>
                 </div>
-                <p class="book-or" id="lbl-book-or">Oppure richiedi un tavolo</p>
-                <div class="book-fields">
-                  <div class="book-field">
-                    <label id="lbl-book-time" for="bookTime">Orario</label>
-                    <select id="bookTime" class="book-select">
-                      <optgroup label="Pranzo" id="bookTimeLunch">
-                        <option value="12:00">12:00</option>
-                        <option value="12:30">12:30</option>
-                        <option value="13:00">13:00</option>
-                        <option value="13:30">13:30</option>
-                        <option value="14:00">14:00</option>
-                        <option value="14:30">14:30</option>
-                      </optgroup>
-                      <optgroup label="Cena" id="bookTimeDinner">
-                        <option value="18:30">18:30</option>
-                        <option value="19:00">19:00</option>
-                        <option value="19:30" selected>19:30</option>
-                        <option value="20:00">20:00</option>
-                        <option value="20:30">20:30</option>
-                        <option value="21:00">21:00</option>
-                        <option value="21:30">21:30</option>
-                      </optgroup>
-                    </select>
-                  </div>
-                  <div class="book-field">
-                    <label id="lbl-book-pax" for="bookPax">Persone</label>
-                    <select id="bookPax" class="book-select">
-                      <option value="1">1</option>
-                      <option value="2" selected>2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="10">10</option>
-                      <option value="12">12</option>
-                    </select>
-                  </div>
+                <div class="table-panel-divider">
+                  <p class="book-or" id="lbl-book-or">Oppure richiedi un tavolo</p>
                 </div>
-                <button type="button" class="btn-canal book-submit" id="btnBookSend">Invia richiesta</button>
-                <p class="book-done" id="bookDoneMsg" hidden></p>
+                <div class="table-panel-form">
+                  <div class="book-fields">
+                    <div class="book-field">
+                      <label id="lbl-book-time" for="bookTime">Orario</label>
+                      <select id="bookTime" class="book-select">
+                        <optgroup label="Pranzo" id="bookTimeLunch">
+                          <option value="12:00">12:00</option>
+                          <option value="12:30">12:30</option>
+                          <option value="13:00">13:00</option>
+                          <option value="13:30">13:30</option>
+                          <option value="14:00">14:00</option>
+                          <option value="14:30">14:30</option>
+                        </optgroup>
+                        <optgroup label="Cena" id="bookTimeDinner">
+                          <option value="18:30">18:30</option>
+                          <option value="19:00">19:00</option>
+                          <option value="19:30" selected>19:30</option>
+                          <option value="20:00">20:00</option>
+                          <option value="20:30">20:30</option>
+                          <option value="21:00">21:00</option>
+                          <option value="21:30">21:30</option>
+                        </optgroup>
+                      </select>
+                    </div>
+                    <div class="book-field">
+                      <label id="lbl-book-pax" for="bookPax">Persone</label>
+                      <select id="bookPax" class="book-select">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="10">10</option>
+                        <option value="12">12</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-canal book-submit" id="btnBookSend">Invia richiesta</button>
+                  <p class="book-done" id="bookDoneMsg" hidden></p>
+                </div>
               </div>
 
               <div class="guest-sheet-panel" id="doorsPanel" hidden>
@@ -5254,12 +5347,10 @@
                   <div class="ios-row">
                     <span class="row-label" id="lbl-door-main">Walter</span>
                     <span class="row-value" id="doorMain">-</span>
-                    <button type="button" class="action-badge copy-btn" data-copy-from="doorMain" id="btnCopyDoorMain">Copia</button>
                   </div>
                   <div class="ios-row">
                     <span class="row-label" id="lbl-door-inner">Airone</span>
                     <span class="row-value" id="doorInner">-</span>
-                    <button type="button" class="action-badge copy-btn" data-copy-from="doorInner" id="btnCopyDoorInner">Copia</button>
                   </div>
                 </div>
               </div>
@@ -5267,20 +5358,31 @@
               <div class="guest-sheet-panel" id="wifiPanel" hidden>
                 <p class="wifi-location-label" id="lbl-wifi-location">Sede</p>
                 <div class="wifi-location-pills" id="wifiLocationPills" role="tablist" aria-label="Wi-Fi location">
-                  <button type="button" class="wifi-pill is-selected" data-wifi-id="canal" role="tab" aria-selected="true">Hotel Canal</button>
-                  <button type="button" class="wifi-pill" data-wifi-id="airone" role="tab" aria-selected="false">Airone</button>
+                  <button type="button" class="wifi-pill is-selected" data-wifi-id="hotel" role="tab" aria-selected="true">Hotel</button>
                   <button type="button" class="wifi-pill" data-wifi-id="pisani" role="tab" aria-selected="false">Appartamenti</button>
                 </div>
-                <div class="ios-group">
+                <div class="ios-group" id="wifiHotelBlock">
                   <div class="ios-row">
-                    <span class="row-label" id="lbl-wifi-net">Rete</span>
-                    <span class="row-value" id="wifiSsid">-</span>
-                    <button type="button" class="action-badge copy-btn" data-copy-from="wifiSsid" id="btnCopyWifiSsid">Copia</button>
+                    <span class="row-label wifi-network-name" id="lbl-wifi-hotel-canal">Hotel Canal</span>
+                    <span class="row-value" id="wifiCanalSsid">-</span>
+                  </div>
+                  <div class="ios-row">
+                    <span class="row-label wifi-network-name" id="lbl-wifi-airone">Airone</span>
+                    <span class="row-value" id="wifiAironeSsid">-</span>
                   </div>
                   <div class="ios-row">
                     <span class="row-label" id="lbl-wifi-pass">Password</span>
-                    <span class="row-value" id="wifiPass">-</span>
-                    <button type="button" class="action-badge copy-btn" data-copy-from="wifiPass" id="btnCopyWifiPass">Copia</button>
+                    <span class="row-value" id="wifiHotelPass">-</span>
+                  </div>
+                </div>
+                <div class="ios-group" id="wifiAptBlock" hidden>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-net">Rete</span>
+                    <span class="row-value" id="wifiAptSsid">-</span>
+                  </div>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-pass-apt">Password</span>
+                    <span class="row-value" id="wifiAptPass">-</span>
                   </div>
                 </div>
               </div>
@@ -5398,13 +5500,16 @@
         wifiNet: 'Rete',
         wifiPass: 'Password',
         wifiLocation: 'Sede',
+        wifiHotel: 'Hotel',
         wifiHotelCanal: 'Hotel Canal',
         wifiAirone: 'Airone',
         wifiApartments: 'Appartamenti',
+        actTripAdvisor: 'TripAdvisor',
+        actTripAdvisorBtn: 'Vedi',
+        tripadvisorUrlDefault:
+          'https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html',
         doorMain: 'Walter',
         doorInner: 'Airone',
-        copy: 'Copia',
-        copied: 'Copiato',
         receptionNote: 'Reception 24h. Passa quando vuoi.',
         trattoriaPhoneAria: 'Chiama Trattoria alla Terrazza',
         askReception: 'Chiedi in reception',
@@ -5505,13 +5610,16 @@
         wifiNet: 'Network',
         wifiPass: 'Password',
         wifiLocation: 'Location',
+        wifiHotel: 'Hotel',
         wifiHotelCanal: 'Hotel Canal',
         wifiAirone: 'Airone',
         wifiApartments: 'Apartments',
+        actTripAdvisor: 'TripAdvisor',
+        actTripAdvisorBtn: 'View',
+        tripadvisorUrlDefault:
+          'https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html',
         doorMain: 'Walter',
         doorInner: 'Airone',
-        copy: 'Copy',
-        copied: 'Copied',
         receptionNote: 'Reception 24h. Come by anytime.',
         trattoriaPhoneAria: 'Call Trattoria alla Terrazza',
         askReception: 'Ask at reception',
@@ -7568,7 +7676,7 @@
     }
 
     let guestServicesCache = null;
-    let selectedWifiId = 'canal';
+    let selectedWifiId = 'hotel';
 
     function applyWifiNetwork(networks, dict) {
       const ask = dict?.askReception || '-';
@@ -7579,9 +7687,12 @@
           : [];
       if (!list.length) return;
 
+      const canal = list.find((net) => net.id === 'canal');
+      const airone = list.find((net) => net.id === 'airone');
+      const pisani = list.find((net) => net.id === 'pisani');
+
       const pillLabels = {
-        canal: dict?.wifiHotelCanal || 'Hotel Canal',
-        airone: dict?.wifiAirone || 'Airone',
+        hotel: dict?.wifiHotel || 'Hotel',
         pisani: dict?.wifiApartments || 'Appartamenti',
       };
       document.querySelectorAll('#wifiLocationPills .wifi-pill').forEach((btn) => {
@@ -7592,12 +7703,24 @@
         btn.setAttribute('aria-selected', selected ? 'true' : 'false');
       });
 
-      const current =
-        list.find((net) => net.id === selectedWifiId) || list[0];
-      const ssidEl = document.getElementById('wifiSsid');
-      const passEl = document.getElementById('wifiPass');
-      if (ssidEl) ssidEl.textContent = current?.ssid || ask;
-      if (passEl) passEl.textContent = current?.password || ask;
+      const hotelBlock = document.getElementById('wifiHotelBlock');
+      const aptBlock = document.getElementById('wifiAptBlock');
+      const showHotel = selectedWifiId === 'hotel';
+      if (hotelBlock) hotelBlock.hidden = !showHotel;
+      if (aptBlock) aptBlock.hidden = showHotel;
+
+      const canalEl = document.getElementById('wifiCanalSsid');
+      const aironeEl = document.getElementById('wifiAironeSsid');
+      const hotelPassEl = document.getElementById('wifiHotelPass');
+      const aptSsidEl = document.getElementById('wifiAptSsid');
+      const aptPassEl = document.getElementById('wifiAptPass');
+      if (canalEl) canalEl.textContent = canal?.ssid || ask;
+      if (aironeEl) aironeEl.textContent = airone?.ssid || ask;
+      if (hotelPassEl) {
+        hotelPassEl.textContent = canal?.password || airone?.password || ask;
+      }
+      if (aptSsidEl) aptSsidEl.textContent = pisani?.ssid || ask;
+      if (aptPassEl) aptPassEl.textContent = pisani?.password || ask;
     }
 
     function applyGuestActionLabels(dict, couponSent) {
@@ -7632,14 +7755,14 @@
       setTxt('lbl-act-doors-sub', dict.actDoorsSub);
       setTxt('lbl-wifi-net', dict.wifiNet);
       setTxt('lbl-wifi-pass', dict.wifiPass);
+      setTxt('lbl-wifi-pass-apt', dict.wifiPass);
       setTxt('lbl-wifi-location', dict.wifiLocation);
+      setTxt('lbl-wifi-hotel-canal', dict.wifiHotelCanal);
+      setTxt('lbl-wifi-airone', dict.wifiAirone);
+      setTxt('lbl-act-tripadvisor', dict.actTripAdvisor);
+      setTxt('lbl-act-tripadvisor-btn', dict.actTripAdvisorBtn);
       setTxt('lbl-door-main', dict.doorMain);
       setTxt('lbl-door-inner', dict.doorInner);
-      document.querySelectorAll('.copy-btn').forEach((btn) => {
-        if (!btn.classList.contains('is-copied')) {
-          btn.textContent = dict.copy || 'Copy';
-        }
-      });
       setTxt('lbl-reception-note', dict.receptionNote);
       const callBtn = document.getElementById('btnCallTrattoria');
       if (callBtn) {
@@ -7669,6 +7792,22 @@
       const callBtn = document.getElementById('btnCallTrattoria');
       if (phoneEl) phoneEl.textContent = display;
       if (callBtn) callBtn.href = `tel:${tel}`;
+
+      const taBtn = document.getElementById('btnTripAdvisor');
+      const taRating = document.getElementById('tripAdvisorRating');
+      const url =
+        data?.tripadvisorUrl ||
+        dict?.tripadvisorUrlDefault ||
+        'https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html';
+      const rating = data?.tripadvisorRating || '4.3';
+      if (taBtn) {
+        taBtn.href = url;
+        taBtn.setAttribute(
+          'aria-label',
+          `${dict?.actTripAdvisor || 'TripAdvisor'} ${rating}`,
+        );
+      }
+      if (taRating) taRating.textContent = rating;
     }
 
     async function loadGuestServices(dict) {
@@ -7711,7 +7850,7 @@
       const pill = e.target.closest('.wifi-pill[data-wifi-id]');
       if (!pill) return;
       e.preventDefault();
-      selectedWifiId = pill.getAttribute('data-wifi-id') || 'canal';
+      selectedWifiId = pill.getAttribute('data-wifi-id') || 'hotel';
       playConfirmChime({ soft: true });
       applyWifiNetwork(guestServicesCache?.wifiNetworks, t());
     });
@@ -7728,48 +7867,6 @@
       e.preventDefault();
       playConfirmChime({ soft: true });
       closeGuestSheet();
-    });
-
-    async function copySheetValue(btn) {
-      const id = btn.getAttribute('data-copy-from');
-      const source = id ? document.getElementById(id) : null;
-      const value = String(source?.textContent || '').trim();
-      const dict = t();
-      if (!value || value === '-' || value === (dict.askReception || '')) {
-        return;
-      }
-      try {
-        if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(value);
-        } else {
-          const ta = document.createElement('textarea');
-          ta.value = value;
-          ta.setAttribute('readonly', '');
-          ta.style.position = 'fixed';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          ta.remove();
-        }
-        playConfirmChime({ soft: true });
-        btn.classList.add('is-copied');
-        btn.textContent = dict.copied || 'Copied';
-        clearTimeout(btn._copyTimer);
-        btn._copyTimer = setTimeout(() => {
-          btn.classList.remove('is-copied');
-          btn.textContent = dict.copy || 'Copy';
-        }, 1400);
-      } catch (_) {
-        /* ignore clipboard denial */
-      }
-    }
-
-    document.getElementById('guestSheet')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('.copy-btn');
-      if (!btn) return;
-      e.preventDefault();
-      void copySheetValue(btn);
     });
 
     function openGuestSheet(panelId, triggerBtn) {

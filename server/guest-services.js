@@ -4,7 +4,8 @@ function env(name, fallback = '') {
 
 /** Reti Wi-Fi per sede (Hotel Canal, Airone, appartamenti). */
 export function buildWifiNetworks() {
-  const canalPassword = String(env('WIFI_PASSWORD', '')).trim();
+  const canalPassword =
+    String(env('WIFI_PASSWORD', 'hotelcanal')).trim() || 'hotelcanal';
   const canalSsid =
     String(env('WIFI_SSID', 'hotel canal')).trim() || 'hotel canal';
   const aironeSsid =
@@ -38,6 +39,11 @@ export function buildWifiNetworks() {
   ];
 }
 
+/** Solo Hotel Canal in email welcome — niente Airone né appartamenti. */
+export function buildWifiNetworksForEmail() {
+  return buildWifiNetworks().filter((net) => net.id === 'canal');
+}
+
 export function buildGuestServicesPayload() {
   let doorWalter = String(env('DOOR_CODE_WALTER', '')).trim();
   if (doorWalter && !doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
@@ -56,6 +62,15 @@ export function buildGuestServicesPayload() {
     trattoriaPhone: String(env('TRATTORIA_PHONE', '+393282464972')).trim(),
     trattoriaPhoneDisplay: String(
       env('TRATTORIA_PHONE_DISPLAY', '328 246 4972'),
+    ).trim(),
+    tripadvisorUrl: String(
+      env(
+        'TRATTORIA_TRIPADVISOR_URL',
+        'https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html',
+      ),
+    ).trim(),
+    tripadvisorRating: String(
+      env('TRATTORIA_TRIPADVISOR_RATING', '4.3'),
     ).trim(),
   };
 }
