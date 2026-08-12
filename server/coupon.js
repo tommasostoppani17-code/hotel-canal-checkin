@@ -300,13 +300,16 @@ function buildWelcomeHtml({
               </table>`;
 
   const postcard = (src, alt, bottom = 28) => `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;border-radius:20px;overflow:hidden;border:1px solid #E2E6E8;">
+              <table role="presentation" class="email-postcard" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 ${bottom}px;width:100%;border-radius:20px;overflow:hidden;border:1px solid #E2E6E8;">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};">
-                    <img src="${src}" width="436" alt="${alt}" style="display:block;width:100%;max-width:436px;height:auto;border:0;">
+                  <td bgcolor="#FFFFFF" style="padding:0;line-height:0;font-size:0;background-color:#FFFFFF !important;mso-line-height-rule:exactly;">
+                    <img class="email-postcard-img" src="${src}" width="456" alt="${alt}" style="display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">
                   </td>
                 </tr>
               </table>`;
+
+  /** Due bande ristorante: stessa altezza (stesso frame sorgente 1400×780). */
+  const postcardBand = (src, alt, bottom = 8) => postcard(src, alt, bottom);
 
   const veniceGuideBlock = (() => {
     const items = [
@@ -486,6 +489,13 @@ function buildWelcomeHtml({
       object-fit: cover !important;
       border-radius: 14px !important;
     }
+    .email-postcard-img,
+    .email-hero-img {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      display: block !important;
+    }
     @media only screen and (max-width: 420px) {
       .meta-chip {
         display: block !important;
@@ -517,10 +527,10 @@ function buildWelcomeHtml({
           <tr>
             <td class="email-content force-white" bgcolor="#FFFFFF" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
               <!-- TOP: foto + brand + saluto + stanza -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;border-radius:16px;overflow:hidden;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;width:100%;border-radius:16px;overflow:hidden;">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};border-radius:16px;">
-                    <img src="${hero}" width="452" alt="Hotel Canal - Venezia" style="display:block;width:100%;max-width:452px;height:auto;border:0;border-radius:16px;">
+                  <td bgcolor="#FFFFFF" style="padding:0;line-height:0;font-size:0;background-color:#FFFFFF !important;border-radius:16px;">
+                    <img class="email-hero-img" src="${hero}" width="456" alt="Hotel Canal - Venezia" style="display:block;width:100%;max-width:100%;height:auto;border:0;border-radius:16px;outline:none;">
                   </td>
                 </tr>
               </table>
@@ -633,8 +643,8 @@ function buildWelcomeHtml({
               <!-- VOUCHER SCONTO -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px dashed ${C};border-radius:28px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
-                    <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  <td bgcolor="${C}" style="padding:0;line-height:0;font-size:0;background-color:${C};">
+                    <img class="email-postcard-img" src="${resto}" width="456" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;">
                   </td>
                 </tr>
                 <tr>
@@ -678,8 +688,8 @@ function buildWelcomeHtml({
               </p>
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1.5px solid ${C};border-radius:22px;overflow:hidden;margin:0 0 28px;background-color:#FFFFFF;">
                 <tr>
-                  <td style="padding:0;line-height:0;font-size:0;background-color:${C};">
-                    <img src="${resto}" width="452" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:452px;height:auto;border:0;">
+                  <td bgcolor="${C}" style="padding:0;line-height:0;font-size:0;background-color:${C};">
+                    <img class="email-postcard-img" src="${resto}" width="456" alt="Trattoria alla Terrazza" style="display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;">
                   </td>
                 </tr>
                 <tr>
@@ -698,8 +708,8 @@ function buildWelcomeHtml({
                 ${lp.tastesDesc}
               </p>
               ${photoGrid(thumbs.slice(0, 4), 8)}
-              ${postcard(terrace, 'Terrazza sul canale', 8)}
-              ${postcard(dish, 'Cucina della Trattoria alla Terrazza', 8)}
+              ${postcardBand(terrace, 'Piatti della Terrazza', 8)}
+              ${postcardBand(dish, 'Cucina della Trattoria alla Terrazza', 8)}
 
               ${veniceGuideBlock}
               ${venicePdfFooter}
@@ -943,14 +953,15 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Foto HQ landscape: venice-bg + /restaurant.
-  // Walk = terrazza · due grandi sotto griglia = postcard tavolo/dish (max res).
-  // Griglia 2×2: solo crop quadrati /email/thumb-*.
+  // Layout foto email (strategico):
+  // Hero = Canal Grande classico rossastro · Walk = terrazza · Voucher = tavolo piatti
+  // Griglia 2×2 = solo 1:1 HQ · Due bande = stesso frame 1400×780 (stessa altezza)
   const requiredRemote = [
-    ['venice-bg.jpg'],
+    ['email', 'hero-venice.jpg'],
     ['restaurant', '01-terrazza-canale.jpg'],
     ['email', 'postcard-tavolo.jpg'],
-    ['email', 'postcard-dish.jpg'],
+    ['email', 'postcard-large-a.jpg'],
+    ['email', 'postcard-large-b.jpg'],
     ['email', 'thumb-ingresso.jpg'],
     ['email', 'thumb-pesce.jpg'],
     ['email', 'thumb-risotto.jpg'],
@@ -962,14 +973,14 @@ export async function sendWelcomeEmail({
     }
   }
 
-  const heroSrc = publicAssetUrl('venice-bg.jpg');
-  /* Voucher: terrazza sul canale */
-  const restaurantSrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
-  /* Walk to the Terrazza: foto della terrazza */
+  const heroSrc = publicAssetUrl('email', 'hero-venice.jpg');
+  /* Voucher: tavolo con tanti piatti (HQ) */
+  const restaurantSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
+  /* Walk to the Terrazza */
   const gallerySrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
-  /* Due grandi ristorante: massima risoluzione landscape */
-  const terraceSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
-  const dishSrc = publicAssetUrl('email', 'postcard-dish.jpg');
+  /* Due grandi sotto griglia: stesso crop 1400×780 */
+  const terraceSrc = publicAssetUrl('email', 'postcard-large-a.jpg');
+  const dishSrc = publicAssetUrl('email', 'postcard-large-b.jpg');
   const thumbs = [
     {
       src: publicAssetUrl('email', 'thumb-ingresso.jpg'),

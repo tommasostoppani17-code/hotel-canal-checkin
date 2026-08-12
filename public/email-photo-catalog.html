@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hotel Canal — Catalogo foto email</title>
+<style>
+  :root { --c:#124453; --bg:#f4f6f7; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif; background:var(--bg); color:#1c1c1e; }
+  header { position:sticky; top:0; z-index:2; background:#fff; border-bottom:1px solid #e5e5ea; padding:16px 20px; }
+  header h1 { margin:0; font-size:18px; color:var(--c); }
+  header p { margin:6px 0 0; font-size:13px; color:#636366; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; padding:16px 20px 40px; }
+  .card { margin:0; background:#fff; border:1px solid #e5e5ea; border-radius:16px; overflow:hidden; position:relative; }
+  .num { position:absolute; top:10px; left:10px; background:var(--c); color:#fff; font-weight:700; font-size:14px; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+  img { display:block; width:100%; height:180px; object-fit:cover; background:#eee; }
+  figcaption { padding:10px 12px 14px; font-size:12px; line-height:1.35; }
+  figcaption span { color:#8e8e93; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Catalogo foto email — Hotel Canal</h1>
+  <p>Ogni foto ha un numero. Dimmi es. “voucher = #5, walk = #12” e le posiziono.</p>
+</header>
+<div class="grid">
+
+  <figure class="card" id="p1">
+    <div class="num">1</div>
+    <img src="/email/hero-venice.jpg" alt="hero-venice.jpg" loading="lazy">
+    <figcaption>
+      <strong>#1</strong> hero-venice.jpg<br>
+      <span>1200×686 · 158 KB · 1.75:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p2">
+    <div class="num">2</div>
+    <img src="/venice-bg.jpg" alt="venice-bg.jpg" loading="lazy">
+    <figcaption>
+      <strong>#2</strong> venice-bg.jpg<br>
+      <span>1600×980 · 371 KB · 1.63:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p3">
+    <div class="num">3</div>
+    <img src="/email/postcard-dish.jpg" alt="postcard-dish.jpg" loading="lazy">
+    <figcaption>
+      <strong>#3</strong> postcard-dish.jpg<br>
+      <span>1400×875 · 363 KB · 1.6:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p4">
+    <div class="num">4</div>
+    <img src="/email/postcard-ingresso.jpg" alt="postcard-ingresso.jpg" loading="lazy">
+    <figcaption>
+      <strong>#4</strong> postcard-ingresso.jpg<br>
+      <span>1020×576 · 160 KB · 1.77:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p5">
+    <div class="num">5</div>
+    <img src="/email/postcard-large-a.jpg" alt="postcard-large-a.jpg" loading="lazy">
+    <figcaption>
+      <strong>#5</strong> postcard-large-a.jpg<br>
+      <span>1400×780 · 246 KB · 1.79:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p6">
+    <div class="num">6</div>
+    <img src="/email/postcard-large-b.jpg" alt="postcard-large-b.jpg" loading="lazy">
+    <figcaption>
+      <strong>#6</strong> postcard-large-b.jpg<br>
+      <span>1400×780 · 331 KB · 1.79:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p7">
+    <div class="num">7</div>
+    <img src="/email/postcard-tavolo.jpg" alt="postcard-tavolo.jpg" loading="lazy">
+    <figcaption>
+      <strong>#7</strong> postcard-tavolo.jpg<br>
+      <span>1400×667 · 233 KB · 2.1:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p8">
+    <div class="num">8</div>
+    <img src="/email/postcard-terrazza.jpg" alt="postcard-terrazza.jpg" loading="lazy">
+    <figcaption>
+      <strong>#8</strong> postcard-terrazza.jpg<br>
+      <span>1020×682 · 204 KB · 1.5:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p9">
+    <div class="num">9</div>
+    <img src="/email/thumb-ingresso.jpg" alt="thumb-ingresso.jpg" loading="lazy">
+    <figcaption>
+      <strong>#9</strong> thumb-ingresso.jpg<br>
+      <span>960×960 · 194 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p10">
+    <div class="num">10</div>
+    <img src="/email/thumb-linguine.jpg" alt="thumb-linguine.jpg" loading="lazy">
+    <figcaption>
+      <strong>#10</strong> thumb-linguine.jpg<br>
+      <span>960×960 · 229 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p11">
+    <div class="num">11</div>
+    <img src="/email/thumb-pesce.jpg" alt="thumb-pesce.jpg" loading="lazy">
+    <figcaption>
+      <strong>#11</strong> thumb-pesce.jpg<br>
+      <span>960×960 · 311 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p12">
+    <div class="num">12</div>
+    <img src="/email/thumb-risotto.jpg" alt="thumb-risotto.jpg" loading="lazy">
+    <figcaption>
+      <strong>#12</strong> thumb-risotto.jpg<br>
+      <span>960×960 · 274 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p13">
+    <div class="num">13</div>
+    <img src="/email/thumb-sala.jpg" alt="thumb-sala.jpg" loading="lazy">
+    <figcaption>
+      <strong>#13</strong> thumb-sala.jpg<br>
+      <span>960×960 · 142 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p14">
+    <div class="num">14</div>
+    <img src="/restaurant/01-terrazza-canale.jpg" alt="01-terrazza-canale.jpg" loading="lazy">
+    <figcaption>
+      <strong>#14</strong> 01-terrazza-canale.jpg<br>
+      <span>1020×682 · 204 KB · 1.5:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p15">
+    <div class="num">15</div>
+    <img src="/restaurant/02-gondola-ingresso.jpg" alt="02-gondola-ingresso.jpg" loading="lazy">
+    <figcaption>
+      <strong>#15</strong> 02-gondola-ingresso.jpg<br>
+      <span>1020×576 · 160 KB · 1.77:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p16">
+    <div class="num">16</div>
+    <img src="/restaurant/03-sala-interna.jpg" alt="03-sala-interna.jpg" loading="lazy">
+    <figcaption>
+      <strong>#16</strong> 03-sala-interna.jpg<br>
+      <span>1020×787 · 79 KB · 1.3:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p17">
+    <div class="num">17</div>
+    <img src="/restaurant/04-sala-interna-2.jpg" alt="04-sala-interna-2.jpg" loading="lazy">
+    <figcaption>
+      <strong>#17</strong> 04-sala-interna-2.jpg<br>
+      <span>1020×794 · 74 KB · 1.28:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p18">
+    <div class="num">18</div>
+    <img src="/restaurant/05-pesce-al-forno.jpg" alt="05-pesce-al-forno.jpg" loading="lazy">
+    <figcaption>
+      <strong>#18</strong> 05-pesce-al-forno.jpg<br>
+      <span>1020×892 · 217 KB · 1.14:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p19">
+    <div class="num">19</div>
+    <img src="/restaurant/06-linguine-granchio.jpg" alt="06-linguine-granchio.jpg" loading="lazy">
+    <figcaption>
+      <strong>#19</strong> 06-linguine-granchio.jpg<br>
+      <span>953×1000 · 134 KB · 0.95:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p20">
+    <div class="num">20</div>
+    <img src="/restaurant/07-spaghetti-mare.jpg" alt="07-spaghetti-mare.jpg" loading="lazy">
+    <figcaption>
+      <strong>#20</strong> 07-spaghetti-mare.jpg<br>
+      <span>938×1000 · 117 KB · 0.94:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p21">
+    <div class="num">21</div>
+    <img src="/restaurant/08-risotto.jpg" alt="08-risotto.jpg" loading="lazy">
+    <figcaption>
+      <strong>#21</strong> 08-risotto.jpg<br>
+      <span>1020×804 · 204 KB · 1.27:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p22">
+    <div class="num">22</div>
+    <img src="/restaurant/09-tagliatelle.jpg" alt="09-tagliatelle.jpg" loading="lazy">
+    <figcaption>
+      <strong>#22</strong> 09-tagliatelle.jpg<br>
+      <span>1020×1000 · 82 KB · 1.02:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p23">
+    <div class="num">23</div>
+    <img src="/restaurant/10-polenta.jpg" alt="10-polenta.jpg" loading="lazy">
+    <figcaption>
+      <strong>#23</strong> 10-polenta.jpg<br>
+      <span>1020×840 · 81 KB · 1.21:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p24">
+    <div class="num">24</div>
+    <img src="/restaurant/11-tavolo-canale.jpg" alt="11-tavolo-canale.jpg" loading="lazy">
+    <figcaption>
+      <strong>#24</strong> 11-tavolo-canale.jpg<br>
+      <span>768×1022 · 159 KB · 0.75:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p25">
+    <div class="num">25</div>
+    <img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="12-tavolo-terrazza-pasta.jpg" loading="lazy">
+    <figcaption>
+      <strong>#25</strong> 12-tavolo-terrazza-pasta.jpg<br>
+      <span>768×1024 · 183 KB · 0.75:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p26">
+    <div class="num">26</div>
+    <img src="/restaurant/13-sala-interna.jpg" alt="13-sala-interna.jpg" loading="lazy">
+    <figcaption>
+      <strong>#26</strong> 13-sala-interna.jpg<br>
+      <span>664×373 · 52 KB · 1.78:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p27">
+    <div class="num">27</div>
+    <img src="/restaurant/14-pesce-grigliato.jpg" alt="14-pesce-grigliato.jpg" loading="lazy">
+    <figcaption>
+      <strong>#27</strong> 14-pesce-grigliato.jpg<br>
+      <span>1024×1024 · 235 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p28">
+    <div class="num">28</div>
+    <img src="/restaurant/15-linguine-astice.jpg" alt="15-linguine-astice.jpg" loading="lazy">
+    <figcaption>
+      <strong>#28</strong> 15-linguine-astice.jpg<br>
+      <span>500×500 · 48 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p29">
+    <div class="num">29</div>
+    <img src="/restaurant/16-guazzetto-mare.jpg" alt="16-guazzetto-mare.jpg" loading="lazy">
+    <figcaption>
+      <strong>#29</strong> 16-guazzetto-mare.jpg<br>
+      <span>1024×1024 · 201 KB · 1.0:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p30">
+    <div class="num">30</div>
+    <img src="/restaurant/17-astice-sera.jpg" alt="17-astice-sera.jpg" loading="lazy">
+    <figcaption>
+      <strong>#30</strong> 17-astice-sera.jpg<br>
+      <span>768×1024 · 154 KB · 0.75:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p31">
+    <div class="num">31</div>
+    <img src="/restaurant/hero-form.jpg" alt="hero-form.jpg" loading="lazy">
+    <figcaption>
+      <strong>#31</strong> hero-form.jpg<br>
+      <span>768×1022 · 159 KB · 0.75:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p32">
+    <div class="num">32</div>
+    <img src="/restaurant/ingresso.jpg" alt="ingresso.jpg" loading="lazy">
+    <figcaption>
+      <strong>#32</strong> ingresso.jpg<br>
+      <span>1020×576 · 122 KB · 1.77:1</span>
+    </figcaption>
+  </figure>
+  <figure class="card" id="p33">
+    <div class="num">33</div>
+    <img src="/restaurant/terrazza.jpg" alt="terrazza.jpg" loading="lazy">
+    <figcaption>
+      <strong>#33</strong> terrazza.jpg<br>
+      <span>1000×1331 · 243 KB · 0.75:1</span>
+    </figcaption>
+  </figure>
+</div>
+</body>
+</html>
