@@ -4159,15 +4159,15 @@
     }
 
     #step4 .header.step3-head h1 {
-      margin-bottom: var(--ios-2);
+      margin-bottom: 0;
     }
 
     #step4 .header.step3-head #lbl-succ-sub {
-      margin-bottom: var(--ios-4);
+      margin-bottom: 0;
     }
 
     .receipt-badge {
-      margin-top: var(--ios-4);
+      margin-top: 0;
       padding: var(--ios-4);
       border-radius: var(--radius-ios);
     }
@@ -4188,30 +4188,118 @@
     }
 
     /* =========================================================
-       Step 4 hub — list rows iOS Settings (allineamento ottico)
+       Step 4 hub — iOS List + footer ancorato (niente buco nero)
        ========================================================= */
+    #step4 .step3-home {
+      justify-content: flex-start !important;
+      height: 100%;
+      min-height: 100%;
+      padding-bottom: var(--ios-4);
+    }
+
+    #step4 .step3-head {
+      margin: 0 0 var(--ios-4) !important;
+      gap: 0;
+      width: 100%;
+    }
+
+    #step4 .success-check {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto var(--ios-3) !important;
+    }
+
+    #step4 #lbl-succ-title {
+      font-size: 22px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.02em !important;
+      margin: 0 !important;
+    }
+
+    #step4 #lbl-succ-sub {
+      margin: 4px 0 0 !important;
+      font-size: 13.5px !important;
+      line-height: 1.4 !important;
+      max-width: 34ch;
+    }
+
+    /* Coupon: aria sotto titolo + padding interno bilanciato */
+    #step4 .receipt-badge {
+      margin: var(--ios-6) 0 0 !important;
+      padding: var(--ios-4) !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: var(--radius-ios);
+      background: #FFFFFF;
+      border: 1px solid #E5E5EA;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    #step4 .receipt-badge .eyebrow {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #636366;
+      text-transform: uppercase;
+      margin: 0 0 var(--ios-2);
+    }
+
+    #step4 .receipt-badge .code {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--canal-petroleum);
+      margin: 0 0 var(--ios-2);
+      line-height: 1.15;
+    }
+
+    #step4 .receipt-badge .time {
+      display: block;
+      font-size: 11px;
+      color: #636366;
+      line-height: 1.35;
+      padding-bottom: 0;
+      margin: 0;
+    }
+
+    #step4 .step3-body {
+      display: flex !important;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      justify-content: flex-start !important;
+      width: 100%;
+      margin-top: var(--ios-6);
+    }
+
+    /* Lista cresce e spinge reception/link in fondo — gap controllato */
     #step4 .guest-actions {
       width: 100%;
-      margin-top: var(--ios-4);
       display: flex;
       flex-direction: column;
       gap: var(--ios-2);
+      margin: 0 0 auto !important;
+      flex: 0 0 auto;
     }
 
     #step4 .guest-action {
       border-radius: var(--radius-ios);
       overflow: hidden;
+      background: #FFFFFF;
+      border: 1px solid #E5E5EA;
+      box-shadow: none;
     }
 
     #step4 .guest-action-btn {
-      display: grid;
-      grid-template-columns: 36px minmax(0, 1fr) 12px;
+      display: flex !important;
       align-items: center;
-      column-gap: var(--ios-3);
+      justify-content: flex-start;
       width: 100%;
-      min-height: 52px;
-      height: auto;
-      padding: var(--ios-3) var(--ios-4);
+      min-height: 56px;
+      height: 56px;
+      padding: 0 var(--ios-4) !important;
       margin: 0;
       gap: 0;
       box-sizing: border-box;
@@ -4219,44 +4307,43 @@
     }
 
     #step4 .guest-action-btn .ga-icon {
-      grid-column: 1;
-      width: 36px;
-      height: 36px;
+      width: 32px !important;
+      height: 32px !important;
       border-radius: 50%;
-      margin: 0;
+      margin: 0 var(--ios-3) 0 0 !important;
       padding: 0;
       line-height: 0;
+      flex: 0 0 32px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       align-self: center;
-      background: rgba(18, 68, 83, 0.08);
+      background: #F2F2F7 !important;
       color: var(--canal-petroleum);
     }
 
     #step4 .guest-action.is-book .guest-action-btn .ga-icon {
-      background: rgba(18, 68, 83, 0.12);
+      background: #F2F2F7 !important;
     }
 
     #step4 .guest-action-btn .ga-icon svg {
-      width: 18px;
-      height: 18px;
+      width: 16px !important;
+      height: 16px !important;
       display: block;
       margin: 0;
-      flex-shrink: 0;
-      /* ottico: stroke SVG spesso “cade” di 0.5–1px sotto il centro */
       transform: translateY(-0.5px);
     }
 
     #step4 .guest-action-btn .ga-label {
-      grid-column: 2;
+      flex: 1 1 auto;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
       gap: 2px;
-      min-width: 0;
-      padding-top: 1px; /* allineamento ottico titolo ↔ icona */
+      padding: 0;
+      margin: 0;
     }
 
     #step4 .guest-action-btn .ga-title {
@@ -4264,7 +4351,7 @@
       font-weight: 600;
       letter-spacing: -0.02em;
       line-height: 1.2;
-      color: var(--canal-petroleum);
+      color: var(--text-main);
     }
 
     #step4 .guest-action-btn .ga-sub {
@@ -4272,34 +4359,40 @@
       font-weight: 500;
       letter-spacing: -0.01em;
       line-height: 1.25;
-      color: #8E8E93;
+      color: #636366;
     }
 
     #step4 .guest-action-btn .ga-chevron {
-      grid-column: 3;
-      width: 7px;
-      height: 7px;
-      margin: 0;
-      justify-self: end;
+      width: 8px;
+      height: 8px;
+      margin: 0 0 0 var(--ios-4) !important;
+      flex: 0 0 auto;
       align-self: center;
-      /* chevron CSS: lieve nudge ottico verso il centro del testo */
       transform: translateY(-1px) rotate(-45deg);
-      opacity: 0.45;
+      opacity: 0.35;
+      border-color: #C4C4C6;
     }
 
+    /* Footer blocco: aria fissa sopra, ancorato in basso dalla lista */
     #step4 .reception-note,
     .reception-note {
-      margin-top: var(--ios-6);
-      margin-bottom: 0;
+      margin: var(--ios-6) 0 var(--ios-3) !important;
       padding: 0 var(--ios-2);
-      letter-spacing: 0.04em;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #636366;
       line-height: 1.4;
+      text-align: center;
+      flex: 0 0 auto;
     }
 
     #step4 .guest-reentry {
-      margin-top: var(--ios-4);
-      padding-bottom: var(--ios-2);
+      margin: 0 !important;
+      padding: 0 0 var(--ios-2);
       text-align: center;
+      flex: 0 0 auto;
     }
 
     #step4 .guest-reentry .btn-ghost {
@@ -4308,6 +4401,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--canal-petroleum);
+      opacity: 1;
     }
 
     @media (max-width: 390px) {
