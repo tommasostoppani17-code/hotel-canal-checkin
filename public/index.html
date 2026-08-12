@@ -4443,6 +4443,105 @@
     #step1 .form-grid-container {
       margin-top: 0;
     }
+
+    /* =========================================================
+       Step 3 Reservation — layout compresso (niente buchi)
+       ========================================================= */
+    #step3 .step-body.dining-book {
+      gap: 12px !important;
+    }
+
+    #step3 .dining-book-head {
+      margin: 0 0 12px !important;
+      padding: 0;
+    }
+
+    #step3 .dining-book-kicker {
+      margin: 0 0 4px;
+    }
+
+    #step3 .dining-book-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    #step3 .dining-book-sub {
+      margin: 8px auto 0 !important;
+      max-width: 34ch;
+      font-size: 13.5px;
+      line-height: 1.4;
+    }
+
+    #step3 .booking-reserve-block {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    #step3 .booking-reserve-label,
+    #step3 .dining-book .booking-reserve-label {
+      margin: 0 0 8px !important;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    #step3 .booking-segment-grid,
+    #step3 .dining-book .booking-segment-grid {
+      gap: 8px !important;
+      margin: 0 0 16px !important;
+    }
+
+    /* Divider rimosso dall'HTML — zero spacer fantasma */
+    #step3 .dining-section-rule {
+      display: none !important;
+      margin: 0 !important;
+      height: 0 !important;
+      border: 0 !important;
+    }
+
+    #step3 .form-grid-container,
+    #step3 .dining-book .form-grid-container {
+      gap: 12px 12px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    #step3 .form-group label {
+      margin-bottom: 4px !important;
+      margin-left: 2px;
+    }
+
+    #step3 .input-with-icon .apple-input {
+      height: 46px !important;
+      min-height: 46px;
+      padding-left: 38px;
+      font-size: 15px;
+    }
+
+    #step3Footer.step-footer-fixed {
+      padding-top: 12px !important;
+      padding-bottom: 8px !important;
+      margin-top: 0 !important;
+    }
+
+    #step3Footer .btn-canal {
+      height: 50px !important;
+      min-height: 50px;
+      margin-top: 8px !important;
+    }
+
+    #step3Footer .action-links {
+      margin-top: 16px !important;
+      gap: 8px !important;
+    }
+
+    #step3Footer .action-links .btn-text-link {
+      min-height: 40px;
+      padding: 4px 8px;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
@@ -4558,8 +4657,6 @@
               <button type="button" class="hour-pill-ios is-skip is-selected" data-hour="NO" id="pillSkipTable">No</button>
             </div>
           </div>
-
-          <div class="dining-section-rule" aria-hidden="true"></div>
 
           <div class="form-grid-container" id="roomFormGrid">
             <div class="form-group">
