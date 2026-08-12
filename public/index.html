@@ -67,9 +67,16 @@
       --rule-gap: 24px;
       /* 48px: tap target + allineamento glyph/placeholder */
       --ios-touch: 48px;
+      --ios-cta: 52px;
       --ios-inset: 24px;
-      --type-title: 22px;
-      --type-label: 9.5px;
+      --ios-card-pad-top: 32px;
+      --ios-card-pad-bottom: 24px;
+      --header-after: 32px;
+      --input-border: rgba(18, 68, 83, 0.12);
+      --type-brand: 20px;
+      --type-brand-sub: 11px;
+      --type-title: 18px;
+      --type-label: 11px;
       --type-body: 16px;
       --type-cta: 16px;
       /* Viewport stabile; JS scrive --vvh da visualViewport */
@@ -207,7 +214,7 @@
       -webkit-backdrop-filter: none;
       border: 1px solid rgba(255, 255, 255, 0.65);
       border-radius: var(--radius-outer);
-      padding: 24px 0 24px;
+      padding: var(--ios-card-pad-top) 0 var(--ios-card-pad-bottom);
       box-sizing: border-box;
       box-shadow:
         0 20px 60px rgba(8, 48, 72, 0.18),
@@ -4308,6 +4315,133 @@
         padding-left: 16px;
         padding-right: 16px;
       }
+    }
+
+    /* =========================================================
+       Cupertino System File — coerenza cross-step (HIG)
+       Nessuna hairline sotto titoli: solo whitespace.
+       ========================================================= */
+    .header {
+      margin-bottom: var(--header-after);
+      border-bottom: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .header .hotel-title {
+      font-size: var(--type-brand);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 var(--ios-2);
+      color: var(--canal-petroleum);
+    }
+
+    .header .hotel-subtitle {
+      font-size: var(--type-brand-sub);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #8E8E93;
+      margin: 0 0 var(--ios-4);
+    }
+
+    .header h1 {
+      font-size: var(--type-title);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0;
+      border: 0;
+      padding: 0;
+      text-decoration: none;
+      box-shadow: none;
+    }
+
+    /* Step 2/3 page titles: stessa gerarchia, zero linee */
+    .concierge-header-title,
+    .dining-book-title,
+    #step4 .header h1 {
+      font-size: var(--type-title);
+      font-weight: 600;
+      border-bottom: 0 !important;
+      box-shadow: none !important;
+      padding-bottom: 0 !important;
+    }
+
+    .dining-book-kicker {
+      font-size: var(--type-brand-sub);
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: #8E8E93;
+    }
+
+    .dining-book-head {
+      margin-bottom: var(--header-after);
+    }
+
+    #step2 .dining-copy {
+      gap: var(--ios-3);
+      padding: var(--ios-2) var(--ios-2) 0;
+      margin-bottom: 0;
+    }
+
+    /* Separazione sezioni = aria, non hairline decorativa */
+    .dining-book .dining-section-rule,
+    #step3 .dining-section-rule {
+      height: 0 !important;
+      border: 0 !important;
+      border-top: 0 !important;
+      background: transparent !important;
+      margin: var(--ios-8) 0 !important;
+    }
+
+    #step2 .step-footer-fixed {
+      border-top: 0 !important;
+    }
+
+    /* Input system: bianco puro + bordo chiaro (tutti gli step) */
+    .apple-input,
+    #step3 .apple-input,
+    #step3 .input-with-icon .apple-input,
+    #step2 .apple-input {
+      height: var(--ios-touch) !important;
+      min-height: var(--ios-touch);
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      border: 1.5px solid var(--input-border) !important;
+      border-radius: var(--radius-ios) !important;
+    }
+
+    .apple-input:focus,
+    #step3 .apple-input:focus,
+    #step3 .input-with-icon .apple-input:focus {
+      border-color: rgba(18, 68, 83, 0.45) !important;
+      background: #FFFFFF !important;
+    }
+
+    .btn-canal,
+    #step2 .step-footer-fixed .btn-canal,
+    #step3Footer .btn-canal,
+    #step3 .btn-canal {
+      height: var(--ios-cta) !important;
+      min-height: var(--ios-cta);
+      border-radius: var(--radius-ios) !important;
+    }
+
+    .form-group label,
+    #step3 .form-group label {
+      margin-left: 2px;
+      margin-bottom: var(--ios-2);
+      font-size: var(--type-label);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    #step1 .step-body {
+      padding-top: 0;
+    }
+
+    #step1 .form-grid-container {
+      margin-top: 0;
     }
   </style>
 </head>
