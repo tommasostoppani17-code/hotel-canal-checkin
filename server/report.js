@@ -685,26 +685,10 @@ export function buildTableBookingEmail({ hotelName, row }) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background-color:${BOX} !important;border-radius:14px;">
                 <tr>
                   <td align="center" style="padding:16px 14px;">
-                    <div style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;margin:0 0 6px;">
-                      ${escapeHtml(headline.dayLabel)} · orario richiesto
-                    </div>
-                    <div style="font-family:${BODY};font-style:italic;font-size:22px;font-weight:600;color:${C} !important;letter-spacing:0.02em;line-height:1.2;">
-                      ${escapeHtml(timeDisplay)}
-                    </div>
-                    <div style="font-family:${SANS};font-size:12px;font-weight:500;color:#7A8690 !important;margin-top:8px;">
-                      Stanza ${escapeHtml(room)} · ${escapeHtml(String(pax))} ospiti
-                    </div>
-                  </td>
-                </tr>
-              </table>
-
-              ${
-                phoneTel
-                  ? `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;">
-                <tr>
-                  <td align="center" style="padding:0;text-align:center;">
-                    <a href="tel:${escapeHtml(phoneTel)}" style="text-decoration:none;display:inline-block;">
+                    ${
+                      phoneTel
+                        ? `
+                    <a href="tel:${escapeHtml(phoneTel)}" style="text-decoration:none;display:inline-block;margin:0 0 16px;">
                       <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto;">
                         <tr>
                           <td width="64" height="64" align="center" valign="middle" bgcolor="${C}" style="width:64px;height:64px;background-color:${C};border-radius:32px;text-align:center;line-height:64px;font-size:28px;color:#FFFFFF !important;">
@@ -719,11 +703,21 @@ export function buildTableBookingEmail({ hotelName, row }) {
                         Tocca per chiamare l&rsquo;ospite
                       </div>
                     </a>
+                    <div style="height:1px;line-height:1px;background-color:#D8DEE3;margin:0 0 16px;font-size:1px;">&nbsp;</div>`
+                        : ''
+                    }
+                    <div style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;margin:0 0 6px;">
+                      ${escapeHtml(headline.dayLabel)} · orario richiesto
+                    </div>
+                    <div style="font-family:${BODY};font-style:italic;font-size:22px;font-weight:600;color:${C} !important;letter-spacing:0.02em;line-height:1.2;">
+                      ${escapeHtml(timeDisplay)}
+                    </div>
+                    <div style="font-family:${SANS};font-size:12px;font-weight:500;color:#7A8690 !important;margin-top:8px;">
+                      Stanza ${escapeHtml(room)} · ${escapeHtml(String(pax))} ospiti
+                    </div>
                   </td>
                 </tr>
-              </table>`
-                  : ''
-              }
+              </table>
 
               ${sectionTitleLocal('Dettagli richiesta')}
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px;border-top:1px solid #E8E4DC;">
