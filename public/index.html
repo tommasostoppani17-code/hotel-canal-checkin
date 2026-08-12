@@ -4022,82 +4022,133 @@
       margin: var(--rule-gap) 0;
     }
 
-    .dining-book .booking-segment-grid {
+    /* Step 3 — pill pattern uniforme (orari + No) */
+    .dining-book .booking-segment-grid,
+    #step3 .booking-segment-grid {
       gap: var(--ios-2);
+      margin: 0 0 var(--ios-6) !important;
     }
 
-    .hour-pill-ios {
-      height: var(--ios-touch);
-      min-height: var(--ios-touch);
+    #step3 .hour-pill-ios {
+      height: 40px;
+      min-height: 40px;
+      padding: 0 var(--ios-1);
+      background: #F2F2F7;
+      border: 1px solid transparent;
       border-radius: var(--radius-ios);
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .hour-pill-ios.is-skip {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    /* "No" selezionato: outline soft — non competere con gli orari */
-    .hour-pill-ios.is-selected {
-      background: rgba(18, 68, 83, 0.1) !important;
-      border-color: var(--canal-petroleum) !important;
-      color: var(--canal-petroleum) !important;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
       box-shadow: none;
     }
 
-    .hour-pill-ios.is-selected:not(.is-skip) {
+    #step3 .hour-pill-ios.is-skip {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    /* Stesso .active per qualsiasi scelta (orario o No) */
+    #step3 .hour-pill-ios.is-selected,
+    #step3 .hour-pill-ios.is-selected.is-skip {
       background: var(--canal-petroleum) !important;
       border-color: var(--canal-petroleum) !important;
       color: #FFFFFF !important;
-      box-shadow: 0 4px 10px rgba(18, 68, 83, 0.12);
+      font-weight: 600;
+      box-shadow: none;
     }
 
-    .input-with-icon .field-glyph {
-      left: 14px;
-      top: 0;
-      bottom: 0;
-      height: auto;
+    /* Input + glyph: asse verticale condiviso */
+    #step3 .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    #step3 .input-with-icon .field-glyph {
+      position: absolute;
+      left: var(--ios-4);
+      top: 50%;
+      bottom: auto;
       width: 16px;
-      margin: auto 0;
-      transform: none;
+      height: 16px;
+      margin: 0;
+      transform: translateY(-50%);
+      opacity: 0.5;
       display: flex;
       align-items: center;
       justify-content: center;
+      pointer-events: none;
+      z-index: 1;
     }
 
-    .input-with-icon .field-glyph svg {
+    #step3 .input-with-icon .field-glyph svg {
       width: 16px;
       height: 16px;
-    }
-
-    .input-with-icon .apple-input {
-      padding-left: 40px;
-      line-height: var(--ios-touch);
+      display: block;
     }
 
     #step3 .input-with-icon .apple-input {
+      height: 48px;
       padding-left: 40px;
-      line-height: var(--ios-touch);
+      padding-right: var(--ios-4);
+      line-height: normal;
+      border: 1.5px solid rgba(18, 68, 83, 0.12);
+      border-radius: var(--radius-ios);
+    }
+
+    #step3 .form-group label {
+      margin-bottom: 6px;
+      margin-left: 2px;
+    }
+
+    /* Footer step 3: CTA + link touch-safe distanziati */
+    #step3Footer.step-footer-fixed {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding-top: var(--ios-4);
+      padding-bottom: var(--ios-4);
+    }
+
+    #step3Footer .btn-canal {
+      margin-top: 0;
+      height: 52px;
+      border-radius: var(--radius-ios);
+    }
+
+    #step3Footer .action-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--ios-3);
+      margin-top: var(--ios-6);
+      width: 100%;
+    }
+
+    #step3Footer .action-links .btn-text-link {
+      margin: 0;
+      min-height: 44px;
+      padding: var(--ios-2) var(--ios-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: -0.01em;
     }
 
     #btnSkip.btn-text-link {
-      margin-top: var(--ios-4);
-      min-height: 44px;
-      padding: var(--ios-2) var(--ios-4);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      color: var(--canal-petroleum) !important;
+      text-decoration: none;
     }
 
     #btnBack.btn-text-link {
-      margin-top: var(--ios-2);
-      min-height: 44px;
-      padding: var(--ios-2) var(--ios-4);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      color: #636366 !important;
+      text-decoration: none;
     }
 
     #step4 .header.step3-head h1 {
@@ -4329,8 +4380,10 @@
 
         <div class="step-footer-fixed" id="step3Footer">
           <button type="button" class="btn-canal" id="btnSubmit">Conferma e ricevi coupon</button>
-          <button type="button" class="btn-text-link" id="btnSkip">Salta, solo registrazione</button>
-          <button type="button" class="btn-text-link" id="btnBack">Indietro</button>
+          <div class="action-links">
+            <button type="button" class="btn-text-link" id="btnSkip">Salta, solo registrazione</button>
+            <button type="button" class="btn-text-link" id="btnBack">Indietro</button>
+          </div>
         </div>
       </section>
 
