@@ -20,7 +20,6 @@ import {
   buildTableBookingEmail,
 } from '../server/report.js';
 import { buildPosterEmailHtml } from '../server/poster.js';
-import { buildWifiNetworksForEmail } from '../server/guest-services.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -50,7 +49,8 @@ function write(name, html) {
 const files = [];
 const base = publicBaseUrl();
 const token = 'preview-token-demo';
-const wifi = buildWifiNetworksForEmail();
+const wifiSsid = String(process.env.WIFI_SSID || 'hotel canal').trim();
+const wifiPassword = String(process.env.WIFI_PASSWORD || 'preview').trim();
 let doorWalter = String(process.env.DOOR_CODE_WALTER || '1234#').trim();
 if (doorWalter && !doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
 const doorAirone = String(process.env.DOOR_CODE_AIRONE || '5678').trim();
@@ -93,9 +93,8 @@ const welcomeArgs = {
     mooring: publicAssetUrl('email', 'stickers', 'mooring.png'),
     lion: publicAssetUrl('email', 'stickers', 'lion.png'),
   },
-  wifiSsid: wifi[0]?.ssid || 'hotel canal',
-  wifiPassword: wifi[0]?.password || 'preview',
-  wifiNetworks: wifi,
+  wifiSsid,
+  wifiPassword,
   doorWalter,
   doorAirone,
   claimUrl: couponClaimUrl(token),
