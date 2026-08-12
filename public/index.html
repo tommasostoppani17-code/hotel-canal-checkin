@@ -43,12 +43,15 @@
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
-      /* iOS-like continuous: decelerazione lunga, zero rimbalzo */
+      /* iOS-like continuous: decelerazione lunga — altezza SENZA overshoot (evita tremore card) */
       --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --slide-ms: 640ms;
-      /* Altezza card: un filo più lenta dello slide = morph fluido */
-      --height-ms: 780ms;
-      --height-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --slide-ms: 560ms;
+      /* Altezza viewport: fluida ma geometrica (mai cubic con bounce > 1) */
+      --height-ms: 560ms;
+      --height-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      /* Rimbalzo elastico SOLO su transform:scale (GPU, zero reflow) */
+      --bounce-ease: cubic-bezier(0.25, 1, 0.5, 1.2);
+      --bounce-ms: 450ms;
       /* Cupertino 8pt grid — ritmo unico Apple HIG */
       --ios-1: 4px;
       --ios-2: 8px;
@@ -221,9 +224,14 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
       overflow: hidden;
       isolation: isolate;
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
-      will-change: transform;
+      transform: translate3d(0, 0, 0) scale(1);
+      -webkit-transform: translate3d(0, 0, 0) scale(1);
+      will-change: transform, opacity;
+      transition:
+        transform var(--bounce-ms) var(--bounce-ease),
+        opacity 0.3s ease-out;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     .apple-card.is-height-shrink {
@@ -417,14 +425,37 @@
     }
 
     .apple-card.is-rubber {
-      animation: cardRubber 280ms cubic-bezier(0.25, 1, 0.5, 1) both;
+      animation: cardRubber var(--bounce-ms) var(--bounce-ease) both;
     }
 
     @keyframes cardRubber {
-      0% { transform: scale(1) translate3d(0, 0, 0); }
-      50% { transform: scale(0.985) translate3d(0, 2px, 0); }
-      100% { transform: scale(1) translate3d(0, 0, 0); }
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      40% { transform: translate3d(0, 1px, 0) scale(0.97); }
+      70% { transform: translate3d(0, 0, 0) scale(1.012); }
+      100% { transform: translate3d(0, 0, 0) scale(1); }
     }
+
+    /* Step change: micro scale bounce — altezza card non trema */
+    .apple-card.is-step-exit {
+      opacity: 0.72;
+      transform: translate3d(0, 0, 0) scale(0.975);
+      transition:
+        transform 150ms var(--height-ease),
+        opacity 150ms ease-out;
+    }
+
+    .apple-card.is-step-enter {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+      transition:
+        transform var(--bounce-ms) var(--bounce-ease),
+        opacity 0.3s ease-out;
+    }
+
+    .apple-card.is-step-locked {
+      pointer-events: none;
+    }
+
 
     .step-dots {
       display: flex;
@@ -469,10 +500,12 @@
       height: auto;
       overflow: hidden;
       position: relative;
+      /* Height morph: GPU layer, curva SENZA overshoot (niente page-tremble) */
       will-change: height;
       transition: height var(--height-ms) var(--height-ease);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .slider-track {
@@ -1378,13 +1411,14 @@
     }
 
     .apple-card.is-rubber {
-      animation: cardRubber 280ms cubic-bezier(0.25, 1, 0.5, 1) both;
+      animation: cardRubber var(--bounce-ms) var(--bounce-ease) both;
     }
 
     @keyframes cardRubber {
-      0% { transform: scale(1) translate3d(0, 0, 0); }
-      50% { transform: scale(0.985) translate3d(0, 2px, 0); }
-      100% { transform: scale(1) translate3d(0, 0, 0); }
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      40% { transform: translate3d(0, 1px, 0) scale(0.97); }
+      70% { transform: translate3d(0, 0, 0) scale(1.012); }
+      100% { transform: translate3d(0, 0, 0) scale(1); }
     }
 
     .step-dots {
@@ -1430,10 +1464,12 @@
       height: auto;
       overflow: hidden;
       position: relative;
+      /* Height morph: GPU layer, curva SENZA overshoot (niente page-tremble) */
       will-change: height;
       transition: height var(--height-ms) var(--height-ease);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .slider-track {
@@ -4414,6 +4450,25 @@
       }
     }
 
+
+    /* Tile press — feedback elastico (lista hub) */
+    #step4 .guest-action-btn {
+      will-change: transform;
+      transition:
+        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.15s ease;
+    }
+    #step4 .guest-action-btn:active {
+      background-color: #F2F2F7 !important;
+      transform: scale(0.98);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      #step4 .guest-action:hover {
+        transform: translateY(-1px);
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+    }
+
     /* =========================================================
        Cupertino System File — coerenza cross-step (HIG)
        Nessuna hairline sotto titoli: solo whitespace.
@@ -6195,6 +6250,8 @@
     }
 
     let slideRevealTimer = 0;
+    let stepBusy = false;
+    let stepBounceTimer = 0;
 
     function markStepClasses(step, { slidingFrom = null } = {}) {
       for (let i = 1; i <= TOTAL_STEPS; i++) {
@@ -6459,6 +6516,10 @@
     }
 
     function setStep(step, { instant = false } = {}) {
+      // Evita tocchi ripetuti a metà morph (layout "incartato")
+      if (stepBusy && !instant && step !== TOTAL_STEPS && step !== currentStep) {
+        return;
+      }
       const prev = currentStep;
       currentStep = step;
       document.body.dataset.step = String(step);
@@ -6494,6 +6555,30 @@
 
       freezeAmbient(true);
 
+      // Bounce elastico sulla card (scale) — altezza gestita a parte senza overshoot
+      clearTimeout(stepBounceTimer);
+      if (sliding && card && !reduceMotion) {
+        stepBusy = true;
+        card.classList.add('is-step-locked', 'is-step-exit');
+        card.classList.remove('is-step-enter', 'is-rubber', 'is-entering');
+        stepBounceTimer = setTimeout(() => {
+          card.classList.remove('is-step-exit');
+          void card.offsetWidth;
+          card.classList.add('is-step-enter');
+          stepBounceTimer = setTimeout(() => {
+            card.classList.remove('is-step-enter', 'is-step-locked');
+            stepBusy = false;
+          }, 450);
+        }, 150);
+      } else {
+        card?.classList.remove(
+          'is-step-exit',
+          'is-step-enter',
+          'is-step-locked',
+        );
+        stepBusy = false;
+      }
+
       const runMotion = () => {
         const viewport = document.getElementById('sliderViewport');
         if (hardCut) {
@@ -6514,7 +6599,7 @@
           nextH = Math.min(Math.round(nextH), availableViewportMax());
           stepHeightCache[step] = nextH;
 
-          // Partenza esplicita dall’altezza corrente → morph continuo
+          // Partenza esplicita dall’altezza corrente → morph continuo (no bounce)
           applyViewportHeightPx(leavingH || nextH, { animate: false });
           requestAnimationFrame(() => {
             applyViewportHeightPx(nextH, { animate: true });
@@ -6551,17 +6636,18 @@
         markStepClasses(step, { slidingFrom: null });
         if (track) track.style.transition = '';
         card?.classList.remove('is-height-shrink');
-        // Soft settle: riallinea sempre con morph (niente scatto a fine slide)
+        // Soft settle: solo se scarto reale (≥10px) — evita secondo morph tremolante
         const settled = computeCardHeightPx(step, { preferCache: false });
         const viewport = document.getElementById('sliderViewport');
         if (Number.isFinite(settled) && viewport) {
           stepHeightCache[step] = settled;
           const cur = Math.round(viewport.getBoundingClientRect().height);
-          if (Math.abs(cur - settled) >= 2) {
+          if (Math.abs(cur - settled) >= 10) {
             applyViewportHeightPx(settled, { animate: !reduceMotion });
           }
         }
         ensurePrimaryCtaVisible();
+        if (!sliding) stepBusy = false;
       }, reduceMotion || hardCut ? 0 : Math.max(SLIDE_MS, HEIGHT_MS) + 48);
     }
 
