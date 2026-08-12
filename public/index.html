@@ -35,10 +35,12 @@
       --input-white: #FFFFFF;
       --placeholder: #AEB3B8;
       /*
-       * Design System — equazione rigida cross-step (1/2/3).
+       * Design System — equazione rigida cross-step (1/2/3/4).
        * Vietato iniettare px casuali nei singoli step: solo queste costanti.
+       * Corner radius concentrici: outer 28 → inner 14 (≈ metà).
        */
-      --radius-ios: 20px;
+      --radius-outer: 28px;
+      --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
       /* iOS-like continuous: decelerazione lunga, zero rimbalzo */
@@ -56,15 +58,15 @@
       --ios-6: 24px;
       --ios-7: 28px;
       --ios-8: 32px;
-      --ios-gap: 12px;
+      --ios-gap: 8px;
       --ios-gap-lg: 16px;
       /* Blocchi tra sezioni (titolo↔copy, copy↔separator, separator↔form) */
-      --step-stack: 20px;
+      --step-stack: 24px;
       --step-stack-lg: 24px;
       /* Aria intorno ai hairline separator (mai < 16px) */
       --rule-gap: 24px;
-      /* 44px: testo a due righe + tap safe (40px tagliava ga-sub) */
-      --ios-touch: 44px;
+      /* 48px: tap target + allineamento glyph/placeholder */
+      --ios-touch: 48px;
       --ios-inset: 24px;
       --type-title: 22px;
       --type-label: 9.5px;
@@ -110,10 +112,10 @@
     body {
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       padding:
-        calc(12px + env(safe-area-inset-top, 0px))
-        14px
-        calc(12px + env(safe-area-inset-bottom, 0px))
-        14px;
+        calc(16px + env(safe-area-inset-top, 0px))
+        24px
+        calc(16px + env(safe-area-inset-bottom, 0px))
+        24px;
       box-sizing: border-box;
       display: flex;
       justify-content: center;
@@ -204,8 +206,8 @@
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
       border: 1px solid rgba(255, 255, 255, 0.65);
-      border-radius: 28px;
-      padding: 16px 0 16px;
+      border-radius: var(--radius-outer);
+      padding: 24px 0 24px;
       box-sizing: border-box;
       box-shadow:
         0 20px 60px rgba(8, 48, 72, 0.18),
@@ -3909,6 +3911,272 @@
     .receipt-badge .time {
       font-size: 11px;
       color: #7F8C8D;
+    }
+
+    /* =========================================================
+       Cupertino polish — override finale (8pt + radius concentrici)
+       Vince sulla cascata duplicata sopra.
+       ========================================================= */
+    .step-dots {
+      margin: 0 0 var(--ios-6);
+      padding: 0 var(--ios-inset);
+    }
+
+    .form-group label {
+      margin-bottom: var(--ios-2);
+      margin-left: 2px;
+      padding-left: 0;
+      letter-spacing: 0.04em;
+      line-height: 1.2;
+    }
+
+    .form-grid-container .form-group label,
+    .input-row-grid .form-group label {
+      margin-left: 2px;
+      margin-bottom: var(--ios-2);
+    }
+
+    .privacy-box {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      align-items: start;
+      column-gap: var(--ios-3);
+      row-gap: 0;
+      margin: var(--ios-4) 0 var(--ios-6);
+      padding: 0 2px;
+    }
+
+    .privacy-box input {
+      width: 20px;
+      height: 20px;
+      margin-top: 1px; /* ottico: prima riga del testo */
+      border-radius: 6px;
+    }
+
+    .step-footer-fixed .privacy-box {
+      margin: var(--ios-2) 0 var(--ios-4) !important;
+    }
+
+    .btn-canal,
+    .apple-input,
+    .hour-pill-ios,
+    .guest-action,
+    .guest-call,
+    .form-grid-container,
+    #step2 .form-grid-container,
+    #step3 .input-with-icon .apple-input,
+    #step4 .guest-action,
+    #step4 .book-submit {
+      border-radius: var(--radius-ios);
+    }
+
+    .dining-hero,
+    .dining-mosaic figure,
+    .receipt-badge {
+      border-radius: var(--radius-ios);
+    }
+
+    .dining-mosaic {
+      gap: var(--ios-2);
+    }
+
+    .dining-mosaic figure {
+      aspect-ratio: 1 / 1;
+      height: auto;
+      min-height: 0;
+    }
+
+    .dining-mosaic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    #step2 .dining-copy {
+      gap: var(--ios-3);
+      padding: var(--ios-2) var(--ios-2) var(--ios-4);
+      margin-bottom: 0;
+    }
+
+    #step2 .step-footer-fixed,
+    #step3 .step-footer-fixed,
+    .step-footer-fixed {
+      padding-top: var(--ios-6);
+      padding-bottom: var(--ios-4);
+      gap: var(--ios-2);
+    }
+
+    #step2 .step-footer-fixed .btn-ghost:first-of-type,
+    #step2 .step-footer-fixed .btn-text-link,
+    #btnDiningBack.btn-text-link {
+      margin-top: var(--ios-2);
+      min-height: 44px;
+      padding: var(--ios-2) var(--ios-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dining-book .dining-section-rule {
+      margin: var(--rule-gap) 0;
+    }
+
+    .dining-book .booking-segment-grid {
+      gap: var(--ios-2);
+    }
+
+    .hour-pill-ios {
+      height: var(--ios-touch);
+      min-height: var(--ios-touch);
+      border-radius: var(--radius-ios);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .hour-pill-ios.is-skip {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* "No" selezionato: outline soft — non competere con gli orari */
+    .hour-pill-ios.is-selected {
+      background: rgba(18, 68, 83, 0.1) !important;
+      border-color: var(--canal-petroleum) !important;
+      color: var(--canal-petroleum) !important;
+      box-shadow: none;
+    }
+
+    .hour-pill-ios.is-selected:not(.is-skip) {
+      background: var(--canal-petroleum) !important;
+      border-color: var(--canal-petroleum) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 10px rgba(18, 68, 83, 0.12);
+    }
+
+    .input-with-icon .field-glyph {
+      left: 14px;
+      top: 0;
+      bottom: 0;
+      height: auto;
+      width: 16px;
+      margin: auto 0;
+      transform: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-with-icon .field-glyph svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .input-with-icon .apple-input {
+      padding-left: 40px;
+      line-height: var(--ios-touch);
+    }
+
+    #step3 .input-with-icon .apple-input {
+      padding-left: 40px;
+      line-height: var(--ios-touch);
+    }
+
+    #btnSkip.btn-text-link {
+      margin-top: var(--ios-4);
+      min-height: 44px;
+      padding: var(--ios-2) var(--ios-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #btnBack.btn-text-link {
+      margin-top: var(--ios-2);
+      min-height: 44px;
+      padding: var(--ios-2) var(--ios-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #step4 .header.step3-head h1 {
+      margin-bottom: var(--ios-2);
+    }
+
+    #step4 .header.step3-head #lbl-succ-sub {
+      margin-bottom: var(--ios-4);
+    }
+
+    .receipt-badge {
+      margin-top: var(--ios-4);
+      padding: var(--ios-4);
+    }
+
+    .receipt-badge .eyebrow {
+      margin-bottom: var(--ios-2);
+    }
+
+    .receipt-badge .code {
+      margin: var(--ios-2) 0 var(--ios-3);
+      line-height: 1.2;
+    }
+
+    .receipt-badge .time {
+      display: block;
+      padding-bottom: 2px;
+      line-height: 1.35;
+    }
+
+    .guest-action-btn {
+      align-items: center;
+      gap: var(--ios-3);
+    }
+
+    .guest-action-btn .ga-icon {
+      width: 36px;
+      height: 36px;
+      margin: 0;
+      line-height: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+    }
+
+    .guest-action-btn .ga-icon svg {
+      display: block;
+      margin: 0 auto;
+      flex-shrink: 0;
+    }
+
+    .guest-action-btn .ga-label {
+      justify-content: center;
+      gap: 2px;
+    }
+
+    #step4 .reception-note,
+    .reception-note {
+      margin-top: var(--ios-6);
+      margin-bottom: var(--ios-2);
+      letter-spacing: 0.04em;
+    }
+
+    #step4 .guest-reentry {
+      margin-top: var(--ios-4);
+      padding-bottom: var(--ios-2);
+    }
+
+    #step4 .guest-reentry .btn-ghost {
+      min-height: 44px;
+      padding: var(--ios-2) var(--ios-4);
+    }
+
+    @media (max-width: 390px) {
+      body {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
     }
   </style>
 </head>
