@@ -2661,11 +2661,21 @@
     .guest-sheet-bar {
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-      gap: 0;
+      align-items: center;
+      gap: 2px;
       flex: 0 0 auto;
-      padding: var(--ios-2) 2px var(--ios-4);
+      padding: var(--ios-2) 2px var(--ios-6);
       border-bottom: 0;
+      text-align: center;
+    }
+
+    .guest-sheet-brand {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #636366;
+      line-height: 1.2;
     }
 
     .guest-sheet-back {
@@ -2712,11 +2722,11 @@
     .guest-sheet-title {
       margin: 0;
       font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 17px;
+      font-size: 22px;
       font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      line-height: 1.25;
+      letter-spacing: -0.02em;
+      text-transform: none;
+      line-height: 1.2;
       color: var(--canal-petroleum);
       text-align: center;
     }
@@ -2774,12 +2784,12 @@
     }
 
     .ios-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      column-gap: var(--ios-3);
+      gap: var(--ios-3);
       padding: var(--ios-4);
-      min-height: 52px;
+      min-height: 54px;
       position: relative;
       box-sizing: border-box;
     }
@@ -2795,7 +2805,7 @@
     }
 
     .ios-row-call {
-      grid-template-columns: minmax(0, 1fr) auto;
+      display: flex;
     }
 
     .ios-row-stack {
@@ -2803,6 +2813,7 @@
       flex-direction: column;
       gap: 2px;
       min-width: 0;
+      flex: 1 1 auto;
     }
 
     .row-label {
@@ -2812,6 +2823,11 @@
       text-transform: uppercase;
       letter-spacing: 0.03em;
       line-height: 1.2;
+      flex: 1 1 auto;
+    }
+
+    .ios-row-call .row-label {
+      font-size: 10px;
     }
 
     .row-value {
@@ -2822,10 +2838,13 @@
       line-height: 1.25;
       text-align: right;
       word-break: break-word;
+      flex: 0 1 auto;
     }
 
     .ios-row-call .row-value {
       text-align: left;
+      font-size: 18px;
+      margin-top: 2px;
     }
 
     .action-badge {
@@ -2833,7 +2852,7 @@
       -webkit-appearance: none;
       border: 0;
       font-family: inherit;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--canal-petroleum);
       text-transform: uppercase;
@@ -2853,6 +2872,10 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    .action-badge-call {
+      background: #E2F1F7 !important;
+    }
+
     .action-badge:active {
       background: #E5E5EA;
       transform: scale(0.97);
@@ -2865,16 +2888,47 @@
     #tablePanel .book-or {
       margin: 0;
       text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--canal-petroleum);
     }
 
     #tablePanel .book-fields {
       margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--ios-3);
+    }
+
+    #tablePanel .book-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--canal-petroleum);
+      margin: 0 0 6px 2px;
+    }
+
+    #tablePanel .book-select {
+      width: 100%;
+      height: 48px;
+      font-size: 16px; /* evita zoom Safari iOS */
+      background: #FFFFFF;
+      border: 1px solid #E5E5EA;
+      border-radius: var(--radius-ios);
+      color: var(--text-main);
+      padding: 0 var(--ios-4);
+      box-sizing: border-box;
     }
 
     #tablePanel .book-submit {
       margin-top: var(--ios-2);
-      height: 50px;
+      height: 52px;
       border-radius: var(--radius-ios);
+      font-size: 16px;
     }
 
     @keyframes sheetPanelIn {
@@ -5083,6 +5137,7 @@
           <!-- Overlay a tutta card: non allunga il contenitore -->
           <div class="guest-sheet" id="guestSheet" aria-hidden="true">
             <div class="guest-sheet-bar">
+              <span class="guest-sheet-brand" id="guestSheetBrand">Hotel Canal</span>
               <h2 class="guest-sheet-title" id="guestSheetTitle"></h2>
             </div>
             <div class="guest-sheet-scroll">
@@ -5093,7 +5148,7 @@
                       <span class="row-label" id="lbl-act-call-sub">Trattoria alla Terrazza</span>
                       <span class="row-value" id="lbl-call-phone">328 246 4972</span>
                     </div>
-                    <a class="action-badge action-badge-link" id="btnCallTrattoria" href="tel:+393282464972">
+                    <a class="action-badge action-badge-link action-badge-call" id="btnCallTrattoria" href="tel:+393282464972">
                       <span id="lbl-act-call">Chiama</span>
                     </a>
                   </div>

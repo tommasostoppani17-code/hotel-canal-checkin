@@ -1,20 +1,18 @@
 # Hotel Canal Check-in — Blueprint Render (production)
-# Starter + disk richiede carta su Render. Finché free: Gist backup + keep-alive.
-# Upgrade: Dashboard → plan Starter → attach disk → DATABASE_PATH=/var/data/checkins.db
+# Requires payment method on Render for Starter + persistent disk.
 services:
   - type: web
     name: hotel-canal-checkin
     runtime: node
-    plan: free
+    plan: starter
     region: frankfurt
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
-    # Dopo upgrade a starter (carta su Render), decommenta e cambia DATABASE_PATH:
-    # disk:
-    #   name: checkins-data
-    #   mountPath: /var/data
-    #   sizeGB: 1
+    disk:
+      name: checkins-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "20"
@@ -25,9 +23,8 @@ services:
       - key: CRON_TZ
         value: Europe/Rome
       - key: DATABASE_PATH
-        value: ./data/checkins.db
+        value: /var/data/checkins.db
       - key: PUBLIC_URL
-        # Es. https://checkin-hotelcanal.it (apex o www, senza slash finale)
         sync: false
       - key: REPORT_EMAIL
         sync: false
@@ -36,7 +33,6 @@ services:
       - key: RESEND_API_KEY
         sync: false
       - key: SMTP_FROM
-        # Es. Welcome to Hotel Canal <checkin@checkin-hotelcanal.it>
         sync: false
       - key: CRON_SECRET
         sync: false
@@ -69,6 +65,8 @@ services:
       - key: TWILIO_WHATSAPP_FROM
         sync: false
       - key: WHATSAPP_PAYEL
+        sync: false
+      - key: ALLOW_PAYEL_WHATSAPP
         sync: false
 
   # Report notturno: .github/workflows/cron-reports.yml
