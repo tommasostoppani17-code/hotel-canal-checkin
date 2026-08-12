@@ -27,6 +27,7 @@ services:
       - key: DATABASE_PATH
         value: ./data/checkins.db
       - key: PUBLIC_URL
+        # Es. https://checkin-hotelcanal.it (apex o www, senza slash finale)
         sync: false
       - key: REPORT_EMAIL
         sync: false
@@ -35,6 +36,7 @@ services:
       - key: RESEND_API_KEY
         sync: false
       - key: SMTP_FROM
+        # Es. Welcome to Hotel Canal <checkin@checkin-hotelcanal.it>
         sync: false
       - key: CRON_SECRET
         sync: false

@@ -840,7 +840,7 @@ async function sendMail({
       const msg = error.message || JSON.stringify(error);
       if (isResendTestFrom() && /only send testing emails|own email/i.test(msg)) {
         throw new Error(
-          'Resend in modalità test (onboarding@resend.dev): può mandare solo alla tua mail. Verifica un dominio su resend.com/domains e imposta SMTP_FROM tipo Welcome <checkin@hotelcanal.com>',
+          'Resend in modalità test (onboarding@resend.dev): può mandare solo alla tua mail. Verifica un dominio su resend.com/domains e imposta SMTP_FROM tipo Welcome <checkin@checkin-hotelcanal.it>',
         );
       }
       throw new Error(msg);
@@ -851,7 +851,7 @@ async function sendMail({
   if (!smtpConfigured()) {
     if (isResendTestFrom()) {
       throw new Error(
-        'Email ospiti bloccata: SMTP_FROM usa onboarding@resend.dev (solo test). Verifica hotelcanal.com su Resend oppure configura SMTP_USER/SMTP_PASS Gmail.',
+        'Email ospiti bloccata: SMTP_FROM usa onboarding@resend.dev (solo test). Verifica checkin-hotelcanal.it su Resend oppure configura SMTP_USER/SMTP_PASS Gmail.',
       );
     }
     throw new Error('Email non configurata');

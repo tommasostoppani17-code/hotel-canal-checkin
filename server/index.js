@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import express from 'express';
 import cron from 'node-cron';
 import dotenv from 'dotenv';
@@ -241,6 +242,53 @@ app.use((req, res, next) => {
     return res.status(404).end();
   }
   return next();
+});
+
+function publicBaseUrl() {
+  return String(process.env.PUBLIC_URL || `http://localhost:${PORT}`).replace(
+    /\/$/,
+    '',
+  );
+}
+
+/** Origini canoniche (apex + www) per eventuali client cross-origin. */
+const ALLOWED_ORIGINS = new Set([
+  'https://checkin-hotelcanal.it',
+  'https://www.checkin-hotelcanal.it',
+  publicBaseUrl(),
+].filter(Boolean));
+
+app.use((req, res, next) => {
+  const origin = String(req.get('origin') || '').replace(/\/$/, '');
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization',
+    );
+  }
+  if (req.method === 'OPTIONS' && origin && ALLOWED_ORIGINS.has(origin)) {
+    return res.status(204).end();
+  }
+  return next();
+});
+
+/** Poster HTML: URL a piè di pagina sempre allineato a PUBLIC_URL. */
+app.get(['/cartello-reception.html', '/qr-poster.html'], (req, res) => {
+  const file = path.join(rootDir, 'public', path.basename(req.path));
+  try {
+    let html = fs.readFileSync(file, 'utf8');
+    const base = publicBaseUrl();
+    html = html
+      .replace(/https?:\/\/hotel-canal-checkin\.onrender\.com/g, base)
+      .replace(/https?:\/\/(?:www\.)?checkin-hotelcanal\.it/g, base)
+      .replace(/__PUBLIC_URL__/g, base);
+    res.type('html').send(html);
+  } catch {
+    res.status(404).end();
+  }
 });
 
 app.use(express.static(path.join(rootDir, 'public')));

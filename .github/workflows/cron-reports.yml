@@ -25,7 +25,8 @@ jobs:
       - name: Call report endpoint
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          PUBLIC_URL: https://hotel-canal-checkin.onrender.com
+          # Imposta vars.PUBLIC_URL su GitHub (es. https://checkin-hotelcanal.it)
+          PUBLIC_URL: ${{ vars.PUBLIC_URL }}
           EVENT_NAME: ${{ github.event_name }}
           INPUT_KIND: ${{ inputs.kind }}
           SCHEDULE: ${{ github.event.schedule }}
@@ -46,7 +47,8 @@ jobs:
           else
             PATH_API="/api/cron/daily-report"
           fi
-          URL="${PUBLIC_URL%/}${PATH_API}"
+          BASE="${PUBLIC_URL:-https://checkin-hotelcanal.it}"
+          URL="${BASE%/}${PATH_API}"
           echo "POST $URL (kind=$KIND)"
           # Free tier può essere in sleep: ritenta
           for i in 1 2 3 4 5; do
