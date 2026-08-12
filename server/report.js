@@ -682,9 +682,9 @@ export function buildTableBookingEmail({ hotelName, row }) {
                 Ti chiedo di confermare la disponibilit&agrave; del tavolo telefonando all&rsquo;ospite.
               </p>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background-color:${BOX} !important;border-radius:14px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background-color:#FFFFFF !important;border:1.5px solid ${C};border-radius:18px;">
                 <tr>
-                  <td align="center" style="padding:16px 14px;">
+                  <td align="center" style="padding:18px 16px;background-color:#FFFFFF !important;">
                     ${
                       phoneTel
                         ? `
@@ -703,7 +703,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
                         Tocca per chiamare l&rsquo;ospite
                       </div>
                     </a>
-                    <div style="height:1px;line-height:1px;background-color:#D8DEE3;margin:0 0 16px;font-size:1px;">&nbsp;</div>`
+                    <div style="height:1px;line-height:1px;background-color:#E8E4DC;margin:0 0 16px;font-size:1px;">&nbsp;</div>`
                         : ''
                     }
                     <div style="font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A949C;margin:0 0 6px;">
