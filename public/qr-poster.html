@@ -3,25 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel Canal — Reception check-in</title>
+  <title>Hotel Canal — Cartello check-in</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
   <style>
     @page { size: A4; margin: 0; }
 
     :root {
-      --canal: #124453;
-      --text: #1A2B31;
-      --muted: #6E868F;
-      --rule: #D7E2E6;
-      --soft: #F3F6F7;
+      --c: #164E5B;
+      --box: #E9EEF0;
+      --brass: #6E868F;
+      --rule: #E8E4DC;
+      --border: #E2E6E8;
+      --muted: #4A5560;
+      --soft: #5C6670;
+      --paper: #FFFFFF;
     }
 
     html, body {
       margin: 0;
       padding: 0;
-      background: #E8EEF0;
+      background: #EEF4F6;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
@@ -33,224 +36,257 @@
       justify-content: center;
       font-family: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
+      color: #1D1D1F;
     }
 
     .poster {
       width: 210mm;
       height: 297mm;
       box-sizing: border-box;
-      background: #fff;
-      padding: 16mm 18mm 14mm;
+      background: var(--paper);
+      padding: 14mm 16mm 12mm;
       display: flex;
       flex-direction: column;
-      position: relative;
-      box-shadow: 0 12px 36px rgba(18, 68, 83, 0.12);
+      box-shadow: 0 12px 40px rgba(22, 78, 91, 0.12);
+      border: 1px solid var(--border);
+      border-radius: 4px;
     }
 
-    .poster::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 5px;
-      background: var(--canal);
+    .hero {
+      width: 100%;
+      height: 52mm;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 16px;
+      display: block;
+      border: 1px solid var(--border);
     }
 
-    .brand { text-align: center; }
-    .hotel {
+    .brand {
+      text-align: center;
+      padding: 10mm 0 6mm;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 6mm;
+    }
+
+    .brand h1 {
       margin: 0;
-      font-family: Cinzel, Georgia, serif;
-      font-size: 30px;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 28px;
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--canal);
-      line-height: 1;
+      color: var(--c);
+      line-height: 1.15;
     }
-    .address {
-      margin: 10px 0 0;
-      font-size: 12px;
+
+    .brand .eyebrow {
+      margin: 8px 0 0;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--brass);
+    }
+
+    .intro {
+      margin: 0 0 6mm;
+      font-family: "EB Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 16px;
+      line-height: 1.5;
       color: var(--muted);
-      font-weight: 500;
+      text-align: center;
     }
 
-    .rule {
-      height: 1px;
-      background: var(--rule);
-      border: 0;
-      margin: 12mm 0 8mm;
-    }
-
-    .photos {
+    .duo {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
+      margin-bottom: 7mm;
     }
-    .photo {
-      margin: 0;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--rule);
-      background: var(--soft);
-    }
-    .photo img {
-      display: block;
+
+    .duo img {
       width: 100%;
-      height: 38mm;
+      height: 36mm;
       object-fit: cover;
-      object-position: center;
-    }
-    .photo figcaption {
-      margin: 0;
-      padding: 6px 0 0;
-      text-align: center;
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-    }
-
-    .cta { text-align: center; margin-top: 8mm; }
-    .cta h2 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: 0.02em;
-    }
-    .cta p {
-      margin: 10px auto 0;
-      max-width: 145mm;
-      font-size: 13px;
-      line-height: 1.55;
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    .qr-block {
-      margin: 10mm auto 0;
-      text-align: center;
-    }
-    .qr-plate {
-      display: inline-block;
-      background: var(--soft);
-      border: 1.5px solid var(--canal);
       border-radius: 16px;
-      padding: 14px;
-    }
-    .qr {
-      width: 58mm;
-      height: 58mm;
       display: block;
-      border-radius: 10px;
+      border: 1px solid var(--border);
     }
-    .scan {
-      margin: 10px 0 0;
+
+    .section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 4mm;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(22, 78, 91, 0.14);
+    }
+
+    .section span {
+      font-family: Cinzel, Georgia, serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--c);
+    }
+
+    .section-sub {
+      margin: 0 0 5mm;
+      font-family: "EB Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--soft);
+      text-align: center;
+    }
+
+    .qr-card {
+      align-self: center;
+      width: 100%;
+      max-width: 78mm;
+      background: var(--paper);
+      border: 1.5px solid var(--c);
+      border-radius: 18px;
+      padding: 14px 14px 12px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .qr-card .label {
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--canal);
+      color: #8A949C;
+      margin: 0 0 8px;
+    }
+
+    .qr {
+      width: 58mm;
+      height: 58mm;
+      display: block;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+
+    .qr-card .ssid {
+      margin: 10px 0 0;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--c);
+      text-transform: uppercase;
     }
 
     .benefits {
       margin-top: auto;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-      padding-top: 8mm;
+      gap: 8px;
+      padding-top: 7mm;
     }
-    .benefit {
+
+    .chip {
+      background: var(--box);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
       text-align: center;
-      padding: 0 8px;
-      border-right: 1px solid var(--rule);
     }
-    .benefit:last-child { border-right: 0; }
-    .benefit strong {
-      display: block;
-      font-size: 11px;
-      color: var(--canal);
-      margin-bottom: 4px;
+
+    .chip .k {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8A949C;
+      margin: 0 0 6px;
     }
-    .benefit span {
-      display: block;
-      font-size: 10px;
-      line-height: 1.4;
-      color: var(--muted);
+
+    .chip .v {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--c);
+      letter-spacing: 0.02em;
+      line-height: 1.25;
     }
 
     .foot {
-      margin-top: 8mm;
+      margin-top: 6mm;
       padding-top: 10px;
       border-top: 1px solid var(--rule);
       text-align: center;
     }
+
     .foot p {
       margin: 0;
-      font-size: 9.5px;
-      color: var(--muted);
-      line-height: 1.5;
+      font-size: 10px;
+      color: var(--brass);
+      line-height: 1.45;
     }
+
     .foot .url {
-      margin-top: 6px;
-      font-size: 11px;
+      margin-top: 5px;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 13px;
       font-weight: 600;
-      color: var(--canal);
+      color: var(--c);
+      letter-spacing: 0.04em;
     }
 
     @media print {
       body { background: none; }
-      .poster { box-shadow: none; }
+      .poster { box-shadow: none; border: 0; border-radius: 0; }
     }
   </style>
 </head>
 <body>
-  <article class="poster" aria-label="Hotel Canal reception check-in">
+  <article class="poster" aria-label="Hotel Canal cartello check-in">
+    <img class="hero" src="/email/hero-01.jpg" alt="Hotel Canal Venezia">
+
     <header class="brand">
-      <h1 class="hotel">Hotel Canal</h1>
-      <p class="address">Santa Croce 553, 30135 Venezia</p>
+      <h1>Hotel Canal</h1>
+      <p class="eyebrow">Santa Croce 553 · Venezia</p>
     </header>
 
-    <hr class="rule">
+    <p class="intro">Welcome. Scan the code below to complete a quick digital check-in for your room.</p>
 
-    <div class="photos">
-      <figure class="photo">
-        <img src="/email/hero-01.jpg" alt="Hotel Canal">
-        <figcaption>Hotel</figcaption>
-      </figure>
-      <figure class="photo">
-        <img src="/email/band-26.jpg" alt="Trattoria alla Terrazza">
-        <figcaption>Trattoria alla Terrazza</figcaption>
-      </figure>
+    <div class="duo">
+      <img src="/email/postcard-ingresso.jpg" alt="Hotel Canal">
+      <img src="/email/band-26.jpg" alt="Trattoria alla Terrazza">
     </div>
 
-    <div class="cta">
-      <h2>Digital check-in</h2>
-      <p>Scan the code to register your room. You will receive Wi‑Fi details, door codes, and a welcome note for the restaurant.</p>
-    </div>
+    <div class="section"><span>Digital check-in</span></div>
+    <p class="section-sub">Wi‑Fi, door codes and a welcome note for Trattoria alla Terrazza — all after you scan.</p>
 
-    <div class="qr-block">
-      <div class="qr-plate">
-        <img class="qr" src="/qr-checkin.png" width="220" height="220" alt="Scan to check in">
-      </div>
-      <p class="scan">Scan with your phone camera</p>
+    <div class="qr-card">
+      <p class="label">Scan with your phone</p>
+      <img class="qr" src="/qr-checkin.png" width="220" height="220" alt="Check-in QR code">
+      <p class="ssid">Check-in Hotel Canal</p>
     </div>
 
     <div class="benefits">
-      <div class="benefit">
-        <strong>Wi‑Fi</strong>
-        <span>Network and password<br>after check-in</span>
+      <div class="chip">
+        <p class="k">Wi‑Fi</p>
+        <p class="v">Network &amp; password</p>
       </div>
-      <div class="benefit">
-        <strong>Door codes</strong>
-        <span>Access codes<br>for your stay</span>
+      <div class="chip">
+        <p class="k">Doors</p>
+        <p class="v">Access codes</p>
       </div>
-      <div class="benefit">
-        <strong>Restaurant</strong>
-        <span>Welcome offer at<br>Trattoria alla Terrazza</span>
+      <div class="chip">
+        <p class="k">Dining</p>
+        <p class="v">Trattoria welcome</p>
       </div>
     </div>
 
     <footer class="foot">
-      <p>Private and secure · GDPR · guest data deleted automatically after 24 hours</p>
+      <p>Private &amp; secure · GDPR · data deleted after 24 hours</p>
       <p class="url">__PUBLIC_URL__</p>
     </footer>
   </article>
