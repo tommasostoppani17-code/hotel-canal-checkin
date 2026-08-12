@@ -1,6 +1,7 @@
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 import { Resend } from 'resend';
+import { emailLightModeHead, emailLightBodyAttrs, EMAIL_FORCE_WHITE } from './email-light.js';
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
@@ -190,13 +191,21 @@ export async function buildPosterPdfBuffer({
 function buildPosterEmailHtml({ hotelName, pdfKb }) {
   const brand = String(hotelName || 'Hotel Canal');
   return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="color-scheme" content="light">
-<style>body{font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#fff;color:#1D1D1F;margin:0;padding:32px 20px;}
-.card{max-width:480px;margin:0 auto;border:1px solid #E5E5EA;border-top:5px solid #124453;padding:28px 24px;}
-h1{font-family:Georgia,serif;font-size:22px;color:#124453;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 10px;}
-p{font-size:14px;line-height:1.55;color:#515154;margin:0 0 12px;}
-.meta{font-size:12px;color:#8E8E93;}</style></head>
-<body><div class="card">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+${emailLightModeHead({
+  canal: '#124453',
+  box: '#F4F7F9',
+  extraCss: `
+    body{font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;margin:0;padding:32px 20px;}
+    .card{max-width:480px;margin:0 auto;border:1px solid #E5E5EA;border-top:5px solid #124453;padding:28px 24px;background:#FFFFFF !important;}
+    h1{font-family:Georgia,serif;font-size:22px;color:#124453 !important;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 10px;}
+    p{font-size:14px;line-height:1.55;color:#515154 !important;margin:0 0 12px;}
+    .meta{font-size:12px;color:#8E8E93 !important;}
+  `,
+})}
+</head>
+<body ${emailLightBodyAttrs()}>
+<div class="card force-white" bgcolor="${EMAIL_FORCE_WHITE}" style="background-color:${EMAIL_FORCE_WHITE} !important;">
 <h1>${brand}</h1>
 <p>Your A4 reception poster is attached as a PDF (Welcome Discount · English).</p>
 <p>Open the attachment and print at <strong>100% / actual size</strong> on A4. No browser scaling.</p>

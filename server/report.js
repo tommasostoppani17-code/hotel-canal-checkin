@@ -1,5 +1,7 @@
 /** Report email per Payel — stile Hotel Canal, leggibile su telefono */
 
+import { emailLightModeHead, emailLightBodyAttrs } from './email-light.js';
+
 function csvEscape(value) {
   const raw = value == null ? '' : String(value);
   if (/[",\n\r]/.test(raw)) {
@@ -80,33 +82,36 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light">
-  <meta name="supported-color-schemes" content="light">
   <title>${escapeHtml(title)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
-  <style type="text/css">
-    :root { color-scheme: light only; }
+  ${emailLightModeHead({
+    canal: C,
+    box: BOX,
+    extraCss: `
     img { display: block; max-width: 100%; height: auto; border: 0; }
     .utility-textarea {
       width: 100% !important;
       box-sizing: border-box !important;
       -webkit-user-select: text !important;
       user-select: text !important;
+      background-color: ${BOX} !important;
+      color: #1D1D1F !important;
     }
-  </style>
+    `,
+  })}
 </head>
-<body style="margin:0;padding:0;background-color:${WHITE} !important;color:#1D1D1F !important;">
+<body ${emailLightBodyAttrs()}>
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">
     ${escapeHtml(preheader)}
   </div>
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
+  <table role="presentation" class="email-bg force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="${WHITE}" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
     <tr>
-      <td align="center" style="padding:20px 10px;background-color:${WHITE} !important;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
+      <td align="center" class="force-white" bgcolor="${WHITE}" style="padding:20px 10px;background-color:${WHITE} !important;">
+        <table role="presentation" class="email-card force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
           <tr>
-            <td style="padding:20px 22px 0;background-color:#FFFFFF !important;">
+            <td class="force-white" bgcolor="#FFFFFF" style="padding:20px 22px 0;background-color:#FFFFFF !important;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;border-radius:16px;overflow:hidden;">
                 <tr>
                   <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};border-radius:16px;">
@@ -129,7 +134,7 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
             </td>
           </tr>
           <tr>
-            <td style="padding:8px 22px 40px;background-color:#FFFFFF !important;">
+            <td class="email-content force-white" bgcolor="#FFFFFF" style="padding:8px 22px 40px;background-color:#FFFFFF !important;">
               ${bodyHtml}
             </td>
           </tr>
@@ -546,31 +551,26 @@ export function buildTableBookingEmail({ hotelName, row }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light">
-  <meta name="supported-color-schemes" content="light">
   <title>${escapeHtml(subject)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
-  <style type="text/css">
-    :root { color-scheme: light only; }
-    img { display: block; max-width: 100%; height: auto; border: 0; outline: none; }
-    @media (prefers-color-scheme: dark) {
-      .email-bg, .email-card, .email-content, body { background-color: #FFFFFF !important; color: #1D1D1F !important; }
-      .text-main, .brand-title { color: #164E5B !important; }
-    }
-  </style>
+  ${emailLightModeHead({
+    canal: C,
+    box: BOX,
+    extraCss: `img { display: block; max-width: 100%; height: auto; border: 0; outline: none; }`,
+  })}
 </head>
-<body class="email-bg" style="margin:0;padding:0;background-color:${WHITE} !important;color:#1D1D1F !important;">
+<body ${emailLightBodyAttrs()}>
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">
     ${escapeHtml(preheader)}
   </div>
-  <table role="presentation" class="email-bg" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
+  <table role="presentation" class="email-bg force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="${WHITE}" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
     <tr>
-      <td align="center" style="padding:20px 10px;background-color:${WHITE} !important;">
-        <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
+      <td align="center" class="force-white" bgcolor="${WHITE}" style="padding:20px 10px;background-color:${WHITE} !important;">
+        <table role="presentation" class="email-card force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
           <tr>
-            <td class="email-content" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
+            <td class="email-content force-white" bgcolor="#FFFFFF" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
 
               ${photoCard(hero, 'Terrazza sul canale', 18)}
 

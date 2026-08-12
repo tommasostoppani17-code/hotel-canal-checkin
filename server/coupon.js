@@ -5,6 +5,7 @@ import QRCode from 'qrcode';
 import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
 import { resolveWelcomeLang, welcomeCopy } from './welcome-i18n.js';
+import { emailLightModeHead, emailLightBodyAttrs } from './email-light.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -432,14 +433,14 @@ function buildWelcomeHtml({
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="color-scheme" content="light">
-  <meta name="supported-color-schemes" content="light">
   <title>${escapeHtml(lp.htmlTitle)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
-  <style type="text/css">
-    :root { color-scheme: light only; supported-color-schemes: light only; }
+  ${emailLightModeHead({
+    canal: C,
+    box: BOX,
+    extraCss: `
     img { display: block; max-width: 100%; height: auto; border: 0; outline: none; }
     .meta-row { width: 100% !important; max-width: 100% !important; }
     .meta-chip { width: 33.33% !important; }
@@ -460,32 +461,21 @@ function buildWelcomeHtml({
         white-space: nowrap !important;
       }
     }
-    @media (prefers-color-scheme: dark) {
-      .email-bg { background-color: ${WHITE} !important; }
-      .email-card, .email-content, .room-badge, .route-card, .voucher-body, .access-card {
-        background-color: #FFFFFF !important;
-      }
-      .text-main, .text-muted, .email-content, .email-content p, .email-content td, .email-content div, .email-content strong {
-        color: #1D1D1F !important;
-      }
-      .brand-title { color: ${C} !important; }
-      .route-card, .room-badge, .access-card { background-color: ${BOX} !important; }
-      .brass { color: ${BRASS} !important; }
-    }
-  </style>
+    `,
+  })}
 </head>
-<body class="email-bg" style="margin:0;padding:0;background-color:${WHITE} !important;color:#1D1D1F !important;">
+<body ${emailLightBodyAttrs()}>
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">
     ${preheader}
   </div>
   <!-- anti-collapse + anti-thread preview filler -->
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">${preheaderHash}${'&nbsp;'.repeat(48)}</div>
-  <table role="presentation" class="email-bg" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
+  <table role="presentation" class="email-bg force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="${WHITE}" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
     <tr>
-      <td align="center" style="padding:20px 10px;background-color:${WHITE} !important;">
-        <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
+      <td align="center" class="force-white" bgcolor="${WHITE}" style="padding:20px 10px;background-color:${WHITE} !important;">
+        <table role="presentation" class="email-card force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
           <tr>
-            <td class="email-content" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
+            <td class="email-content force-white" bgcolor="#FFFFFF" style="padding:20px 22px 36px;background-color:#FFFFFF !important;">
               <!-- TOP: foto + brand + saluto + stanza -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px;border-radius:16px;overflow:hidden;">
                 <tr>
