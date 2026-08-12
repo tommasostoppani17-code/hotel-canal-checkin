@@ -54,7 +54,7 @@ function emailAssetBaseUrl() {
   if (mode === 'render' || mode === 'public' || mode === 'off') {
     return publicBaseUrl();
   }
-  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@main/public';
+  return 'https://cdn.jsdelivr.net/gh/tommasostoppani17-code/hotel-canal-checkin@cc73d63/public';
 }
 
 function publicAssetUrl(...parts) {
