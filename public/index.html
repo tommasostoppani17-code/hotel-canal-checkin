@@ -2664,8 +2664,8 @@
       align-items: stretch;
       gap: 0;
       flex: 0 0 auto;
-      padding: var(--ios-2) 2px var(--ios-gap-lg);
-      border-bottom: 1px solid rgba(18, 68, 83, 0.1);
+      padding: var(--ios-2) 2px var(--ios-4);
+      border-bottom: 0;
     }
 
     .guest-sheet-back {
@@ -2673,10 +2673,12 @@
       align-items: center;
       justify-content: center;
       gap: var(--ios-gap);
-      width: 100%;
-      height: var(--ios-touch);
-      margin: 0;
-      padding: 0 14px;
+      width: auto;
+      min-width: 44px;
+      height: auto;
+      min-height: 44px;
+      margin: 0 auto;
+      padding: var(--ios-2) var(--ios-4);
       border: 0;
       border-radius: var(--radius-ios);
       background: transparent;
@@ -2709,10 +2711,11 @@
 
     .guest-sheet-title {
       margin: 0;
-      font-family: "Cinzel", Georgia, serif;
-      font-size: var(--type-title);
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       line-height: 1.25;
       color: var(--canal-petroleum);
       text-align: center;
@@ -2724,22 +2727,21 @@
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: var(--ios-gap-lg) 2px var(--ios-gap);
+      padding: var(--ios-2) 2px var(--ios-gap);
       display: flex;
       flex-direction: column;
-      gap: var(--ios-gap);
+      justify-content: flex-start;
+      gap: var(--ios-4);
       scrollbar-width: none;
     }
 
     .guest-sheet-footer {
       flex: 0 0 auto;
-      padding: var(--ios-gap) 2px 2px;
-      border-top: 1px solid rgba(18, 68, 83, 0.1);
-      background: linear-gradient(
-        180deg,
-        rgba(228, 238, 244, 0) 0%,
-        var(--card-cream-bottom) 36%
-      );
+      margin-top: auto;
+      padding: var(--ios-4) 2px var(--ios-2);
+      border-top: 0;
+      text-align: center;
+      background: transparent;
     }
 
     .guest-sheet-scroll::-webkit-scrollbar {
@@ -2749,13 +2751,130 @@
     .guest-sheet-panel {
       display: none;
       flex-direction: column;
-      gap: var(--ios-gap);
+      gap: var(--ios-4);
       width: 100%;
       animation: sheetPanelIn 420ms var(--slide-ease) both;
     }
 
     .guest-sheet-panel.is-active {
       display: flex;
+    }
+
+    /* Monoblocco iOS Settings */
+    .ios-group {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1px solid #E5E5EA;
+      border-radius: var(--radius-ios);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.01);
+      flex: 0 0 auto;
+    }
+
+    .ios-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: var(--ios-3);
+      padding: var(--ios-4);
+      min-height: 52px;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .ios-row:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: var(--ios-4);
+      right: 0;
+      height: 1px;
+      background: #E5E5EA;
+    }
+
+    .ios-row-call {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .ios-row-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .row-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #636366;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+    }
+
+    .row-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .ios-row-call .row-value {
+      text-align: left;
+    }
+
+    .action-badge {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 0;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #F2F2F7;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      flex-shrink: 0;
+      transition: background-color 0.12s ease, transform 0.12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .action-badge:active {
+      background: #E5E5EA;
+      transform: scale(0.97);
+    }
+
+    .action-badge.is-copied {
+      background: rgba(18, 68, 83, 0.12);
+    }
+
+    #tablePanel .book-or {
+      margin: 0;
+      text-align: center;
+    }
+
+    #tablePanel .book-fields {
+      margin: 0;
+    }
+
+    #tablePanel .book-submit {
+      margin-top: var(--ios-2);
+      height: 50px;
+      border-radius: var(--radius-ios);
     }
 
     @keyframes sheetPanelIn {
@@ -4968,13 +5087,17 @@
             </div>
             <div class="guest-sheet-scroll">
               <div class="guest-sheet-panel" id="tablePanel" hidden>
-                <a class="guest-call" id="btnCallTrattoria" href="tel:+393282464972">
-                  <span class="guest-call-text">
-                    <span class="guest-call-kicker" id="lbl-act-call-sub">Trattoria alla Terrazza</span>
-                    <span class="guest-call-number" id="lbl-call-phone">328 246 4972</span>
-                  </span>
-                  <span class="guest-call-action" id="lbl-act-call">Chiama</span>
-                </a>
+                <div class="ios-group">
+                  <div class="ios-row ios-row-call">
+                    <div class="ios-row-stack">
+                      <span class="row-label" id="lbl-act-call-sub">Trattoria alla Terrazza</span>
+                      <span class="row-value" id="lbl-call-phone">328 246 4972</span>
+                    </div>
+                    <a class="action-badge action-badge-link" id="btnCallTrattoria" href="tel:+393282464972">
+                      <span id="lbl-act-call">Chiama</span>
+                    </a>
+                  </div>
+                </div>
                 <p class="book-or" id="lbl-book-or">Oppure richiedi un tavolo</p>
                 <div class="book-fields">
                   <div class="book-field">
@@ -5020,24 +5143,32 @@
               </div>
 
               <div class="guest-sheet-panel" id="doorsPanel" hidden>
-                <div class="guest-kv">
-                  <span class="k" id="lbl-door-main">Entrata principale</span>
-                  <span class="v" id="doorMain">-</span>
-                </div>
-                <div class="guest-kv">
-                  <span class="k" id="lbl-door-inner">Porta interna</span>
-                  <span class="v" id="doorInner">-</span>
+                <div class="ios-group">
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-door-main">Entrata principale</span>
+                    <span class="row-value" id="doorMain">-</span>
+                    <button type="button" class="action-badge copy-btn" data-copy-from="doorMain" id="btnCopyDoorMain">Copia</button>
+                  </div>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-door-inner">Porta interna</span>
+                    <span class="row-value" id="doorInner">-</span>
+                    <button type="button" class="action-badge copy-btn" data-copy-from="doorInner" id="btnCopyDoorInner">Copia</button>
+                  </div>
                 </div>
               </div>
 
               <div class="guest-sheet-panel" id="wifiPanel" hidden>
-                <div class="guest-kv">
-                  <span class="k" id="lbl-wifi-net">Rete</span>
-                  <span class="v" id="wifiSsid">-</span>
-                </div>
-                <div class="guest-kv">
-                  <span class="k" id="lbl-wifi-pass">Password</span>
-                  <span class="v" id="wifiPass">-</span>
+                <div class="ios-group">
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-net">Rete</span>
+                    <span class="row-value" id="wifiSsid">-</span>
+                    <button type="button" class="action-badge copy-btn" data-copy-from="wifiSsid" id="btnCopyWifiSsid">Copia</button>
+                  </div>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-pass">Password</span>
+                    <span class="row-value" id="wifiPass">-</span>
+                    <button type="button" class="action-badge copy-btn" data-copy-from="wifiPass" id="btnCopyWifiPass">Copia</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -5155,6 +5286,8 @@
         wifiPass: 'Password',
         doorMain: 'Entrata principale',
         doorInner: 'Porta interna',
+        copy: 'Copia',
+        copied: 'Copiato',
         receptionNote: 'Reception 24h. Passa quando vuoi.',
         trattoriaPhoneAria: 'Chiama Trattoria alla Terrazza',
         askReception: 'Chiedi in reception',
@@ -5256,6 +5389,8 @@
         wifiPass: 'Password',
         doorMain: 'Main entrance',
         doorInner: 'Inner door',
+        copy: 'Copy',
+        copied: 'Copied',
         receptionNote: 'Reception 24h. Come by anytime.',
         trattoriaPhoneAria: 'Call Trattoria alla Terrazza',
         askReception: 'Ask at reception',
@@ -7324,6 +7459,11 @@
       setTxt('lbl-wifi-pass', dict.wifiPass);
       setTxt('lbl-door-main', dict.doorMain);
       setTxt('lbl-door-inner', dict.doorInner);
+      document.querySelectorAll('.copy-btn').forEach((btn) => {
+        if (!btn.classList.contains('is-copied')) {
+          btn.textContent = dict.copy || 'Copy';
+        }
+      });
       setTxt('lbl-reception-note', dict.receptionNote);
       const callBtn = document.getElementById('btnCallTrattoria');
       if (callBtn) {
@@ -7405,6 +7545,48 @@
       e.preventDefault();
       playConfirmChime({ soft: true });
       closeGuestSheet();
+    });
+
+    async function copySheetValue(btn) {
+      const id = btn.getAttribute('data-copy-from');
+      const source = id ? document.getElementById(id) : null;
+      const value = String(source?.textContent || '').trim();
+      const dict = t();
+      if (!value || value === '-' || value === (dict.askReception || '')) {
+        return;
+      }
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(value);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = value;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        }
+        playConfirmChime({ soft: true });
+        btn.classList.add('is-copied');
+        btn.textContent = dict.copied || 'Copied';
+        clearTimeout(btn._copyTimer);
+        btn._copyTimer = setTimeout(() => {
+          btn.classList.remove('is-copied');
+          btn.textContent = dict.copy || 'Copy';
+        }, 1400);
+      } catch (_) {
+        /* ignore clipboard denial */
+      }
+    }
+
+    document.getElementById('guestSheet')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.copy-btn');
+      if (!btn) return;
+      e.preventDefault();
+      void copySheetValue(btn);
     });
 
     function openGuestSheet(panelId, triggerBtn) {
