@@ -953,9 +953,8 @@ export async function sendWelcomeEmail({
     ? `${publicBaseUrl()}/coupon/${encodeURIComponent(token)}/qr.png`
     : '';
 
-  // Layout foto email (strategico):
-  // Hero = Canal Grande classico rossastro · Walk = terrazza · Voucher = tavolo piatti
-  // Griglia 2×2 = solo 1:1 HQ · Due bande = stesso frame 1400×780 (stessa altezza)
+  // Catalogo https://checkin-hotelcanal.it/email-photo-catalog.html
+  // Hero #1 · Walk #14 · Voucher #24 · Griglia #29 #27 #11 #5 · Due grandi #26 #27
   const requiredRemote = [
     ['email', 'hero-venice.jpg'],
     ['restaurant', '01-terrazza-canale.jpg'],
@@ -973,30 +972,30 @@ export async function sendWelcomeEmail({
     }
   }
 
-  const heroSrc = publicAssetUrl('email', 'hero-venice.jpg');
-  /* Voucher: tavolo con tanti piatti (HQ) */
+  const heroSrc = publicAssetUrl('email', 'hero-venice.jpg'); // #1
+  /* Voucher #24 (11-tavolo-canale → landscape) */
   const restaurantSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
-  /* Walk to the Terrazza */
+  /* Walk #14 */
   const gallerySrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
-  /* Due grandi sotto griglia: stesso crop 1400×780 */
+  /* Due grandi #26 + #27 (stesso frame 1400×780) */
   const terraceSrc = publicAssetUrl('email', 'postcard-large-a.jpg');
   const dishSrc = publicAssetUrl('email', 'postcard-large-b.jpg');
   const thumbs = [
     {
-      src: publicAssetUrl('email', 'thumb-ingresso.jpg'),
-      alt: 'Ingresso della Terrazza',
-    },
-    {
-      src: publicAssetUrl('email', 'thumb-pesce.jpg'),
-      alt: 'Pesce grigliato',
-    },
-    {
-      src: publicAssetUrl('email', 'thumb-risotto.jpg'),
+      src: publicAssetUrl('email', 'thumb-ingresso.jpg'), // #29
       alt: 'Guazzetto di mare',
     },
     {
-      src: publicAssetUrl('email', 'thumb-linguine.jpg'),
-      alt: 'Linguine al granchio',
+      src: publicAssetUrl('email', 'thumb-pesce.jpg'), // #27
+      alt: 'Pesce grigliato',
+    },
+    {
+      src: publicAssetUrl('email', 'thumb-risotto.jpg'), // #11
+      alt: 'Pesce della Terrazza',
+    },
+    {
+      src: publicAssetUrl('email', 'thumb-linguine.jpg'), // #5
+      alt: 'Risotto di mare',
     },
   ];
 
