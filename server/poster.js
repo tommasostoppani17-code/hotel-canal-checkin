@@ -340,8 +340,9 @@ export async function buildPosterPdfBuffer({
       size: 8,
       color: CANAL,
     });
+    const scanBottom = y + 18;
 
-    // --- Footer first (anchor), then services sit just above it ---
+    // --- Footer anchor ---
     const footY = pageH - 78;
     drawOrnamentRule(doc, footY, pageW, side + 8);
     doc
@@ -365,9 +366,11 @@ export async function buildPosterPdfBuffer({
       color: CANAL,
     });
 
-    // --- Three service columns (anchored above footer, no dead air) ---
+    // --- Services: evenly between QR caption and footer (no dead air) ---
     const servicesBlockH = 78;
-    const servicesY = footY - 22 - servicesBlockH;
+    const maxServicesY = footY - 24 - servicesBlockH;
+    const idealServicesY = scanBottom + 28;
+    const servicesY = Math.min(idealServicesY, maxServicesY);
     drawOrnamentRule(doc, servicesY - 16, pageW, side + 24);
 
     const cols = [
