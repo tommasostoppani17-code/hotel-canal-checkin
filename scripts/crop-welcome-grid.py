@@ -31,10 +31,10 @@ PRESETS = {
         'y': 0.52,
     },
     'grid-23.jpg': {
-        'src': 'public/restaurant/10-polenta.jpg',
-        'left': 185,
-        'top': 40,
-        'side': 650,
+        'src': 'public/restaurant/18-linguine-gamberi.jpg',
+        'zoom': 1.0,
+        'x': 0.50,
+        'y': 0.50,
     },
 }
 

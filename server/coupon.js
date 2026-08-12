@@ -987,7 +987,7 @@ export async function sendWelcomeEmail({
     { src: publicAssetUrl('email', 'grid-30.jpg'), alt: 'Astice alla Terrazza' }, // #30 basso
     { src: publicAssetUrl('email', 'grid-05.jpg'), alt: 'Risotto di mare' }, // #5
     { src: publicAssetUrl('email', 'grid-12.jpg'), alt: 'Guazzetto di mare' }, // #12
-    { src: publicAssetUrl('email', 'grid-23.jpg'), alt: 'Polenta e granchio' }, // #23
+    { src: publicAssetUrl('email', 'grid-23.jpg'), alt: 'Linguine di mare' }, // #23
   ];
 
   const iconDefs = [
