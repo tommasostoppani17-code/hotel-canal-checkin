@@ -944,12 +944,13 @@ export async function sendWelcomeEmail({
     : '';
 
   // Foto HQ landscape: venice-bg + /restaurant.
-  // Griglia 2×2: solo crop quadrati /email/thumb-* (mai rettangoli HQ grezzi).
+  // Walk = terrazza · due grandi sotto griglia = postcard tavolo/dish (max res).
+  // Griglia 2×2: solo crop quadrati /email/thumb-*.
   const requiredRemote = [
     ['venice-bg.jpg'],
     ['restaurant', '01-terrazza-canale.jpg'],
-    ['restaurant', '02-gondola-ingresso.jpg'],
-    ['restaurant', '05-pesce-al-forno.jpg'],
+    ['email', 'postcard-tavolo.jpg'],
+    ['email', 'postcard-dish.jpg'],
     ['email', 'thumb-ingresso.jpg'],
     ['email', 'thumb-pesce.jpg'],
     ['email', 'thumb-risotto.jpg'],
@@ -962,13 +963,13 @@ export async function sendWelcomeEmail({
   }
 
   const heroSrc = publicAssetUrl('venice-bg.jpg');
-  /* Voucher: terrazza sul canale (landscape HQ, come nelle screenshot) */
+  /* Voucher: terrazza sul canale */
   const restaurantSrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
-  /* Walk to the Terrazza: gondola + ombrellone */
-  const gallerySrc = publicAssetUrl('restaurant', '02-gondola-ingresso.jpg');
-  /* Stessa terrazza usata nell’alert Payel */
-  const terraceSrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
-  const dishSrc = publicAssetUrl('restaurant', '05-pesce-al-forno.jpg');
+  /* Walk to the Terrazza: foto della terrazza */
+  const gallerySrc = publicAssetUrl('restaurant', '01-terrazza-canale.jpg');
+  /* Due grandi ristorante: massima risoluzione landscape */
+  const terraceSrc = publicAssetUrl('email', 'postcard-tavolo.jpg');
+  const dishSrc = publicAssetUrl('email', 'postcard-dish.jpg');
   const thumbs = [
     {
       src: publicAssetUrl('email', 'thumb-ingresso.jpg'),
