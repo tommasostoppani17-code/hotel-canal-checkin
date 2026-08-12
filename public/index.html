@@ -4162,6 +4162,7 @@
     .receipt-badge {
       margin-top: var(--ios-4);
       padding: var(--ios-4);
+      border-radius: var(--radius-ios);
     }
 
     .receipt-badge .eyebrow {
@@ -4179,48 +4180,127 @@
       line-height: 1.35;
     }
 
-    .guest-action-btn {
-      align-items: center;
-      gap: var(--ios-3);
+    /* =========================================================
+       Step 4 hub — list rows iOS Settings (allineamento ottico)
+       ========================================================= */
+    #step4 .guest-actions {
+      width: 100%;
+      margin-top: var(--ios-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--ios-2);
     }
 
-    .guest-action-btn .ga-icon {
+    #step4 .guest-action {
+      border-radius: var(--radius-ios);
+      overflow: hidden;
+    }
+
+    #step4 .guest-action-btn {
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr) 12px;
+      align-items: center;
+      column-gap: var(--ios-3);
+      width: 100%;
+      min-height: 52px;
+      height: auto;
+      padding: var(--ios-3) var(--ios-4);
+      margin: 0;
+      gap: 0;
+      box-sizing: border-box;
+      text-align: left;
+    }
+
+    #step4 .guest-action-btn .ga-icon {
+      grid-column: 1;
       width: 36px;
       height: 36px;
+      border-radius: 50%;
       margin: 0;
+      padding: 0;
       line-height: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       align-self: center;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
     }
 
-    .guest-action-btn .ga-icon svg {
+    #step4 .guest-action.is-book .guest-action-btn .ga-icon {
+      background: rgba(18, 68, 83, 0.12);
+    }
+
+    #step4 .guest-action-btn .ga-icon svg {
+      width: 18px;
+      height: 18px;
       display: block;
-      margin: 0 auto;
+      margin: 0;
       flex-shrink: 0;
+      /* ottico: stroke SVG spesso “cade” di 0.5–1px sotto il centro */
+      transform: translateY(-0.5px);
     }
 
-    .guest-action-btn .ga-label {
+    #step4 .guest-action-btn .ga-label {
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
+      align-items: flex-start;
       gap: 2px;
+      min-width: 0;
+      padding-top: 1px; /* allineamento ottico titolo ↔ icona */
+    }
+
+    #step4 .guest-action-btn .ga-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--canal-petroleum);
+    }
+
+    #step4 .guest-action-btn .ga-sub {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+      color: #8E8E93;
+    }
+
+    #step4 .guest-action-btn .ga-chevron {
+      grid-column: 3;
+      width: 7px;
+      height: 7px;
+      margin: 0;
+      justify-self: end;
+      align-self: center;
+      /* chevron CSS: lieve nudge ottico verso il centro del testo */
+      transform: translateY(-1px) rotate(-45deg);
+      opacity: 0.45;
     }
 
     #step4 .reception-note,
     .reception-note {
       margin-top: var(--ios-6);
-      margin-bottom: var(--ios-2);
+      margin-bottom: 0;
+      padding: 0 var(--ios-2);
       letter-spacing: 0.04em;
+      line-height: 1.4;
     }
 
     #step4 .guest-reentry {
       margin-top: var(--ios-4);
       padding-bottom: var(--ios-2);
+      text-align: center;
     }
 
     #step4 .guest-reentry .btn-ghost {
       min-height: 44px;
       padding: var(--ios-2) var(--ios-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     @media (max-width: 390px) {
