@@ -611,8 +611,9 @@ export function buildTableBookingEmail({ hotelName, row }) {
     .filter((line) => line != null)
     .join('\n');
 
-  const hero = escapeHtml(publicAssetUrl('email', 'voucher-24.jpg'));
-  const dish = escapeHtml(publicAssetUrl('email', 'voucher-24.jpg'));
+  // Hero #26 (sala) · sotto #27 (piatto) — non ripetere la stessa foto
+  const hero = escapeHtml(publicAssetUrl('email', 'band-26.jpg'));
+  const dish = escapeHtml(publicAssetUrl('email', 'band-27.jpg'));
 
   const CW = 456;
   const BAND_H = 254;
