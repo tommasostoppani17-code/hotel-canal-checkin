@@ -215,8 +215,28 @@ function romeYearMonthNow() {
   return `${map.year}-${map.month}`;
 }
 
+/** SQLite `datetime('now')` / ISO → YYYY-MM in Europe/Rome. */
+function romeYearMonthFromUtc(createdAt) {
+  const raw = String(createdAt || '').trim();
+  if (!raw) return romeYearMonthNow();
+  const iso = /Z$|[+-]\d{2}:\d{2}$/.test(raw)
+    ? raw
+    : raw.includes('T')
+      ? `${raw}Z`
+      : `${raw.replace(' ', 'T')}Z`;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return romeYearMonthNow();
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+  }).formatToParts(d);
+  const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+  return `${map.year}-${map.month}`;
+}
+
 function normalizeReceptionist(value) {
-  const name = String(value || '').trim();
+  const name = String(value || '').trim().replace(/\s+/g, ' ').toUpperCase();
   return name || 'RECEPTION';
 }
 
@@ -238,6 +258,86 @@ export function bumpStaffMonthStats({
       coupons = coupons + @couponInc
   `,
   ).run({ ym, staff, couponInc });
+}
+
+/** Snapshot rollup mensile (niente PII) — deve sopravvivere al purge GDPR. */
+export function exportStaffMonthStats() {
+  return db
+    .prepare(
+      `
+      SELECT year_month, receptionist, checkins, coupons
+      FROM staff_month_stats
+      ORDER BY year_month ASC, receptionist ASC
+    `,
+    )
+    .all();
+}
+
+/**
+ * Unisce stats da backup: tiene il massimo tra locale e backup
+ * (mai abbassare i contatori dopo un restore parziale).
+ */
+export function mergeStaffMonthStats(rows) {
+  if (!Array.isArray(rows) || !rows.length) return 0;
+  const stmt = db.prepare(`
+    INSERT INTO staff_month_stats (year_month, receptionist, checkins, coupons)
+    VALUES (@year_month, @receptionist, @checkins, @coupons)
+    ON CONFLICT(year_month, receptionist) DO UPDATE SET
+      checkins = MAX(checkins, excluded.checkins),
+      coupons = MAX(coupons, excluded.coupons)
+  `);
+  const tx = db.transaction((list) => {
+    let n = 0;
+    for (const row of list) {
+      const ym = String(row?.year_month || '').trim();
+      const staff = normalizeReceptionist(row?.receptionist);
+      const checkins = Math.max(0, Number(row?.checkins) || 0);
+      const coupons = Math.max(0, Number(row?.coupons) || 0);
+      if (!ym || !/^\d{4}-\d{2}$/.test(ym)) continue;
+      stmt.run({
+        year_month: ym,
+        receptionist: staff,
+        checkins,
+        coupons,
+      });
+      n += 1;
+    }
+    return n;
+  });
+  return tx(rows);
+}
+
+/**
+ * Ricalcola i mesi ancora presenti in `checkins` e fa merge (MAX) sul rollup.
+ * Non cancella mesi storici già solo nel rollup (post GDPR).
+ */
+export function mergeStaffMonthStatsFromCheckins() {
+  const rows = db
+    .prepare(
+      `
+      SELECT receptionist, coupon_sent_at, coupon_token, room_number, created_at
+      FROM checkins
+    `,
+    )
+    .all();
+  if (!rows.length) return 0;
+
+  const map = new Map();
+  for (const row of rows) {
+    const ym = romeYearMonthFromUtc(row.created_at);
+    const staff = normalizeReceptionist(row.receptionist);
+    const key = `${ym}\0${staff}`;
+    const cur = map.get(key) || { year_month: ym, receptionist: staff, checkins: 0, coupons: 0 };
+    cur.checkins += 1;
+    const hasCoupon =
+      Boolean(row.coupon_sent_at) ||
+      (Boolean(row.coupon_token) &&
+        Boolean(String(row.room_number || '').trim()) &&
+        staff !== 'RECEPTION');
+    if (hasCoupon) cur.coupons += 1;
+    map.set(key, cur);
+  }
+  return mergeStaffMonthStats([...map.values()]);
 }
 
 /** True se la stanza è già usata da un altro check-in attivo. */
@@ -290,6 +390,7 @@ export function insertCheckin({
   receptionist,
   guestsCount,
   couponToken,
+  withCoupon = false,
 }) {
   const stmt = db.prepare(`
     INSERT INTO checkins (
@@ -313,7 +414,7 @@ export function insertCheckin({
   try {
     bumpStaffMonthStats({
       receptionist,
-      withCoupon: Boolean(couponToken),
+      withCoupon: Boolean(withCoupon),
     });
   } catch (err) {
     console.error('[stats] bumpStaffMonthStats failed:', err.message || err);

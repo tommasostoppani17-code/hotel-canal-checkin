@@ -1,6 +1,8 @@
 /**
- * Backup durable dei check-in su GitHub Gist.
+ * Backup durable dei check-in + rollup staff mensile su GitHub Gist.
  * Su Render free il filesystem è effimero: al boot ripristiniamo se il DB è vuoto.
+ * staff_month_stats deve essere nel backup: i check-in spariscono dopo 24h (GDPR)
+ * ma il report mensile legge solo il rollup.
  */
 
 function env(name, fallback = '') {
@@ -53,13 +55,18 @@ export function isBackupConfigured() {
   return configured();
 }
 
-export async function pushCheckinsBackup(rows) {
+/**
+ * @param {object[]} checkins
+ * @param {object[]} [staffMonthStats]
+ */
+export async function pushCheckinsBackup(checkins, staffMonthStats = []) {
   if (!configured()) return { skipped: true };
   const gistId = env('CHECKIN_BACKUP_GIST_ID').trim();
   const payload = {
-    version: 1,
+    version: 2,
     updatedAt: new Date().toISOString(),
-    checkins: rows,
+    checkins,
+    staffMonthStats: Array.isArray(staffMonthStats) ? staffMonthStats : [],
   };
   const gist = await gistRequest('GET', `/gists/${gistId}`);
   const filename = pickGistJsonFile(gist);
@@ -71,9 +78,16 @@ export async function pushCheckinsBackup(rows) {
       },
     },
   });
-  return { ok: true, count: rows.length };
+  return {
+    ok: true,
+    count: checkins.length,
+    staffMonths: payload.staffMonthStats.length,
+  };
 }
 
+/**
+ * @returns {Promise<{ checkins: object[], staffMonthStats: object[] } | null>}
+ */
 export async function pullCheckinsBackup() {
   if (!configured()) return null;
   const gistId = env('CHECKIN_BACKUP_GIST_ID').trim();
@@ -93,5 +107,13 @@ export async function pullCheckinsBackup() {
   }
   if (!content) return null;
   const data = JSON.parse(content);
-  return Array.isArray(data?.checkins) ? data.checkins : [];
+  if (Array.isArray(data)) {
+    return { checkins: data, staffMonthStats: [] };
+  }
+  return {
+    checkins: Array.isArray(data?.checkins) ? data.checkins : [],
+    staffMonthStats: Array.isArray(data?.staffMonthStats)
+      ? data.staffMonthStats
+      : [],
+  };
 }

@@ -21,6 +21,9 @@ import {
   purgeCheckinsOlderThan24Hours,
   isRoomTaken,
   getActiveCheckinByRoom,
+  exportStaffMonthStats,
+  mergeStaffMonthStats,
+  mergeStaffMonthStatsFromCheckins,
 } from './db.js';
 import {
   runDailyReport,
@@ -123,8 +126,11 @@ async function syncCheckinsBackup(reason = 'update') {
   if (!isBackupConfigured()) return;
   try {
     const rows = exportAllCheckins();
-    await pushCheckinsBackup(rows);
-    console.log(`[backup] synced ${rows.length} checkins (${reason})`);
+    const stats = exportStaffMonthStats();
+    await pushCheckinsBackup(rows, stats);
+    console.log(
+      `[backup] synced ${rows.length} checkins + ${stats.length} staff rows (${reason})`,
+    );
   } catch (err) {
     console.error('[backup] sync failed:', err.message || err);
   }
@@ -136,13 +142,23 @@ async function restoreCheckinsBackupIfNeeded() {
     return;
   }
   try {
-    if (countCheckins() > 0) {
-      console.log(`[backup] db locale ok (${countCheckins()} checkins)`);
+    const backup = await pullCheckinsBackup();
+    if (!backup) {
+      console.log('[backup] gist vuoto o illeggibile');
       return;
     }
-    const rows = await pullCheckinsBackup();
-    const n = importCheckinsIfEmpty(rows || []);
-    console.log(`[backup] ripristinati ${n} checkins da Gist`);
+    const { checkins = [], staffMonthStats = [] } = backup;
+    if (countCheckins() === 0 && checkins.length) {
+      const n = importCheckinsIfEmpty(checkins);
+      console.log(`[backup] ripristinati ${n} checkins da Gist`);
+    } else {
+      console.log(`[backup] db locale ok (${countCheckins()} checkins)`);
+    }
+    const mergedStats = mergeStaffMonthStats(staffMonthStats);
+    const mergedLive = mergeStaffMonthStatsFromCheckins();
+    console.log(
+      `[backup] staff stats: +${mergedStats} da gist, +${mergedLive} da check-in vivi`,
+    );
   } catch (err) {
     console.error('[backup] restore failed:', err.message || err);
   }
@@ -523,7 +539,13 @@ function publicReportSummary(result) {
   return {
     sent: Boolean(result.sent),
     count: Number(result.count) || 0,
-    empty: Boolean(result.empty) || result.reason === 'no_new_checkins',
+    empty:
+      Boolean(result.empty) ||
+      result.reason === 'no_new_checkins' ||
+      result.reason === 'no_month_data',
+    reason: result.reason || undefined,
+    yearMonth: result.yearMonth || undefined,
+    staff: result.staff,
   };
 }
 
@@ -804,6 +826,7 @@ app.post('/coupon/claim/:token', (req, res) => {
       receptionist,
       guestsCount: row.guests_count ?? payload?.n ?? 2,
       couponToken: redeemToken,
+      withCoupon: true,
     });
   } catch (err) {
     const msg = String(err?.message || err || '');
@@ -1002,6 +1025,7 @@ async function handleCheckin(req, res) {
         receptionist,
         guestsCount,
         couponToken,
+        withCoupon: includeCoupon,
       });
     } catch (err) {
       const msg = String(err?.message || err || '');

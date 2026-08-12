@@ -13,6 +13,7 @@ import {
   getMonthlyStaffStats,
   purgeCheckinsOlderThan24Hours,
   exportAllCheckins,
+  exportStaffMonthStats,
 } from './db.js';
 import {
   sendDailyWhatsAppReport,
@@ -229,7 +230,10 @@ export async function runDailyReport({ force = false } = {}) {
           process.env.CHECKIN_BACKUP_GIST_ID &&
           process.env.CHECKIN_BACKUP_GITHUB_TOKEN
         ) {
-          await pushCheckinsBackup(exportAllCheckins());
+          await pushCheckinsBackup(
+            exportAllCheckins(),
+            exportStaffMonthStats(),
+          );
         }
       }
     } catch (err) {
@@ -328,7 +332,7 @@ export async function runDailyReport({ force = false } = {}) {
       process.env.CHECKIN_BACKUP_GIST_ID &&
       process.env.CHECKIN_BACKUP_GITHUB_TOKEN
     ) {
-      await pushCheckinsBackup(exportAllCheckins());
+      await pushCheckinsBackup(exportAllCheckins(), exportStaffMonthStats());
     }
   } catch (err) {
     console.error('[GDPR] post-report purge/backup failed:', err.message || err);
@@ -410,28 +414,60 @@ export async function runMonthlyStaffReport({ force = false } = {}) {
     env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
   assertEmailReady(reportEmail);
 
-  const prev = previousMonthRome();
-  const { totals, ranking } = getMonthlyStaffStats(prev.yearMonth);
-  const totaleMese = Number(totals?.totale_mese || 0);
+  // Allinea rollup ai check-in ancora in DB (mesi storici restano dal backup).
+  try {
+    const { mergeStaffMonthStatsFromCheckins } = await import('./db.js');
+    mergeStaffMonthStatsFromCheckins();
+  } catch (err) {
+    console.error('[monthly] merge stats failed:', err.message || err);
+  }
+
+  let period = previousMonthRome();
+  let { totals, ranking, source } = getMonthlyStaffStats(period.yearMonth);
+  let totaleMese = Number(totals?.totale_mese || 0);
+
+  // Force manuale a metà mese: se il mese scorso è vuoto, invia il mese in corso.
+  if (!totaleMese && force) {
+    const currentYm = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Rome',
+      year: 'numeric',
+      month: '2-digit',
+    }).formatToParts(new Date());
+    const map = Object.fromEntries(currentYm.map((p) => [p.type, p.value]));
+    const year = Number(map.year);
+    const month = Number(map.month);
+    const yearMonth = `${year}-${String(month).padStart(2, '0')}`;
+    const labelDate = new Date(Date.UTC(year, month - 1, 15, 12, 0, 0));
+    const monthLabel = new Intl.DateTimeFormat('it-IT', {
+      timeZone: 'UTC',
+      month: 'long',
+    })
+      .format(labelDate)
+      .toUpperCase();
+    period = { year, month, yearMonth, monthLabel };
+    ({ totals, ranking, source } = getMonthlyStaffStats(period.yearMonth));
+    totaleMese = Number(totals?.totale_mese || 0);
+  }
 
   if (!totaleMese) {
     return {
       sent: false,
       reason: 'no_month_data',
       count: 0,
-      yearMonth: prev.yearMonth,
+      yearMonth: period.yearMonth,
+      empty: true,
     };
   }
 
   const { subject, text, html, csv } = buildMonthlyStaffEmail({
     hotelName,
-    monthLabel: prev.monthLabel,
-    year: String(prev.year),
+    monthLabel: period.monthLabel,
+    year: String(period.year),
     totals,
     ranking,
   });
 
-  const filename = `performance_staff_${prev.monthLabel.toLowerCase()}_${prev.year}.csv`;
+  const filename = `performance_staff_${period.monthLabel.toLowerCase()}_${period.year}.csv`;
   const provider = resendConfigured() ? 'resend' : 'smtp';
 
   await sendReportMail({
@@ -450,6 +486,7 @@ export async function runMonthlyStaffReport({ force = false } = {}) {
     to: reportEmail,
     provider,
     force,
-    yearMonth: prev.yearMonth,
+    yearMonth: period.yearMonth,
+    source,
   };
 }
