@@ -65,17 +65,30 @@ export function decryptField(value) {
   );
 }
 
-/** Decrypt PII columns on a check-in row (safe for null / legacy). */
+function decryptFieldSoft(value, field, rowId) {
+  try {
+    return decryptField(value);
+  } catch (err) {
+    console.error(
+      `[crypto] decrypt ${field} failed (id=${rowId ?? '?'}):`,
+      err.message || err,
+    );
+    return '[illeggibile]';
+  }
+}
+
+/**
+ * Decrypt PII columns on a check-in row (safe for null / legacy).
+ * Never throws: a corrupt/wrong-key ciphertext becomes "[illeggibile]"
+ * so nightly contact reports cannot be blocked by one bad row.
+ */
 export function decryptCheckinRow(row) {
   if (!row || typeof row !== 'object') return row;
   const out = { ...row };
-  try {
-    if (out.phone != null) out.phone = decryptField(out.phone);
-    if (out.email != null) out.email = decryptField(out.email);
-    if (out.guest_name != null) out.guest_name = decryptField(out.guest_name);
-  } catch (err) {
-    console.error('[crypto] decrypt row failed:', err.message || err);
-    throw err;
+  if (out.phone != null) out.phone = decryptFieldSoft(out.phone, 'phone', out.id);
+  if (out.email != null) out.email = decryptFieldSoft(out.email, 'email', out.id);
+  if (out.guest_name != null) {
+    out.guest_name = decryptFieldSoft(out.guest_name, 'guest_name', out.id);
   }
   return out;
 }
