@@ -218,8 +218,11 @@
       border-radius: var(--radius-outer);
       padding: var(--ios-card-pad-top) 0 var(--ios-card-pad-bottom);
       box-sizing: border-box;
+      /* Ombre stratificate: contatto + ambiente brand + fluttuazione */
       box-shadow:
-        0 20px 60px rgba(8, 48, 72, 0.18),
+        0 1px 2px rgba(0, 0, 0, 0.04),
+        0 12px 28px rgba(18, 68, 83, 0.08),
+        0 28px 56px rgba(8, 48, 72, 0.14),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
       overflow: hidden;
       isolation: isolate;
@@ -2874,7 +2877,9 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.01);
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        0 4px 12px rgba(18, 68, 83, 0.04);
       flex: 0 0 auto;
     }
 
@@ -2887,6 +2892,25 @@
       min-height: 54px;
       position: relative;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color 0.15s var(--ios-ease),
+        transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .ios-row:hover {
+        background-color: rgba(18, 68, 83, 0.03);
+      }
+
+      a.ios-row:hover,
+      button.ios-row:hover {
+        transform: translate3d(1px, 0, 0);
+      }
+    }
+
+    .ios-row:active {
+      background-color: #E5E5EA;
     }
 
     .ios-row:not(:last-child)::after {
@@ -3477,20 +3501,36 @@
       font-weight: 400;
       letter-spacing: -0.02em;
       color: var(--text-main);
-      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+      box-shadow:
+        inset 0 1px 2px rgba(18, 68, 83, 0.03),
+        0 1px 2px rgba(18, 68, 83, 0.04);
       -webkit-appearance: none;
       appearance: none;
-      transition: border-color 0.35s var(--ios-ease), box-shadow 0.35s var(--ios-ease);
+      transform: translateZ(0);
+      transition:
+        border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .book-field input:hover,
+      .book-field .book-select:hover {
+        border-color: rgba(18, 68, 83, 0.14);
+      }
     }
 
     .book-field input:focus,
     .book-field .book-select:focus {
       outline: none;
-      border-color: rgba(18, 68, 83, 0.28);
-      box-shadow: 0 0 0 3px rgba(18, 68, 83, 0.1);
+      border-color: rgba(18, 68, 83, 0.35);
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        0 0 0 3.5px rgba(18, 68, 83, 0.12);
     }
 
     .book-field .book-select {
+      display: block;
       padding-right: 36px;
       font-weight: 500;
       color: var(--canal-petroleum);
@@ -3499,6 +3539,24 @@
       background-position: right 14px center;
       background-color: #FFFFFF;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    /* Congela scroll interno mentre il picker nativo iOS è aperto */
+    body.ios-picker-open #step4.slide-step,
+    body.ios-picker-open .step-scroll,
+    body.ios-picker-open .guest-sheet-scroll,
+    body.ios-picker-open #tablePanel {
+      overflow: hidden !important;
+      overscroll-behavior: none;
+      touch-action: none;
+    }
+
+    body.ios-picker-open #sliderViewport {
+      contain: layout paint size;
     }
 
     .book-field input[type="time"] {
@@ -3528,12 +3586,26 @@
       align-items: center;
       justify-content: center;
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1), background-color 0.25s var(--ios-ease);
+      transform: translate3d(0, 0, 0);
+      transition:
+        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.08);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .book-submit:hover:not(:disabled) {
+        background: var(--canal-petroleum-hover);
+        transform: translate3d(0, -1.5px, 0);
+        box-shadow: 0 6px 16px rgba(18, 68, 83, 0.22);
+      }
     }
 
     .book-submit:active {
-      transform: scale(0.97);
+      transform: translate3d(0, 0.5px, 0) scale(0.98);
       background: var(--canal-petroleum-hover);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .book-submit:disabled {
@@ -3736,16 +3808,22 @@
       opacity: 1;
     }
 
+    @media (hover: hover) and (pointer: fine) {
+      .apple-input:hover:not(:focus):not(.is-invalid) {
+        border-color: rgba(18, 68, 83, 0.14);
+      }
+    }
+
     .apple-input:focus {
       outline: none;
       border-color: rgba(18, 68, 83, 0.45);
       background: #FFFFFF !important;
       background-color: #FFFFFF !important;
       transform: none;
-      /* Anello interno: non viene tagliato da overflow:hidden della card */
+      /* Anello esterno: focus ring tipo iOS / Apple Pay */
       box-shadow:
-        inset 0 0 0 1px rgba(18, 68, 83, 0.12),
-        0 1px 2px rgba(18, 68, 83, 0.06);
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        0 0 0 3.5px rgba(18, 68, 83, 0.12);
     }
 
     .apple-input.is-invalid {
@@ -4008,18 +4086,21 @@
       align-items: center;
       justify-content: center;
       margin-top: var(--ios-2);
+      -webkit-tap-highlight-color: transparent;
+      transform: translate3d(0, 0, 0);
+      will-change: transform, box-shadow, background-color;
       transition:
-        transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
-        background-color 0.25s var(--ios-ease),
-        box-shadow 0.3s var(--ios-ease);
-      box-shadow: none;
+        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.08);
     }
 
     @media (hover: hover) and (pointer: fine) {
       .btn-canal:hover:not(:disabled):not(.is-loading) {
         background: var(--canal-petroleum-hover);
-        transform: translate3d(0, -1px, 0);
-        box-shadow: 0 10px 22px rgba(18, 68, 83, 0.32);
+        transform: translate3d(0, -1.5px, 0);
+        box-shadow: 0 6px 16px rgba(18, 68, 83, 0.22);
       }
 
       .btn-ghost:hover {
@@ -4028,11 +4109,11 @@
     }
 
     .btn-canal:active:not(:disabled):not(.is-loading) {
-      transform: scale(0.94);
-      transition-duration: 0.07s, 0.15s, 0.15s;
+      transform: translate3d(0, 0.5px, 0) scale(0.98);
+      transition-duration: 0.08s, 0.12s, 0.12s;
       transition-timing-function: ease-out, var(--ios-ease), var(--ios-ease);
       background-color: var(--canal-petroleum-hover);
-      box-shadow: 0 2px 5px rgba(18, 68, 83, 0.06);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .btn-canal:disabled {
@@ -6899,6 +6980,7 @@
     /** Matrice live (375×667): seed antifallo + misura a freddo. */
     const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 568, 4: 292 };
     const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    let iosPickerOpen = false;
 
     function isCompactPhoneViewport() {
       return window.matchMedia('(max-width: 480px) and (max-height: 680px)')
@@ -6946,6 +7028,7 @@
     }
 
     function invalidateGeometry(stepOrNull = null) {
+      if (iosPickerOpen) return;
       if (stepOrNull == null) {
         preCalculateGeometry({ applyCurrent: !stepBusy });
         return;
@@ -7264,6 +7347,7 @@
     }
 
     function syncAppViewportHeight() {
+      if (iosPickerOpen) return;
       const vv = window.visualViewport;
       const h = Math.round((vv && vv.height) || window.innerHeight || 0);
       if (h > 0) {
@@ -7275,6 +7359,35 @@
       stepHeightCache[4] = 0;
       preCalculateGeometry({ applyCurrent: true });
       requestAnimationFrame(() => ensurePrimaryCtaVisible());
+    }
+
+    /** Blocca reflow/scroll mentre Safari apre il picker nativo dei <select>. */
+    function initSelectStability() {
+      const viewport = document.getElementById('sliderViewport');
+      const selects = document.querySelectorAll('.book-select');
+      if (!viewport || !selects.length) return;
+
+      const freeze = () => {
+        iosPickerOpen = true;
+        document.body.classList.add('ios-picker-open');
+        viewport.style.height = `${viewport.offsetHeight}px`;
+      };
+
+      const thaw = () => {
+        iosPickerOpen = false;
+        document.body.classList.remove('ios-picker-open');
+        if (!stepBusy) {
+          applyViewportHeightPx(mappedStepHeight(currentStep), { animate: false });
+        }
+      };
+
+      selects.forEach((select) => {
+        select.addEventListener('focus', freeze);
+        select.addEventListener('blur', thaw);
+        select.addEventListener('change', () => {
+          select.blur();
+        });
+      });
     }
 
     function normalizeBookTime(value) {
@@ -8946,6 +9059,7 @@
     window.addEventListener('orientationchange', () => {
       setTimeout(syncAppViewportHeight, 120);
     });
+    initSelectStability();
 
     // Foto dining: se caricano dopo la misura, riallinea senza scatto
     document.querySelectorAll('#step2 .dining-showcase img').forEach((img) => {
