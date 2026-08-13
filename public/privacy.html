@@ -44,47 +44,401 @@
       border-radius: 18px;
       padding: 20px 18px;
     }
+    [dir="rtl"] h1,
+    [dir="rtl"] h2 { letter-spacing: 0; }
   </style>
 </head>
 <body>
   <main>
     <div class="card">
-      <h1>Informativa privacy</h1>
-      <p class="meta">Hotel Canal · Check-in digitale · GDPR (UE 2016/679)</p>
+      <h1 id="privacyTitle"></h1>
+      <p class="meta" id="privacyMeta"></p>
 
-      <h2>1. Titolare del trattamento</h2>
-      <p>
-        <strong>CANAL S.r.l.</strong><br>
-        Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>
-        P.IVA / C.F.: <strong>04711930273</strong><br>
-        Contatti: reception in struttura ·
-        <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>
-      </p>
+      <h2 id="controllerTitle"></h2>
+      <div id="controllerBody"></div>
 
-      <h2>2. Dati raccolti</h2>
-      <p>Nome, cognome, email, numero di telefono, eventuale numero di stanza, nome receptionist, numero ospiti, preferenza orario tavolo, lingua, timestamp di consenso privacy.</p>
+      <h2 id="dataTitle"></h2>
+      <div id="dataBody"></div>
 
-      <h2>3. Finalità e base giuridica</h2>
-      <ul>
-        <li>Check-in digitale e servizi di portineria (Wi‑Fi, accessi, istruzioni) — art. 6.1.b GDPR</li>
-        <li>Invio coupon partner e comunicazioni di soggiorno — art. 6.1.a / 6.1.b</li>
-        <li>Report operativi interni al front desk — art. 6.1.f (interesse legittimo organizzativo, limitato)</li>
-      </ul>
+      <h2 id="purposeTitle"></h2>
+      <div id="purposeBody"></div>
 
-      <h2>4. Conservazione</h2>
-      <p>I dati di contatto sono conservati sul sistema di check-in per un massimo di <strong>24 ore</strong>, poi eliminati automaticamente (principio di limitazione della conservazione). Copia operativa può essere ricevuta dal personale autorizzato nel report giornaliero.</p>
+      <h2 id="retentionTitle"></h2>
+      <div id="retentionBody"></div>
 
-      <h2>5. Destinatari</h2>
-      <p>Personale autorizzato dell’hotel. Nessuna vendita o cessione a piattaforme di remarketing. Fornitori tecnici (hosting, email transazionale, WhatsApp Business) trattano i dati solo per erogare il servizio, ove nominati responsabili.</p>
+      <h2 id="recipientsTitle"></h2>
+      <div id="recipientsBody"></div>
 
-      <h2>6. Sicurezza</h2>
-      <p>Trasporto HTTPS; contatti (telefono, email, nome) cifrati at rest (AES-256-GCM); accesso ai servizi ospite solo con token dopo check-in; consenso privacy obbligatorio e non pre-selezionato.</p>
+      <h2 id="securityTitle"></h2>
+      <div id="securityBody"></div>
 
-      <h2>7. Diritti dell’interessato</h2>
-      <p>Accesso, rettifica, cancellazione, limitazione, opposizione, reclamo al Garante Privacy. Per esercitare i diritti: reception Hotel Canal o email sopra.</p>
+      <h2 id="rightsTitle"></h2>
+      <div id="rightsBody"></div>
 
-      <p style="margin-top:28px"><a href="/">← Torna al check-in</a></p>
+      <p style="margin-top:28px"><a id="backLink" href="/"></a></p>
     </div>
   </main>
+  <script>
+    var PRIVACY_I18N = {
+      it: {
+        docTitle: 'Informativa privacy — Hotel Canal',
+        title: 'Informativa privacy',
+        meta: 'Hotel Canal · Check-in digitale · GDPR (UE 2016/679)',
+        controllerTitle: '1. Titolare del trattamento',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Contatti: reception in struttura · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Dati raccolti',
+        dataBody:
+          '<p>Nome, cognome, email, numero di telefono, eventuale numero di stanza, nome receptionist, numero ospiti, preferenza orario tavolo, lingua, timestamp di consenso privacy.</p>',
+        purposeTitle: '3. Finalità e base giuridica',
+        purposeBody:
+          '<ul><li>Check-in digitale e servizi di portineria (Wi‑Fi, accessi, istruzioni) — art. 6.1.b GDPR</li><li>Invio coupon partner e comunicazioni di soggiorno — art. 6.1.a / 6.1.b</li><li>Report operativi interni al front desk — art. 6.1.f (interesse legittimo organizzativo, limitato)</li></ul>',
+        retentionTitle: '4. Conservazione',
+        retentionBody:
+          '<p>I dati di contatto sono conservati sul sistema di check-in per un massimo di <strong>24 ore</strong>, poi eliminati automaticamente (principio di limitazione della conservazione). Copia operativa può essere ricevuta dal personale autorizzato nel report giornaliero.</p>',
+        recipientsTitle: '5. Destinatari',
+        recipientsBody:
+          '<p>Personale autorizzato dell’hotel. Nessuna vendita o cessione a piattaforme di remarketing. Fornitori tecnici (hosting, email transazionale, WhatsApp Business) trattano i dati solo per erogare il servizio, ove nominati responsabili.</p>',
+        securityTitle: '6. Sicurezza',
+        securityBody:
+          '<p>Trasporto HTTPS; contatti (telefono, email, nome) cifrati at rest (AES-256-GCM); accesso ai servizi ospite solo con token dopo check-in; consenso privacy obbligatorio e non pre-selezionato.</p>',
+        rightsTitle: '7. Diritti dell’interessato',
+        rightsBody:
+          '<p>Accesso, rettifica, cancellazione, limitazione, opposizione, reclamo al Garante Privacy. Per esercitare i diritti: reception Hotel Canal o email sopra.</p>',
+        backLink: '← Torna al check-in',
+      },
+      en: {
+        docTitle: 'Privacy notice — Hotel Canal',
+        title: 'Privacy notice',
+        meta: 'Hotel Canal · Digital check-in · GDPR (EU 2016/679)',
+        controllerTitle: '1. Data controller',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Contacts: on-site reception · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Data collected',
+        dataBody:
+          '<p>First name, last name, email, phone number, room number if any, receptionist name, number of guests, preferred table time, language, privacy consent timestamp.</p>',
+        purposeTitle: '3. Purposes and legal basis',
+        purposeBody:
+          '<ul><li>Digital check-in and front-desk services (Wi‑Fi, access, instructions) — Art. 6.1.b GDPR</li><li>Partner coupons and stay-related communications — Art. 6.1.a / 6.1.b</li><li>Internal front-desk operational reports — Art. 6.1.f (limited organisational legitimate interest)</li></ul>',
+        retentionTitle: '4. Retention',
+        retentionBody:
+          '<p>Contact data are kept on the check-in system for a maximum of <strong>24 hours</strong>, then automatically deleted (storage limitation). Authorised staff may receive an operational copy in the daily report.</p>',
+        recipientsTitle: '5. Recipients',
+        recipientsBody:
+          '<p>Authorised hotel staff. No sale or transfer to remarketing platforms. Technical providers (hosting, transactional email, WhatsApp Business) process data only to deliver the service, where appointed as processors.</p>',
+        securityTitle: '6. Security',
+        securityBody:
+          '<p>HTTPS transport; contacts (phone, email, name) encrypted at rest (AES-256-GCM); guest service access only with a token after check-in; privacy consent mandatory and not pre-selected.</p>',
+        rightsTitle: '7. Data subject rights',
+        rightsBody:
+          '<p>Access, rectification, erasure, restriction, objection, complaint to the supervisory authority. To exercise rights: Hotel Canal reception or the email above.</p>',
+        backLink: '← Back to check-in',
+      },
+      fr: {
+        docTitle: 'Information confidentialité — Hotel Canal',
+        title: 'Information confidentialité',
+        meta: 'Hotel Canal · Check-in numérique · RGPD (UE 2016/679)',
+        controllerTitle: '1. Responsable du traitement',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Contacts : réception sur place · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Données collectées',
+        dataBody:
+          '<p>Prénom, nom, e-mail, numéro de téléphone, numéro de chambre éventuel, nom du réceptionniste, nombre d’hôtes, préférence d’horaire de table, langue, horodatage du consentement privacy.</p>',
+        purposeTitle: '3. Finalités et base juridique',
+        purposeBody:
+          '<ul><li>Check-in numérique et services de conciergerie (Wi‑Fi, accès, instructions) — art. 6.1.b RGPD</li><li>Envoi de coupons partenaires et communications de séjour — art. 6.1.a / 6.1.b</li><li>Rapports opérationnels internes à la réception — art. 6.1.f (intérêt légitime organisationnel limité)</li></ul>',
+        retentionTitle: '4. Conservation',
+        retentionBody:
+          '<p>Les données de contact sont conservées sur le système de check-in pendant un maximum de <strong>24 heures</strong>, puis supprimées automatiquement (limitation de la conservation). Une copie opérationnelle peut être reçue par le personnel autorisé dans le rapport quotidien.</p>',
+        recipientsTitle: '5. Destinataires',
+        recipientsBody:
+          '<p>Personnel autorisé de l’hôtel. Aucune vente ni cession à des plateformes de remarketing. Les prestataires techniques (hébergement, e-mail transactionnel, WhatsApp Business) traitent les données uniquement pour fournir le service, lorsqu’ils sont désignés sous-traitants.</p>',
+        securityTitle: '6. Sécurité',
+        securityBody:
+          '<p>Transport HTTPS ; contacts (téléphone, e-mail, nom) chiffrés au repos (AES-256-GCM) ; accès aux services hôtes uniquement avec un jeton après check-in ; consentement privacy obligatoire et non pré-sélectionné.</p>',
+        rightsTitle: '7. Droits de la personne concernée',
+        rightsBody:
+          '<p>Accès, rectification, effacement, limitation, opposition, réclamation auprès de l’autorité de contrôle. Pour exercer vos droits : réception Hotel Canal ou e-mail ci-dessus.</p>',
+        backLink: '← Retour au check-in',
+      },
+      de: {
+        docTitle: 'Datenschutzhinweis — Hotel Canal',
+        title: 'Datenschutzhinweis',
+        meta: 'Hotel Canal · Digitaler Check-in · DSGVO (EU 2016/679)',
+        controllerTitle: '1. Verantwortlicher',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Kontakte: Rezeption vor Ort · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Erhobene Daten',
+        dataBody:
+          '<p>Vorname, Nachname, E-Mail, Telefonnummer, ggf. Zimmernummer, Name des Empfangs, Gästeanzahl, bevorzugte Tischzeit, Sprache, Zeitstempel der Datenschutz-Einwilligung.</p>',
+        purposeTitle: '3. Zwecke und Rechtsgrundlage',
+        purposeBody:
+          '<ul><li>Digitaler Check-in und Portierdienste (Wi‑Fi, Zugänge, Anweisungen) — Art. 6 Abs. 1 lit. b DSGVO</li><li>Partner-Coupons und aufenthaltsbezogene Kommunikation — Art. 6 Abs. 1 lit. a / lit. b</li><li>Interne operative Front-Desk-Berichte — Art. 6 Abs. 1 lit. f (begrenztes organisatorisches berechtigtes Interesse)</li></ul>',
+        retentionTitle: '4. Speicherung',
+        retentionBody:
+          '<p>Kontaktdaten werden im Check-in-System höchstens <strong>24 Stunden</strong> gespeichert und danach automatisch gelöscht (Speicherbegrenzung). Autorisiertes Personal kann eine operative Kopie im Tagesbericht erhalten.</p>',
+        recipientsTitle: '5. Empfänger',
+        recipientsBody:
+          '<p>Autorisiertes Hotelpersonal. Kein Verkauf und keine Weitergabe an Remarketing-Plattformen. Technische Anbieter (Hosting, Transaktions-E-Mail, WhatsApp Business) verarbeiten Daten nur zur Leistungserbringung, soweit als Auftragsverarbeiter benannt.</p>',
+        securityTitle: '6. Sicherheit',
+        securityBody:
+          '<p>HTTPS-Transport; Kontakte (Telefon, E-Mail, Name) verschlüsselt at rest (AES-256-GCM); Gastzugang zu Diensten nur mit Token nach Check-in; Datenschutz-Einwilligung verpflichtend und nicht vorausgewählt.</p>',
+        rightsTitle: '7. Rechte der betroffenen Person',
+        rightsBody:
+          '<p>Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch, Beschwerde bei der Aufsichtsbehörde. Zur Ausübung der Rechte: Rezeption Hotel Canal oder E-Mail oben.</p>',
+        backLink: '← Zurück zum Check-in',
+      },
+      es: {
+        docTitle: 'Aviso de privacidad — Hotel Canal',
+        title: 'Aviso de privacidad',
+        meta: 'Hotel Canal · Check-in digital · RGPD (UE 2016/679)',
+        controllerTitle: '1. Responsable del tratamiento',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Contactos: recepción en el hotel · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Datos recogidos',
+        dataBody:
+          '<p>Nombre, apellidos, email, número de teléfono, número de habitación si aplica, nombre del recepcionista, número de huéspedes, preferencia de horario de mesa, idioma, marca de tiempo del consentimiento de privacidad.</p>',
+        purposeTitle: '3. Finalidades y base jurídica',
+        purposeBody:
+          '<ul><li>Check-in digital y servicios de conserjería (Wi‑Fi, accesos, instrucciones) — art. 6.1.b RGPD</li><li>Envío de cupones de partners y comunicaciones de estancia — art. 6.1.a / 6.1.b</li><li>Informes operativos internos de recepción — art. 6.1.f (interés legítimo organizativo limitado)</li></ul>',
+        retentionTitle: '4. Conservación',
+        retentionBody:
+          '<p>Los datos de contacto se conservan en el sistema de check-in durante un máximo de <strong>24 horas</strong> y luego se eliminan automáticamente (limitación de la conservación). El personal autorizado puede recibir una copia operativa en el informe diario.</p>',
+        recipientsTitle: '5. Destinatarios',
+        recipientsBody:
+          '<p>Personal autorizado del hotel. Ninguna venta ni cesión a plataformas de remarketing. Los proveedores técnicos (hosting, email transaccional, WhatsApp Business) tratan los datos solo para prestar el servicio, cuando son nombrados encargados.</p>',
+        securityTitle: '6. Seguridad',
+        securityBody:
+          '<p>Transporte HTTPS; contactos (teléfono, email, nombre) cifrados en reposo (AES-256-GCM); acceso a servicios de huésped solo con token tras el check-in; consentimiento de privacidad obligatorio y no preseleccionado.</p>',
+        rightsTitle: '7. Derechos del interesado',
+        rightsBody:
+          '<p>Acceso, rectificación, supresión, limitación, oposición, reclamación ante la autoridad de control. Para ejercer los derechos: recepción Hotel Canal o el email anterior.</p>',
+        backLink: '← Volver al check-in',
+      },
+      zh: {
+        docTitle: '隐私声明 — Hotel Canal',
+        title: '隐私声明',
+        meta: 'Hotel Canal · 数字入住 · GDPR（欧盟 2016/679）',
+        controllerTitle: '1. 数据控制者',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>联系方式：酒店前台 · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. 收集的数据',
+        dataBody:
+          '<p>姓名、电子邮件、电话号码、房间号（如有）、接待员姓名、客人人数、首选用餐时间、语言、隐私同意时间戳。</p>',
+        purposeTitle: '3. 目的与法律依据',
+        purposeBody:
+          '<ul><li>数字入住登记与前台服务（Wi‑Fi、门禁、说明）— GDPR 第 6.1.b 条</li><li>合作伙伴优惠券及与住宿相关的沟通 — 第 6.1.a / 6.1.b 条</li><li>前台内部运营报告 — 第 6.1.f 条（有限的组织合法利益）</li></ul>',
+        retentionTitle: '4. 保存',
+        retentionBody:
+          '<p>联系数据在入住系统中最长保存 <strong>24 小时</strong>，随后自动删除（存储限制原则）。授权人员可能在日报中收到运营副本。</p>',
+        recipientsTitle: '5. 接收方',
+        recipientsBody:
+          '<p>酒店授权人员。不向再营销平台出售或转让。技术服务商（托管、事务性电子邮件、WhatsApp Business）仅在被指定为处理者时为提供服务而处理数据。</p>',
+        securityTitle: '6. 安全',
+        securityBody:
+          '<p>HTTPS 传输；联系信息（电话、电子邮件、姓名）静态加密（AES-256-GCM）；入住后仅凭令牌访问客人服务；隐私同意为必选且未预勾选。</p>',
+        rightsTitle: '7. 数据主体权利',
+        rightsBody:
+          '<p>访问、更正、删除、限制、反对、向监管机构投诉。行使权利：Hotel Canal 前台或上述电子邮件。</p>',
+        backLink: '← 返回入住登记',
+      },
+      ja: {
+        docTitle: 'プライバシー通知 — Hotel Canal',
+        title: 'プライバシー通知',
+        meta: 'Hotel Canal · デジタルチェックイン · GDPR（EU 2016/679）',
+        controllerTitle: '1. 管理者',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>連絡先：館内フロント · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. 収集データ',
+        dataBody:
+          '<p>氏名、メール、電話番号、部屋番号（ある場合）、受付担当者名、ゲスト人数、希望テーブル時間、言語、プライバシー同意のタイムスタンプ。</p>',
+        purposeTitle: '3. 目的および法的根拠',
+        purposeBody:
+          '<ul><li>デジタルチェックインおよびフロントサービス（Wi‑Fi、入館、案内）— GDPR 第6.1.b条</li><li>パートナークーポンおよび滞在関連の連絡 — 第6.1.a / 6.1.b条</li><li>フロント内部の運用レポート — 第6.1.f条（限定的な組織上の正当な利益）</li></ul>',
+        retentionTitle: '4. 保存',
+        retentionBody:
+          '<p>連絡先データはチェックインシステム上で最大<strong>24時間</strong>保管され、その後自動削除されます（保存の制限）。権限あるスタッフは日次レポートで運用コピーを受け取ることがあります。</p>',
+        recipientsTitle: '5. 受領者',
+        recipientsBody:
+          '<p>ホテルの権限あるスタッフ。リマーケティングプラットフォームへの販売・譲渡はありません。技術提供者（ホスティング、トランザクションメール、WhatsApp Business）は処理者に指名された場合に限り、サービス提供のためにデータを処理します。</p>',
+        securityTitle: '6. セキュリティ',
+        securityBody:
+          '<p>HTTPS 通信；連絡先（電話、メール、氏名）は保管時に暗号化（AES-256-GCM）；チェックイン後はトークンのみでゲストサービスにアクセス；プライバシー同意は必須かつ事前選択なし。</p>',
+        rightsTitle: '7. データ主体の権利',
+        rightsBody:
+          '<p>アクセス、訂正、消去、制限、異議、監督機関への苦情。権利行使：Hotel Canal フロントまたは上記メール。</p>',
+        backLink: '← チェックインに戻る',
+      },
+      bn: {
+        docTitle: 'গোপনীয়তা নোটিশ — Hotel Canal',
+        title: 'গোপনীয়তা নোটিশ',
+        meta: 'Hotel Canal · ডিজিটাল চেক-ইন · GDPR (EU 2016/679)',
+        controllerTitle: '১. ডেটা কন্ট্রোলার',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>যোগাযোগ: হোটেলের রিসেপশন · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '২. সংগৃহীত ডেটা',
+        dataBody:
+          '<p>নাম, পদবি, ইমেইল, ফোন নম্বর, রুম নম্বর (থাকলে), রিসেপশনিস্টের নাম, অতিথির সংখ্যা, পছন্দের টেবিল সময়, ভাষা, গোপনীয়তা সম্মতির টাইমস্ট্যাম্প।</p>',
+        purposeTitle: '৩. উদ্দেশ্য ও আইনি ভিত্তি',
+        purposeBody:
+          '<ul><li>ডিজিটাল চেক-ইন ও পোর্টার সেবা (Wi‑Fi, প্রবেশাধিকার, নির্দেশনা) — GDPR ধারা ৬.১.খ</li><li>পার্টনার কুপন ও থাকার সম্পর্কিত যোগাযোগ — ধারা ৬.১.ক / ৬.১.খ</li><li>ফ্রন্ট ডেস্কের অভ্যন্তরীণ অপারেশনাল রিপোর্ট — ধারা ৬.১.চ (সীমিত সাংগঠনিক বৈধ স্বার্থ)</li></ul>',
+        retentionTitle: '৪. সংরক্ষণ',
+        retentionBody:
+          '<p>যোগাযোগের ডেটা চেক-ইন সিস্টেমে সর্বোচ্চ <strong>২৪ ঘণ্টা</strong> রাখা হয়, তারপর স্বয়ংক্রিয়ভাবে মুছে ফেলা হয় (সংরক্ষণ সীমাবদ্ধতা)। অনুমোদিত কর্মী দৈনিক রিপোর্টে অপারেশনাল কপি পেতে পারেন।</p>',
+        recipientsTitle: '৫. প্রাপক',
+        recipientsBody:
+          '<p>হোটেলের অনুমোদিত কর্মী। রিমার্কেটিং প্ল্যাটফর্মে কোনো বিক্রি বা হস্তান্তর নেই। প্রযুক্তিগত সরবরাহকারী (হোস্টিং, ট্রানজ্যাকশনাল ইমেইল, WhatsApp Business) শুধু সেবা প্রদানের জন্য ডেটা প্রক্রিয়া করে, যেখানে প্রসেসর হিসেবে নিযুক্ত।</p>',
+        securityTitle: '৬. নিরাপত্তা',
+        securityBody:
+          '<p>HTTPS পরিবহন; যোগাযোগ (ফোন, ইমেইল, নাম) অ্যাট রেস্ট এনক্রিপ্টেড (AES-256-GCM); চেক-ইনের পর শুধু টোকেন দিয়ে অতিথি সেবায় প্রবেশ; গোপনীয়তা সম্মতি বাধ্যতামূলক ও প্রি-সিলেক্টেড নয়।</p>',
+        rightsTitle: '৭. ডেটা সাবজেক্টের অধিকার',
+        rightsBody:
+          '<p>অ্যাক্সেস, সংশোধন, মুছে ফেলা, সীমাবদ্ধতা, আপত্তি, তদারকি কর্তৃপক্ষের কাছে অভিযোগ। অধিকার প্রয়োগে: Hotel Canal রিসেপশন বা উপরের ইমেইল।</p>',
+        backLink: '← চেক-ইনে ফিরে যান',
+      },
+      ar: {
+        docTitle: 'إشعار الخصوصية — Hotel Canal',
+        title: 'إشعار الخصوصية',
+        meta: 'Hotel Canal · تسجيل وصول رقمي · اللائحة العامة لحماية البيانات (الاتحاد الأوروبي 2016/679)',
+        controllerTitle: '1. المسؤول عن المعالجة',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>جهات الاتصال: استقبال الفندق · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. البيانات المجمعة',
+        dataBody:
+          '<p>الاسم الأول، اسم العائلة، البريد الإلكتروني، رقم الهاتف، رقم الغرفة إن وُجد، اسم موظف الاستقبال، عدد الضيوف، الوقت المفضل للطاولة، اللغة، طابع زمني لموافقة الخصوصية.</p>',
+        purposeTitle: '3. الأغراض والأساس القانوني',
+        purposeBody:
+          '<ul><li>تسجيل وصول رقمي وخدمات الاستقبال (Wi‑Fi، الدخول، التعليمات) — المادة 6.1.ب من اللائحة العامة لحماية البيانات</li><li>قسائم الشركاء والاتصالات المتعلقة بالإقامة — المادة 6.1.أ / 6.1.ب</li><li>تقارير تشغيلية داخلية للاستقبال — المادة 6.1.و (مصلحة مشروعة تنظيمية محدودة)</li></ul>',
+        retentionTitle: '4. الاحتفاظ',
+        retentionBody:
+          '<p>تُحفظ بيانات الاتصال على نظام تسجيل الوصول لمدة أقصاها <strong>24 ساعة</strong>، ثم تُحذف تلقائيًا (تقييد التخزين). قد يتلقى الموظفون المصرح لهم نسخة تشغيلية في التقرير اليومي.</p>',
+        recipientsTitle: '5. المستلمون',
+        recipientsBody:
+          '<p>موظفو الفندق المصرح لهم. لا بيع ولا تحويل إلى منصات إعادة التسويق. يعالج المزودون التقنيون (الاستضافة، البريد الإلكتروني المعاملاتي، WhatsApp Business) البيانات فقط لتقديم الخدمة عند تعيينهم كمعالجين.</p>',
+        securityTitle: '6. الأمن',
+        securityBody:
+          '<p>نقل عبر HTTPS؛ جهات الاتصال (الهاتف، البريد الإلكتروني، الاسم) مشفّرة أثناء التخزين (AES-256-GCM)؛ الوصول إلى خدمات الضيف فقط برمز بعد تسجيل الوصول؛ موافقة الخصوصية إلزامية وغير محددة مسبقًا.</p>',
+        rightsTitle: '7. حقوق صاحب البيانات',
+        rightsBody:
+          '<p>الوصول، التصحيح، المحو، التقييد، الاعتراض، الشكوى لدى السلطة الرقابية. لممارسة الحقوق: استقبال Hotel Canal أو البريد الإلكتروني أعلاه.</p>',
+        backLink: '→ العودة إلى تسجيل الوصول',
+      },
+      ru: {
+        docTitle: 'Уведомление о конфиденциальности — Hotel Canal',
+        title: 'Уведомление о конфиденциальности',
+        meta: 'Hotel Canal · Цифровой check-in · GDPR (ЕС 2016/679)',
+        controllerTitle: '1. Контролёр данных',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Контакты: ресепшен отеля · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Собираемые данные',
+        dataBody:
+          '<p>Имя, фамилия, email, номер телефона, номер комнаты при наличии, имя администратора, число гостей, предпочтительное время столика, язык, метка времени согласия на обработку.</p>',
+        purposeTitle: '3. Цели и правовое основание',
+        purposeBody:
+          '<ul><li>Цифровой check-in и услуги портье (Wi‑Fi, доступы, инструкции) — ст. 6.1.b GDPR</li><li>Партнёрские купоны и сообщения о проживании — ст. 6.1.a / 6.1.b</li><li>Внутренние операционные отчёты front desk — ст. 6.1.f (ограниченный организационный законный интерес)</li></ul>',
+        retentionTitle: '4. Хранение',
+        retentionBody:
+          '<p>Контактные данные хранятся в системе check-in максимум <strong>24 часа</strong>, затем автоматически удаляются (ограничение хранения). Уполномоченный персонал может получить операционную копию в ежедневном отчёте.</p>',
+        recipientsTitle: '5. Получатели',
+        recipientsBody:
+          '<p>Уполномоченный персонал отеля. Нет продажи или передачи платформам ремаркетинга. Технические поставщики (хостинг, транзакционный email, WhatsApp Business) обрабатывают данные только для оказания услуги, если назначены обработчиками.</p>',
+        securityTitle: '6. Безопасность',
+        securityBody:
+          '<p>Транспорт HTTPS; контакты (телефон, email, имя) шифруются at rest (AES-256-GCM); доступ к гостевым сервисам только с токеном после check-in; согласие на обработку обязательно и не предвыбрано.</p>',
+        rightsTitle: '7. Права субъекта данных',
+        rightsBody:
+          '<p>Доступ, исправление, удаление, ограничение, возражение, жалоба в надзорный орган. Для осуществления прав: ресепшен Hotel Canal или email выше.</p>',
+        backLink: '← Вернуться к check-in',
+      },
+      pl: {
+        docTitle: 'Informacja o prywatności — Hotel Canal',
+        title: 'Informacja o prywatności',
+        meta: 'Hotel Canal · Cyfrowy check-in · RODO (UE 2016/679)',
+        controllerTitle: '1. Administrator danych',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Kontakty: recepcja w obiekcie · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Dane zbierane',
+        dataBody:
+          '<p>Imię, nazwisko, e-mail, numer telefonu, numer pokoju (jeśli dotyczy), imię recepcjonisty, liczba gości, preferowana godzina stolika, język, znacznik czasu zgody na prywatność.</p>',
+        purposeTitle: '3. Cele i podstawa prawna',
+        purposeBody:
+          '<ul><li>Cyfrowy check-in i usługi portierni (Wi‑Fi, dostępy, instrukcje) — art. 6.1.b RODO</li><li>Kupony partnerskie i komunikacja związana z pobytem — art. 6.1.a / 6.1.b</li><li>Wewnętrzne raporty operacyjne front desk — art. 6.1.f (ograniczony organizacyjny prawnie uzasadniony interes)</li></ul>',
+        retentionTitle: '4. Przechowywanie',
+        retentionBody:
+          '<p>Dane kontaktowe są przechowywane w systemie check-in maksymalnie <strong>24 godziny</strong>, następnie automatycznie usuwane (ograniczenie przechowywania). Upoważniony personel może otrzymać kopię operacyjną w raporcie dziennym.</p>',
+        recipientsTitle: '5. Odbiorcy',
+        recipientsBody:
+          '<p>Upoważniony personel hotelu. Brak sprzedaży lub przekazania platformom remarketingowym. Dostawcy techniczni (hosting, e-mail transakcyjny, WhatsApp Business) przetwarzają dane wyłącznie w celu świadczenia usługi, gdy są wyznaczeni jako podmioty przetwarzające.</p>',
+        securityTitle: '6. Bezpieczeństwo',
+        securityBody:
+          '<p>Transport HTTPS; kontakty (telefon, e-mail, imię) szyfrowane at rest (AES-256-GCM); dostęp do usług gościa tylko z tokenem po check-inie; zgoda na prywatność obowiązkowa i nie wstępnie zaznaczona.</p>',
+        rightsTitle: '7. Prawa osoby, której dane dotyczą',
+        rightsBody:
+          '<p>Dostęp, sprostowanie, usunięcie, ograniczenie, sprzeciw, skarga do organu nadzorczego. Aby skorzystać z praw: recepcja Hotel Canal lub e-mail powyżej.</p>',
+        backLink: '← Wróć do check-inu',
+      },
+      nl: {
+        docTitle: 'Privacyverklaring — Hotel Canal',
+        title: 'Privacyverklaring',
+        meta: 'Hotel Canal · Digitale check-in · AVG (EU 2016/679)',
+        controllerTitle: '1. Verwerkingsverantwoordelijke',
+        controllerBody:
+          '<p><strong>CANAL S.r.l.</strong><br>Hotel Canal — Santa Croce 553, 30135 Venezia (VE), Italy<br>P.IVA / C.F.: <strong>04711930273</strong><br>Contact: receptie ter plaatse · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a></p>',
+        dataTitle: '2. Verzamelde gegevens',
+        dataBody:
+          '<p>Voornaam, achternaam, e-mail, telefoonnummer, eventueel kamernummer, naam receptionist, aantal gasten, voorkeurstijd tafel, taal, tijdstempel privacytoestemming.</p>',
+        purposeTitle: '3. Doeleinden en rechtsgrond',
+        purposeBody:
+          '<ul><li>Digitale check-in en portiersdiensten (Wi‑Fi, toegang, instructies) — art. 6.1.b AVG</li><li>Partnercoupons en verblijfsgerelateerde communicatie — art. 6.1.a / 6.1.b</li><li>Interne operationele front-deskrapportering — art. 6.1.f (beperkt organisatorisch gerechtvaardigd belang)</li></ul>',
+        retentionTitle: '4. Bewaring',
+        retentionBody:
+          '<p>Contactgegevens worden maximaal <strong>24 uur</strong> bewaard in het check-insysteem en daarna automatisch verwijderd (bewaartermijnbeperking). Bevoegd personeel kan een operationele kopie ontvangen in het dagrapport.</p>',
+        recipientsTitle: '5. Ontvangers',
+        recipientsBody:
+          '<p>Bevoegd hotelpersoneel. Geen verkoop of doorgifte aan remarketingplatforms. Technische leveranciers (hosting, transactionele e-mail, WhatsApp Business) verwerken gegevens alleen om de dienst te leveren, waar zij als verwerker zijn aangesteld.</p>',
+        securityTitle: '6. Beveiliging',
+        securityBody:
+          '<p>HTTPS-transport; contacten (telefoon, e-mail, naam) versleuteld at rest (AES-256-GCM); toegang tot gastdiensten alleen met token na check-in; privacytoestemming verplicht en niet vooraf aangevinkt.</p>',
+        rightsTitle: '7. Rechten van de betrokkene',
+        rightsBody:
+          '<p>Inzage, rectificatie, wissing, beperking, bezwaar, klacht bij de toezichthouder. Om rechten uit te oefenen: receptie Hotel Canal of het e-mailadres hierboven.</p>',
+        backLink: '← Terug naar check-in',
+      },
+    };
+
+    function resolveLang() {
+      var params = new URLSearchParams(window.location.search);
+      var raw = (params.get('lang') || navigator.language || 'en').slice(0, 2).toLowerCase();
+      return PRIVACY_I18N[raw] ? raw : 'en';
+    }
+
+    function fillPrivacy(lang) {
+      var t = PRIVACY_I18N[lang] || PRIVACY_I18N.en;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.title = t.docTitle;
+      document.getElementById('privacyTitle').textContent = t.title;
+      document.getElementById('privacyMeta').textContent = t.meta;
+      document.getElementById('controllerTitle').textContent = t.controllerTitle;
+      document.getElementById('controllerBody').innerHTML = t.controllerBody;
+      document.getElementById('dataTitle').textContent = t.dataTitle;
+      document.getElementById('dataBody').innerHTML = t.dataBody;
+      document.getElementById('purposeTitle').textContent = t.purposeTitle;
+      document.getElementById('purposeBody').innerHTML = t.purposeBody;
+      document.getElementById('retentionTitle').textContent = t.retentionTitle;
+      document.getElementById('retentionBody').innerHTML = t.retentionBody;
+      document.getElementById('recipientsTitle').textContent = t.recipientsTitle;
+      document.getElementById('recipientsBody').innerHTML = t.recipientsBody;
+      document.getElementById('securityTitle').textContent = t.securityTitle;
+      document.getElementById('securityBody').innerHTML = t.securityBody;
+      document.getElementById('rightsTitle').textContent = t.rightsTitle;
+      document.getElementById('rightsBody').innerHTML = t.rightsBody;
+      var back = document.getElementById('backLink');
+      back.textContent = t.backLink;
+      back.href = '/';
+    }
+
+    fillPrivacy(resolveLang());
+  </script>
 </body>
 </html>

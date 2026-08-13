@@ -1,5 +1,10 @@
 /** Copy only - same layout/CSS. Fallback: en */
 
+import { resolveGuestLang, SUPPORTED_GUEST_LANGS } from './i18n-langs.js';
+import { WELCOME_I18N_EXTRA } from './welcome-i18n-extra.js';
+
+export { SUPPORTED_GUEST_LANGS, resolveGuestLang };
+
 export const WELCOME_I18N = {
   it: {
     subject: 'Benvenuto a Venezia',
@@ -524,16 +529,14 @@ export const WELCOME_I18N = {
       'Exención ticket acceso Venecia (huésped hotel): registre en https://cda.ve.it',
     textSignature: 'La Dirección - Hotel Canal Venecia',
   },
+  ...WELCOME_I18N_EXTRA,
 };
 
 export function resolveWelcomeLang(raw) {
-  const code = String(raw || '')
-    .trim()
-    .slice(0, 2)
-    .toLowerCase();
-  return WELCOME_I18N[code] ? code : 'en';
+  return resolveGuestLang(raw);
 }
 
 export function welcomeCopy(lang) {
-  return WELCOME_I18N[resolveWelcomeLang(lang)];
+  const code = resolveWelcomeLang(lang);
+  return WELCOME_I18N[code] || WELCOME_I18N.en;
 }

@@ -5412,6 +5412,7 @@
     </div>
   </div>
 
+  <script src="/i18n-ui-extra.js"></script>
   <script>
     const translations = {
       it: {
@@ -6273,6 +6274,36 @@
       },
     };
 
+    const SUPPORTED_LANGS = [
+      'it',
+      'en',
+      'fr',
+      'de',
+      'zh',
+      'ja',
+      'bn',
+      'ar',
+      'ru',
+      'pl',
+      'nl',
+      'es',
+    ];
+
+    (function mergeI18nExtras() {
+      const extra = window.I18N_UI_EXTRA || {};
+      const privacy = window.I18N_PRIVACY_PATCH || {};
+      const gaps = window.I18N_UI_GAP_FILL || {};
+      Object.assign(translations, extra);
+      for (const code of Object.keys(privacy)) {
+        if (!translations[code]) continue;
+        Object.assign(translations[code], privacy[code]);
+      }
+      for (const code of Object.keys(gaps)) {
+        if (!translations[code]) continue;
+        Object.assign(translations[code], gaps[code]);
+      }
+    })();
+
     const STORAGE_KEY = 'hotel_canal_registered';
     const SESSION_KEY = 'hotel_canal_guest_session';
     /** Lock dispositivo allineato alla retention GDPR (24h): poi il telefono può rifare check-in. */
@@ -6655,7 +6686,7 @@
       )
         .slice(0, 2)
         .toLowerCase();
-      return translations[nav] ? nav : 'en';
+      return SUPPORTED_LANGS.includes(nav) && translations[nav] ? nav : 'en';
     }
 
     let slideRevealTimer = 0;
@@ -7347,6 +7378,21 @@
       }
       const privacyTitle = document.getElementById('privacySheetTitle');
       if (privacyTitle) privacyTitle.textContent = dict.privacySheetTitle || 'Privacy notice';
+      const privacyBody = document.getElementById('privacySheetBody');
+      if (privacyBody && dict.privacyBodyHtml) {
+        const fullLabel = dict.privacyFullLink || 'Open full version';
+        privacyBody.innerHTML =
+          dict.privacyBodyHtml +
+          `<p><a href="/privacy.html?lang=${encodeURIComponent(currentLang)}" target="_blank" rel="noopener">${fullLabel}</a></p>`;
+      }
+      const privacyClose = document.getElementById('privacySheetClose');
+      if (privacyClose) {
+        privacyClose.setAttribute('aria-label', dict.privacyClose || 'Close');
+      }
+      const privacyCloseBg = document.getElementById('privacySheetCloseBg');
+      if (privacyCloseBg) {
+        privacyCloseBg.setAttribute('aria-label', dict.privacyClose || 'Close');
+      }
       const conciergeTitle = document.getElementById('lbl-concierge-title');
       if (conciergeTitle) {
         conciergeTitle.textContent = dict.conciergeTitle || 'Our gift for you';
@@ -8561,14 +8607,18 @@
       });
     }
 
-    // Init: lingua dal telefono (it/en/fr/de/es/zh/ja/ar), altrimenti inglese
-    // Override: ?lang=it|en|fr|de|es|zh|ja|ar · test: ?test=1 (sblocca device)
+    // Init: lingua dispositivo (SUPPORTED_LANGS), altrimenti inglese
+    // Override: ?lang=it|en|fr|de|zh|ja|bn|ar|ru|pl|nl|es · test: ?test=1
     const bootParams = new URLSearchParams(location.search);
     const bootLang = String(bootParams.get('lang') || '')
       .slice(0, 2)
       .toLowerCase();
     currentLang =
-      bootLang && translations[bootLang] ? bootLang : detectLanguage();
+      bootLang &&
+      SUPPORTED_LANGS.includes(bootLang) &&
+      translations[bootLang]
+        ? bootLang
+        : detectLanguage();
 
     if (isTestMode()) {
       clearRegistrationLock();
