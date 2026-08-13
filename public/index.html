@@ -43,11 +43,11 @@
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
-      /* FLIP engine: clock unico andata/ritorno — decelerazione Apple, zero bounce */
-      --slide-ease: cubic-bezier(0.23, 1, 0.32, 1);
-      --slide-ms: 450ms;
-      --height-ms: 450ms;
-      --height-ease: cubic-bezier(0.23, 1, 0.32, 1);
+      /* WAAPI engine: durata sotto soglia percettiva Apple + molla magnetica */
+      --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --slide-ms: 420ms;
+      --height-ms: 420ms;
+      --height-ease: cubic-bezier(0.16, 1, 0.3, 1);
       /* Rimbalzo elastico SOLO su transform:scale (GPU, zero reflow) */
       --bounce-ease: cubic-bezier(0.25, 1, 0.5, 1.2);
       --bounce-ms: 450ms;
@@ -569,21 +569,14 @@
       overflow: visible;
     }
 
-    /* Transizioni SOLO durante il ciclo FLIP — stesso clock andata/ritorno */
+    /* WAAPI possiede il morph — niente transition CSS su height/clip/transform */
     .slider-animating .slider-viewport,
-    .slider-viewport.slider-animating {
-      /* Solo clip-path: height resta fissa allo shell max durante il morph */
-      transition: clip-path var(--slide-ms) var(--slide-ease);
-    }
-
+    .slider-viewport.slider-animating,
     .slider-animating .slider-track,
-    .slider-animating > .slider-track {
-      transition: transform var(--slide-ms) var(--slide-ease);
-    }
-
+    .slider-animating > .slider-track,
     .slider-animating .slide-step.is-active,
     .slider-animating .slide-step.is-sliding {
-      transition: opacity 350ms ease-out;
+      transition: none !important;
     }
 
     .slide-step::-webkit-scrollbar {
@@ -1553,21 +1546,14 @@
       overflow: visible;
     }
 
-    /* Transizioni SOLO durante il ciclo FLIP — stesso clock andata/ritorno */
+    /* WAAPI possiede il morph — niente transition CSS su height/clip/transform */
     .slider-animating .slider-viewport,
-    .slider-viewport.slider-animating {
-      /* Solo clip-path: height resta fissa allo shell max durante il morph */
-      transition: clip-path var(--slide-ms) var(--slide-ease);
-    }
-
+    .slider-viewport.slider-animating,
     .slider-animating .slider-track,
-    .slider-animating > .slider-track {
-      transition: transform var(--slide-ms) var(--slide-ease);
-    }
-
+    .slider-animating > .slider-track,
     .slider-animating .slide-step.is-active,
     .slider-animating .slide-step.is-sliding {
-      transition: opacity 350ms ease-out;
+      transition: none !important;
     }
 
     .slide-step::-webkit-scrollbar {
@@ -6946,10 +6932,57 @@
     }
 
     /**
-     * FLIP su coordinate della matrice (andata = ritorno).
-     * Shell height = max(start,end); morph = solo clip-path GPU (foglio rigido, zero crush).
+     * Motore WAAPI + matrice geometrica.
+     * Quattro vettori GPU sincronizzati (track / height / clip / opacity+scale),
+     * settle su Animation.onfinish (niente setTimeout).
      */
     let flipFinishTimer = 0;
+    let activeFlipAnims = [];
+    let flipGeneration = 0;
+    const WAAPI_EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
+    const WAAPI_MS = 420;
+
+    function cancelActiveFlipAnims() {
+      activeFlipAnims.forEach((anim) => {
+        try {
+          anim.onfinish = null;
+          anim.cancel();
+        } catch (_) {
+          /* ignore */
+        }
+      });
+      activeFlipAnims = [];
+      clearTimeout(flipFinishTimer);
+      flipFinishTimer = 0;
+    }
+
+    function settleFlipDom({
+      viewport,
+      step,
+      endH,
+      toSlide,
+      currentStepEl,
+      nextStepEl,
+    }) {
+      viewport.classList.remove('slider-animating');
+      card?.classList.remove('slider-animating', 'is-step-locked');
+      viewport.style.clipPath = '';
+      viewport.style.webkitClipPath = '';
+      viewport.style.height = `${endH}px`;
+      applyTrack(toSlide);
+      if (currentStepEl) {
+        currentStepEl.style.opacity = '';
+        currentStepEl.style.transform = '';
+      }
+      if (nextStepEl) {
+        nextStepEl.style.opacity = '';
+        nextStepEl.style.transform = '';
+      }
+      markStepClasses(step, { slidingFrom: null });
+      stepBusy = false;
+      ensurePrimaryCtaVisible();
+    }
+
     function flipTransitionToStep(
       prev,
       step,
@@ -6966,102 +6999,175 @@
       }
 
       const isBackward = step < prev;
-      // Coordinate dalla matrice — zero misura mid-flight
       if (!geometryMap[prev] || !geometryMap[step]) {
         preCalculateGeometry({ applyCurrent: false });
       }
       const startH = mappedStepHeight(prev);
       const endH = mappedStepHeight(step);
-      const shellH = Math.max(startH, endH);
-      const startInset = Math.max(0, shellH - startH);
-      const endInset = Math.max(0, shellH - endH);
+      const fromSlide = -((prev - 1) * 100) / TOTAL_STEPS;
 
-      // Back: spegni tastiera + pulisci ghost + reset scroll (niente reflow sui testi)
-      if (isBackward) {
+      try {
+        document.activeElement?.blur?.();
+      } catch (_) {
+        /* ignore */
+      }
+      if (isBackward && currentStepEl) {
+        currentStepEl
+          .querySelectorAll('.is-invalid, .label-error-state, .has-error')
+          .forEach((el) => {
+            el.classList.remove('is-invalid', 'label-error-state', 'has-error');
+          });
+        currentStepEl.querySelectorAll('.step-scroll').forEach((sc) => {
+          try {
+            sc.scrollTop = 0;
+          } catch (_) {
+            /* ignore */
+          }
+        });
+      }
+
+      const canWaapi =
+        !reduceMotion &&
+        typeof viewport.animate === 'function' &&
+        typeof track.animate === 'function';
+
+      if (!canWaapi) {
+        applyViewportHeightPx(endH, { animate: false });
+        applyParallax(toParallax, toScale);
+        applyTrack(toSlide);
+        markStepClasses(step, { slidingFrom: null });
+        stepBusy = false;
+        ensurePrimaryCtaVisible();
+        return;
+      }
+
+      cancelActiveFlipAnims();
+      const gen = ++flipGeneration;
+      stepBusy = true;
+      card?.classList.add('is-step-locked', 'slider-animating');
+      viewport.classList.add('slider-animating');
+
+      viewport.style.transition = 'none';
+      track.style.transition = 'none';
+      viewport.style.height = `${startH}px`;
+      viewport.style.clipPath = isBackward
+        ? 'inset(0px 0px 0px 0px)'
+        : `inset(0px 0px ${Math.max(0, endH - startH)}px 0px)`;
+      if (currentStepEl) {
+        currentStepEl.style.opacity = '1';
+        currentStepEl.style.transform = 'translate3d(0,0,0) scale(1)';
+      }
+      if (nextStepEl) {
+        nextStepEl.style.opacity = '0';
+        nextStepEl.style.transform = 'translate3d(0,0,0) scale(1.02)';
+      }
+      applyTrack(fromSlide);
+      void viewport.offsetHeight;
+
+      const timing = {
+        duration: WAAPI_MS,
+        easing: WAAPI_EASING,
+        fill: 'forwards',
+      };
+
+      const trackAnim = track.animate(
+        [
+          { transform: `translate3d(${fromSlide}%, 0, 0)` },
+          { transform: `translate3d(${toSlide}%, 0, 0)` },
+        ],
+        timing,
+      );
+
+      const heightAnim = viewport.animate(
+        [{ height: `${startH}px` }, { height: `${endH}px` }],
+        timing,
+      );
+
+      const clipAnim = viewport.animate(
+        isBackward
+          ? [
+              { clipPath: 'inset(0px 0px 0px 0px)' },
+              {
+                clipPath: `inset(0px 0px ${Math.max(0, startH - endH)}px 0px)`,
+              },
+            ]
+          : [
+              {
+                clipPath: `inset(0px 0px ${Math.max(0, endH - startH)}px 0px)`,
+              },
+              { clipPath: 'inset(0px 0px 0px 0px)' },
+            ],
+        timing,
+      );
+
+      if (currentStepEl?.animate) {
+        activeFlipAnims.push(
+          currentStepEl.animate(
+            [
+              { opacity: 1, transform: 'translate3d(0,0,0) scale(1)' },
+              { opacity: 0, transform: 'translate3d(0,0,0) scale(0.97)' },
+            ],
+            {
+              duration: Math.round(WAAPI_MS * 0.55),
+              easing: 'ease-out',
+              fill: 'forwards',
+            },
+          ),
+        );
+      }
+      if (nextStepEl?.animate) {
+        activeFlipAnims.push(
+          nextStepEl.animate(
+            [
+              { opacity: 0, transform: 'translate3d(0,0,0) scale(1.02)' },
+              { opacity: 1, transform: 'translate3d(0,0,0) scale(1)' },
+            ],
+            timing,
+          ),
+        );
+      }
+
+      activeFlipAnims.push(trackAnim, heightAnim, clipAnim);
+      applyParallax(toParallax, toScale);
+
+      const finish = () => {
+        if (gen !== flipGeneration) return;
+        flipGeneration += 1; // invalidate duplicate finish
         try {
-          document.activeElement?.blur?.();
-        } catch (_) {
-          /* ignore */
-        }
-        if (currentStepEl) {
-          currentStepEl
-            .querySelectorAll('.is-invalid, .label-error-state, .has-error')
-            .forEach((el) => {
-              el.classList.remove('is-invalid', 'label-error-state', 'has-error');
-            });
-          currentStepEl.querySelectorAll('.step-scroll').forEach((sc) => {
+          activeFlipAnims.forEach((anim) => {
             try {
-              sc.scrollTop = 0;
+              anim.onfinish = null;
+              anim.commitStyles?.();
             } catch (_) {
               /* ignore */
             }
           });
-        }
-      } else {
-        try {
-          document.activeElement?.blur?.();
         } catch (_) {
           /* ignore */
         }
-      }
+        const anims = activeFlipAnims;
+        activeFlipAnims = [];
+        clearTimeout(flipFinishTimer);
+        flipFinishTimer = 0;
+        anims.forEach((anim) => {
+          try {
+            anim.cancel();
+          } catch (_) {
+            /* ignore */
+          }
+        });
+        settleFlipDom({
+          viewport,
+          step,
+          endH,
+          toSlide,
+          currentStepEl,
+          nextStepEl,
+        });
+      };
 
-      // INVERT — shell fisso, clip alla maschera dello step di partenza
-      viewport.classList.remove('slider-animating');
-      card?.classList.remove('slider-animating');
-      viewport.style.transition = 'none';
-      track.style.transition = 'none';
-      if (currentStepEl) {
-        currentStepEl.style.transition = 'none';
-        currentStepEl.style.opacity = '1';
-      }
-      if (nextStepEl) {
-        nextStepEl.style.transition = 'none';
-        nextStepEl.style.opacity = '0.001';
-      }
-      viewport.style.height = `${shellH}px`;
-      const invClip = `inset(0px 0px ${startInset}px 0px)`;
-      viewport.style.clipPath = invClip;
-      viewport.style.webkitClipPath = invClip;
-      void viewport.offsetHeight;
-
-      // PLAY — stesso clock: clip → maschera arrivo + translate + opacity
-      stepBusy = true;
-      card?.classList.add('is-step-locked', 'slider-animating');
-      viewport.classList.add('slider-animating');
-      viewport.style.transition = '';
-      track.style.transition = '';
-      const playClip = `inset(0px 0px ${endInset}px 0px)`;
-      viewport.style.clipPath = playClip;
-      viewport.style.webkitClipPath = playClip;
-      if (currentStepEl) currentStepEl.style.opacity = '0';
-      if (nextStepEl) nextStepEl.style.opacity = '1';
-      applyParallax(toParallax, toScale);
-      applyTrack(toSlide);
-
-      clearTimeout(flipFinishTimer);
-      flipFinishTimer = setTimeout(() => {
-        viewport.classList.remove('slider-animating');
-        card?.classList.remove('slider-animating', 'is-step-locked');
-        viewport.style.transition = 'none';
-        track.style.transition = 'none';
-        viewport.style.clipPath = '';
-        viewport.style.webkitClipPath = '';
-        viewport.style.height = `${endH}px`;
-        void viewport.offsetHeight;
-        viewport.style.transition = '';
-        track.style.transition = '';
-        if (currentStepEl) {
-          currentStepEl.style.opacity = '';
-          currentStepEl.style.transition = '';
-        }
-        if (nextStepEl) {
-          nextStepEl.style.opacity = '';
-          nextStepEl.style.transition = '';
-        }
-        markStepClasses(step, { slidingFrom: null });
-        stepBusy = false;
-        ensurePrimaryCtaVisible();
-      }, SLIDE_MS + 16);
+      trackAnim.onfinish = finish;
+      flipFinishTimer = setTimeout(finish, WAAPI_MS + 80);
     }
 
     /**
@@ -7213,7 +7319,7 @@
       clearTimeout(ambientUnlockTimer);
       ambientUnlockTimer = setTimeout(
         () => freezeAmbient(false),
-        reduceMotion || hardCut ? 0 : SLIDE_MS + 40,
+        reduceMotion || hardCut ? 0 : WAAPI_MS + 40,
       );
 
       // Niente soft-settle post-slide: l'altezza target è già misurata a freddo nel FLIP
