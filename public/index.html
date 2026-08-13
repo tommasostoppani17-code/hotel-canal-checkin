@@ -43,12 +43,12 @@
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
-      /* iOS-like continuous: decelerazione lunga — altezza SENZA overshoot (evita tremore card) */
-      --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --slide-ms: 560ms;
-      /* Altezza viewport: fluida ma geometrica (mai cubic con bounce > 1) */
-      --height-ms: 560ms;
-      --height-ease: cubic-bezier(0.32, 0.72, 0, 1);
+      /* FLIP engine: stesso clock per slide + clip-path (GPU only) */
+      --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --slide-ms: 500ms;
+      /* Legacy alias — non animare più height, solo clip-path */
+      --height-ms: 500ms;
+      --height-ease: cubic-bezier(0.16, 1, 0.3, 1);
       /* Rimbalzo elastico SOLO su transform:scale (GPU, zero reflow) */
       --bounce-ease: cubic-bezier(0.25, 1, 0.5, 1.2);
       --bounce-ms: 450ms;
@@ -493,7 +493,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Viewport: altezza biologica dello step attivo (JS). Card resta height:auto. */
+    /* Viewport: altezza statica (JS). Morph = clip-path GPU, zero reflow height. */
     .slider-viewport {
       width: 100%;
       flex: 0 0 auto;
@@ -501,9 +501,10 @@
       height: auto;
       overflow: hidden;
       position: relative;
-      /* Height morph: GPU layer, curva SENZA overshoot (niente page-tremble) */
-      will-change: height;
-      transition: height var(--height-ms) var(--height-ease);
+      will-change: clip-path;
+      transition: clip-path var(--slide-ms) var(--slide-ease);
+      -webkit-clip-path: inset(0 0 0 0);
+      clip-path: inset(0 0 0 0);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       backface-visibility: hidden;
@@ -515,7 +516,7 @@
       align-items: flex-start;
       width: 400%;
       height: auto;
-      min-height: 100%;
+      min-height: 0;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
       transition: transform var(--slide-ms) var(--slide-ease);
@@ -529,8 +530,8 @@
     }
 
     /*
-     * Step a altezza naturale (niente height:100% che schiaccia i flex).
-     * Se il viewport è clampato, .is-active riempie e scrolla il body interno.
+     * Step a altezza nativa statica — mai height:100% del viewport
+     * (evita reflow del testo mentre il clip-path morphing gira).
      */
     .slide-step {
       flex: 0 0 25%;
@@ -561,10 +562,9 @@
 
     .slide-step.is-active,
     .slide-step.is-sliding {
-      /* Quando il viewport ha altezza fissa, riempi senza comprimere i CTA */
-      height: 100%;
-      max-height: 100%;
-      overflow: hidden;
+      height: auto;
+      max-height: none;
+      overflow: visible;
     }
 
     .slide-step::-webkit-scrollbar {
@@ -1457,7 +1457,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Viewport: altezza biologica dello step attivo (JS). Card resta height:auto. */
+    /* Viewport: altezza statica (JS). Morph = clip-path GPU, zero reflow height. */
     .slider-viewport {
       width: 100%;
       flex: 0 0 auto;
@@ -1465,9 +1465,10 @@
       height: auto;
       overflow: hidden;
       position: relative;
-      /* Height morph: GPU layer, curva SENZA overshoot (niente page-tremble) */
-      will-change: height;
-      transition: height var(--height-ms) var(--height-ease);
+      will-change: clip-path;
+      transition: clip-path var(--slide-ms) var(--slide-ease);
+      -webkit-clip-path: inset(0 0 0 0);
+      clip-path: inset(0 0 0 0);
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       backface-visibility: hidden;
@@ -1479,7 +1480,7 @@
       align-items: flex-start;
       width: 400%;
       height: auto;
-      min-height: 100%;
+      min-height: 0;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
       transition: transform var(--slide-ms) var(--slide-ease);
@@ -1493,8 +1494,8 @@
     }
 
     /*
-     * Step a altezza naturale (niente height:100% che schiaccia i flex).
-     * Se il viewport è clampato, .is-active riempie e scrolla il body interno.
+     * Step a altezza nativa statica — mai height:100% del viewport
+     * (evita reflow del testo mentre il clip-path morphing gira).
      */
     .slide-step {
       flex: 0 0 25%;
@@ -1525,10 +1526,9 @@
 
     .slide-step.is-active,
     .slide-step.is-sliding {
-      /* Quando il viewport ha altezza fissa, riempi senza comprimere i CTA */
-      height: 100%;
-      max-height: 100%;
-      overflow: hidden;
+      height: auto;
+      max-height: none;
+      overflow: visible;
     }
 
     .slide-step::-webkit-scrollbar {
@@ -6844,16 +6844,97 @@
         Math.max(Math.round(h), 280),
         availableViewportMax(),
       );
-      if (!animate || reduceMotion) {
-        const prev = viewport.style.transition;
-        viewport.style.transition = 'none';
-        viewport.style.height = `${clamped}px`;
-        void viewport.offsetHeight;
-        viewport.style.transition = prev || '';
+      // Altezza = layout statico; mai transition su height (FLIP usa solo clip-path)
+      viewport.style.transition = 'none';
+      viewport.style.clipPath = '';
+      viewport.style.webkitClipPath = '';
+      viewport.style.height = `${clamped}px`;
+      void viewport.offsetHeight;
+      viewport.style.transition = '';
+    }
+
+    /**
+     * FLIP molecolare: First/Last misura → Invert clip-path → Play (slide+clip stesso clock).
+     * Zero height-transition, zero double-settle, zero scale bounce sulla card.
+     */
+    let flipFinishTimer = 0;
+    function flipTransitionToStep(
+      prev,
+      step,
+      { toSlide, toParallax, toScale } = {},
+    ) {
+      const viewport = document.getElementById('sliderViewport');
+      if (!viewport || !track) {
+        syncViewportHeight(step, { animate: false });
+        applyParallax(toParallax, toScale);
+        applyTrack(toSlide);
         return;
       }
-      if (viewport.style.transition === 'none') viewport.style.transition = '';
-      viewport.style.height = `${clamped}px`;
+
+      const maxH = availableViewportMax();
+      const leavingRaw = Math.round(viewport.getBoundingClientRect().height);
+      const currentH = Math.min(
+        Math.max(
+          leavingRaw >= 200
+            ? leavingRaw
+            : computeCardHeightPx(prev, { preferCache: true }),
+          280,
+        ),
+        maxH,
+      );
+      let nextH = computeCardHeightPx(step, { preferCache: false });
+      if (!Number.isFinite(nextH)) nextH = currentH;
+      nextH = Math.min(Math.max(Math.round(nextH), 280), maxH);
+      stepHeightCache[prev] = currentH;
+      stepHeightCache[step] = nextH;
+
+      const grow = nextH >= currentH;
+      const delta = Math.abs(nextH - currentH);
+      const shellH = Math.max(currentH, nextH);
+      const duration = SLIDE_MS;
+      const easing =
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--slide-ease')
+          .trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
+
+      // INVERT
+      viewport.style.transition = 'none';
+      track.style.transition = 'none';
+      viewport.style.height = `${shellH}px`;
+      const invertClip = grow
+        ? `inset(0px 0px ${delta}px 0px)`
+        : 'inset(0px 0px 0px 0px)';
+      viewport.style.clipPath = invertClip;
+      viewport.style.webkitClipPath = invertClip;
+      void viewport.offsetHeight;
+
+      // PLAY — stesso clock
+      stepBusy = true;
+      card?.classList.add('is-step-locked');
+      viewport.style.transition = `clip-path ${duration}ms ${easing}`;
+      track.style.transition = `transform ${duration}ms ${easing}`;
+      const playClip = grow
+        ? 'inset(0px 0px 0px 0px)'
+        : `inset(0px 0px ${delta}px 0px)`;
+      viewport.style.clipPath = playClip;
+      viewport.style.webkitClipPath = playClip;
+      applyParallax(toParallax, toScale);
+      applyTrack(toSlide);
+
+      clearTimeout(flipFinishTimer);
+      flipFinishTimer = setTimeout(() => {
+        viewport.style.transition = 'none';
+        viewport.style.clipPath = '';
+        viewport.style.webkitClipPath = '';
+        viewport.style.height = `${nextH}px`;
+        void viewport.offsetHeight;
+        viewport.style.transition = '';
+        if (track) track.style.transition = '';
+        card?.classList.remove('is-step-locked');
+        markStepClasses(step, { slidingFrom: null });
+        stepBusy = false;
+        ensurePrimaryCtaVisible();
+      }, duration + 20);
     }
 
     /**
@@ -6884,7 +6965,7 @@
       const h = Math.min(Math.max(natural, 280), maxH);
       stepHeightCache[step] = h;
       if (step === 1) measuredStep1Height = h;
-      applyViewportHeightPx(h, { animate });
+      applyViewportHeightPx(h, { animate: false });
     }
 
     function computeCardHeightPx(step, { preferCache = true } = {}) {
@@ -6971,117 +7052,46 @@
       // Successo: taglio netto (niente overlap form + Registered)
       const hardCut = instant || step === TOTAL_STEPS || prev === TOTAL_STEPS;
       const sliding = !hardCut && prev !== step && !reduceMotion;
-      // Settle entra dalla direzione opposta allo slide
-      const settleX = step > prev ? '12px' : step < prev ? '-12px' : '0px';
-      document.documentElement.style.setProperty('--settle-x', settleX);
       markStepClasses(step, { slidingFrom: sliding ? prev : null });
 
       const toSlide = -((step - 1) * 100) / TOTAL_STEPS;
       const toParallax = ((step - 1) * 100) / 22;
       const toScale = 1.05 + (step - 1) * 0.012;
 
-      if ((reduceMotion || hardCut) && track) {
-        track.style.transition = 'none';
-      } else if (track) {
-        track.style.transition = '';
-      }
-
       freezeAmbient(true);
 
-      // Bounce elastico sulla card (scale) — altezza gestita a parte senza overshoot
+      // Guscio card rigido: niente scale bounce X/Y durante lo slide (solo clip+translate)
       clearTimeout(stepBounceTimer);
-      if (sliding && card && !reduceMotion) {
-        stepBusy = true;
-        card.classList.add('is-step-locked', 'is-step-exit');
-        card.classList.remove('is-step-enter', 'is-rubber', 'is-entering');
-        stepBounceTimer = setTimeout(() => {
-          card.classList.remove('is-step-exit');
-          void card.offsetWidth;
-          card.classList.add('is-step-enter');
-          stepBounceTimer = setTimeout(() => {
-            card.classList.remove('is-step-enter', 'is-step-locked');
-            stepBusy = false;
-          }, 450);
-        }, 150);
-      } else {
-        card?.classList.remove(
-          'is-step-exit',
-          'is-step-enter',
-          'is-step-locked',
-        );
+      card?.classList.remove(
+        'is-step-exit',
+        'is-step-enter',
+        'is-step-locked',
+        'is-rubber',
+      );
+
+      if (hardCut || !sliding) {
         stepBusy = false;
-      }
-
-      const runMotion = () => {
-        const viewport = document.getElementById('sliderViewport');
-        if (hardCut) {
-          syncViewportHeight(step, { animate: false });
-          applyParallax(toParallax, toScale);
-          applyTrack(toSlide);
-          requestAnimationFrame(() => ensurePrimaryCtaVisible());
-          return;
+        if (track) {
+          track.style.transition = hardCut || reduceMotion ? 'none' : '';
         }
-
-        if (sliding && viewport) {
-          const leavingH = Math.round(viewport.getBoundingClientRect().height);
-          if (leavingH >= 200) stepHeightCache[prev] = leavingH;
-
-          // Misura fresca dello step target (cache stale = scatto)
-          let nextH = computeCardHeightPx(step, { preferCache: false });
-          if (!Number.isFinite(nextH)) nextH = leavingH || 420;
-          nextH = Math.min(Math.round(nextH), availableViewportMax());
-          stepHeightCache[step] = nextH;
-
-          // Partenza esplicita dall’altezza corrente → morph continuo (no bounce)
-          applyViewportHeightPx(leavingH || nextH, { animate: false });
-          requestAnimationFrame(() => {
-            applyViewportHeightPx(nextH, { animate: true });
-            applyParallax(toParallax, toScale);
-            applyTrack(toSlide);
-            requestAnimationFrame(() => ensurePrimaryCtaVisible());
-          });
-          return;
-        }
-
-        syncViewportHeight(step, { animate: true });
+        syncViewportHeight(step, { animate: false });
         applyParallax(toParallax, toScale);
         applyTrack(toSlide);
         requestAnimationFrame(() => ensurePrimaryCtaVisible());
-      };
-
-      if (sliding && !reduceMotion) {
-        // Double-rAF: parte dall’altezza corrente già paintata, poi anima
-        requestAnimationFrame(() => {
-          requestAnimationFrame(runMotion);
-        });
+        markStepClasses(step, { slidingFrom: null });
       } else {
-        runMotion();
+        flipTransitionToStep(prev, step, { toSlide, toParallax, toScale });
       }
 
       clearTimeout(ambientUnlockTimer);
       ambientUnlockTimer = setTimeout(
         () => freezeAmbient(false),
-        reduceMotion || hardCut ? 0 : Math.max(SLIDE_MS, HEIGHT_MS) + 80,
+        reduceMotion || hardCut ? 0 : SLIDE_MS + 40,
       );
 
+      // Niente soft-settle post-slide: l'altezza target è già misurata a freddo nel FLIP
       clearTimeout(slideRevealTimer);
-      slideRevealTimer = setTimeout(() => {
-        markStepClasses(step, { slidingFrom: null });
-        if (track) track.style.transition = '';
-        card?.classList.remove('is-height-shrink');
-        // Soft settle: solo se scarto reale (≥10px) — evita secondo morph tremolante
-        const settled = computeCardHeightPx(step, { preferCache: false });
-        const viewport = document.getElementById('sliderViewport');
-        if (Number.isFinite(settled) && viewport) {
-          stepHeightCache[step] = settled;
-          const cur = Math.round(viewport.getBoundingClientRect().height);
-          if (Math.abs(cur - settled) >= 10) {
-            applyViewportHeightPx(settled, { animate: !reduceMotion });
-          }
-        }
-        ensurePrimaryCtaVisible();
-        if (!sliding) stepBusy = false;
-      }, reduceMotion || hardCut ? 0 : Math.max(SLIDE_MS, HEIGHT_MS) + 48);
+      slideRevealTimer = 0;
     }
 
     /**
