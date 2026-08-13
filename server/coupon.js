@@ -19,7 +19,7 @@ import {
   emailDisplayStyle,
   emailEyebrowStyle,
 } from './email-type.js';
-import { isBlockedRecipient, assertSendableRecipient, sendableRecipientOrEmpty } from './recipient-guard.js';
+import { assertSendableRecipient, sendableRecipientOrEmpty } from './recipient-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
