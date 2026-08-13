@@ -43,12 +43,11 @@
       --radius-ios: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
-      /* FLIP engine: stesso clock per slide + clip-path (GPU only) */
-      --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --slide-ms: 500ms;
-      /* Legacy alias — non animare più height, solo clip-path */
-      --height-ms: 500ms;
-      --height-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      /* FLIP engine: clock unico andata/ritorno — decelerazione Apple, zero bounce */
+      --slide-ease: cubic-bezier(0.23, 1, 0.32, 1);
+      --slide-ms: 450ms;
+      --height-ms: 450ms;
+      --height-ease: cubic-bezier(0.23, 1, 0.32, 1);
       /* Rimbalzo elastico SOLO su transform:scale (GPU, zero reflow) */
       --bounce-ease: cubic-bezier(0.25, 1, 0.5, 1.2);
       --bounce-ms: 450ms;
@@ -493,7 +492,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Viewport: altezza statica (JS). Morph = clip-path GPU, zero reflow height. */
+    /* Viewport: contain isola il layout; morph solo sotto .slider-animating */
     .slider-viewport {
       width: 100%;
       flex: 0 0 auto;
@@ -501,8 +500,9 @@
       height: auto;
       overflow: hidden;
       position: relative;
-      will-change: clip-path;
-      transition: clip-path var(--slide-ms) var(--slide-ease);
+      contain: paint layout size;
+      will-change: clip-path, height;
+      transition: none;
       -webkit-clip-path: inset(0 0 0 0);
       clip-path: inset(0 0 0 0);
       -webkit-transform: translateZ(0);
@@ -519,7 +519,7 @@
       min-height: 0;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      transition: transform var(--slide-ms) var(--slide-ease);
+      transition: none;
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -530,8 +530,8 @@
     }
 
     /*
-     * Step a altezza nativa statica — mai height:100% del viewport
-     * (evita reflow del testo mentre il clip-path morphing gira).
+     * Step a altezza nativa statica — contain:layout isola input/validazioni
+     * dello step uscente dal reflow dello step entrante.
      */
     .slide-step {
       flex: 0 0 25%;
@@ -549,7 +549,8 @@
       padding: 0 var(--ios-inset);
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      will-change: transform;
+      contain: layout;
+      will-change: transform, opacity;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
@@ -558,6 +559,7 @@
       pointer-events: none;
       opacity: 1;
       visibility: hidden;
+      transition: none;
     }
 
     .slide-step.is-active,
@@ -565,6 +567,24 @@
       height: auto;
       max-height: none;
       overflow: visible;
+    }
+
+    /* Transizioni SOLO durante il ciclo FLIP — stesso clock andata/ritorno */
+    .slider-animating .slider-viewport,
+    .slider-viewport.slider-animating {
+      transition:
+        clip-path var(--slide-ms) var(--slide-ease),
+        height var(--slide-ms) var(--slide-ease);
+    }
+
+    .slider-animating .slider-track,
+    .slider-animating > .slider-track {
+      transition: transform var(--slide-ms) var(--slide-ease);
+    }
+
+    .slider-animating .slide-step.is-active,
+    .slider-animating .slide-step.is-sliding {
+      transition: opacity 350ms ease-out;
     }
 
     .slide-step::-webkit-scrollbar {
@@ -1457,7 +1477,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Viewport: altezza statica (JS). Morph = clip-path GPU, zero reflow height. */
+    /* Viewport: contain isola il layout; morph solo sotto .slider-animating */
     .slider-viewport {
       width: 100%;
       flex: 0 0 auto;
@@ -1465,8 +1485,9 @@
       height: auto;
       overflow: hidden;
       position: relative;
-      will-change: clip-path;
-      transition: clip-path var(--slide-ms) var(--slide-ease);
+      contain: paint layout size;
+      will-change: clip-path, height;
+      transition: none;
       -webkit-clip-path: inset(0 0 0 0);
       clip-path: inset(0 0 0 0);
       -webkit-transform: translateZ(0);
@@ -1483,7 +1504,7 @@
       min-height: 0;
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      transition: transform var(--slide-ms) var(--slide-ease);
+      transition: none;
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -1494,8 +1515,8 @@
     }
 
     /*
-     * Step a altezza nativa statica — mai height:100% del viewport
-     * (evita reflow del testo mentre il clip-path morphing gira).
+     * Step a altezza nativa statica — contain:layout isola input/validazioni
+     * dello step uscente dal reflow dello step entrante.
      */
     .slide-step {
       flex: 0 0 25%;
@@ -1513,7 +1534,8 @@
       padding: 0 var(--ios-inset);
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
-      will-change: transform;
+      contain: layout;
+      will-change: transform, opacity;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
@@ -1522,6 +1544,7 @@
       pointer-events: none;
       opacity: 1;
       visibility: hidden;
+      transition: none;
     }
 
     .slide-step.is-active,
@@ -1529,6 +1552,24 @@
       height: auto;
       max-height: none;
       overflow: visible;
+    }
+
+    /* Transizioni SOLO durante il ciclo FLIP — stesso clock andata/ritorno */
+    .slider-animating .slider-viewport,
+    .slider-viewport.slider-animating {
+      transition:
+        clip-path var(--slide-ms) var(--slide-ease),
+        height var(--slide-ms) var(--slide-ease);
+    }
+
+    .slider-animating .slider-track,
+    .slider-animating > .slider-track {
+      transition: transform var(--slide-ms) var(--slide-ease);
+    }
+
+    .slider-animating .slide-step.is-active,
+    .slider-animating .slide-step.is-sliding {
+      transition: opacity 350ms ease-out;
     }
 
     .slide-step::-webkit-scrollbar {
@@ -6854,8 +6895,10 @@
     }
 
     /**
-     * FLIP molecolare: First/Last misura → Invert clip-path → Play (slide+clip stesso clock).
-     * Zero height-transition, zero double-settle, zero scale bounce sulla card.
+     * FLIP unificato andata/ritorno (stesso clock).
+     * Forward: pre-allunga height + clip-path che si apre.
+     * Backward: height che si stringe + opacity fade sullo step uscente
+     * (niente testo schiacciato, blur tastiera, reset scroll).
      */
     let flipFinishTimer = 0;
     function flipTransitionToStep(
@@ -6864,6 +6907,8 @@
       { toSlide, toParallax, toScale } = {},
     ) {
       const viewport = document.getElementById('sliderViewport');
+      const currentStepEl = document.getElementById(`step${prev}`);
+      const nextStepEl = document.getElementById(`step${step}`);
       if (!viewport || !track) {
         syncViewportHeight(step, { animate: false });
         applyParallax(toParallax, toScale);
@@ -6871,6 +6916,7 @@
         return;
       }
 
+      const isBackward = step < prev;
       const maxH = availableViewportMax();
       const leavingRaw = Math.round(viewport.getBoundingClientRect().height);
       const currentH = Math.min(
@@ -6887,54 +6933,106 @@
       nextH = Math.min(Math.max(Math.round(nextH), 280), maxH);
       stepHeightCache[prev] = currentH;
       stepHeightCache[step] = nextH;
+      const deltaGrow = Math.max(0, nextH - currentH);
 
-      const grow = nextH >= currentH;
-      const delta = Math.abs(nextH - currentH);
-      const shellH = Math.max(currentH, nextH);
-      const duration = SLIDE_MS;
-      const easing =
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--slide-ease')
-          .trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
+      // Back: spegni tastiera + pulisci ghost di validazione + reset scroll
+      if (isBackward) {
+        try {
+          document.activeElement?.blur?.();
+        } catch (_) {
+          /* ignore */
+        }
+        if (currentStepEl) {
+          currentStepEl
+            .querySelectorAll('.is-invalid, .label-error-state, .has-error')
+            .forEach((el) => {
+              el.classList.remove('is-invalid', 'label-error-state', 'has-error');
+            });
+          currentStepEl.querySelectorAll('.step-scroll').forEach((sc) => {
+            try {
+              sc.scrollTop = 0;
+            } catch (_) {
+              /* ignore */
+            }
+          });
+        }
+      }
 
-      // INVERT
+      // INVERT — zero transition
+      viewport.classList.remove('slider-animating');
+      card?.classList.remove('slider-animating');
       viewport.style.transition = 'none';
       track.style.transition = 'none';
-      viewport.style.height = `${shellH}px`;
-      const invertClip = grow
-        ? `inset(0px 0px ${delta}px 0px)`
-        : 'inset(0px 0px 0px 0px)';
-      viewport.style.clipPath = invertClip;
-      viewport.style.webkitClipPath = invertClip;
+      if (currentStepEl) {
+        currentStepEl.style.transition = 'none';
+        currentStepEl.style.opacity = '1';
+      }
+      if (nextStepEl) {
+        nextStepEl.style.transition = 'none';
+        nextStepEl.style.opacity = isBackward ? '0.001' : '1';
+      }
+
+      if (isBackward) {
+        // Da lungo → corto: height ancora currentH, clip aperto
+        viewport.style.height = `${currentH}px`;
+        viewport.style.clipPath = 'inset(0px 0px 0px 0px)';
+        viewport.style.webkitClipPath = 'inset(0px 0px 0px 0px)';
+      } else {
+        // Da corto → lungo: pre-allunga, croppa il delta
+        viewport.style.height = `${nextH}px`;
+        const inv = `inset(0px 0px ${deltaGrow}px 0px)`;
+        viewport.style.clipPath = inv;
+        viewport.style.webkitClipPath = inv;
+      }
       void viewport.offsetHeight;
 
-      // PLAY — stesso clock
+      // PLAY — classe .slider-animating = unico clock CSS
       stepBusy = true;
-      card?.classList.add('is-step-locked');
-      viewport.style.transition = `clip-path ${duration}ms ${easing}`;
-      track.style.transition = `transform ${duration}ms ${easing}`;
-      const playClip = grow
-        ? 'inset(0px 0px 0px 0px)'
-        : `inset(0px 0px ${delta}px 0px)`;
-      viewport.style.clipPath = playClip;
-      viewport.style.webkitClipPath = playClip;
+      card?.classList.add('is-step-locked', 'slider-animating');
+      viewport.classList.add('slider-animating');
+      viewport.style.transition = '';
+      track.style.transition = '';
+
+      if (isBackward) {
+        viewport.style.height = `${nextH}px`;
+        viewport.style.clipPath = 'inset(0px 0px 0px 0px)';
+        viewport.style.webkitClipPath = 'inset(0px 0px 0px 0px)';
+        if (currentStepEl) currentStepEl.style.opacity = '0';
+        if (nextStepEl) nextStepEl.style.opacity = '1';
+      } else {
+        viewport.style.clipPath = 'inset(0px 0px 0px 0px)';
+        viewport.style.webkitClipPath = 'inset(0px 0px 0px 0px)';
+        if (currentStepEl) currentStepEl.style.opacity = '0';
+        if (nextStepEl) nextStepEl.style.opacity = '1';
+      }
+
       applyParallax(toParallax, toScale);
       applyTrack(toSlide);
 
       clearTimeout(flipFinishTimer);
       flipFinishTimer = setTimeout(() => {
+        viewport.classList.remove('slider-animating');
+        card?.classList.remove('slider-animating', 'is-step-locked');
         viewport.style.transition = 'none';
+        track.style.transition = 'none';
         viewport.style.clipPath = '';
         viewport.style.webkitClipPath = '';
         viewport.style.height = `${nextH}px`;
         void viewport.offsetHeight;
         viewport.style.transition = '';
-        if (track) track.style.transition = '';
-        card?.classList.remove('is-step-locked');
+        track.style.transition = '';
+        if (currentStepEl) {
+          currentStepEl.style.opacity = '';
+          currentStepEl.style.transition = '';
+        }
+        if (nextStepEl) {
+          nextStepEl.style.opacity = '';
+          nextStepEl.style.transition = '';
+        }
         markStepClasses(step, { slidingFrom: null });
         stepBusy = false;
         ensurePrimaryCtaVisible();
-      }, duration + 20);
+      }, SLIDE_MS + 16);
     }
 
     /**
