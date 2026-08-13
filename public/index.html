@@ -391,6 +391,24 @@
       }
     }
 
+    /* iPhone SE / schermi corti: respiro CTA + clamp viewport (no ghigliottina Continua) */
+    @media (max-width: 480px) and (max-height: 680px) {
+      .apple-card {
+        padding: 12px 0 10px;
+        max-height: var(--card-max);
+      }
+
+      #sliderViewport {
+        max-height: calc(var(--app-vh) - 72px);
+      }
+
+      #btnNext,
+      #btnDiningNext,
+      #btnSubmit {
+        flex-shrink: 0;
+      }
+    }
+
     /* Specchio di luce sul vetro (desktop) — niente preserve-3d / tilt */
     .card-sheen {
       position: absolute;
@@ -6878,13 +6896,21 @@
       viewport.style.transition = '';
     }
 
-    /** Matrice delle proporzioni: altezze fisse misurate a freddo (no DOM mid-flight). */
+    /** Matrice live (375×667): seed antifallo + misura a freddo. */
+    const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 568, 4: 292 };
     const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+    function isCompactPhoneViewport() {
+      return window.matchMedia('(max-width: 480px) and (max-height: 680px)')
+        .matches;
+    }
 
     function mappedStepHeight(step) {
       const maxH = availableViewportMax();
       const mapped = Number(geometryMap[step]) || 0;
       if (mapped >= 200) return Math.min(Math.max(mapped, 280), maxH);
+      const seed = Number(GEOMETRY_SEED[step]) || 0;
+      if (seed >= 200) return Math.min(Math.max(seed, 280), maxH);
       const cached = Number(stepHeightCache[step]) || 0;
       if (cached >= 200) return Math.min(Math.max(cached, 280), maxH);
       let natural = measureStepContentHeight(step);
@@ -6893,17 +6919,22 @@
     }
 
     /**
-     * Pre-calcolo Cupertino: mappa geometrica di TUTTI gli step all'avvio
-     * (e su invalidate: resize / font / lingua / errori / immagini).
+     * Pre-calcolo: su iPhone SE usa seed live come pavimento,
+     * poi alza se il contenuto reale (CTA) richiede più pixel.
      */
     function preCalculateGeometry({ applyCurrent = true } = {}) {
       const maxH = availableViewportMax();
+      const compact = isCompactPhoneViewport();
       for (let i = 1; i <= TOTAL_STEPS; i++) {
         let natural = measureStepContentHeight(i);
         if (!Number.isFinite(natural) || natural < 200) {
-          natural = stepHeightCache[i] >= 200 ? stepHeightCache[i] : 420;
+          natural = stepHeightCache[i] >= 200 ? stepHeightCache[i] : 0;
         }
-        const h = Math.min(Math.max(Math.round(natural), 280), maxH);
+        const seed = Number(GEOMETRY_SEED[i]) || 0;
+        const base = compact
+          ? Math.max(seed, natural || 0)
+          : natural || seed || 420;
+        const h = Math.min(Math.max(Math.round(base), 280), maxH);
         geometryMap[i] = h;
         stepHeightCache[i] = h;
         if (i === 1) measuredStep1Height = h;
@@ -7049,17 +7080,23 @@
 
       viewport.style.transition = 'none';
       track.style.transition = 'none';
+      // BACKWARD PROTOCOL: maschera sempre aperta — non ghigliottinare i CTA
+      if (isBackward) {
+        viewport.style.clipPath = 'inset(0px 0px 0px 0px)';
+        viewport.style.webkitClipPath = 'inset(0px 0px 0px 0px)';
+      }
       viewport.style.height = `${startH}px`;
-      viewport.style.clipPath = isBackward
-        ? 'inset(0px 0px 0px 0px)'
-        : `inset(0px 0px ${Math.max(0, endH - startH)}px 0px)`;
+      if (!isBackward) {
+        viewport.style.clipPath = `inset(0px 0px ${Math.max(0, endH - startH)}px 0px)`;
+        viewport.style.webkitClipPath = `inset(0px 0px ${Math.max(0, endH - startH)}px 0px)`;
+      }
       if (currentStepEl) {
         currentStepEl.style.opacity = '1';
         currentStepEl.style.transform = 'translate3d(0,0,0) scale(1)';
       }
       if (nextStepEl) {
         nextStepEl.style.opacity = '0';
-        nextStepEl.style.transform = 'translate3d(0,0,0) scale(1.02)';
+        nextStepEl.style.transform = 'translate3d(0,0,0) scale(1.018)';
       }
       applyTrack(fromSlide);
       void viewport.offsetHeight;
@@ -7083,13 +7120,12 @@
         timing,
       );
 
+      // Forward: clip cresce con la card. Backward: clip resta aperto (CTA visibili).
       const clipAnim = viewport.animate(
         isBackward
           ? [
               { clipPath: 'inset(0px 0px 0px 0px)' },
-              {
-                clipPath: `inset(0px 0px ${Math.max(0, startH - endH)}px 0px)`,
-              },
+              { clipPath: 'inset(0px 0px 0px 0px)' },
             ]
           : [
               {
@@ -7105,10 +7141,10 @@
           currentStepEl.animate(
             [
               { opacity: 1, transform: 'translate3d(0,0,0) scale(1)' },
-              { opacity: 0, transform: 'translate3d(0,0,0) scale(0.97)' },
+              { opacity: 0, transform: 'translate3d(0,0,0) scale(0.975)' },
             ],
             {
-              duration: Math.round(WAAPI_MS * 0.55),
+              duration: Math.round(WAAPI_MS * 0.5),
               easing: 'ease-out',
               fill: 'forwards',
             },
@@ -7119,7 +7155,7 @@
         activeFlipAnims.push(
           nextStepEl.animate(
             [
-              { opacity: 0, transform: 'translate3d(0,0,0) scale(1.02)' },
+              { opacity: 0, transform: 'translate3d(0,0,0) scale(1.018)' },
               { opacity: 1, transform: 'translate3d(0,0,0) scale(1)' },
             ],
             timing,
