@@ -1035,8 +1035,14 @@ async function sendMail({
   html,
   attachments = [],
   headers = {},
+  /** Welcome ospite: l'indirizzo lo digita il guest — non applicare il blocco hotelcanal/info@. */
+  allowGuestRecipient = false,
 }) {
-  assertSendableRecipient(to, 'ospite');
+  if (!allowGuestRecipient) {
+    assertSendableRecipient(to, 'ospite');
+  } else if (!String(to || '').trim()) {
+    throw new Error('Destinatario ospite mancante');
+  }
   assertInlineImages(html, attachments);
 
   const approxKb = attachments.reduce((sum, a) => {
@@ -1143,10 +1149,12 @@ export async function sendWelcomeEmail({
   language,
   includeCoupon = true,
 }) {
-  if (isBlockedRecipient(to)) {
-    console.warn(`[welcome] destinatario bloccato, skip: ${to}`);
-    return { sent: false, skipped: true, reason: 'blocked_recipient' };
+  if (!String(to || '').trim()) {
+    console.warn('[welcome] destinatario mancante, skip');
+    return { sent: false, skipped: true, reason: 'missing_recipient' };
   }
+  // Non bloccare info@ / @hotelcanal.com qui: è l'email digitata dall'ospite (o dalla reception).
+  // Il blocco hotel resta su report/poster/BCC di sistema.
   const resolvedLang = resolveWelcomeLang(lang || language);
   const lp = welcomeCopy(resolvedLang);
   const displayName = toTitleCase(guestName) || lp.guestFallback;
@@ -1314,7 +1322,9 @@ export async function sendWelcomeEmail({
     headers: {
       'X-Entity-Ref-ID': String(token),
     },
+    allowGuestRecipient: true,
   });
+  return { sent: true, skipped: false };
 }
 
 /** Pagina claim coupon (receptionist default TOMMASO) */

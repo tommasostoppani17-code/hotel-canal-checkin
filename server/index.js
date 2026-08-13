@@ -1144,7 +1144,7 @@ async function handleCheckin(req, res) {
 
     let welcomeSent = false;
     try {
-      await sendWelcomeEmail({
+      const welcomeResult = await sendWelcomeEmail({
         to: email,
         guestName,
         roomNumber,
@@ -1154,11 +1154,17 @@ async function handleCheckin(req, res) {
         language: languageRaw,
         includeCoupon,
       });
-      if (includeCoupon) markCouponSent(id);
-      welcomeSent = true;
-      console.log(
-        `[welcome] Concierge email → ${maskEmail(email)} · lang ${String(languageRaw || 'en').slice(0, 2)} · coupon ${includeCoupon ? 'yes' : 'claim-link'} · room ${roomNumber || '-'} · staff ${receptionist || '-'} · guests ${guestsCount}`,
-      );
+      welcomeSent = Boolean(welcomeResult?.sent);
+      if (welcomeSent && includeCoupon) markCouponSent(id);
+      if (welcomeSent) {
+        console.log(
+          `[welcome] Concierge email → ${maskEmail(email)} · lang ${String(languageRaw || 'en').slice(0, 2)} · coupon ${includeCoupon ? 'yes' : 'claim-link'} · room ${roomNumber || '-'} · staff ${receptionist || '-'} · guests ${guestsCount}`,
+        );
+      } else {
+        console.warn(
+          `[welcome] non inviata → ${maskEmail(email)} · reason ${welcomeResult?.reason || 'unknown'}`,
+        );
+      }
     } catch (mailErr) {
       console.error('[welcome] Errore invio:', mailErr.message || mailErr);
     }
