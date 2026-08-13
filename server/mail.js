@@ -20,6 +20,10 @@ import {
   assertSendableRecipient,
   sendableRecipientOrEmpty,
 } from './recipient-guard.js';
+import {
+  whatsappConfigured,
+  sendDailyWhatsAppReport,
+} from './whatsapp.js';
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
