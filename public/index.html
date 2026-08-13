@@ -572,9 +572,8 @@
     /* Transizioni SOLO durante il ciclo FLIP — stesso clock andata/ritorno */
     .slider-animating .slider-viewport,
     .slider-viewport.slider-animating {
-      transition:
-        clip-path var(--slide-ms) var(--slide-ease),
-        height var(--slide-ms) var(--slide-ease);
+      /* Solo clip-path: height resta fissa allo shell max durante il morph */
+      transition: clip-path var(--slide-ms) var(--slide-ease);
     }
 
     .slider-animating .slider-track,
@@ -1557,9 +1556,8 @@
     /* Transizioni SOLO durante il ciclo FLIP — stesso clock andata/ritorno */
     .slider-animating .slider-viewport,
     .slider-viewport.slider-animating {
-      transition:
-        clip-path var(--slide-ms) var(--slide-ease),
-        height var(--slide-ms) var(--slide-ease);
+      /* Solo clip-path: height resta fissa allo shell max durante il morph */
+      transition: clip-path var(--slide-ms) var(--slide-ease);
     }
 
     .slider-animating .slider-track,
@@ -6894,11 +6892,62 @@
       viewport.style.transition = '';
     }
 
+    /** Matrice delle proporzioni: altezze fisse misurate a freddo (no DOM mid-flight). */
+    const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+    function mappedStepHeight(step) {
+      const maxH = availableViewportMax();
+      const mapped = Number(geometryMap[step]) || 0;
+      if (mapped >= 200) return Math.min(Math.max(mapped, 280), maxH);
+      const cached = Number(stepHeightCache[step]) || 0;
+      if (cached >= 200) return Math.min(Math.max(cached, 280), maxH);
+      let natural = measureStepContentHeight(step);
+      if (!Number.isFinite(natural) || natural < 200) natural = 420;
+      return Math.min(Math.max(Math.round(natural), 280), maxH);
+    }
+
     /**
-     * FLIP unificato andata/ritorno (stesso clock).
-     * Forward: pre-allunga height + clip-path che si apre.
-     * Backward: height che si stringe + opacity fade sullo step uscente
-     * (niente testo schiacciato, blur tastiera, reset scroll).
+     * Pre-calcolo Cupertino: mappa geometrica di TUTTI gli step all'avvio
+     * (e su invalidate: resize / font / lingua / errori / immagini).
+     */
+    function preCalculateGeometry({ applyCurrent = true } = {}) {
+      const maxH = availableViewportMax();
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        let natural = measureStepContentHeight(i);
+        if (!Number.isFinite(natural) || natural < 200) {
+          natural = stepHeightCache[i] >= 200 ? stepHeightCache[i] : 420;
+        }
+        const h = Math.min(Math.max(Math.round(natural), 280), maxH);
+        geometryMap[i] = h;
+        stepHeightCache[i] = h;
+        if (i === 1) measuredStep1Height = h;
+      }
+      if (applyCurrent) {
+        applyViewportHeightPx(mappedStepHeight(currentStep), { animate: false });
+      }
+      return geometryMap;
+    }
+
+    function invalidateGeometry(stepOrNull = null) {
+      if (stepOrNull == null) {
+        preCalculateGeometry({ applyCurrent: !stepBusy });
+        return;
+      }
+      const step = Number(stepOrNull) || currentStep;
+      const maxH = availableViewportMax();
+      let natural = measureStepContentHeight(step);
+      if (!Number.isFinite(natural) || natural < 200) return;
+      const h = Math.min(Math.max(Math.round(natural), 280), maxH);
+      geometryMap[step] = h;
+      stepHeightCache[step] = h;
+      if (step === currentStep && !stepBusy) {
+        applyViewportHeightPx(h, { animate: false });
+      }
+    }
+
+    /**
+     * FLIP su coordinate della matrice (andata = ritorno).
+     * Shell height = max(start,end); morph = solo clip-path GPU (foglio rigido, zero crush).
      */
     let flipFinishTimer = 0;
     function flipTransitionToStep(
@@ -6917,25 +6966,17 @@
       }
 
       const isBackward = step < prev;
-      const maxH = availableViewportMax();
-      const leavingRaw = Math.round(viewport.getBoundingClientRect().height);
-      const currentH = Math.min(
-        Math.max(
-          leavingRaw >= 200
-            ? leavingRaw
-            : computeCardHeightPx(prev, { preferCache: true }),
-          280,
-        ),
-        maxH,
-      );
-      let nextH = computeCardHeightPx(step, { preferCache: false });
-      if (!Number.isFinite(nextH)) nextH = currentH;
-      nextH = Math.min(Math.max(Math.round(nextH), 280), maxH);
-      stepHeightCache[prev] = currentH;
-      stepHeightCache[step] = nextH;
-      const deltaGrow = Math.max(0, nextH - currentH);
+      // Coordinate dalla matrice — zero misura mid-flight
+      if (!geometryMap[prev] || !geometryMap[step]) {
+        preCalculateGeometry({ applyCurrent: false });
+      }
+      const startH = mappedStepHeight(prev);
+      const endH = mappedStepHeight(step);
+      const shellH = Math.max(startH, endH);
+      const startInset = Math.max(0, shellH - startH);
+      const endInset = Math.max(0, shellH - endH);
 
-      // Back: spegni tastiera + pulisci ghost di validazione + reset scroll
+      // Back: spegni tastiera + pulisci ghost + reset scroll (niente reflow sui testi)
       if (isBackward) {
         try {
           document.activeElement?.blur?.();
@@ -6956,9 +6997,15 @@
             }
           });
         }
+      } else {
+        try {
+          document.activeElement?.blur?.();
+        } catch (_) {
+          /* ignore */
+        }
       }
 
-      // INVERT — zero transition
+      // INVERT — shell fisso, clip alla maschera dello step di partenza
       viewport.classList.remove('slider-animating');
       card?.classList.remove('slider-animating');
       viewport.style.transition = 'none';
@@ -6969,43 +7016,25 @@
       }
       if (nextStepEl) {
         nextStepEl.style.transition = 'none';
-        nextStepEl.style.opacity = isBackward ? '0.001' : '1';
+        nextStepEl.style.opacity = '0.001';
       }
-
-      if (isBackward) {
-        // Da lungo → corto: height ancora currentH, clip aperto
-        viewport.style.height = `${currentH}px`;
-        viewport.style.clipPath = 'inset(0px 0px 0px 0px)';
-        viewport.style.webkitClipPath = 'inset(0px 0px 0px 0px)';
-      } else {
-        // Da corto → lungo: pre-allunga, croppa il delta
-        viewport.style.height = `${nextH}px`;
-        const inv = `inset(0px 0px ${deltaGrow}px 0px)`;
-        viewport.style.clipPath = inv;
-        viewport.style.webkitClipPath = inv;
-      }
+      viewport.style.height = `${shellH}px`;
+      const invClip = `inset(0px 0px ${startInset}px 0px)`;
+      viewport.style.clipPath = invClip;
+      viewport.style.webkitClipPath = invClip;
       void viewport.offsetHeight;
 
-      // PLAY — classe .slider-animating = unico clock CSS
+      // PLAY — stesso clock: clip → maschera arrivo + translate + opacity
       stepBusy = true;
       card?.classList.add('is-step-locked', 'slider-animating');
       viewport.classList.add('slider-animating');
       viewport.style.transition = '';
       track.style.transition = '';
-
-      if (isBackward) {
-        viewport.style.height = `${nextH}px`;
-        viewport.style.clipPath = 'inset(0px 0px 0px 0px)';
-        viewport.style.webkitClipPath = 'inset(0px 0px 0px 0px)';
-        if (currentStepEl) currentStepEl.style.opacity = '0';
-        if (nextStepEl) nextStepEl.style.opacity = '1';
-      } else {
-        viewport.style.clipPath = 'inset(0px 0px 0px 0px)';
-        viewport.style.webkitClipPath = 'inset(0px 0px 0px 0px)';
-        if (currentStepEl) currentStepEl.style.opacity = '0';
-        if (nextStepEl) nextStepEl.style.opacity = '1';
-      }
-
+      const playClip = `inset(0px 0px ${endInset}px 0px)`;
+      viewport.style.clipPath = playClip;
+      viewport.style.webkitClipPath = playClip;
+      if (currentStepEl) currentStepEl.style.opacity = '0';
+      if (nextStepEl) nextStepEl.style.opacity = '1';
       applyParallax(toParallax, toScale);
       applyTrack(toSlide);
 
@@ -7017,7 +7046,7 @@
         track.style.transition = 'none';
         viewport.style.clipPath = '';
         viewport.style.webkitClipPath = '';
-        viewport.style.height = `${nextH}px`;
+        viewport.style.height = `${endH}px`;
         void viewport.offsetHeight;
         viewport.style.transition = '';
         track.style.transition = '';
@@ -7102,7 +7131,7 @@
       stepHeightCache[2] = 0;
       stepHeightCache[3] = 0;
       stepHeightCache[4] = 0;
-      syncViewportHeight(currentStep, { animate: false });
+      preCalculateGeometry({ applyCurrent: true });
       requestAnimationFrame(() => ensurePrimaryCtaVisible());
     }
 
@@ -7318,6 +7347,8 @@
         }
       }
       shakeCard();
+      // Aggiorna solo lo step corrente nella matrice (errore può cambiare altezza label)
+      requestAnimationFrame(() => invalidateGeometry(currentStep));
     }
 
     /** Evidenzia più campi insieme (stesso UX iOS, niente toast). */
@@ -7610,14 +7641,7 @@
       if (!formMode) {
         requestAnimationFrame(() => {
           try {
-            if (typeof stepHeightCache !== 'undefined') {
-              stepHeightCache[currentStep] = 0;
-            }
-            if (typeof syncCardHeight === 'function') {
-              syncCardHeight(currentStep, { preferCache: false });
-            } else if (typeof syncViewportHeight === 'function') {
-              syncViewportHeight(currentStep);
-            }
+            preCalculateGeometry({ applyCurrent: true });
           } catch (_) {
             /* ignore */
           }
@@ -7637,20 +7661,10 @@
         void loadGuestServices(dict);
       }
 
-      // Ricalcola altezza step a fine iniezione (niente vuoti d'aria)
+      // Matrice geometrica: ricalcola dopo i nuovi testi
       requestAnimationFrame(() => {
         try {
-          if (typeof stepHeightCache !== 'undefined') {
-            stepHeightCache[1] = 0;
-            stepHeightCache[2] = 0;
-            stepHeightCache[3] = 0;
-            stepHeightCache[4] = 0;
-          }
-          if (typeof syncCardHeight === 'function') {
-            syncCardHeight(currentStep, { preferCache: false });
-          } else if (typeof syncViewportHeight === 'function') {
-            syncViewportHeight(currentStep);
-          }
+          preCalculateGeometry({ applyCurrent: true });
           if (typeof ensurePrimaryCtaVisible === 'function') {
             ensurePrimaryCtaVisible();
           }
@@ -8758,20 +8772,20 @@
       showAlreadyRegisteredScreen();
     } else {
       syncAppViewportHeight();
+      preCalculateGeometry({ applyCurrent: true });
       setStep(1);
       try {
         document.fonts?.ready?.then?.(() => {
-          stepHeightCache[1] = 0;
-          stepHeightCache[2] = 0;
-          stepHeightCache[3] = 0;
-          stepHeightCache[4] = 0;
-          syncCardHeight(currentStep, { preferCache: false });
+          preCalculateGeometry({ applyCurrent: true });
           ensurePrimaryCtaVisible();
         });
       } catch (_) {
         /* ignore */
       }
-      window.setTimeout(() => ensurePrimaryCtaVisible(), 120);
+      window.setTimeout(() => {
+        preCalculateGeometry({ applyCurrent: true });
+        ensurePrimaryCtaVisible();
+      }, 120);
       window.setTimeout(() => ensurePrimaryCtaVisible(), 400);
     }
     startAmbientInertia();
@@ -8794,12 +8808,7 @@
     // Foto dining: se caricano dopo la misura, riallinea senza scatto
     document.querySelectorAll('#step2 .dining-showcase img').forEach((img) => {
       const softSync = () => {
-        if (currentStep !== 2) {
-          stepHeightCache[2] = 0;
-          return;
-        }
-        stepHeightCache[2] = 0;
-        syncViewportHeight(2, { animate: !reduceMotion });
+        invalidateGeometry(2);
       };
       if (img.complete && img.naturalHeight > 0) return;
       img.addEventListener('load', softSync, { once: true });
