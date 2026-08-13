@@ -5400,18 +5400,11 @@
         <h2 id="privacySheetTitle">Informativa privacy</h2>
         <button type="button" class="privacy-sheet-x" id="privacySheetClose" aria-label="Chiudi">×</button>
       </div>
-      <div class="privacy-sheet-body" id="privacySheetBody">
-        <p><strong>Titolare del trattamento:</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE), P.IVA / C.F. 04711930273.</p>
-        <p><strong>Finalità:</strong> esecuzione di misure precontrattuali e contrattuali relative al soggiorno (check-in digitale, invio istruzioni Wi‑Fi/accessi, coupon partner, prenotazione tavolo, report interni di portineria).</p>
-        <p><strong>Base giuridica:</strong> art. 6.1.b GDPR (contratto/misure precontrattuali) e art. 6.1.a (consenso esplicito raccolto in app).</p>
-        <p><strong>Conservazione:</strong> i dati anagrafici di contatto sono conservati sul server al massimo 24 ore, poi eliminati automaticamente dopo l’uso operativo (report di portineria).</p>
-        <p><strong>Destinatari:</strong> personale autorizzato dell’hotel (front desk). Nessuna cessione a piattaforme di remarketing o terzi commerciali. Fornitori tecnici (hosting/email/WhatsApp business) agiscono come responsabili del trattamento ove applicabile.</p>
-        <p><strong>Diritti:</strong> accesso, rettifica, cancellazione, limitazione, opposizione — contattare la reception o <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>
-        <p><a href="/privacy.html" target="_blank" rel="noopener">Apri versione completa</a></p>
-      </div>
+      <div class="privacy-sheet-body" id="privacySheetBody"></div>
     </div>
   </div>
 
+  <script src="/i18n-privacy-sheet.js"></script>
   <script src="/i18n-ui-extra.js"></script>
   <script>
     const translations = {
@@ -7348,6 +7341,48 @@
       });
     }
 
+    /** Privacy sheet body + close labels — always follow currentLang (never leave Italian HTML). */
+    function applyPrivacySheetBody(dict = t()) {
+      const patch =
+        window.I18N_PRIVACY_PATCH?.[currentLang] ||
+        window.I18N_PRIVACY_PATCH?.en ||
+        {};
+      const bodyHtml =
+        dict.privacyBodyHtml ||
+        patch.privacyBodyHtml ||
+        translations.en?.privacyBodyHtml ||
+        '';
+      const fullLabel =
+        dict.privacyFullLink ||
+        patch.privacyFullLink ||
+        translations.en?.privacyFullLink ||
+        'Open full version';
+      const closeLabel =
+        dict.privacyClose ||
+        patch.privacyClose ||
+        translations.en?.privacyClose ||
+        'Close';
+      const privacyTitle = document.getElementById('privacySheetTitle');
+      if (privacyTitle) {
+        privacyTitle.textContent =
+          dict.privacySheetTitle ||
+          translations.en?.privacySheetTitle ||
+          'Privacy notice';
+      }
+      const privacyBody = document.getElementById('privacySheetBody');
+      if (privacyBody && bodyHtml) {
+        privacyBody.innerHTML =
+          bodyHtml +
+          `<p><a href="/privacy.html?lang=${encodeURIComponent(currentLang)}" target="_blank" rel="noopener">${fullLabel}</a></p>`;
+      }
+      document
+        .getElementById('privacySheetClose')
+        ?.setAttribute('aria-label', closeLabel);
+      document
+        .getElementById('privacySheetCloseBg')
+        ?.setAttribute('aria-label', closeLabel);
+    }
+
     function applyFormLabels() {
       const dict = t();
       document.getElementById('lbl-title').textContent = dict.title;
@@ -7376,23 +7411,7 @@
           `<button type="button" class="privacy-link" id="btnPrivacyInfo" aria-haspopup="dialog">${linkLabel}</button>`,
         );
       }
-      const privacyTitle = document.getElementById('privacySheetTitle');
-      if (privacyTitle) privacyTitle.textContent = dict.privacySheetTitle || 'Privacy notice';
-      const privacyBody = document.getElementById('privacySheetBody');
-      if (privacyBody && dict.privacyBodyHtml) {
-        const fullLabel = dict.privacyFullLink || 'Open full version';
-        privacyBody.innerHTML =
-          dict.privacyBodyHtml +
-          `<p><a href="/privacy.html?lang=${encodeURIComponent(currentLang)}" target="_blank" rel="noopener">${fullLabel}</a></p>`;
-      }
-      const privacyClose = document.getElementById('privacySheetClose');
-      if (privacyClose) {
-        privacyClose.setAttribute('aria-label', dict.privacyClose || 'Close');
-      }
-      const privacyCloseBg = document.getElementById('privacySheetCloseBg');
-      if (privacyCloseBg) {
-        privacyCloseBg.setAttribute('aria-label', dict.privacyClose || 'Close');
-      }
+      applyPrivacySheetBody(dict);
       const conciergeTitle = document.getElementById('lbl-concierge-title');
       if (conciergeTitle) {
         conciergeTitle.textContent = dict.conciergeTitle || 'Our gift for you';
@@ -8263,6 +8282,7 @@
     function openPrivacySheet(e) {
       e?.preventDefault?.();
       e?.stopPropagation?.();
+      applyPrivacySheetBody(t());
       const sheet = document.getElementById('privacySheet');
       if (!sheet) return;
       sheet.hidden = false;
