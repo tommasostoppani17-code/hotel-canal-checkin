@@ -398,6 +398,26 @@ function normalizeReceptionist(value) {
   return name || 'RECEPTION';
 }
 
+function decrementStaffMonthStats({
+  receptionist,
+  withCoupon = false,
+  yearMonth = romeYearMonthNow(),
+} = {}) {
+  const ym = String(yearMonth || romeYearMonthNow());
+  const staff = normalizeReceptionist(receptionist);
+  if (!staff || staff === 'RECEPTION') return;
+  const couponDec = withCoupon ? 1 : 0;
+  db.prepare(
+    `
+    UPDATE staff_month_stats
+    SET
+      checkins = MAX(0, checkins - 1),
+      coupons = MAX(0, coupons - @couponDec)
+    WHERE year_month = @ym AND receptionist = @staff
+  `,
+  ).run({ ym, staff, couponDec });
+}
+
 /** Incrementa contatori mensili (niente telefono/email/nome). */
 export function bumpStaffMonthStats({
   receptionist,
@@ -598,7 +618,7 @@ export function insertCheckin({
     checkoutDate: checkoutDate || null,
   });
 
-  if (!skipStaffStats) {
+  if (!skipStaffStats && receptionist) {
     try {
       bumpStaffMonthStats({
         receptionist,
@@ -644,6 +664,44 @@ export function getCheckinById(id) {
     )
     .get(Number(id));
   return row ? decryptCheckinRow(row) : null;
+}
+
+/** Dashboard staff: elimina un check-in e i dati collegati (niente PII orfana). */
+export function deleteStaffCheckin(id) {
+  const numId = Number(id);
+  if (!Number.isInteger(numId) || numId < 1) {
+    return { ok: false, error: 'invalid_id' };
+  }
+  const row = getCheckinById(numId);
+  if (!row) return { ok: false, error: 'not_found' };
+
+  const tx = db.transaction(() => {
+    db.prepare(`DELETE FROM checkin_activity WHERE checkin_id = ?`).run(numId);
+    db.prepare(`DELETE FROM staff_alerts WHERE checkin_id = ?`).run(numId);
+    db.prepare(`UPDATE reception_notes SET checkin_id = NULL WHERE checkin_id = ?`).run(
+      numId,
+    );
+    db.prepare(`UPDATE guest_blacklist SET checkin_id = NULL WHERE checkin_id = ?`).run(
+      numId,
+    );
+    db.prepare(`DELETE FROM checkins WHERE id = ?`).run(numId);
+  });
+  tx();
+
+  const staff = String(row.receptionist || '').trim();
+  if (staff && staff.toUpperCase() !== 'RECEPTION') {
+    try {
+      decrementStaffMonthStats({
+        receptionist: staff,
+        withCoupon: Boolean(row.coupon_sent_at),
+        yearMonth: romeYearMonthFromUtc(row.created_at),
+      });
+    } catch (err) {
+      console.error('[stats] decrementStaffMonthStats failed:', err.message || err);
+    }
+  }
+
+  return { ok: true, id: numId };
 }
 
 /** Save dinner table preference (e.g. 20:15 or 2026-08-17 20:15) and optional party size. */
@@ -1205,6 +1263,7 @@ export function listStaffCheckins({ date = '', q = '' } = {}) {
 
 const CHECKIN_ACTIVITY_LABELS = {
   room_change: 'Stanza modificata',
+  staff_assign: 'Receptionist assegnato',
   star: 'Aggiunto ai preferiti',
   unstar: 'Rimosso dai preferiti',
   phone_reveal: 'Telefono visualizzato',
@@ -1310,6 +1369,42 @@ export function updateCheckinRoom(id, roomNumber, staffName = null) {
   }
   const keys = loadBlacklistMap();
   return { ok: true, row: toStaffSafeRow(getCheckinById(id), keys) };
+}
+
+export function updateCheckinReceptionist(id, receptionist, staffName = null) {
+  const row = getCheckinById(id);
+  if (!row) return { ok: false, error: 'not_found' };
+  const dec = decryptCheckinRow(row);
+  const oldStaff = String(dec.receptionist || '').trim().toUpperCase();
+  const nextStaff = String(receptionist || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toUpperCase()
+    .slice(0, 60);
+  if (!nextStaff) return { ok: false, error: 'staff_required' };
+  db.prepare(`UPDATE checkins SET receptionist = ? WHERE id = ?`).run(
+    nextStaff,
+    Number(id),
+  );
+  if (!oldStaff) {
+    try {
+      bumpStaffMonthStats({
+        receptionist: nextStaff,
+        withCoupon: Boolean(dec.coupon_sent_at),
+      });
+    } catch (err) {
+      console.error('[stats] bumpStaffMonthStats failed:', err.message || err);
+    }
+  }
+  if (staffName && oldStaff !== nextStaff) {
+    logCheckinActivity({
+      checkinId: id,
+      staffName,
+      action: 'staff_assign',
+      detail: `${oldStaff || '—'} → ${nextStaff}`,
+    });
+  }
+  return { ok: true, row: toStaffSafeRow(getCheckinById(id), loadBlacklistMap()) };
 }
 
 export function toggleCheckinStar(id, staffName = null) {

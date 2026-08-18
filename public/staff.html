@@ -1189,44 +1189,53 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       padding: 0;
-      border: 1px solid #DFE5EA;
-      border-radius: var(--radius-ui);
-      background: #fff;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
       color: var(--canal-petroleum);
       cursor: pointer;
       flex-shrink: 0;
-      transition: background var(--hover-ease), border-color var(--hover-ease), box-shadow var(--hover-ease);
+      transition: background 0.18s ease;
     }
 
-    .btn-notify:hover {
-      background: #F7F9FA;
-      border-color: #C8D4DC;
+    .btn-notify:hover,
+    .btn-notify:focus-visible {
+      background: rgba(18, 68, 83, 0.08);
+      outline: none;
     }
 
     .btn-notify.is-open {
-      border-color: var(--canal-petroleum);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(18, 68, 83, 0.08);
+      background: rgba(18, 68, 83, 0.12);
     }
 
     .notify-badge {
       position: absolute;
-      top: 3px;
-      right: 3px;
-      min-width: 16px;
-      height: 16px;
-      padding: 0 4px;
+      top: 1px;
+      right: 0;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
       border-radius: 999px;
-      background: #C62828;
+      background: #ff3b30;
       color: #fff;
-      font-size: 10px;
+      border: 2px solid #fff;
+      box-sizing: border-box;
+      font-size: 11px;
       font-weight: 700;
-      line-height: 16px;
+      line-height: 14px;
       text-align: center;
       pointer-events: none;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .notify-badge.is-wide {
+      min-width: 22px;
+      padding: 0 4px;
+      font-size: 10px;
     }
 
     .notify-menu {
@@ -2196,6 +2205,20 @@
 
     .row-menu-item-icon--history {
       color: #6b8494;
+    }
+
+    .row-menu-item--danger {
+      color: #C62828;
+    }
+
+    .row-menu-item--danger:hover,
+    .row-menu-item--danger:focus-visible {
+      background: rgba(198, 40, 40, 0.08);
+      color: #C62828;
+    }
+
+    .row-menu-item--danger .row-menu-item-icon {
+      color: #C62828;
     }
 
     .row-menu-item-chevron {
@@ -4131,7 +4154,113 @@
         max-height: calc(100dvh - 32px);
         overflow: auto;
       }
-      body:not(.is-dashboard) { padding: 12px; }
+    }
+
+    /* Login Accesso personale — mobile / iPhone */
+    @media (max-width: 720px) {
+      body:not(.is-dashboard) {
+        padding:
+          calc(10px + env(safe-area-inset-top, 0px))
+          max(12px, env(safe-area-inset-left, 0px))
+          calc(10px + env(safe-area-inset-bottom, 0px))
+          max(12px, env(safe-area-inset-right, 0px));
+        align-items: flex-start;
+        justify-content: flex-start;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        min-height: 100dvh;
+        height: auto;
+      }
+
+      body:not(.is-dashboard) .staff-shell {
+        width: 100%;
+        max-width: 100%;
+        flex: 1 0 auto;
+        min-height: min(100%, auto);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      .login-view {
+        width: 100%;
+        min-height: 0;
+        padding: 6px 0 12px;
+      }
+
+      .gate-card {
+        max-width: 100%;
+        width: 100%;
+        border-radius: var(--radius-ios);
+        padding-top: 28px;
+        padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .gate-card.is-menu-open {
+        overflow: visible;
+        margin-bottom: min(160px, 28dvh);
+      }
+
+      .gate-header {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .gate-form {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .gate-form .ui-dropdown-menu {
+        max-height: min(240px, 44dvh);
+      }
+
+      .gate-form .btn-canal {
+        margin-bottom: 2px;
+      }
+    }
+
+    @media (max-width: 720px) and (max-height: 740px) {
+      :root {
+        --ios-card-pad-top: 24px;
+        --ios-card-pad-bottom: 18px;
+        --ios-inset: 20px;
+        --step-stack: 18px;
+      }
+
+      .gate-header .hotel-title {
+        font-size: 20px;
+      }
+
+      .gate-header .hotel-subtitle {
+        margin-bottom: 10px;
+      }
+
+      .gate-lead {
+        font-size: 12px;
+        margin-top: 8px;
+      }
+
+      .gate-form .form-group {
+        margin-bottom: 8px;
+      }
+
+      .gate-form .btn-canal {
+        margin-top: 12px;
+        height: 48px;
+        min-height: 48px;
+      }
+    }
+
+    .contact-stack {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .contact-ios-label {
+      display: none;
     }
 
     .secure-cell-wrapper,
@@ -4460,6 +4589,7 @@
         border-left: 0;
         border-right: 0;
         border-bottom: 0;
+        background: #F2F2F7;
       }
 
       #checkinsPanel .table-head-wrap {
@@ -4474,30 +4604,54 @@
         min-width: 0;
       }
 
+      #checkinsPanel .matrix-table tbody {
+        padding: 10px 12px calc(18px + env(safe-area-inset-bottom, 0px));
+      }
+
       #checkinsPanel .matrix-table col {
         display: none;
       }
 
       #checkinsPanel .matrix-table tbody tr {
+        position: relative;
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         grid-template-areas:
           "guest room"
+          "staff staff"
           "phone phone"
-          "email email"
-          "staff staff";
+          "email email";
         align-items: center;
-        column-gap: 10px;
-        row-gap: 8px;
+        column-gap: 8px;
+        row-gap: 0;
         height: auto;
         min-height: 0;
-        padding: 14px 16px 12px;
-        border-bottom: 1px solid rgba(18, 68, 83, 0.08);
+        margin: 0 0 10px;
+        padding: 14px 44px 12px 14px;
+        border: 0;
+        border-bottom: 0;
+        border-radius: 16px;
         background: #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
       }
 
       #checkinsPanel .matrix-table tbody tr:last-child {
         border-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      #checkinsPanel .matrix-table tbody tr:hover,
+      #checkinsPanel .matrix-table tbody tr:active:not(:has(:focus-within)),
+      #checkinsPanel .matrix-table tbody tr:has(.btn-row-menu.is-open),
+      #checkinsPanel .matrix-table tbody tr:has(:focus-within):not(:has(.btn-row-menu.is-open)) {
+        background-color: #fff;
+      }
+
+      #checkinsPanel .matrix-table tbody tr.is-blacklisted,
+      #checkinsPanel .matrix-table tbody tr.is-blacklisted:hover,
+      #checkinsPanel .matrix-table tbody tr.is-blacklisted:has(.btn-row-menu.is-open) {
+        background: #fff;
+        box-shadow: 0 0 0 1px rgba(198, 40, 40, 0.22), 0 1px 2px rgba(0, 0, 0, 0.04);
       }
 
       #checkinsPanel .matrix-table tbody td {
@@ -4513,34 +4667,21 @@
         overflow: visible;
       }
 
-      #checkinsPanel .matrix-table td.col-guest { grid-area: guest; }
-      #checkinsPanel .matrix-table td.col-room { grid-area: room; justify-content: flex-end; }
+      #checkinsPanel .matrix-table td.col-guest {
+        grid-area: guest;
+        min-height: 24px;
+        margin-bottom: 2px;
+      }
+
+      #checkinsPanel .matrix-table td.col-room {
+        grid-area: room;
+        justify-content: flex-end;
+        margin-bottom: 2px;
+      }
+
       #checkinsPanel .matrix-table td.col-phone { grid-area: phone; }
       #checkinsPanel .matrix-table td.col-email { grid-area: email; }
       #checkinsPanel .matrix-table td.col-receptionist { grid-area: staff; }
-
-      #checkinsPanel .matrix-table td.col-phone::before,
-      #checkinsPanel .matrix-table td.col-email::before,
-      #checkinsPanel .matrix-table td.col-receptionist::before {
-        flex-shrink: 0;
-        width: 52px;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: #8a9ba8;
-      }
-
-      #checkinsPanel .matrix-table td.col-phone::before { content: "Tel"; }
-      #checkinsPanel .matrix-table td.col-email::before { content: "Email"; }
-      #checkinsPanel .matrix-table td.col-receptionist::before { content: "Da"; }
-
-      #checkinsPanel .secure-cell-wrapper,
-      #checkinsPanel .phone-wrapper {
-        max-width: none;
-        width: 100%;
-        flex: 1;
-      }
 
       #checkinsPanel .cell-guest,
       #checkinsPanel .cell-guest > .cell-name {
@@ -4548,14 +4689,144 @@
         width: 100%;
       }
 
+      #checkinsPanel .cell-guest > .cell-name {
+        font-size: 17px;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        min-height: 0;
+      }
+
+      #checkinsPanel .cell-room {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        min-height: 26px;
+        height: 26px;
+        line-height: 26px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: #F2F2F7;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
       #checkinsPanel .cell-receptionist-wrap {
         flex: 1;
         min-width: 0;
+        min-height: 0;
+        margin: 0 0 10px;
+      }
+
+      #checkinsPanel .cell-receptionist {
+        min-height: 0;
+        font-size: 13px;
+        color: #8E8E93;
+      }
+
+      #checkinsPanel .cell-receptionist-wrap .btn-row-menu {
+        position: absolute;
+        top: 8px;
+        right: 6px;
+        margin: 0;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        border-radius: 50%;
+      }
+
+      #checkinsPanel .matrix-table td.col-phone,
+      #checkinsPanel .matrix-table td.col-email {
+        background: #F2F2F7;
+        padding: 8px 10px;
+        min-height: 52px;
+        align-items: stretch;
+      }
+
+      #checkinsPanel .matrix-table td.col-phone {
+        border-radius: 12px 12px 0 0;
+      }
+
+      #checkinsPanel .matrix-table td.col-email {
+        border-radius: 0 0 12px 12px;
+        box-shadow: inset 0 0.5px 0 rgba(60, 60, 67, 0.18);
+      }
+
+      #checkinsPanel .secure-cell-wrapper,
+      #checkinsPanel .phone-wrapper {
+        max-width: none;
+        width: 100%;
+        flex: 1;
+        height: auto;
+        min-height: 0;
+        font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 16px;
+        color: #1D1D1F;
+        gap: 8px;
+      }
+
+      #checkinsPanel .contact-ios-label {
+        display: block;
+        margin: 0 0 2px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: #8E8E93;
+        line-height: 1.2;
+      }
+
+      #checkinsPanel .secure-cell-wrapper .phone-text,
+      #checkinsPanel .secure-cell-wrapper .email-text,
+      #checkinsPanel .phone-wrapper .phone-text,
+      #checkinsPanel .phone-wrapper .email-text {
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        color: #1D1D1F;
+      }
+
+      #checkinsPanel .phone-text.is-revealed,
+      #checkinsPanel .email-text.is-revealed {
+        font-weight: 600;
+        font-size: 15px;
+      }
+
+      #checkinsPanel .cell-muted {
+        min-height: 0;
+        font-size: 16px;
+        color: #C7C7CC;
+      }
+
+      #checkinsPanel .btn-reveal {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        opacity: 0.7;
+        align-self: center;
+      }
+
+      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:hover,
+      #checkinsPanel .cell-receptionist-wrap .btn-row-menu.is-open,
+      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:focus-visible {
+        background: rgba(18, 68, 83, 0.08);
+        color: var(--canal-petroleum);
+      }
+
+      #checkinsPanel .footer-summary {
+        background: #F2F2F7;
+        border-top: 0;
+        padding-left: 16px;
+        padding-right: 16px;
       }
 
       #checkinsPanel .matrix-table tbody tr:has(.empty) {
         display: block;
         padding: 36px 16px;
+        background: transparent;
+        box-shadow: none;
       }
 
       #checkinsPanel .matrix-table tbody tr:has(.empty) td {
@@ -4571,7 +4842,8 @@
       .date-segment { min-height: 38px; padding: 3px; gap: 5px; }
       .matrix-table:not(.matrix-table--clients) th,
       .matrix-table:not(.matrix-table--clients) td { padding-left: 10px; padding-right: 10px; }
-      #checkinsPanel .matrix-table tbody tr { padding-left: 14px; padding-right: 14px; }
+      #checkinsPanel .matrix-table tbody { padding-left: 10px; padding-right: 10px; }
+      #checkinsPanel .matrix-table tbody tr { padding-left: 12px; padding-right: 42px; }
     }
 
     @media (min-width: 901px) {
@@ -4953,6 +5225,32 @@
     </div>
   </div>
 
+  <div class="sheet sheet--ig" id="staffSheet" hidden aria-hidden="true">
+    <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="staffSheetCloseBg" aria-label="Chiudi"></button>
+    <div class="sheet-panel sheet-panel--ig-report" role="dialog" aria-modal="true" aria-labelledby="staffSheetTitle">
+      <div class="ig-sheet-handle" aria-hidden="true"></div>
+      <header class="ig-sheet-bar">
+        <span class="ig-sheet-bar-side" aria-hidden="true"></span>
+        <h2 class="ig-sheet-bar-title" id="staffSheetTitle">Check-in da</h2>
+        <button type="button" class="ig-sheet-bar-close" id="staffSheetClose" aria-label="Chiudi">×</button>
+      </header>
+      <div class="ig-sheet-body">
+      <form id="staffSheetForm" class="sheet-form sheet-form--flat">
+        <p class="sheet-guest-line" id="staffSheetGuest">—</p>
+        <div class="sheet-field">
+          <label class="sheet-label" id="lbl-edit-staff" for="staffSheetName">Receptionist</label>
+          <select class="field" id="staffSheetName">
+            <option value="">Seleziona…</option>
+          </select>
+        </div>
+        <div class="sheet-foot sheet-foot--minimal">
+          <button type="submit" class="btn-primary" id="staffSheetSave">Salva</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
   <div class="sheet sheet--ig" id="blacklistSheet" hidden aria-hidden="true">
     <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="blacklistSheetCloseBg" aria-label="Chiudi"></button>
     <div class="sheet-panel sheet-panel--ig-report" role="dialog" aria-modal="true" aria-labelledby="blacklistSheetTitle">
@@ -5068,6 +5366,10 @@
     const roomSheetForm = document.getElementById('roomSheetForm');
     const roomSheetGuestEl = document.getElementById('roomSheetGuest');
     const roomSheetNumberEl = document.getElementById('roomSheetNumber');
+    const staffSheet = document.getElementById('staffSheet');
+    const staffSheetForm = document.getElementById('staffSheetForm');
+    const staffSheetGuestEl = document.getElementById('staffSheetGuest');
+    const staffSheetNameEl = document.getElementById('staffSheetName');
     const reportSheet = document.getElementById('reportSheet');
     const reportSheetCloseBg = document.getElementById('reportSheetCloseBg');
     const reportSheetClose = document.getElementById('reportSheetClose');
@@ -5091,6 +5393,7 @@
     let lastUrgentNotesCount = 0;
     let noteSheetContext = { mode: 'create', noteId: null, checkinId: null };
     let roomSheetContext = { checkinId: null };
+    let staffSheetContext = { checkinId: null };
     let sheetContext = { mode: 'checkin', checkinId: null, guestName: '', entryId: null };
     const roomSaveTimers = new Map();
 
@@ -5159,8 +5462,11 @@
       const gap = 8;
       const viewportPad = 12;
       const preferredMax = 280;
-      const spaceBelow = window.innerHeight - triggerRect.bottom - viewportPad;
-      const spaceAbove = triggerRect.top - viewportPad;
+      const vv = window.visualViewport;
+      const viewportH = Math.round(vv?.height || window.innerHeight || 0);
+      const viewportTop = Math.round(vv?.offsetTop || 0);
+      const spaceBelow = viewportH + viewportTop - triggerRect.bottom - viewportPad;
+      const spaceAbove = triggerRect.top - viewportTop - viewportPad;
       let maxH = Math.min(preferredMax, spaceBelow - gap);
       if (maxH < 132 && spaceAbove > spaceBelow) {
         menuEl.classList.add('is-flip-up');
@@ -5833,6 +6139,12 @@
         <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
       </svg>`;
 
+    const ICON_STAFF_MENU = `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M5.5 19c.8-3 3.2-5 6.5-5s5.7 2 6.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>`;
+
     const ICON_ROOM_MENU = `
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -5859,8 +6171,8 @@
 
     const HISTORY_ROOM_ACTION = 'room_change';
 
-    function rowMenuItem(action, iconClass, iconSvg, label, { chevron = false } = {}) {
-      return `<button type="button" class="ui-menu-item row-menu-item" data-row-action="${action}" role="menuitem">
+    function rowMenuItem(action, iconClass, iconSvg, label, { chevron = false, danger = false } = {}) {
+      return `<button type="button" class="ui-menu-item row-menu-item${danger ? ' row-menu-item--danger' : ''}" data-row-action="${action}" role="menuitem">
         <span class="row-menu-item-icon ${iconClass}">${iconSvg}</span>
         <span class="row-menu-item-text">${escapeHtml(label)}</span>
         ${chevron ? ICON_MENU_CHEVRON : ''}
@@ -5915,6 +6227,12 @@
     function buildRowMenuHtml(row) {
       const parts = [];
       parts.push(rowMenuItem('edit-room', 'row-menu-item-icon--room', ICON_ROOM_MENU, 'Modifica stanza'));
+      parts.push(rowMenuItem(
+        'assign-staff',
+        'row-menu-item-icon--info',
+        ICON_STAFF_MENU,
+        row.receptionist ? 'Cambia receptionist' : 'Assegna receptionist',
+      ));
       parts.push(rowMenuItem('add-note', 'row-menu-item-icon--table', ICON_NOTE_MENU, 'Nuova nota'));
 
       if (row.blacklisted) {
@@ -5924,6 +6242,7 @@
       }
 
       parts.push(rowMenuItem('history', 'row-menu-item-icon--history', ICON_HISTORY_MENU, 'Cambi stanza', { chevron: true }));
+      parts.push(rowMenuItem('delete-checkin', 'row-menu-item-icon--ban', ICON_FEED_TRASH, 'Elimina check-in', { danger: true }));
 
       return parts.join('');
     }
@@ -6098,6 +6417,10 @@
         openRoomSheet(row);
         return;
       }
+      if (action === 'assign-staff') {
+        openStaffSheet(row);
+        return;
+      }
       if (action === 'flag') {
         openBlacklistSheet({
           mode: 'checkin',
@@ -6135,13 +6458,50 @@
         });
         return;
       }
+      if (action === 'delete-checkin') {
+        await deleteStaffCheckinRow(row);
+      }
+    }
+
+    async function deleteStaffCheckinRow(row) {
+      const name = String(row.guestName || 'questo ospite').trim() || 'questo ospite';
+      const room = String(row.roomNumber || '').trim();
+      const who = room ? `${name} (stanza ${room})` : name;
+      if (!window.confirm(`Eliminare il check-in di ${who}?`)) return;
+      try {
+        const res = await fetch(`/api/staff/checkins/${row.id}`, {
+          method: 'DELETE',
+          credentials: 'same-origin',
+        });
+        if (res.status === 401) { showLogin(); return; }
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          showServerToast(body.error || 'Impossibile eliminare il check-in', true);
+          return;
+        }
+        clearServerToast();
+        await loadList();
+      } catch (_) {
+        showServerToast('Errore di rete. Riprova.', true);
+      }
     }
 
     function maskedContactCell(row, kind, masked, hasValue, textClass, revealAttr, labelShow, labelHide) {
-      if (!hasValue) return '<span class="cell-muted">—</span>';
+      const label = kind === 'phone' ? 'Telefono' : 'Email';
+      if (!hasValue) {
+        return `<div class="secure-cell-wrapper is-empty">
+          <div class="contact-stack">
+            <span class="contact-ios-label">${label}</span>
+            <span class="cell-muted">Non indicato</span>
+          </div>
+        </div>`;
+      }
       const copyHint = kind === 'phone' ? 'Doppio tap per copiare telefono' : 'Doppio tap per copiare email';
       return `<div class="secure-cell-wrapper">
-        <span class="phone-text contact-copy-target ${textClass}" data-${kind}-text="${row.id}" data-copy-kind="${kind}" data-mask="${escapeAttr(masked)}" title="${escapeAttr(copyHint)}" tabindex="0" role="button" aria-label="${escapeAttr(copyHint)}">${escapeHtml(masked)}</span>
+        <div class="contact-stack">
+          <span class="contact-ios-label">${label}</span>
+          <span class="phone-text contact-copy-target ${textClass}" data-${kind}-text="${row.id}" data-copy-kind="${kind}" data-mask="${escapeAttr(masked)}" title="${escapeAttr(copyHint)}" tabindex="0" role="button" aria-label="${escapeAttr(copyHint)}">${escapeHtml(masked)}</span>
+        </div>
         <button type="button" class="btn-reveal" data-reveal-${kind}="${row.id}" aria-label="${labelShow}">${EYE_ICON}</button>
       </div>`;
     }
@@ -6288,6 +6648,7 @@
       closeNoteCategoryMenu();
       closeNotifyMenu();
       closeRoomSheet();
+      closeStaffSheet();
       noteSheetContext = { mode: ctx.mode || 'create', noteId: ctx.noteId || null, checkinId: ctx.checkinId || null };
       document.getElementById('noteSheetTitle').textContent = ctx.mode === 'edit' ? 'Modifica nota' : 'Nuova nota';
       noteGuestNameEl.value = ctx.guestName || '';
@@ -6318,6 +6679,7 @@
     function openRoomSheet(row) {
       closeStaffMenu();
       closeNoteSheet();
+      closeStaffSheet();
       roomSheetContext = { checkinId: row?.id || null };
       if (roomSheetGuestEl) roomSheetGuestEl.textContent = row?.guestName || '—';
       if (roomSheetNumberEl) {
@@ -6337,6 +6699,51 @@
     function closeRoomSheet() {
       animateSheetClose(roomSheet, () => {
         roomSheetContext = { checkinId: null };
+        unlockSheetScroll();
+      });
+    }
+
+    const STAFF_ASSIGN_ROSTER = [
+      { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso' },
+      { id: 'john', name: 'JOHN', label: 'John' },
+      { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro' },
+      { id: 'maria', name: 'MARIA', label: 'Maria' },
+      { id: 'mizan', name: 'MIZAN', label: 'Mizan' },
+      { id: 'payel', name: 'PAYEL', label: 'Payel' },
+      { id: 'sayeed', name: 'SAYEED', label: 'Sayeed' },
+    ];
+
+    function openStaffSheet(row) {
+      closeStaffMenu();
+      closeNoteCategoryMenu();
+      closeNoteSheet();
+      closeRoomSheet();
+      staffSheetContext = { checkinId: row?.id || null };
+      if (staffSheetGuestEl) staffSheetGuestEl.textContent = row?.guestName || '—';
+      const current = String(row?.receptionist || '').trim().toUpperCase();
+      const selected = current
+        || String(currentStaff?.name || '').trim().toUpperCase();
+      if (staffSheetNameEl) {
+        staffSheetNameEl.innerHTML = [
+          '<option value="">Seleziona…</option>',
+          ...STAFF_ASSIGN_ROSTER.map((member) => (
+            `<option value="${escapeAttr(member.name)}"${member.name === selected ? ' selected' : ''}>${escapeHtml(member.label)}</option>`
+          )),
+        ].join('');
+        staffSheetNameEl.classList.remove('is-invalid');
+      }
+      document.getElementById('lbl-edit-staff')?.classList.remove('label-error-state');
+      if (!staffSheet) return;
+      staffSheet.hidden = false;
+      staffSheet.setAttribute('aria-hidden', 'false');
+      lockSheetScroll();
+      animateSheetOpen(staffSheet);
+      staffSheetNameEl?.focus();
+    }
+
+    function closeStaffSheet() {
+      animateSheetClose(staffSheet, () => {
+        staffSheetContext = { checkinId: null };
         unlockSheetScroll();
       });
     }
@@ -6589,8 +6996,11 @@
     function paintInboxBadge(count) {
       const n = Number(count) || 0;
       if (!notifyBadge) return;
-      notifyBadge.textContent = n > 9 ? '9+' : String(n);
+      const label = n > 99 ? '99+' : String(n);
+      notifyBadge.textContent = label;
       notifyBadge.classList.toggle('hidden', n < 1);
+      notifyBadge.classList.toggle('is-wide', n > 9);
+      notifyBadge.setAttribute('aria-hidden', n < 1 ? 'true' : 'false');
       btnNotify?.setAttribute(
         'aria-label',
         n === 1 ? 'Notifiche, 1 nota da altri' : n > 1 ? `Notifiche, ${n} note da altri` : 'Notifiche',
@@ -6706,12 +7116,27 @@
       if (!date || !btnCsv) return;
       btnCsv.disabled = true;
       try {
-        const res = await fetch(`/api/staff/checkins.csv?date=${encodeURIComponent(date)}`, {
-          credentials: 'same-origin',
-        });
+        const q = `date=${encodeURIComponent(date)}`;
+        const urls = [
+          `/api/staff/checkins/export?${q}`,
+          `/api/staff/checkins.csv?${q}`,
+        ];
+        let res = null;
+        for (const url of urls) {
+          const attempt = await fetch(url, { credentials: 'same-origin' });
+          if (attempt.status !== 404) {
+            res = attempt;
+            break;
+          }
+        }
+        if (!res) {
+          showServerToast('Export CSV non disponibile sul server. Aggiorna il deploy.', true);
+          return;
+        }
         if (res.status === 401) { showLogin(); return; }
         if (!res.ok) {
-          showServerToast('Impossibile scaricare il CSV', true);
+          const errBody = await res.json().catch(() => ({}));
+          showServerToast(errBody.error || 'Impossibile scaricare il CSV', true);
           return;
         }
         const blob = await res.blob();
@@ -7125,6 +7550,8 @@
     document.getElementById('noteSheetClose')?.addEventListener('click', closeNoteSheet);
     document.getElementById('roomSheetCloseBg')?.addEventListener('click', closeRoomSheet);
     document.getElementById('roomSheetClose')?.addEventListener('click', closeRoomSheet);
+    document.getElementById('staffSheetCloseBg')?.addEventListener('click', closeStaffSheet);
+    document.getElementById('staffSheetClose')?.addEventListener('click', closeStaffSheet);
 
     roomSheetForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -7159,6 +7586,46 @@
         closeRoomSheet();
         await loadList();
         showServerToast('Stanza aggiornata');
+      } catch (_) {
+        showServerToast('Errore di rete. Riprova.', true);
+      } finally {
+        if (saveBtn) saveBtn.disabled = false;
+      }
+    });
+
+    staffSheetForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = staffSheetContext.checkinId;
+      const receptionist = String(staffSheetNameEl?.value || '').trim();
+      const lbl = document.getElementById('lbl-edit-staff');
+      staffSheetNameEl?.classList.remove('is-invalid');
+      lbl?.classList.remove('label-error-state');
+      if (!id) return;
+      if (!receptionist) {
+        staffSheetNameEl?.classList.add('is-invalid');
+        lbl?.classList.add('label-error-state');
+        shake(staffSheet.querySelector('.sheet-panel'));
+        return;
+      }
+      const saveBtn = document.getElementById('staffSheetSave');
+      if (saveBtn) saveBtn.disabled = true;
+      try {
+        const res = await fetch(`/api/staff/checkins/${id}/receptionist`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ receptionist }),
+        });
+        if (res.status === 401) { showLogin(); return; }
+        if (!res.ok) {
+          staffSheetNameEl?.classList.add('is-invalid');
+          lbl?.classList.add('label-error-state');
+          shake(staffSheet.querySelector('.sheet-panel'));
+          return;
+        }
+        closeStaffSheet();
+        await loadList();
+        showServerToast('Receptionist aggiornato');
       } catch (_) {
         showServerToast('Errore di rete. Riprova.', true);
       } finally {
@@ -7593,6 +8060,10 @@
         }
         if (roomSheet && !roomSheet.hidden) {
           closeRoomSheet();
+          return;
+        }
+        if (staffSheet && !staffSheet.hidden) {
+          closeStaffSheet();
           return;
         }
         if (blacklistSheet && !blacklistSheet.hidden) {

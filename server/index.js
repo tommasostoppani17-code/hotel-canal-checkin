@@ -29,6 +29,7 @@ import {
   parseCheckoutDate,
   listStaffCheckins,
   updateCheckinRoom,
+  updateCheckinReceptionist,
   toggleCheckinStar,
   listBlacklist,
   addToBlacklist,
@@ -43,6 +44,7 @@ import {
   listReceptionNotes,
   listInboxNotes,
   listCheckinsForCsv,
+  deleteStaffCheckin,
   createReceptionNote,
   updateReceptionNote,
   setReceptionNoteStatus,
@@ -376,7 +378,7 @@ app.use((req, res, next) => {
   if (origin && ALLOWED_ORIGINS.has(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
     res.setHeader(
       'Access-Control-Allow-Headers',
       'Content-Type, Authorization',
@@ -1246,15 +1248,10 @@ async function handleCheckin(req, res) {
       });
     }
 
-    // Coupon: stanza + receptionist del check-in obbligatori
+    // Coupon: stanza + checkout obbligatori. Receptionist facoltativo.
     if (wantCoupon) {
       if (!roomNumber) {
         return res.status(400).json({ error: 'Numero di stanza obbligatorio per il coupon' });
-      }
-      if (!receptionist) {
-        return res
-          .status(400)
-          .json({ error: 'Nome del receptionist del check-in obbligatorio per il coupon' });
       }
       if (!checkoutDate) {
         return res.status(400).json({
@@ -1264,12 +1261,7 @@ async function handleCheckin(req, res) {
       }
     }
 
-    const includeCoupon = Boolean(wantCoupon && roomNumber && receptionist);
-    // Stanza serve sempre a Payel (tavolo) — non azzerarla se manca il coupon.
-    // Solo il receptionist resta legato al flusso coupon.
-    if (!includeCoupon) {
-      receptionist = null;
-    }
+    const includeCoupon = Boolean(wantCoupon && roomNumber);
 
     const tester = isTesterAccount({
       email,
@@ -1642,11 +1634,8 @@ app.get(
   },
 );
 
-app.get(
-  '/api/staff/checkins.csv',
-  rateLimit({ windowMs: 60_000, max: 20 }),
-  requireStaff,
-  (req, res) => {
+function sendStaffCheckinsCsv(req, res) {
+  try {
     const date = String(req.query.date || '').trim();
     if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return res.status(400).json({ error: 'Data non valida' });
@@ -1658,6 +1647,44 @@ app.get(
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Cache-Control', 'no-store');
     return res.send(csv);
+  } catch (err) {
+    console.error('[staff] csv export failed', err);
+    return res.status(500).json({ error: 'Errore durante l’export CSV' });
+  }
+}
+
+app.get(
+  '/api/staff/checkins/export',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  requireStaff,
+  sendStaffCheckinsCsv,
+);
+
+app.get(
+  '/api/staff/checkins.csv',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  requireStaff,
+  sendStaffCheckinsCsv,
+);
+
+app.delete(
+  '/api/staff/checkins/:id',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = deleteStaffCheckin(id);
+    if (!result.ok) {
+      return res.status(result.error === 'not_found' ? 404 : 400).json({
+        error: result.error === 'not_found' ? 'Check-in non trovato' : 'Id non valido',
+        code: result.error,
+      });
+    }
+    void syncCheckinsBackup('staff-delete');
+    return res.json({ ok: true, id: result.id });
   },
 );
 
@@ -1693,6 +1720,33 @@ app.patch(
       });
     }
     void syncCheckinsBackup('staff-room');
+    return res.json(result.row);
+  },
+);
+
+app.patch(
+  '/api/staff/checkins/:id/receptionist',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const raw = req.body?.receptionist || req.body?.staff || req.body?.staffId || '';
+    const member = staffMemberById(raw);
+    const name = member?.name || raw;
+    const result = updateCheckinReceptionist(id, name, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(result.error === 'not_found' ? 404 : 400).json({
+        error:
+          result.error === 'staff_required'
+            ? 'Scegli un receptionist'
+            : 'Check-in non trovato',
+        code: result.error,
+      });
+    }
+    void syncCheckinsBackup('staff-assign');
     return res.json(result.row);
   },
 );
