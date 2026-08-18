@@ -4164,8 +4164,8 @@
           max(12px, env(safe-area-inset-left, 0px))
           calc(10px + env(safe-area-inset-bottom, 0px))
           max(12px, env(safe-area-inset-right, 0px));
-        align-items: flex-start;
-        justify-content: flex-start;
+        align-items: center;
+        justify-content: center;
         overflow-x: hidden;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -4184,8 +4184,10 @@
 
       .login-view {
         width: 100%;
-        min-height: 0;
+        min-height: calc(100dvh - (20px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)));
         padding: 6px 0 12px;
+        align-items: center;
+        justify-content: center;
       }
 
       .gate-card {
