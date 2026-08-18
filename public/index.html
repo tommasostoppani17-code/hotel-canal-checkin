@@ -3511,7 +3511,7 @@
     }
 
     #step4 .guest-reentry {
-      margin: 14px 0 0;
+      margin: 8px 0 0;
       text-align: center;
     }
 
@@ -3519,13 +3519,12 @@
       display: none !important;
     }
 
-    #step4 .guest-reentry .btn-ghost {
+    #step4 .guest-reentry .btn-text-link {
       font-size: 13px;
       font-weight: 600;
-      color: var(--canal-petroleum);
-      opacity: 0.78;
-      min-height: 40px;
-      padding: 8px 12px;
+      color: #636366 !important;
+      min-height: 36px;
+      padding: 8px 10px;
     }
 
     .guest-action-btn:active .ga-chevron {
@@ -5496,6 +5495,18 @@
       text-align: center;
     }
 
+    /* Coupon nascosto: niente lastra bianca (padding !important di #step4 .receipt-badge) */
+    #step4 .receipt-badge.is-collapsed {
+      display: none !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
     /* Coupon: STESSA larghezza 100% dei moduli azione */
     #step4 .receipt-badge {
       display: block !important;
@@ -5684,22 +5695,21 @@
 
     #step4 .guest-reentry {
       margin: 0 !important;
-      padding: 0 0 var(--ios-2);
+      padding: var(--ios-2) 0 0;
       text-align: center;
       flex: 0 0 auto;
       width: 100%;
     }
 
-    #step4 .guest-reentry .btn-ghost {
-      min-height: 44px;
-      padding: var(--ios-2) var(--ios-4);
+    #step4 .guest-reentry .btn-text-link {
+      min-height: 36px;
+      padding: 8px 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--canal-petroleum);
-      opacity: 1;
+      font-size: 13px;
+      font-weight: 600;
+      color: #636366 !important;
     }
 
     @media (max-width: 390px) {
@@ -6699,7 +6709,7 @@
                 Reception 24h. Passa quando vuoi.
               </p>
               <div class="guest-reentry" id="guestReentry" hidden>
-                <button type="button" class="btn-ghost" id="btnNewCheckin"></button>
+                <button type="button" class="btn-text-link" id="btnNewCheckin"></button>
               </div>
             </div>
           </div>
@@ -6999,8 +7009,8 @@
         privacy: 'Accetto il trattamento dei dati per le comunicazioni relative al mio soggiorno.',
         submitError: 'Errore durante l\'invio. Riprova.',
         networkError: 'Errore di connessione.',
-        alreadyRegisteredTitle: 'Sei già registrato',
-        alreadyRegisteredSub: 'Apri i menu qui sotto per Wi‑Fi, codici porta e tavolo. Buon soggiorno a Venezia.',
+        alreadyRegisteredTitle: 'Già registrato',
+        alreadyRegisteredSub: "Ti abbiamo inviato un'email con i dettagli del soggiorno. Aprila per le indicazioni.",
         newCheckin: 'Nuovo check-in',
         networkErrorTitle: 'Errore di connessione',
         networkErrorSub: 'Problema di rete o troppi dispositivi collegati. Riprova tra poco.',
@@ -7118,7 +7128,7 @@
         submitError: 'Could not submit. Please try again.',
         networkError: 'Connection error.',
         alreadyRegisteredTitle: 'Already registered',
-        alreadyRegisteredSub: 'Open the menus below for Wi‑Fi, door codes and table booking. Enjoy your stay in Venice.',
+        alreadyRegisteredSub: 'We emailed your stay details. Open the email for directions.',
         newCheckin: 'New check-in',
         networkErrorTitle: 'Connection error',
         networkErrorSub: 'Network issue or too many devices connected. Please try again shortly.',
@@ -8797,6 +8807,7 @@
 
     let lastCheckinId = null;
     let lastCouponSent = false;
+    let lastAlreadyRegistered = false;
     let guestAccessToken = null;
     let measuredStep1Height = 0;
     /** Altezze “buone” per step (misurate a riposo) — evita misura gonfiata durante lo slide */
@@ -10289,7 +10300,9 @@
 
       if (currentStep === TOTAL_STEPS) {
         const dict = t();
-        document.getElementById('lbl-succ-title').textContent = dict.successTitle;
+        document.getElementById('lbl-succ-title').textContent = lastAlreadyRegistered
+          ? dict.alreadyRegisteredTitle
+          : dict.successTitle;
         document.getElementById('lbl-succ-sub').textContent = lastCouponSent
           ? dict.successSubCoupon
           : dict.successSub;
@@ -10316,6 +10329,7 @@
       guestAccessToken = null;
       lastCheckinId = null;
       lastCouponSent = false;
+      lastAlreadyRegistered = false;
       guestServicesCache = null;
       closeGuestSheet();
       const reentry = document.getElementById('guestReentry');
@@ -10324,7 +10338,6 @@
     }
 
     function showAlreadyRegisteredScreen() {
-      const dict = t();
       const session = readGuestSession() || {};
       showSuccessStep({
         id: session.checkinId,
@@ -10334,15 +10347,6 @@
         guestAccessToken: session.guestAccessToken || null,
         quiet: true,
       });
-      const reentryBtn = document.getElementById('btnNewCheckin');
-      if (reentryBtn) {
-        reentryBtn.textContent = dict.newCheckin || 'Nuovo check-in';
-        reentryBtn.onclick = (e) => {
-          e.preventDefault();
-          playConfirmChime?.({ soft: true });
-          startFreshCheckin();
-        };
-      }
     }
 
     function showNetworkErrorScreen() {
@@ -10410,6 +10414,7 @@
 
       lastCheckinId = id != null ? Number(id) : null;
       lastCouponSent = Boolean(couponSent);
+      lastAlreadyRegistered = Boolean(already);
       guestAccessToken = accessToken || null;
       guestServicesCache = null;
       document.getElementById('step4')?.classList.remove('is-report-result');
@@ -10418,29 +10423,27 @@
       document.getElementById('lbl-succ-title').textContent = already
         ? dict.alreadyRegisteredTitle
         : dict.successTitle;
-      document.getElementById('lbl-succ-sub').textContent = already
-        ? dict.alreadyRegisteredSub
-        : couponSent
-          ? dict.successSubCoupon
-          : dict.successSub;
+      document.getElementById('lbl-succ-sub').textContent = couponSent
+        ? dict.successSubCoupon
+        : dict.successSub;
       document.getElementById('lbl-badge').textContent = dict.badgeTxt;
       document.getElementById('verificationCode').textContent = checkCode;
       document.getElementById('lbl-verified-time').textContent =
         `${dict.verifiedTxt} ${now}`;
       const badge = document.getElementById('receiptBadge');
-      badge.classList.toggle('is-collapsed', Boolean(already));
+      badge.classList.remove('is-collapsed');
 
       applyGuestActionLabels(dict, couponSent);
       const actions = document.getElementById('guestActions');
       const note = document.getElementById('lbl-reception-note');
       if (note) note.textContent = dict.receptionNote || '';
-      // Menu a tendina sempre disponibili (anche se già registrato)
+      // Stesso hub del primo check-in: coupon + menu. “Nuovo check-in” solo per i tester.
       if (actions) {
         actions.hidden = false;
       }
       const reentry = document.getElementById('guestReentry');
       const reentryBtn = document.getElementById('btnNewCheckin');
-      if (reentry) reentry.hidden = !already;
+      if (reentry) reentry.hidden = true;
       if (reentryBtn) {
         reentryBtn.textContent = dict.newCheckin || 'Nuovo check-in';
         reentryBtn.onclick = (e) => {
