@@ -706,6 +706,26 @@
       margin-top: var(--ios-1);
     }
 
+    /* Schermi corti: corpo scrollabile, footer/Continua sempre ancorato */
+    .slide-step.is-viewport-clamped {
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .slide-step.is-viewport-clamped > .step-body,
+    .slide-step.is-viewport-clamped > .step-body.step-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .slide-step.is-viewport-clamped > .step-footer-fixed {
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+
     .input-row-grid,
     .form-grid-container {
       display: grid;
@@ -1681,6 +1701,26 @@
 
     .step-footer-fixed .btn-ghost:first-of-type {
       margin-top: var(--ios-1);
+    }
+
+    /* Schermi corti: corpo scrollabile, footer/Continua sempre ancorato */
+    .slide-step.is-viewport-clamped {
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .slide-step.is-viewport-clamped > .step-body,
+    .slide-step.is-viewport-clamped > .step-body.step-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .slide-step.is-viewport-clamped > .step-footer-fixed {
+      flex-shrink: 0;
+      margin-top: auto;
     }
 
     .input-row-grid,
@@ -6881,6 +6921,44 @@
         if (i !== TOTAL_STEPS || step !== TOTAL_STEPS) {
           el.classList.remove('is-dissolving');
         }
+        if (!active && !sliding) {
+          clearStepViewportClamp(i);
+        }
+      }
+    }
+
+    function clearStepViewportClamp(step) {
+      const stepEl = document.getElementById(`step${step}`);
+      if (!stepEl) return;
+      stepEl.classList.remove('is-viewport-clamped');
+      stepEl.style.height = '';
+      stepEl.style.maxHeight = '';
+    }
+
+    /** Se il contenuto supera #sliderViewport, scroll solo nel body — footer/CTA restano visibili. */
+    function reconcileStepViewportFit(step) {
+      const viewport = document.getElementById('sliderViewport');
+      const stepEl = document.getElementById(`step${step}`);
+      if (!viewport || !stepEl || !stepEl.classList.contains('is-active')) return;
+
+      viewport.style.clipPath = '';
+      viewport.style.webkitClipPath = '';
+
+      const vpH = Math.round(viewport.getBoundingClientRect().height);
+      if (vpH < 80) return;
+
+      const natural = measureStepContentHeight(step);
+      if (!Number.isFinite(natural) || natural < 80) {
+        clearStepViewportClamp(step);
+        return;
+      }
+
+      if (natural > vpH + 6) {
+        stepEl.classList.add('is-viewport-clamped');
+        stepEl.style.height = `${vpH}px`;
+        stepEl.style.maxHeight = `${vpH}px`;
+      } else {
+        clearStepViewportClamp(step);
       }
     }
 
@@ -7004,13 +7082,33 @@
               ? document.getElementById('btnNext')
               : null;
       if (!viewport || !btn) return;
+
+      viewport.style.clipPath = '';
+      viewport.style.webkitClipPath = '';
+
       const vr = viewport.getBoundingClientRect();
       const br = btn.getBoundingClientRect();
       if (br.height < 8) return;
-      if (br.bottom > vr.bottom - 2 || br.top > vr.bottom) {
-        stepHeightCache[currentStep] = 0;
-        syncViewportHeight(currentStep);
+
+      const ctaVisible = br.bottom <= vr.bottom - 2 && br.top < vr.bottom;
+      if (!ctaVisible) {
+        const natural = measureStepContentHeight(currentStep);
+        const maxH = availableViewportMax();
+        const target = Math.min(Math.max(natural, 280), maxH);
+        stepHeightCache[currentStep] = target;
+        geometryMap[currentStep] = target;
+        applyViewportHeightPx(target, { animate: false });
       }
+
+      reconcileStepViewportFit(currentStep);
+
+      requestAnimationFrame(() => {
+        const vr2 = viewport.getBoundingClientRect();
+        const br2 = btn.getBoundingClientRect();
+        if (br2.height >= 8 && br2.bottom > vr2.bottom - 2) {
+          reconcileStepViewportFit(currentStep);
+        }
+      });
     }
 
     function applyViewportHeightPx(h, { animate = true } = {}) {
@@ -7027,6 +7125,7 @@
       viewport.style.height = `${clamped}px`;
       void viewport.offsetHeight;
       viewport.style.transition = '';
+      reconcileStepViewportFit(currentStep);
     }
 
     /** Matrice live (375×667): seed antifallo + misura a freddo. */
@@ -7147,6 +7246,7 @@
       markStepClasses(step, { slidingFrom: null });
       stepBusy = false;
       ensurePrimaryCtaVisible();
+      reconcileStepViewportFit(step);
     }
 
     function flipTransitionToStep(
@@ -7370,6 +7470,7 @@
       stepHeightCache[step] = h;
       if (step === 1) measuredStep1Height = h;
       applyViewportHeightPx(h, { animate: false });
+      reconcileStepViewportFit(step);
     }
 
     function computeCardHeightPx(step, { preferCache = true } = {}) {
