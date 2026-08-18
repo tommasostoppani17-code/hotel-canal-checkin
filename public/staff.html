@@ -86,6 +86,7 @@
       --hover-ease: 180ms ease;
       --kb-inset: 0px;
       --app-vh: 100svh;
+      --card-max-w: 420px;
     }
 
     * {
@@ -198,7 +199,7 @@
 
     body:not(.is-dashboard) .staff-shell {
       width: 100%;
-      max-width: 380px;
+      max-width: var(--card-max-w);
       height: auto;
       min-height: 0;
       max-height: 100%;
@@ -351,7 +352,10 @@
     .gate-card {
       position: relative;
       width: 100%;
-      max-width: 380px;
+      max-width: var(--card-max-w);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
       background-color: var(--card-cream);
       background-image: linear-gradient(
         180deg,
@@ -443,10 +447,14 @@
 
     .gate-form .form-group {
       margin-top: 0;
-      margin-bottom: var(--ios-2);
+      margin-bottom: var(--ios-gap-lg);
       position: relative;
       z-index: 0;
       text-align: left;
+    }
+
+    .gate-form .form-group:last-of-type {
+      margin-bottom: 0;
     }
 
     .gate-form .form-group:focus-within {
@@ -454,7 +462,7 @@
     }
 
     .gate-form .form-group:has(.ui-dropdown.is-open) {
-      z-index: 8;
+      z-index: 20;
     }
 
     .gate-form .form-group label {
@@ -472,19 +480,116 @@
       color: var(--canal-petroleum-hover);
     }
 
+    .gate-form .input-with-icon {
+      position: relative;
+      width: 100%;
+    }
+
+    .gate-form .input-with-icon .field-glyph {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: #86868b;
+      pointer-events: none;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gate-form .input-with-icon .field-glyph svg {
+      display: block;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .gate-form .apple-input,
+    .gate-form .field,
+    .gate-form .ui-dropdown-trigger.field {
+      width: 100%;
+      height: 48px;
+      min-height: 48px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      padding: 0 14px 0 36px;
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius-ios);
+      background: #fff;
+      box-sizing: border-box;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+      outline: none;
+      scroll-margin-top: 80px;
+      scroll-margin-bottom: 24px;
+    }
+
+    .gate-form .ui-dropdown-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: left;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .gate-form .apple-picker-value,
+    .gate-form .ui-dropdown-value {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 400;
+    }
+
+    .gate-form .ui-dropdown-value.is-placeholder,
+    .gate-form .apple-picker-value.is-placeholder {
+      color: var(--placeholder);
+      font-weight: 500;
+    }
+
+    .gate-form .apple-picker-chevron {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      margin-left: 8px;
+      color: #8E8E93;
+      pointer-events: none;
+    }
+
+    .gate-form .ui-dropdown.is-open .apple-picker-chevron {
+      transform: rotate(180deg);
+      color: var(--canal-petroleum);
+    }
+
+    .gate-form .field:focus,
+    .gate-form .apple-input:focus,
+    .gate-form .ui-dropdown.is-open .ui-dropdown-trigger {
+      border-color: rgba(18, 68, 83, 0.45);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+    }
+
     .gate-card.is-menu-open {
+      overflow: visible;
+    }
+
+    body:not(.is-dashboard):has(.gate-card.is-menu-open) {
       overflow: hidden;
     }
 
-    .gate-form .field,
-    .gate-form .ui-dropdown-trigger.field {
-      height: var(--ios-touch);
-      font-size: var(--type-body);
-      letter-spacing: -0.02em;
-      border: 1.5px solid transparent;
-      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
-      scroll-margin-top: 80px;
-      scroll-margin-bottom: 24px;
+    body:not(.is-dashboard):has(.gate-card.is-menu-open) .staff-shell {
+      overflow: visible;
     }
 
     .gate-form .field::-webkit-contacts-auto-fill-button,
@@ -507,7 +612,7 @@
     .gate-form .btn-canal {
       width: 100%;
       height: var(--ios-cta);
-      margin-top: var(--ios-4);
+      margin-top: var(--step-stack);
       border: 0;
       border-radius: var(--radius-ios);
       background: var(--canal-petroleum);
@@ -687,7 +792,7 @@
     }
 
     .apple-inline-list:not([hidden]) {
-      display: block;
+      display: block !important;
     }
 
     /* Login: ruota fluttuante. Non entra nel flusso, non deforma la card. */
@@ -867,6 +972,13 @@
     .ui-dropdown.is-open .ui-dropdown-trigger {
       border-color: rgba(18, 68, 83, 0.45);
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+    }
+
+    .gate-form .ui-dropdown-trigger.field {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-main);
+      justify-content: flex-start;
     }
 
     .ui-menu-item {
@@ -4841,10 +4953,10 @@
         min-height: var(--app-vh, 100svh);
         max-height: var(--app-vh, 100svh);
         padding:
-          calc(10px + env(safe-area-inset-top, 0px))
-          max(12px, env(safe-area-inset-left, 0px))
-          calc(10px + env(safe-area-inset-bottom, 0px))
-          max(12px, env(safe-area-inset-right, 0px));
+          calc(16px + env(safe-area-inset-top, 0px))
+          16px
+          calc(16px + env(safe-area-inset-bottom, 0px))
+          16px;
         align-items: center;
         justify-content: center;
         overflow: hidden;
@@ -4852,8 +4964,8 @@
       }
 
       body:not(.is-dashboard) .staff-shell {
-        width: min(100%, 380px);
-        max-width: 380px;
+        width: min(100%, var(--card-max-w));
+        max-width: var(--card-max-w);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -4873,15 +4985,15 @@
       }
 
       .gate-card {
-        max-width: 380px;
+        max-width: var(--card-max-w);
         width: 100%;
-        border-radius: var(--radius-ios);
+        border-radius: 24px;
         padding-top: 28px;
-        padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: 22px;
       }
 
       .gate-card.is-menu-open {
-        overflow: hidden;
+        overflow: visible;
       }
 
       .gate-header {
@@ -5597,14 +5709,13 @@
       <form id="gateForm" class="gate-form" action="#" autocomplete="off">
         <div class="form-group">
           <label id="lbl-staff" for="staffMemberTrigger">Receptionist</label>
-          <div class="ui-dropdown" id="staffDropdown">
-            <button type="button" class="ui-dropdown-trigger field" id="staffMemberTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="staffMemberMenu">
-              <span class="ui-dropdown-value is-placeholder" id="staffMemberLabel">Seleziona…</span>
-              <span class="ui-dropdown-chevron-wrap" aria-hidden="true">
-                <svg class="ui-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </span>
+          <div class="ui-dropdown input-with-icon" id="staffDropdown">
+            <span class="field-glyph" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 .7 4 2.2"/></svg>
+            </span>
+            <button type="button" class="apple-input apple-picker-trigger ui-dropdown-trigger field" id="staffMemberTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="staffMemberMenu">
+              <span class="apple-picker-value ui-dropdown-value is-placeholder" id="staffMemberLabel">Seleziona…</span>
+              <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
             </button>
             <div class="apple-inline-list" id="staffMemberList" hidden>
               <div class="apple-inline-window" aria-hidden="true"></div>
@@ -5617,12 +5728,11 @@
         </div>
         <div class="form-group">
           <label id="lbl-pin" for="pin">Password</label>
-          <div class="input-container">
-            <input class="field" id="pin" type="password" inputmode="text" autocomplete="off" maxlength="64" placeholder="Inserisci password">
-            <svg class="input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M8 15a4 4 0 1 1 3.6-5.8L20 17.6V21h-3.4l-1.8-1.8" stroke="#124453" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="8" cy="11" r="1.2" fill="#124453"/>
-            </svg>
+          <div class="input-with-icon">
+            <span class="field-glyph" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+            <input class="apple-input field" id="pin" type="password" inputmode="text" autocomplete="off" maxlength="64" placeholder="Inserisci password">
           </div>
         </div>
         <button class="btn-canal" id="btnLogin" type="submit">Entra</button>

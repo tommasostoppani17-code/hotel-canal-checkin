@@ -91,6 +91,7 @@
       --card-h-3-booking: 520px;
       --card-h-3-open: 580px;
       --card-h: var(--card-h-1);
+      --card-max-w: 420px;
       --card-max: calc(
         var(--app-vh) - env(safe-area-inset-top, 0px) -
           env(safe-area-inset-bottom, 0px) - 24px
@@ -202,7 +203,7 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      max-width: 380px;
+      max-width: var(--card-max-w);
       /* Fluida: cresce col viewport interno, tetto = schermo − safe-area */
       height: auto;
       max-height: var(--card-max);
@@ -248,7 +249,7 @@
       animation: cardIntro 0.5s var(--ios-ease) both;
     }
 
-    /* Smartphone: card più stretta + tetto safe-area */
+    /* Smartphone: card a tutta larghezza utile, tetto safe-area */
     @media (max-width: 480px) {
       :root {
         --card-h-1: 460px;
@@ -267,8 +268,13 @@
         max-height: var(--app-vh);
       }
 
+      body {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
       .apple-card {
-        max-width: 360px;
+        max-width: var(--card-max-w);
         width: 100%;
         margin-left: auto;
         margin-right: auto;
@@ -360,7 +366,7 @@
 
       #step3 .form-grid-container,
       #step3 #roomFormGrid {
-        gap: 12px;
+        gap: var(--ios-gap-lg);
         padding: 0;
       }
 
@@ -753,7 +759,7 @@
     .form-grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: var(--step-stack) var(--ios-gap-lg);
+      gap: var(--ios-gap-lg);
       width: 100%;
       box-sizing: border-box;
       /* Aria per bordo/focus inset: non finiscono sotto il clip della card */
@@ -1374,7 +1380,7 @@
     .dining-book .form-grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: var(--step-stack) var(--ios-gap-lg) !important;
+      gap: var(--ios-gap-lg) !important;
       margin: 0 !important;
       padding: 0 !important;
       width: 100%;
@@ -1392,8 +1398,17 @@
     #step3 .form-group {
       margin-bottom: 0;
     }
+    #step3 .input-with-icon .apple-input,
+    #step3 .input-with-icon .apple-picker-trigger {
+      height: var(--ios-touch);
+      padding-left: 36px;
+      padding-right: 10px;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+      border-radius: var(--radius-ios);
+    }
     #step3 .input-with-icon .field-glyph {
-      left: 14px;
+      left: 12px;
       top: 50%;
       bottom: auto;
       width: 16px;
@@ -1407,14 +1422,6 @@
       width: 16px;
       height: 16px;
     }
-    #step3 .input-with-icon .apple-input,
-    #step3 .input-with-icon .apple-picker-trigger {
-      height: var(--ios-touch);
-      padding-left: 42px;
-      padding-right: 14px;
-      font-size: var(--type-body);
-      border-radius: var(--radius-ios);
-    }
     #step3 input[type="number"].apple-input {
       -moz-appearance: textfield;
       appearance: textfield;
@@ -1425,7 +1432,8 @@
       margin: 0;
     }
     #step3 input[type="date"].apple-input {
-      font-size: 16px;
+      font-size: 14px;
+      letter-spacing: -0.02em;
       color-scheme: light;
       min-width: 0;
     }
@@ -1765,7 +1773,7 @@
     .form-grid-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: var(--step-stack) var(--ios-gap-lg);
+      gap: var(--ios-gap-lg);
       width: 100%;
       box-sizing: border-box;
       /* Aria per bordo/focus inset: non finiscono sotto il clip della card */
@@ -3639,11 +3647,11 @@
     .apple-inline-list {
       display: none;
       position: absolute;
-      top: 100%;
+      top: calc(100% + 4px);
       left: 0;
       width: 100%;
       height: 176px;
-      margin-top: 4px;
+      margin-top: 0;
       overflow: hidden;
       background: #fff;
       border: 1px solid #d1d1d6;
@@ -3663,7 +3671,53 @@
     }
 
     .form-group.is-picker-open .apple-inline-list {
-      display: block;
+      display: block !important;
+    }
+
+    /* Receptionist in fondo: la lista sale e copre le date, non finisce sotto il CTA */
+    #step3 .form-group.span-2.is-picker-open .apple-inline-list {
+      top: auto;
+      bottom: calc(100% + 4px);
+    }
+
+    /* Sblocca i clip della card solo mentre la tendina è aperta */
+    .apple-card:has(.is-picker-open),
+    .apple-card.is-picker-open {
+      overflow: visible;
+    }
+
+    .slider-viewport:has(.is-picker-open) {
+      overflow: visible;
+      contain: layout size;
+      clip-path: none;
+      -webkit-clip-path: none;
+    }
+
+    .slide-step:has(.is-picker-open) {
+      overflow: visible;
+    }
+
+    .slide-step:has(.is-picker-open) > .step-body.step-scroll {
+      overflow: visible;
+    }
+
+    .slide-step:has(.is-picker-open) > .step-body {
+      position: relative;
+      z-index: 8;
+    }
+
+    .slide-step:has(.is-picker-open) > .step-footer-fixed {
+      z-index: 1;
+    }
+
+    .apple-card:has(.is-picker-open) .card-sheen,
+    .apple-card.is-picker-open .card-sheen {
+      z-index: 0;
+    }
+
+    .apple-card:has(.is-picker-open) .slider-viewport,
+    .apple-card.is-picker-open .slider-viewport {
+      z-index: 6;
     }
 
     .apple-inline-scroll {
@@ -4711,7 +4765,7 @@
 
     #step3 .input-with-icon .field-glyph {
       position: absolute;
-      left: 14px;
+      left: 12px;
       top: 50%;
       bottom: auto;
       width: 16px;
@@ -4738,8 +4792,10 @@
       width: 100%;
       height: 48px;
       min-height: 48px;
-      padding-left: 42px;
-      padding-right: 14px;
+      padding-left: 36px;
+      padding-right: 10px;
+      font-size: 14px;
+      letter-spacing: -0.02em;
       line-height: normal;
       border: 1.5px solid rgba(18, 68, 83, 0.12);
       border-radius: var(--radius-ios);
@@ -4756,14 +4812,24 @@
 
     #step3 input[type="date"].apple-input {
       min-width: 0;
+      font-size: 14px;
+      letter-spacing: -0.02em;
     }
 
     #step3 input[type="date"].apple-input::-webkit-date-and-time-value {
       text-align: left;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    #step3 input[type="date"].apple-input::-webkit-datetime-edit {
+      font-size: 14px;
+      letter-spacing: -0.02em;
+      padding: 0;
     }
 
     #step3 .form-group label {
-      margin-bottom: 6px;
+      margin-bottom: var(--ios-2);
       margin-left: 0;
     }
 
@@ -4772,9 +4838,9 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: 0;
-      padding-top: var(--ios-4);
-      padding-bottom: var(--ios-4);
+      gap: var(--ios-2);
+      padding-top: var(--step-stack);
+      padding-bottom: var(--ios-2);
     }
 
     #step3Footer .btn-canal {
@@ -4787,8 +4853,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: var(--ios-3);
-      margin-top: var(--ios-6);
+      gap: var(--ios-2);
+      margin-top: var(--ios-2);
       width: 100%;
     }
 
@@ -5266,33 +5332,33 @@
     }
 
     /* =========================================================
-       Step 3 Reservation — layout compresso (niente buchi)
+       Step 3 — stesso ritmo 8pt di step 1 / 2
        ========================================================= */
     #step3 .step-body.dining-book {
-      gap: 12px !important;
+      gap: var(--step-stack) !important;
     }
 
     #step3 .dining-book-head {
-      margin: 0 0 12px !important;
+      margin: 0 !important;
       padding: 0;
     }
 
     #step3 .dining-book-kicker {
-      margin: 0 0 4px;
+      margin: 0 0 var(--ios-2);
     }
 
     #step3 .dining-book-title {
       margin: 0;
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1.15;
+      font-size: var(--type-title);
+      font-weight: 600;
+      line-height: 1.25;
     }
 
     #step3 .dining-book-sub {
-      margin: 8px auto 0 !important;
+      margin: var(--ios-3) auto 0 !important;
       max-width: 34ch;
-      font-size: 13.5px;
-      line-height: 1.4;
+      font-size: 13px;
+      line-height: 1.45;
     }
 
     #step3 .booking-reserve-block {
@@ -5302,16 +5368,16 @@
 
     #step3 .booking-reserve-label,
     #step3 .dining-book .booking-reserve-label {
-      margin: 0 0 8px !important;
+      margin: 0 0 var(--ios-2) !important;
       text-align: center;
-      font-size: 11px;
-      font-weight: 600;
+      font-size: var(--type-label);
+      font-weight: 700;
     }
 
     #step3 .booking-segment-grid,
     #step3 .dining-book .booking-segment-grid {
-      gap: 8px !important;
-      margin: 0 0 16px !important;
+      gap: var(--ios-gap) !important;
+      margin: 0 0 var(--ios-gap-lg) !important;
     }
 
     /* Divider rimosso dall'HTML — zero spacer fantasma */
@@ -5327,7 +5393,7 @@
     #step3 #roomFormGrid {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 16px !important;
+      gap: var(--ios-gap-lg) !important;
       margin: 0 !important;
       padding: 0 !important;
       width: 100%;
@@ -5342,7 +5408,7 @@
     }
 
     #step3 .form-group label {
-      margin-bottom: 6px !important;
+      margin-bottom: var(--ios-2) !important;
       margin-left: 0;
     }
 
@@ -5350,14 +5416,15 @@
     #step3 #roomFormGrid .input-with-icon .apple-picker-trigger {
       height: 48px !important;
       min-height: 48px;
-      padding-left: 42px !important;
-      padding-right: 14px;
-      font-size: 16px;
+      padding-left: 36px !important;
+      padding-right: 10px;
+      font-size: 14px;
+      letter-spacing: -0.02em;
     }
 
     #step3Footer.step-footer-fixed {
-      padding-top: 12px !important;
-      padding-bottom: 8px !important;
+      padding-top: var(--step-stack) !important;
+      padding-bottom: var(--ios-2) !important;
       margin-top: 0 !important;
     }
 
@@ -5586,6 +5653,80 @@
 
     .form-picker-option:active {
       background: rgba(18, 68, 83, 0.12);
+    }
+
+    /* Ritmo unico 8pt — tutte le schermate card */
+    .form-grid-container,
+    .input-row-grid,
+    #step1 .form-grid-container,
+    #step3 .form-grid-container,
+    #step3 #roomFormGrid {
+      gap: var(--ios-gap-lg) !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .form-group label,
+    .form-grid-container .form-group label,
+    #step3 .form-group label {
+      margin-bottom: var(--ios-2) !important;
+      margin-left: 0 !important;
+    }
+
+    .header {
+      margin-bottom: var(--step-stack);
+    }
+
+    .step-footer-fixed,
+    #step1Footer.step-footer-fixed,
+    #step2 .step-footer-fixed,
+    #step3Footer.step-footer-fixed {
+      padding-top: var(--step-stack) !important;
+      padding-bottom: var(--ios-2) !important;
+    }
+
+    .step-footer-fixed .privacy-box,
+    #step1Footer .privacy-box {
+      margin: 0 0 var(--ios-gap-lg) !important;
+    }
+
+    #step2 .step-footer-fixed {
+      gap: var(--ios-2);
+    }
+
+    #step2 .step-footer-fixed .btn-canal,
+    #step3Footer .btn-canal,
+    #step1Footer .btn-canal {
+      height: var(--ios-cta) !important;
+      min-height: var(--ios-cta);
+      margin-top: 0 !important;
+    }
+
+    #step3Footer .action-links {
+      margin-top: var(--ios-2) !important;
+      gap: var(--ios-2) !important;
+    }
+
+    #step2 .dining-story {
+      gap: var(--step-stack);
+    }
+
+    #step2 .dining-copy {
+      gap: var(--ios-3);
+      padding: 0;
+    }
+
+    #step4 .step3-head {
+      margin: 0 0 var(--step-stack);
+    }
+
+    #step4 .receipt-badge {
+      margin-bottom: var(--ios-gap-lg);
+    }
+
+    #step4 .guest-actions {
+      gap: var(--ios-gap);
+      margin-top: 0;
     }
   </style>
 </head>
@@ -7212,6 +7353,7 @@
       staffTrigger?.closest('.form-group')?.classList.remove('is-picker-open');
       guestsTrigger?.setAttribute('aria-expanded', 'false');
       staffTrigger?.setAttribute('aria-expanded', 'false');
+      document.getElementById('card')?.classList.remove('is-picker-open');
       wheelKind = null;
     }
 
@@ -7259,6 +7401,7 @@
       list.hidden = false;
       list.removeAttribute('hidden');
       trigger.closest('.form-group')?.classList.add('is-picker-open');
+      document.getElementById('card')?.classList.add('is-picker-open');
       guestsTrigger?.setAttribute('aria-expanded', kind === 'guests' ? 'true' : 'false');
       staffTrigger?.setAttribute('aria-expanded', kind === 'staff' ? 'true' : 'false');
       window.requestAnimationFrame(() => {
@@ -7900,16 +8043,13 @@
      */
     function preCalculateGeometry({ applyCurrent = true } = {}) {
       const maxH = availableViewportMax();
-      const compact = isCompactPhoneViewport();
       for (let i = 1; i <= TOTAL_STEPS; i++) {
         let natural = measureStepContentHeight(i);
         if (!Number.isFinite(natural) || natural < 200) {
           natural = stepHeightCache[i] >= 200 ? stepHeightCache[i] : 0;
         }
         const seed = Number(GEOMETRY_SEED[i]) || 0;
-        const base = compact
-          ? Math.max(seed, natural || 0)
-          : natural || seed || 420;
+        const base = Math.max(seed, natural || 0) || 420;
         const h = Math.min(Math.max(Math.round(base), 280), maxH);
         geometryMap[i] = h;
         stepHeightCache[i] = h;
