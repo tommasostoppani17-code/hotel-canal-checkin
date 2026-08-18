@@ -4555,6 +4555,13 @@
       color-scheme: light;
     }
 
+    input.apple-input,
+    textarea.apple-input {
+      color: var(--text-main);
+      -webkit-text-fill-color: var(--text-main);
+      caret-color: var(--text-main);
+    }
+
     .apple-input::placeholder {
       color: var(--placeholder);
       font-weight: 400;
@@ -5954,6 +5961,13 @@
       letter-spacing: -0.02em;
     }
 
+    #room {
+      color: #1d1d1f !important;
+      -webkit-text-fill-color: #1d1d1f !important;
+      caret-color: #1d1d1f;
+      opacity: 1;
+    }
+
     #step3Footer.step-footer-fixed {
       padding-top: var(--step-stack) !important;
       padding-bottom: var(--ios-2) !important;
@@ -6015,7 +6029,7 @@
       min-height: 0;
       overflow: hidden !important;
       overscroll-behavior: none !important;
-      padding-bottom: calc(var(--kb-inset, 0px) + 16px);
+      padding-bottom: 0 !important;
     }
 
     body.is-keyboard-open .slide-step.is-active > .step-footer-fixed {
@@ -6301,6 +6315,137 @@
     .slide-step:has(.is-picker-open) > .step-body.step-scroll {
       overflow: visible !important;
     }
+
+    /* ==========================================================================
+       Keyboard lock — card di cemento, zero reflow
+       ========================================================================== */
+    html.keyboard-visible,
+    html.keyboard-visible body,
+    body.is-keyboard-open {
+      height: var(--rest-vh, var(--app-vh, 100svh)) !important;
+      max-height: var(--rest-vh, var(--app-vh, 100svh)) !important;
+      min-height: var(--rest-vh, var(--app-vh, 100svh)) !important;
+      overflow: hidden !important;
+      overflow: clip !important;
+    }
+
+    html.keyboard-visible .apple-card,
+    html.keyboard-visible #sliderViewport,
+    html.keyboard-visible .slider-track,
+    html.keyboard-visible .slide-step,
+    html.keyboard-visible .step-body,
+    html.keyboard-visible .step-footer-fixed,
+    html.keyboard-visible .btn-canal,
+    html.keyboard-visible .btn-text-link,
+    body.is-keyboard-open .apple-card,
+    body.is-keyboard-open #sliderViewport,
+    body.is-keyboard-open .slider-track,
+    body.is-keyboard-open .slide-step,
+    body.is-keyboard-open .step-footer-fixed,
+    body.is-keyboard-open .btn-canal {
+      transition: none !important;
+      animation: none !important;
+    }
+
+    html.keyboard-visible #sliderViewport,
+    body.is-keyboard-open #sliderViewport {
+      contain: paint layout size !important;
+      flex-shrink: 0 !important;
+      flex-grow: 0 !important;
+    }
+
+    html.keyboard-visible .slider-track,
+    body.is-keyboard-open .slider-track {
+      align-items: flex-start !important;
+    }
+
+    html.keyboard-visible .slide-step.is-active,
+    body.is-keyboard-open .slide-step.is-active {
+      height: 100% !important;
+      max-height: 100% !important;
+      overflow: hidden !important;
+      overflow: clip !important;
+    }
+
+    html.keyboard-visible .step-footer-fixed,
+    body.is-keyboard-open .step-footer-fixed {
+      transform: none !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* ==========================================================================
+       CTA hover — solo desktop con mouse reale
+       ========================================================================== */
+    .btn-canal,
+    .book-submit {
+      margin-top: 0;
+      transform: translate3d(0, 0, 0);
+      will-change: auto;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.08);
+      transition:
+        background-color 0.15s ease,
+        transform 0.1s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.15s ease !important;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-canal:hover:not(:disabled):not(.is-loading),
+      .book-submit:hover:not(:disabled) {
+        background-color: var(--canal-petroleum-hover);
+        transform: translate3d(0, -1px, 0);
+        box-shadow: 0 4px 12px rgba(18, 68, 83, 0.14);
+      }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      .btn-canal:hover,
+      .btn-canal:hover:not(:disabled):not(.is-loading),
+      .book-submit:hover,
+      .book-submit:hover:not(:disabled),
+      #step4 .guest-action:hover {
+        background: var(--canal-petroleum) !important;
+        background-color: var(--canal-petroleum) !important;
+        transform: none !important;
+        box-shadow: 0 1px 2px rgba(18, 68, 83, 0.08) !important;
+      }
+
+      #step4 .guest-action:hover {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        box-shadow: none !important;
+      }
+    }
+
+    .btn-canal:active:not(:disabled):not(.is-loading),
+    .book-submit:active:not(:disabled) {
+      background-color: #051A24 !important;
+      transform: translate3d(0, 0.5px, 0) scale(0.985) !important;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;
+      transition: none !important;
+    }
+
+    html.viewport-frozen #sliderViewport,
+    html.keyboard-visible #sliderViewport {
+      contain: paint layout size !important;
+      transition: none !important;
+    }
+
+    html.viewport-frozen .slider-track,
+    html.keyboard-visible .slider-track {
+      align-items: flex-start !important;
+    }
+
+    html.viewport-frozen #step3Footer,
+    html.keyboard-visible #step3Footer,
+    html.viewport-frozen #step3Footer .action-links,
+    html.keyboard-visible #step3Footer .action-links,
+    html.viewport-frozen #step3Footer .btn-canal,
+    html.keyboard-visible #step3Footer .btn-canal,
+    html.viewport-frozen #step3Footer .btn-text-link,
+    html.keyboard-visible #step3Footer .btn-text-link {
+      transform: translate3d(0, 0, 0) !important;
+      transition: none !important;
+    }
   </style>
 </head>
 <body>
@@ -6412,7 +6557,7 @@
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="8" cy="10" r="3"/><path d="M11 10h9v3M17 10v6M20 10v4"/></svg>
                 </span>
-                <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="next">
+                <input type="text" id="room" name="hc_room_number" class="apple-input" placeholder="" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="numeric" maxlength="4" enterkeyhint="done">
               </div>
             </div>
             <div class="form-group">
@@ -7753,12 +7898,39 @@
       }
     }
 
+    function isDemoHost() {
+      const host = String(location.hostname || '');
+      return host === 'localhost' || host === '127.0.0.1' || host === '::1';
+    }
+
     function isTestMode() {
       try {
-        return new URLSearchParams(location.search).get('test') === '1';
+        const q = new URLSearchParams(location.search);
+        if (q.get('test') === '1' || q.get('demo') === '1') return true;
       } catch (_) {
-        return false;
+        /* ignore */
       }
+      return isDemoHost();
+    }
+
+    function fillDemoGuestForm() {
+      if (!isTestMode()) return;
+      const today = romeYmd();
+      if (firstNameEl) firstNameEl.value = 'Elena';
+      if (lastNameEl) lastNameEl.value = 'Bianchi';
+      if (phoneEl) phoneEl.value = '+39 333 010 1010';
+      if (emailEl) emailEl.value = 'elena.bianchi@canal-demo.test';
+      if (privacyEl) privacyEl.checked = true;
+      if (roomEl) {
+        roomEl.value = '12';
+        lastRoomTyped = '12';
+      }
+      setGuestsPicker(2);
+      if (checkinEl) checkinEl.value = today;
+      syncCheckoutBounds();
+      if (checkoutEl) checkoutEl.value = addDaysYmd(today, 3);
+      setStaffPicker('MARIA');
+      paintStayDateTriggers();
     }
 
     function shouldLockDevice() {
@@ -7777,13 +7949,49 @@
     const firstNameEl = document.getElementById('firstname');
     const lastNameEl = document.getElementById('lastname');
     const roomEl = document.getElementById('room');
+    let lastRoomTyped = '';
+    const committedStay = {
+      room: '',
+      staff: '',
+      checkin: '',
+      checkout: '',
+      guests: '2',
+    };
+    function roomDigits(raw) {
+      return String(raw || '').replace(/\D+/g, '').slice(0, 4);
+    }
     function sanitizeRoomInput() {
       if (!roomEl) return;
-      const next = String(roomEl.value || '').replace(/\D+/g, '').slice(0, 4);
+      const next = roomDigits(roomEl.value);
       if (roomEl.value !== next) roomEl.value = next;
+      lastRoomTyped = next;
+      committedStay.room = next;
     }
-    roomEl?.addEventListener('input', sanitizeRoomInput);
-    roomEl?.addEventListener('blur', sanitizeRoomInput);
+    function commitStayFieldsFromDom() {
+      sanitizeRoomInput();
+      const room = currentRoomValue();
+      if (room) committedStay.room = room;
+      const staff = String(staffEl?.value || committedStay.staff || '').trim();
+      if (staff) committedStay.staff = staff;
+      const checkin = String(checkinEl?.value || committedStay.checkin || '').trim();
+      if (checkin) committedStay.checkin = checkin;
+      const checkout = String(checkoutEl?.value || committedStay.checkout || '').trim();
+      if (checkout) committedStay.checkout = checkout;
+      const guests = String(guestsEl?.value || committedStay.guests || '2').trim();
+      if (guests) committedStay.guests = guests;
+    }
+    function currentRoomValue() {
+      const live = roomDigits(roomEl?.value);
+      if (live) {
+        lastRoomTyped = live;
+        committedStay.room = live;
+        return live;
+      }
+      return roomDigits(lastRoomTyped || committedStay.room);
+    }
+    ['input', 'change', 'blur', 'keyup', 'paste'].forEach((type) => {
+      roomEl?.addEventListener(type, sanitizeRoomInput);
+    });
     const staffEl = document.getElementById('receptionist');
     const guestsEl = document.getElementById('guests');
     const checkoutEl = document.getElementById('checkoutDate');
@@ -8670,16 +8878,80 @@
       return Math.round(vv.offsetTop + vv.height);
     }
 
+    function lockKeyboardInsetVar() {
+      const viewportEl = document.getElementById('sliderViewport');
+      document.documentElement.style.setProperty('--kb-inset', '0px', 'important');
+      document.body.style.setProperty('--kb-inset', '0px', 'important');
+      viewportEl?.style.setProperty('--kb-inset', '0px', 'important');
+    }
+
+    function freezeBoxPx(el, h) {
+      if (!el || !(h >= 280)) return;
+      el.style.setProperty('height', `${h}px`, 'important');
+      el.style.setProperty('max-height', `${h}px`, 'important');
+      el.style.setProperty('min-height', `${h}px`, 'important');
+    }
+
+    function unfreezeBoxPx(el) {
+      if (!el) return;
+      el.style.removeProperty('height');
+      el.style.removeProperty('max-height');
+      el.style.removeProperty('min-height');
+    }
+
     function freezeViewportForKeyboard() {
-      const viewport = document.getElementById('sliderViewport');
-      if (!viewport) return;
+      const viewportEl = document.getElementById('sliderViewport');
+      const cardEl = document.getElementById('card');
+      const trackEl = document.getElementById('sliderTrack');
+      if (!viewportEl) return;
       const current = Math.round(
-        parseFloat(viewport.style.height) || viewport.offsetHeight || 0,
+        parseFloat(viewportEl.style.height) || viewportEl.offsetHeight || 0,
       );
       const h = Math.max(frozenKeyboardViewportH || 0, current, 280);
       frozenKeyboardViewportH = h;
-      viewport.style.height = `${h}px`;
-      reconcileStepViewportFit(currentStep);
+      freezeBoxPx(viewportEl, h);
+      if (cardEl) {
+        const cardH = Math.round(
+          parseFloat(cardEl.style.height) || cardEl.offsetHeight || 0,
+        );
+        freezeBoxPx(cardEl, Math.max(cardH, h));
+      }
+      trackEl?.style.setProperty('align-items', 'flex-start', 'important');
+      document.documentElement.classList.add('keyboard-visible', 'viewport-frozen');
+      lockKeyboardInsetVar();
+    }
+
+    function releaseKeyboardLock() {
+      if (isEditableField(document.activeElement)) return;
+      keyboardLock = false;
+      frozenKeyboardViewportH = 0;
+      document.body.classList.remove('ios-keyboard-open');
+      document.body.classList.remove('is-keyboard-open');
+      document.documentElement.classList.remove('keyboard-visible', 'viewport-frozen');
+      const viewportEl = document.getElementById('sliderViewport');
+      const cardEl = document.getElementById('card');
+      const trackEl = document.getElementById('sliderTrack');
+      unfreezeBoxPx(cardEl);
+      trackEl?.style.removeProperty('align-items');
+      viewportEl?.style.removeProperty('--kb-inset');
+      document.body.style.removeProperty('--kb-inset');
+      document.documentElement.style.setProperty('--kb-inset', '0px');
+      if (viewportEl) {
+        unfreezeBoxPx(viewportEl);
+        viewportEl.style.height = `${mappedStepHeight(currentStep)}px`;
+      }
+      captureRestLayout();
+    }
+
+    function releaseKeyboardLockWhenIdle() {
+      window.setTimeout(() => {
+        if (isEditableField(document.activeElement)) return;
+        if (keyboardInsetPx() > 64) {
+          window.setTimeout(releaseKeyboardLockWhenIdle, 120);
+          return;
+        }
+        releaseKeyboardLock();
+      }, 280);
     }
 
     function scrollFieldIntoScroller() {
@@ -8687,13 +8959,8 @@
     }
 
     function syncKeyboardScroll() {
-      if (!keyboardLock) {
-        document.documentElement.style.setProperty('--kb-inset', '0px');
-        freezeInnerScroll();
-        return;
-      }
-      document.documentElement.style.setProperty('--kb-inset', `${keyboardInsetPx()}px`);
-      freezeInnerScroll();
+      if (keyboardLock) lockKeyboardInsetVar();
+      else document.documentElement.style.setProperty('--kb-inset', '0px');
     }
 
     function initKeyboardLayoutLock() {
@@ -8707,32 +8974,25 @@
       }
       document.addEventListener('focusin', (e) => {
         if (!isEditableField(e.target)) return;
-        hammerScrollLock();
+        commitStayFieldsFromDom();
+        freezeInnerScroll();
         if (!usesVirtualKeyboard()) return;
         if (!keyboardLock) captureRestLayout();
         keyboardLock = true;
         document.documentElement.style.setProperty(
           '--rest-vh',
           `${layoutHeightPx()}px`,
+          'important',
         );
         document.body.classList.add('ios-keyboard-open');
         document.body.classList.add('is-keyboard-open');
         freezeViewportForKeyboard();
-        syncKeyboardScroll();
-        hammerScrollLock();
       });
       document.addEventListener('focusout', () => {
+        commitStayFieldsFromDom();
         window.setTimeout(() => {
-          if (isEditableField(document.activeElement)) {
-            syncKeyboardScroll();
-            return;
-          }
-          keyboardLock = false;
-          frozenKeyboardViewportH = 0;
-          document.body.classList.remove('ios-keyboard-open');
-          document.body.classList.remove('is-keyboard-open');
-          document.documentElement.style.setProperty('--kb-inset', '0px');
-          captureRestLayout();
+          if (isEditableField(document.activeElement)) return;
+          releaseKeyboardLockWhenIdle();
         }, 50);
       });
     }
@@ -9497,7 +9757,6 @@
 
     function hammerScrollLock() {
       freezeInnerScroll();
-      [16, 50, 100, 220, 400].forEach((ms) => setTimeout(freezeInnerScroll, ms));
     }
 
     function pinCardInView() {
@@ -9714,8 +9973,6 @@
         }
       }
       shakeCard();
-      // Aggiorna solo lo step corrente nella matrice (errore può cambiare altezza label)
-      requestAnimationFrame(() => invalidateGeometry(currentStep));
     }
 
     /** Evidenzia più campi insieme (stesso UX iOS, niente toast). */
@@ -10595,17 +10852,18 @@
     /** Coupon: stanza + nome receptionist del check-in obbligatori */
     function validateCouponFields() {
       clearError();
-      const roomRaw = roomEl.value.trim();
-      const staffRaw = staffEl.value.trim();
-      if (!roomRaw) {
+      commitStayFieldsFromDom();
+      const roomRaw = currentRoomValue();
+      const staffRaw = String(staffEl?.value || committedStay.staff || '').trim();
+      if (!roomRaw || !/^\d{1,4}$/.test(roomRaw)) {
         showFieldError(roomEl);
         return false;
       }
-      if (!isValidCheckinDate(checkinEl?.value)) {
+      if (!isValidCheckinDate(checkinEl?.value || committedStay.checkin)) {
         showFieldError(checkinEl);
         return false;
       }
-      if (!isValidCheckoutDate(checkoutEl?.value)) {
+      if (!isValidCheckoutDate(checkoutEl?.value || committedStay.checkout)) {
         showFieldError(checkoutEl);
         return false;
       }
@@ -10707,8 +10965,15 @@
       }
     }
 
+    btnNext.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') return;
+      if (submitting) return;
+      e.preventDefault();
+      btnNext.click();
+    });
     btnNext.addEventListener('click', () => {
       if (submitting) return;
+      if (currentStep !== 1) return;
       // Chiudi tastiera iOS senza scrollare la card fuori viewport
       try {
         document.activeElement?.blur?.();
@@ -10746,7 +11011,7 @@
     function focusNextFormControl(el) {
       if (!el || el.disabled) return;
       try {
-        el.focus({ preventScroll: false });
+        el.focus({ preventScroll: true });
       } catch (_) {
         el.focus();
       }
@@ -10897,17 +11162,50 @@
       setStep(2);
     });
 
-    btnSubmit.addEventListener('click', () => {
-      if (submitting) return;
+    document.getElementById('step3Footer')?.addEventListener(
+      'pointerdown',
+      commitStayFieldsFromDom,
+      true,
+    );
+    let couponSubmitLock = false;
+    function requestCouponSubmit() {
+      if (submitting || couponSubmitLock) return;
+      commitStayFieldsFromDom();
+      if (committedStay.room && roomEl && !String(roomEl.value || '').trim()) {
+        roomEl.value = committedStay.room;
+      }
       if (!validateCouponFields()) return;
-      submitFinal({ clearStaff: false, requireCoupon: true });
+      couponSubmitLock = true;
+      try {
+        roomEl?.blur?.();
+        document.activeElement?.blur?.();
+      } catch (_) {
+        /* ignore */
+      }
+      Promise.resolve(submitFinal({ clearStaff: false, requireCoupon: true }))
+        .finally(() => {
+          couponSubmitLock = false;
+        });
+    }
+    btnSubmit.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') return;
+      e.preventDefault();
+      requestCouponSubmit();
+    });
+    btnSubmit.addEventListener('click', () => {
+      requestCouponSubmit();
     });
     btnSkip?.addEventListener('click', () => {
       if (submitting) return;
       staffEl.value = '';
       roomEl.value = '';
+      lastRoomTyped = '';
+      committedStay.room = '';
+      committedStay.staff = '';
+      committedStay.checkout = '';
       if (checkoutEl) checkoutEl.value = '';
       if (checkinEl) checkinEl.value = romeYmd();
+      committedStay.checkin = checkinEl?.value || '';
       setStaffPicker('');
       setGuestsPicker(2);
       paintStayDateTriggers();
@@ -10929,10 +11227,16 @@
       const firstName = firstNameEl.value.trim();
       const lastName = lastNameEl.value.trim();
       const guestNameRaw = `${firstName} ${lastName}`.trim();
-      const roomRaw = clearStaff ? '' : roomEl.value.trim();
-      const staffRaw = clearStaff ? '' : staffEl.value.trim();
-      const checkoutRaw = clearStaff ? '' : String(checkoutEl?.value || '').trim();
-      const stayRaw = clearStaff ? '' : String(checkinEl?.value || '').trim();
+      const roomRaw = clearStaff ? '' : currentRoomValue();
+      const staffRaw = clearStaff
+        ? ''
+        : String(staffEl.value.trim() || committedStay.staff || '');
+      const checkoutRaw = clearStaff
+        ? ''
+        : String(checkoutEl?.value || committedStay.checkout || '').trim();
+      const stayRaw = clearStaff
+        ? ''
+        : String(checkinEl?.value || committedStay.checkin || '').trim();
       const receptionistNormalized = clearStaff
         ? null
         : normalizeReceptionist(staffRaw);
@@ -11181,8 +11485,12 @@
 
     setLanguage(currentLang);
     setupStayDateFields();
-    void loadGuestRoster();
+    fillDemoGuestForm();
+    void loadGuestRoster().then(() => {
+      if (isTestMode()) setStaffPicker('MARIA');
+    });
     setGuestsPicker(guestsEl?.value || 2);
+    if (isTestMode()) fillDemoGuestForm();
     initKeyboardLayoutLock();
     checkinEl?.addEventListener('change', syncCheckoutBounds);
 
@@ -11233,6 +11541,8 @@
       keyboardLock = false;
       frozenKeyboardViewportH = 0;
       restLayoutH = 0;
+      document.documentElement.classList.remove('keyboard-visible', 'viewport-frozen');
+      document.body.classList.remove('ios-keyboard-open', 'is-keyboard-open');
       setTimeout(syncAppViewportHeight, 180);
     });
     if (window.visualViewport) {

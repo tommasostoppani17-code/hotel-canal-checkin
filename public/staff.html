@@ -4954,6 +4954,9 @@
       letter-spacing: 0.04em;
       padding-left: 8px;
       padding-right: 8px;
+      color: #1d1d1f;
+      -webkit-text-fill-color: #1d1d1f;
+      caret-color: #1d1d1f;
     }
 
     .field--select {
@@ -6933,7 +6936,7 @@
         <div class="sheet-inline-2">
           <div class="sheet-field">
             <label class="sheet-label" id="lbl-note-room" for="noteRoom">Stanza</label>
-            <input class="field field--room" id="noteRoom" maxlength="8" placeholder="109" inputmode="numeric" autocomplete="off">
+          <input class="field field--room" id="noteRoom" maxlength="8" placeholder="" inputmode="numeric" autocomplete="off">
           </div>
           <div class="sheet-field">
             <label class="sheet-label" id="lbl-note-category" for="noteCategory">Tipo</label>
@@ -6970,7 +6973,7 @@
         <p class="sheet-guest-line" id="roomSheetGuest">—</p>
         <div class="sheet-field">
           <label class="sheet-label" id="lbl-edit-room" for="roomSheetNumber">Stanza</label>
-          <input class="field field--room" id="roomSheetNumber" maxlength="8" placeholder="109" inputmode="numeric" autocomplete="off">
+          <input class="field field--room" id="roomSheetNumber" maxlength="8" placeholder="" inputmode="numeric" autocomplete="off">
         </div>
         <p class="settings-lead" id="roomSheetHint">Il cambio resta a nome di chi è collegato.</p>
         <div class="sheet-foot sheet-foot--minimal">
@@ -7178,6 +7181,10 @@
     const roomSheetForm = document.getElementById('roomSheetForm');
     const roomSheetGuestEl = document.getElementById('roomSheetGuest');
     const roomSheetNumberEl = document.getElementById('roomSheetNumber');
+    roomSheetNumberEl?.addEventListener('input', () => {
+      const next = String(roomSheetNumberEl.value || '').replace(/[^0-9A-Za-z]/g, '').slice(0, 8);
+      if (roomSheetNumberEl.value !== next) roomSheetNumberEl.value = next;
+    });
     const staffSheet = document.getElementById('staffSheet');
     const staffSheetForm = document.getElementById('staffSheetForm');
     const staffSheetGuestEl = document.getElementById('staffSheetGuest');
