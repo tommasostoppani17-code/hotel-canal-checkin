@@ -199,6 +199,12 @@
 
     .hidden { display: none !important; }
 
+    /* Temporarily hide Settings section from dashboard navigation and panel. */
+    #tabSettings,
+    #settingsPanel {
+      display: none !important;
+    }
+
     /* ── Motion (allineato al lato ospite) ── */
     @keyframes cardIntro {
       from {
@@ -5952,14 +5958,12 @@
       requests: 'Richieste speciali',
       checkins: 'Clienti',
       blacklist: 'Segnalazioni',
-      settings: 'Impostazioni',
     };
 
     const VIEW_SUBTITLES = {
       requests: 'Turno · ordinate per scadenza',
       checkins: 'Oggi',
       blacklist: 'Lista reception',
-      settings: 'Il tuo account',
     };
 
     function populateNoteCategories(selected = 'other') {
@@ -5969,11 +5973,10 @@
     function setActiveView(view) {
       closeRowMenu();
       closeNotifyMenu();
-      activeView = ['requests', 'checkins', 'blacklist', 'settings'].includes(view) ? view : 'checkins';
+      activeView = ['requests', 'checkins', 'blacklist'].includes(view) ? view : 'checkins';
       tabRequests.classList.toggle('is-on', activeView === 'requests');
       tabCheckins.classList.toggle('is-on', activeView === 'checkins');
       tabBlacklist.classList.toggle('is-on', activeView === 'blacklist');
-      tabSettings?.classList.toggle('is-on', activeView === 'settings');
       if (pageTitle) pageTitle.textContent = VIEW_TITLES[activeView] || 'Reception';
       if (pageSubtitle) {
         const subtitle = VIEW_SUBTITLES[activeView] || '';
@@ -5987,8 +5990,8 @@
       requestsPanel.classList.toggle('hidden', activeView !== 'requests');
       checkinsPanel.classList.toggle('hidden', activeView !== 'checkins');
       blacklistPanel.classList.toggle('hidden', activeView !== 'blacklist');
-      settingsPanel?.classList.toggle('hidden', activeView !== 'settings');
-      workspaceEl?.classList.toggle('is-settings', activeView === 'settings');
+      settingsPanel?.classList.add('hidden');
+      workspaceEl?.classList.remove('is-settings');
       workspaceEl?.classList.toggle('is-feed', activeView === 'requests' || activeView === 'blacklist');
       const showDateToolbar = activeView === 'checkins';
       daysEl.classList.toggle('hidden', !showDateToolbar);
@@ -6006,7 +6009,6 @@
       replayMotion(activePanelEl(), 'motion-panel-in', 480);
       if (activeView === 'blacklist') loadBlacklist();
       else if (activeView === 'requests') loadReceptionNotes();
-      else if (activeView === 'settings') loadSettings();
       else if (lastCheckins.length) renderList(lastCheckins);
       else loadList();
     }
@@ -7513,7 +7515,6 @@
     tabRequests.addEventListener('click', () => setActiveView('requests'));
     tabCheckins.addEventListener('click', () => setActiveView('checkins'));
     tabBlacklist.addEventListener('click', () => setActiveView('blacklist'));
-    tabSettings?.addEventListener('click', () => setActiveView('settings'));
 
     document.getElementById('settingsPasswordForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
