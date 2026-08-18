@@ -119,6 +119,7 @@
       max-height: 100svh;
       max-height: -webkit-fill-available;
       overflow: hidden !important;
+      overflow: clip !important;
       overscroll-behavior: none !important;
       touch-action: manipulation;
       color-scheme: light only;
@@ -5590,8 +5591,8 @@
 
     .apple-input,
     .apple-picker-trigger {
-      scroll-margin-top: 80px;
-      scroll-margin-bottom: 24px;
+      scroll-margin: 0 !important;
+      scroll-padding: 0 !important;
     }
 
     /* Tastiera = overlay. Html/body/card restano fermi: niente alzata, niente morph. */
@@ -5887,19 +5888,27 @@
       touch-action: pan-y;
     }
 
-    /* Form: un blocco solo. Mai scroll interno tra titolo e Continua. */
+    /* Form: un blocco solo. overflow:clip = Safari non può scrollare al focus. */
     #step1 .step-body.step-scroll,
     #step2 .step-body.step-scroll,
     #step3 .step-body.step-scroll,
+    #step1.slide-step,
+    #step2.slide-step,
+    #step3.slide-step,
+    #sliderViewport,
+    .apple-card,
     .slide-step.is-viewport-clamped > .step-body.step-scroll,
     body.is-keyboard-open .slide-step.is-active > .step-body.step-scroll {
       overflow: hidden !important;
+      overflow: clip !important;
       overscroll-behavior: none !important;
       flex-grow: 0;
       flex-shrink: 0;
       touch-action: manipulation;
     }
 
+    .apple-card:has(.is-picker-open),
+    .slide-step:has(.is-picker-open),
     .slide-step:has(.is-picker-open) > .step-body.step-scroll {
       overflow: visible !important;
     }
@@ -8180,33 +8189,18 @@
       reconcileStepViewportFit(currentStep);
     }
 
-    function scrollFieldIntoScroller(el) {
-      if (!el || !(el instanceof HTMLElement)) return;
-      pinCardInView();
-      const scroller = el.closest('.step-scroll');
-      if (scroller && !scroller.closest('#step4')) {
-        scroller.scrollTop = 0;
-        scroller.scrollLeft = 0;
-      }
+    function scrollFieldIntoScroller() {
+      freezeInnerScroll();
     }
 
     function syncKeyboardScroll() {
       if (!keyboardLock) {
         document.documentElement.style.setProperty('--kb-inset', '0px');
+        freezeInnerScroll();
         return;
       }
-      try {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-      } catch (_) {
-        /* ignore */
-      }
       document.documentElement.style.setProperty('--kb-inset', `${keyboardInsetPx()}px`);
-      const el = document.activeElement;
-      if (isEditableField(el)) {
-        window.requestAnimationFrame(() => scrollFieldIntoScroller(el));
-      }
+      freezeInnerScroll();
     }
 
     function initKeyboardLayoutLock() {
@@ -8220,6 +8214,7 @@
       }
       document.addEventListener('focusin', (e) => {
         if (!isEditableField(e.target)) return;
+        hammerScrollLock();
         if (!usesVirtualKeyboard()) return;
         if (!keyboardLock) captureRestLayout();
         keyboardLock = true;
@@ -8231,6 +8226,7 @@
         document.body.classList.add('is-keyboard-open');
         freezeViewportForKeyboard();
         syncKeyboardScroll();
+        hammerScrollLock();
       });
       document.addEventListener('focusout', () => {
         window.setTimeout(() => {
@@ -8945,19 +8941,35 @@
       }
     }
 
-    function pinCardInView() {
+    function freezeInnerScroll() {
       try {
-        if (keyboardLock) return;
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
-        document.querySelectorAll('.step-scroll').forEach((sc) => {
+        ['card', 'sliderViewport', 'sliderTrack', 'step1', 'step2', 'step3'].forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.scrollTop = 0;
+          el.scrollLeft = 0;
+        });
+        document.querySelectorAll(
+          '#step1 .step-scroll, #step2 .step-scroll, #step3 .step-scroll, #step1 .step-body, #step2 .step-body, #step3 .step-body',
+        ).forEach((sc) => {
           sc.scrollTop = 0;
           sc.scrollLeft = 0;
         });
       } catch (_) {
         /* ignore */
       }
+    }
+
+    function hammerScrollLock() {
+      freezeInnerScroll();
+      [16, 50, 100, 220, 400].forEach((ms) => setTimeout(freezeInnerScroll, ms));
+    }
+
+    function pinCardInView() {
+      freezeInnerScroll();
     }
 
     function isPageScrollPassthrough(target) {
@@ -10696,15 +10708,12 @@
       window.visualViewport.addEventListener('scroll', onVvChange, { passive: true });
     }
     document.addEventListener('touchmove', lockBackgroundScroll, { passive: false });
-    window.addEventListener('scroll', () => {
-      if (!keyboardLock) pinCardInView();
-    }, { passive: true });
-    document.querySelectorAll('#step1 .step-scroll, #step2 .step-scroll, #step3 .step-scroll').forEach((sc) => {
-      sc.addEventListener('scroll', () => {
-        sc.scrollTop = 0;
-        sc.scrollLeft = 0;
-      }, { passive: true });
-    });
+    document.addEventListener('scroll', (e) => {
+      const t = e.target;
+      if (t instanceof Element && isPageScrollPassthrough(t)) return;
+      freezeInnerScroll();
+    }, { capture: true, passive: true });
+    window.addEventListener('scroll', freezeInnerScroll, { passive: true });
     guestsTrigger?.addEventListener('click', () => openFormPicker('guests'));
     staffTrigger?.addEventListener('click', () => openFormPicker('staff'));
     checkinTrigger?.addEventListener('click', () => openBrandCalendar('checkin'));
