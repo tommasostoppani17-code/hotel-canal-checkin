@@ -73,6 +73,7 @@
       --cell-control-h: 32px;
       --surface-card: #FFFFFF;
       --bg-main: var(--sky-50);
+      --shadow-premium: 0 8px 28px rgba(10, 45, 55, 0.12), 0 2px 8px rgba(10, 45, 55, 0.04);
       --ios-magnetic: cubic-bezier(0.16, 1, 0.3, 1);
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -97,10 +98,16 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    html {
+      overflow: hidden;
+    }
+
     html, body {
       width: 100%;
       min-height: 100%;
+      max-height: 100dvh;
       color-scheme: light only;
+      overscroll-behavior: none;
     }
 
     body {
@@ -113,7 +120,11 @@
       min-height: var(--app-vh, 100svh);
       height: var(--app-vh, 100svh);
       max-height: var(--app-vh, 100svh);
-      overflow: hidden;
+      overflow: hidden !important;
+      overscroll-behavior: none !important;
+      position: fixed;
+      inset: 0;
+      width: 100%;
       padding:
         calc(16px + env(safe-area-inset-top, 0px))
         24px
@@ -719,8 +730,8 @@
       padding: 6px;
       border-radius: var(--radius-ui);
       background: #fff;
-      border: 1px solid #dbdbdb;
-      box-shadow: 0 4px 24px rgba(10, 45, 55, 0.14);
+      border: 1px solid rgba(18, 68, 83, 0.15);
+      box-shadow: var(--shadow-premium);
     }
 
     .ui-menu:not(.hidden):not(.row-menu) {
@@ -779,11 +790,9 @@
       margin-top: 0;
       overflow: hidden;
       background: #fff;
-      border: 1px solid #d1d1d6;
+      border: 1px solid rgba(18, 68, 83, 0.18);
       border-radius: var(--radius-ui);
-      box-shadow:
-        0 8px 24px rgba(18, 68, 83, 0.14),
-        0 2px 6px rgba(18, 68, 83, 0.06);
+      box-shadow: var(--shadow-premium);
       z-index: 50;
     }
 
@@ -854,22 +863,25 @@
     .apple-inline-item.is-focused {
       font-weight: 700;
       color: var(--canal-petroleum);
+      background: transparent;
     }
 
     .apple-inline-spacer {
-      height: 88px;
+      height: 66px;
       pointer-events: none;
     }
 
     .apple-inline-window {
       position: absolute;
-      left: 8px;
-      right: 8px;
-      top: 50%;
+      left: 12px;
+      right: 12px;
+      top: 66px;
       height: 44px;
-      margin-top: -22px;
-      border-radius: 10px;
-      background: rgba(18, 68, 83, 0.08);
+      margin-top: 0;
+      border-radius: 0;
+      background: transparent;
+      border-top: 1px solid rgba(18, 68, 83, 0.08);
+      border-bottom: 1px solid rgba(18, 68, 83, 0.08);
       pointer-events: none;
       z-index: 1;
     }
@@ -1719,7 +1731,7 @@
       max-width: 100%;
       min-height: 40px;
       padding: 4px;
-      border-radius: 999px;
+      border-radius: 12px;
       background: linear-gradient(180deg, var(--card-cream-top) 0%, var(--sky-100) 100%);
       border: 1px solid var(--input-border);
       overflow-x: auto;
@@ -1733,11 +1745,11 @@
     .date-pill {
       height: 32px;
       min-width: 44px;
-      padding: 0 14px;
+      padding: 0 16px;
       border: 1px solid transparent;
-      border-radius: 999px;
+      border-radius: 8px;
       background: transparent;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       color: #6b8494;
       cursor: pointer;
@@ -2129,11 +2141,11 @@
     .matrix-table th {
       padding-left: var(--cell-x);
       padding-right: var(--cell-x);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
-      color: #86868b;
+      color: var(--text-secondary);
       text-align: left;
       background: var(--table-head-bg);
       border-bottom: none;
@@ -2422,7 +2434,7 @@
       padding: 4px;
       border-radius: var(--radius-ios);
       background: #fff;
-      border: 1px solid rgba(18, 68, 83, 0.1);
+      border: 1px solid rgba(18, 68, 83, 0.12);
       box-shadow: 0 8px 28px rgba(10, 45, 55, 0.14);
       transform-origin: top right;
       overflow: hidden;
@@ -6310,6 +6322,7 @@
     if (checkinsHead && checkinsScroll) {
       checkinsScroll.addEventListener('scroll', () => {
         checkinsHead.scrollLeft = checkinsScroll.scrollLeft;
+        syncRowMenuToAnchor();
       }, { passive: true });
     }
     const notesListEl = document.getElementById('notesList');
@@ -7507,15 +7520,36 @@
       resetRowMenuPositionStyles();
       const menuW = rowMenuView === 'history' ? 240 : 200;
       const rect = anchor.getBoundingClientRect();
+      const scroller = anchor.closest('.table-scroll');
+      const bounds = scroller
+        ? scroller.getBoundingClientRect()
+        : { left: 8, right: window.innerWidth - 8, top: 8, bottom: window.innerHeight - 8 };
       let left = rect.right - menuW;
+      left = Math.max(bounds.left + 8, Math.min(left, bounds.right - menuW - 8));
       left = Math.max(8, Math.min(left, window.innerWidth - menuW - 8));
       rowMenu.style.width = `${menuW}px`;
       rowMenu.style.left = `${left}px`;
       rowMenu.style.top = `${rect.bottom + 4}px`;
       const menuRect = rowMenu.getBoundingClientRect();
-      if (menuRect.height > 0 && menuRect.bottom > window.innerHeight - 8) {
-        rowMenu.style.top = `${Math.max(8, rect.top - menuRect.height - 4)}px`;
+      const floor = Math.min(window.innerHeight, bounds.bottom) - 8;
+      if (menuRect.height > 0 && menuRect.bottom > floor) {
+        rowMenu.style.top = `${Math.max(bounds.top + 8, rect.top - menuRect.height - 4)}px`;
       }
+    }
+
+    function syncRowMenuToAnchor() {
+      if (!rowMenu || rowMenu.hidden || !rowMenuAnchor) return;
+      if (isMobileRowMenu()) return;
+      const scroller = rowMenuAnchor.closest('.table-scroll');
+      if (scroller) {
+        const sr = scroller.getBoundingClientRect();
+        const ar = rowMenuAnchor.getBoundingClientRect();
+        if (ar.bottom < sr.top + 4 || ar.top > sr.bottom - 4) {
+          closeRowMenu();
+          return;
+        }
+      }
+      positionRowMenu(rowMenuAnchor);
     }
 
     async function loadRowMenuActivity(row) {
@@ -9560,8 +9594,21 @@
         if (lock) {
           pinLayout();
           sync();
+          return;
         }
+        if (!document.body.classList.contains('is-dashboard')) pinLayout();
       }, { passive: true });
+      document.addEventListener('touchmove', (e) => {
+        if (document.body.classList.contains('is-dashboard')) return;
+        if (e.target.closest?.('.apple-inline-scroll, .ui-dropdown-menu')) return;
+        if (
+          document.body.classList.contains('is-keyboard-open') &&
+          e.target.closest?.('.login-view, .gate-form')
+        ) {
+          return;
+        }
+        e.preventDefault();
+      }, { passive: false });
       window.addEventListener('orientationchange', () => {
         lock = false;
         document.body.classList.remove('is-keyboard-open');

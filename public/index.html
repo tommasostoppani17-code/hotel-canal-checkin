@@ -101,15 +101,21 @@
     /* Blocca rimbalzo — altezza hardware-aware (Safari + Isola Dinamica) */
     html {
       height: 100%;
+      height: 100dvh;
       height: -webkit-fill-available;
+      position: fixed;
+      inset: 0;
+      width: 100%;
     }
 
     html, body {
       margin: 0;
       width: 100%;
       height: 100%;
+      height: 100dvh;
       height: 100svh;
       height: -webkit-fill-available;
+      max-height: 100dvh;
       max-height: 100svh;
       max-height: -webkit-fill-available;
       overflow: hidden !important;
@@ -637,10 +643,9 @@
       flex: 1 1 auto;
       min-height: 0;
       width: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: auto;
       scrollbar-width: none;
     }
 
@@ -745,9 +750,8 @@
     .slide-step.is-viewport-clamped > .step-body.step-scroll {
       flex: 1 1 auto;
       min-height: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
+      overscroll-behavior: none;
     }
 
     .slide-step.is-viewport-clamped > .step-footer-fixed {
@@ -1651,10 +1655,9 @@
       flex: 1 1 auto;
       min-height: 0;
       width: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: auto;
       scrollbar-width: none;
     }
 
@@ -1759,9 +1762,8 @@
     .slide-step.is-viewport-clamped > .step-body.step-scroll {
       flex: 1 1 auto;
       min-height: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
+      overscroll-behavior: none;
     }
 
     .slide-step.is-viewport-clamped > .step-footer-fixed {
@@ -2167,10 +2169,8 @@
       gap: var(--step-stack-lg);
       position: relative;
       z-index: 1;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
+      overscroll-behavior: none;
       scrollbar-width: none;
     }
 
@@ -2657,10 +2657,8 @@
 
     #step4.slide-step {
       justify-content: stretch;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
+      overscroll-behavior: none;
       padding-top: 0;
       padding-left: 0;
       padding-right: 0;
@@ -3664,7 +3662,7 @@
       margin-top: 0;
       overflow: hidden;
       background: #fff;
-      border: 1px solid #d1d1d6;
+      border: 1px solid rgba(18, 68, 83, 0.18);
       border-radius: var(--radius-ios);
       box-shadow:
         0 8px 24px rgba(18, 68, 83, 0.14),
@@ -3763,6 +3761,9 @@
       color: #1d1d1f;
       scroll-snap-align: center;
       cursor: pointer;
+      user-select: none;
+      position: relative;
+      z-index: 2;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -3770,22 +3771,25 @@
     .apple-inline-item.is-focused {
       font-weight: 700;
       color: var(--canal-petroleum);
+      background: transparent;
     }
 
     .apple-inline-spacer {
-      height: 88px;
+      height: 66px;
       pointer-events: none;
     }
 
     .apple-inline-window {
       position: absolute;
-      left: 8px;
-      right: 8px;
-      top: 50%;
+      left: 12px;
+      right: 12px;
+      top: 66px;
       height: 44px;
-      margin-top: -22px;
-      border-radius: 10px;
-      background: rgba(18, 68, 83, 0.08);
+      margin-top: 0;
+      border-radius: 0;
+      background: transparent;
+      border-top: 1px solid rgba(18, 68, 83, 0.08);
+      border-bottom: 1px solid rgba(18, 68, 83, 0.08);
       pointer-events: none;
       z-index: 1;
     }
@@ -3920,6 +3924,10 @@
     .brand-calendar-day.is-on {
       background: var(--canal-petroleum);
       color: #fff;
+    }
+
+    .brand-calendar-day:hover:not(:disabled):not(.is-on) {
+      background: rgba(18, 68, 83, 0.05);
     }
 
     .brand-calendar-day:disabled {
@@ -5862,6 +5870,24 @@
     #step4 .guest-actions {
       gap: var(--ios-gap);
       margin-top: 0;
+    }
+
+    /* 16px: Safari non zooma/sposta lo schermo al tap sui campi */
+    .apple-input,
+    .apple-picker-trigger,
+    .apple-picker-value,
+    #step3 .input-with-icon .apple-input,
+    #step3 .input-with-icon .apple-picker-trigger,
+    #step3 input[type="date"].apple-input {
+      font-size: 16px !important;
+    }
+
+    .apple-inline-scroll,
+    #brandCalendar,
+    .guest-sheet-scroll,
+    #tablePanel {
+      overscroll-behavior: contain;
+      touch-action: pan-y;
     }
   </style>
 </head>
@@ -8178,16 +8204,7 @@
       const visibleBottom = visibleViewportBottomPx();
 
       if (!scroller) {
-        try {
-          const er = el.getBoundingClientRect();
-          if (er.bottom > visibleBottom - botPad) {
-            window.scrollBy(0, er.bottom - (visibleBottom - botPad));
-          } else if (er.top < (window.visualViewport?.offsetTop || 0) + topPad) {
-            window.scrollBy(0, er.top - ((window.visualViewport?.offsetTop || 0) + topPad));
-          }
-        } catch (_) {
-          /* ignore */
-        }
+        pinCardInView();
         return;
       }
       const sr = scroller.getBoundingClientRect();
@@ -8531,6 +8548,7 @@
       }
       markStepClasses(step, { slidingFrom: null });
       stepBusy = false;
+      pinCardInView();
       ensurePrimaryCtaVisible();
       reconcileStepViewportFit(step);
     }
@@ -8569,14 +8587,14 @@
           .forEach((el) => {
             el.classList.remove('is-invalid', 'label-error-state', 'has-error');
           });
-        currentStepEl.querySelectorAll('.step-scroll').forEach((sc) => {
-          try {
-            sc.scrollTop = 0;
-          } catch (_) {
-            /* ignore */
-          }
-        });
       }
+      document.querySelectorAll('.step-scroll').forEach((sc) => {
+        try {
+          sc.scrollTop = 0;
+        } catch (_) {
+          /* ignore */
+        }
+      });
 
       const canWaapi =
         !reduceMotion &&
@@ -8959,9 +8977,32 @@
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
+        document.querySelectorAll('.step-scroll').forEach((sc) => {
+          sc.scrollTop = 0;
+          sc.scrollLeft = 0;
+        });
       } catch (_) {
         /* ignore */
       }
+    }
+
+    function isPageScrollPassthrough(target) {
+      if (!(target instanceof Element)) return false;
+      if (target.closest('.apple-inline-scroll, .form-picker-list, #brandCalendar, .guest-sheet-scroll, #tablePanel')) {
+        return true;
+      }
+      if (
+        document.body.classList.contains('is-keyboard-open') &&
+        target.closest('.step-scroll')
+      ) {
+        return true;
+      }
+      return false;
+    }
+
+    function lockBackgroundScroll(e) {
+      if (isPageScrollPassthrough(e.target)) return;
+      e.preventDefault();
     }
 
     function setStep(step, { instant = false } = {}) {
@@ -8974,10 +9015,7 @@
       const prev = currentStep;
       currentStep = step;
       document.body.dataset.step = String(step);
-      // Niente scrollTo a ogni slide: su mobile crea un micro-scatto
-      if (instant || step === TOTAL_STEPS || prev === TOTAL_STEPS) {
-        pinCardInView();
-      }
+      pinCardInView();
 
       if (dots) {
         dots.classList.toggle('hidden', step === TOTAL_STEPS);
@@ -10690,6 +10728,10 @@
       window.visualViewport.addEventListener('resize', onVvChange, { passive: true });
       window.visualViewport.addEventListener('scroll', onVvChange, { passive: true });
     }
+    document.addEventListener('touchmove', lockBackgroundScroll, { passive: false });
+    window.addEventListener('scroll', () => {
+      if (!keyboardLock) pinCardInView();
+    }, { passive: true });
     guestsTrigger?.addEventListener('click', () => openFormPicker('guests'));
     staffTrigger?.addEventListener('click', () => openFormPicker('staff'));
     checkinTrigger?.addEventListener('click', () => openBrandCalendar('checkin'));
