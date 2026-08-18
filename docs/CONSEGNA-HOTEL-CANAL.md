@@ -19,7 +19,7 @@ Documento per **CANAL S.r.l. / reception**. Aggiornato al deploy con dashboard s
 ## 2. Accesso dashboard staff
 
 1. Apri **https://checkin-hotelcanal.it/staff**
-2. Scegli il tuo nome (Tommaso, John, Alejandro, Maria, Mizan, Payel)
+2. Scegli il tuo nome (Tommaso, John, Alejandro, Maria, Mizan, Payel, Sayeed)
 3. Inserisci la **password personale** (consegnata dal titolare / IT)
 
 La sessione dura **12 ore**. Poi rifare login.

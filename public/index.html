@@ -1391,6 +1391,11 @@
       -webkit-appearance: none;
       margin: 0;
     }
+    #step3 input[type="date"].apple-input {
+      font-size: 16px;
+      color-scheme: light;
+      min-width: 0;
+    }
     .btn-text-link {
       appearance: none;
       -webkit-appearance: none;
@@ -5285,27 +5290,15 @@
         </div>
       </section>
 
-      <!-- STEP 3: Prenotazione tavolo + dettagli stanza -->
+      <!-- STEP 3: Dettagli soggiorno -->
       <section class="slide-step" id="step3" aria-hidden="true">
         <div class="step-body step-scroll dining-book">
           <div class="dining-book-head">
-            <p class="dining-book-kicker" id="lbl-book-kicker">Trattoria alla Terrazza</p>
-            <h2 class="dining-book-title" id="lbl-book-title">Prenotazione</h2>
+            <p class="dining-book-kicker" id="lbl-book-kicker">Hotel Canal</p>
+            <h2 class="dining-book-title" id="lbl-book-title">Dettagli soggiorno</h2>
             <p class="dining-book-sub" id="lbl-book-sub">
-              Come nostro ospite hai un certificato sconto esclusivo del <strong>10%</strong> presso la <strong>Trattoria alla Terrazza</strong>. Seleziona un <strong>orario</strong> qui sotto per richiedere il tavolo.
+              Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.
             </p>
-          </div>
-
-          <div class="booking-reserve-block">
-            <label class="booking-reserve-label" id="lbl-reserve-tonight" for="bookingHourGrid">
-              Prenotare un tavolo per stasera? (opzionale)
-            </label>
-            <div class="booking-segment-grid" id="bookingHourGrid" role="group" aria-labelledby="lbl-reserve-tonight">
-              <button type="button" class="hour-pill-ios" data-hour="19:30">19:30</button>
-              <button type="button" class="hour-pill-ios" data-hour="20:15">20:15</button>
-              <button type="button" class="hour-pill-ios" data-hour="21:00">21:00</button>
-              <button type="button" class="hour-pill-ios is-skip is-selected" data-hour="NO" id="pillSkipTable">No</button>
-            </div>
           </div>
 
           <div class="form-grid-container" id="roomFormGrid">
@@ -5316,6 +5309,15 @@
                   <svg viewBox="0 0 24 24"><circle cx="8" cy="10" r="3"/><path d="M11 10h9v3M17 10v6M20 10v4"/></svg>
                 </span>
                 <input type="text" id="room" name="room" class="apple-input" placeholder="104" autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="next">
+              </div>
+            </div>
+            <div class="form-group">
+              <label id="lbl-checkout" for="checkoutDate">Checkout *</label>
+              <div class="input-with-icon">
+                <span class="field-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+                </span>
+                <input type="date" id="checkoutDate" name="checkoutDate" class="apple-input" enterkeyhint="next">
               </div>
             </div>
             <div class="form-group">
@@ -5601,9 +5603,9 @@
         title: 'Registrazione rapida',
         title2: 'Regalo di benvenuto',
         roomTitle: 'Dettagli stanza',
-        bookTitle: 'Prenotazione',
-        bookKicker: 'Trattoria alla Terrazza',
-        bookSub: 'Come nostro ospite hai un certificato sconto esclusivo del <strong>10%</strong> presso la <strong>Trattoria alla Terrazza</strong>. Seleziona un <strong>orario</strong> qui sotto per richiedere il tavolo.',
+        bookTitle: 'Dettagli soggiorno',
+        bookKicker: 'Hotel Canal',
+        bookSub: 'Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.',
         subtitle: 'Nome, cognome, email e telefono per attivare i servizi digitali.',
         phone: 'Numero di Telefono *',
         email: 'Email *',
@@ -5616,6 +5618,7 @@
         room: 'Numero di Stanza *',
         roomShort: 'Stanza *',
         guestsShort: 'Ospiti',
+        checkoutShort: 'Checkout *',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
         restDescShort: 'Completa stanza e receptionist per attivare il certificato −10%.',
@@ -5716,9 +5719,9 @@
         title: 'Fast Registration',
         title2: 'Welcome Gift',
         roomTitle: 'Room Details',
-        bookTitle: 'Reservation',
-        bookKicker: 'Trattoria alla Terrazza',
-        bookSub: 'As our guest, you hold a <strong>10%</strong> exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Select a <strong>dining hour</strong> below to reserve your table.',
+        bookTitle: 'Stay details',
+        bookKicker: 'Hotel Canal',
+        bookSub: 'Enter your <strong>room</strong> and <strong>checkout date</strong> to complete registration.',
         subtitle: 'First name, last name, email and phone to activate digital services.',
         phone: 'Phone Number *',
         email: 'Email *',
@@ -5731,6 +5734,7 @@
         room: 'Room Number *',
         roomShort: 'Room *',
         guestsShort: 'Guests',
+        checkoutShort: 'Checkout *',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
         restDescShort: 'Add room and receptionist to activate your −10% certificate.',
@@ -5839,6 +5843,7 @@
         room: 'Numéro de chambre *',
         roomShort: 'Chambre *',
         guestsShort: 'Pers.',
+        checkoutShort: 'Départ *',
         staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
         restDescShort: 'Indiquez chambre et réceptionniste pour activer le certificat −10%.',
@@ -5847,9 +5852,9 @@
         conciergeSubHtml: 'En tant qu’hôte, vous disposez d’un certificat exclusif <strong>−10%</strong> chez <strong>Trattoria alla Terrazza</strong>.',
         reserveTonight: 'Réserver une table pour ce soir ? (facultatif)',
         roomTitle: 'Détails chambre',
-        bookTitle: 'Réservation',
-        bookKicker: 'Trattoria alla Terrazza',
-        bookSub: 'En tant qu’hôte, vous disposez d’un certificat exclusif <strong>−10%</strong> chez <strong>Trattoria alla Terrazza</strong>. Choisissez un <strong>horaire</strong> ci-dessous pour demander une table.',
+        bookTitle: 'Détails du séjour',
+        bookKicker: 'Hotel Canal',
+        bookSub: 'Indiquez la <strong>chambre</strong> et le <strong>jour de départ</strong> pour terminer l’enregistrement.',
         pillSkip: 'Non',
         nextBtn: 'Continuer',
         restSub: 'Un dîner sur la terrasse du canal, pensé pour les clients Hotel Canal.',
@@ -5941,6 +5946,7 @@
         room: 'Zimmernummer *',
         roomShort: 'Zimmer *',
         guestsShort: 'Gäste',
+        checkoutShort: 'Abreise *',
         staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
         restDescShort: 'Zimmer und Empfang angeben, um Ihr −10%-Zertifikat zu aktivieren.',
@@ -5949,9 +5955,9 @@
         conciergeSubHtml: 'Als Gast erhalten Sie ein exklusives <strong>−10%</strong>-Zertifikat bei <strong>Trattoria alla Terrazza</strong>.',
         reserveTonight: 'Tisch für heute Abend reservieren? (optional)',
         roomTitle: 'Zimmerdetails',
-        bookTitle: 'Reservierung',
-        bookKicker: 'Trattoria alla Terrazza',
-        bookSub: 'Als Gast erhalten Sie ein exklusives <strong>−10%</strong>-Zertifikat bei <strong>Trattoria alla Terrazza</strong>. Wählen Sie unten eine <strong>Uhrzeit</strong> für Ihren Tisch.',
+        bookTitle: 'Aufenthalt',
+        bookKicker: 'Hotel Canal',
+        bookSub: 'Geben Sie <strong>Zimmer</strong> und <strong>Abreisedatum</strong> ein, um die Registrierung abzuschließen.',
         pillSkip: 'Nein',
         nextBtn: 'Weiter',
         restSub: 'Abendessen auf der Kanalterrasse, für Gäste des Hotel Canal.',
@@ -6043,6 +6049,7 @@
         room: 'Número de habitación *',
         roomShort: 'Habitación *',
         guestsShort: 'Huéspedes',
+        checkoutShort: 'Salida *',
         staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
         restDescShort: 'Indique habitación y recepcionista para activar el certificado −10%.',
@@ -6051,9 +6058,9 @@
         conciergeSubHtml: 'Como huésped tiene un certificado exclusivo <strong>−10%</strong> en <strong>Trattoria alla Terrazza</strong>.',
         reserveTonight: '¿Reservar mesa para esta noche? (opcional)',
         roomTitle: 'Detalles de habitación',
-        bookTitle: 'Reserva',
-        bookKicker: 'Trattoria alla Terrazza',
-        bookSub: 'Como huésped tiene un certificado exclusivo <strong>−10%</strong> en <strong>Trattoria alla Terrazza</strong>. Seleccione un <strong>horario</strong> abajo para solicitar mesa.',
+        bookTitle: 'Datos de estancia',
+        bookKicker: 'Hotel Canal',
+        bookSub: 'Indique la <strong>habitación</strong> y el <strong>día de salida</strong> para completar el registro.',
         pillSkip: 'No',
         nextBtn: 'Continuar',
         restSub: 'Cena en la terraza del canal, pensada para huéspedes del Hotel Canal.',
@@ -6137,10 +6144,10 @@
         title: '快速 check-in 注册',
         title2: '欢迎礼遇',
         roomTitle: '房间信息',
-        bookTitle: '预订',
-        bookKicker: 'Trattoria alla Terrazza',
+        bookTitle: '入住信息',
+        bookKicker: 'Hotel Canal',
         bookSub:
-          '作为我们的贵宾，您将获得 <strong>Trattoria alla Terrazza</strong> 餐厅的 <strong>10%</strong> 专属折扣券。请在下方选择<strong>用餐时间</strong>以预订您的座位。',
+          '请填写<strong>房间号</strong>和<strong>退房日期</strong>以完成登记。',
         subtitle: '请填写姓名、邮箱与电话以启用数字服务。',
         phone: '电话号码 *',
         email: '电子邮件 *',
@@ -6153,6 +6160,7 @@
         room: '房间号 *',
         roomShort: '房间 *',
         guestsShort: '人数',
+        checkoutShort: '退房 *',
         staffShort: '接待员 *',
         staffPlaceholder: '谁为您办理入住',
         restDescShort: '填写房间号与接待员以激活 −10% 凭证。',
@@ -6246,10 +6254,10 @@
         title: 'クイックチェックイン',
         title2: 'ウェルカムギフト',
         roomTitle: 'お部屋情報',
-        bookTitle: 'ご予約',
-        bookKicker: 'Trattoria alla Terrazza',
+        bookTitle: '滞在情報',
+        bookKicker: 'Hotel Canal',
         bookSub:
-          '当ホテルのご宿泊客として、<strong>Trattoria alla Terrazza</strong> でご利用いただける<strong>10%</strong>限定割引クーポンを進呈いたします。以下よりご希望の<strong>時間</strong>を選択してテーブルをご予約ください。',
+          '<strong>部屋番号</strong>と<strong>チェックアウト日</strong>を入力して登録を完了してください。',
         subtitle: '氏名・メール・電話番号でデジタルサービスを有効化します。',
         phone: '電話番号 *',
         email: 'メールアドレス *',
@@ -6262,6 +6270,7 @@
         room: '部屋番号 *',
         roomShort: '部屋 *',
         guestsShort: '人数',
+        checkoutShort: 'チェックアウト *',
         staffShort: '担当者 *',
         staffPlaceholder: 'チェックイン担当者',
         restDescShort: '部屋番号と担当者を入力して −10% を有効化。',
@@ -6357,10 +6366,10 @@
         title: 'تسجيل سريع',
         title2: 'هدية ترحيب',
         roomTitle: 'تفاصيل الغرفة',
-        bookTitle: 'حجز',
-        bookKicker: 'Trattoria alla Terrazza',
+        bookTitle: 'تفاصيل الإقامة',
+        bookKicker: 'Hotel Canal',
         bookSub:
-          'بصفتك ضيفنا الكريم، فإنك تملك قسيمة خصم حصري بنسبة <strong>10%</strong> في مطعم <strong>Trattoria alla Terrazza</strong>. اختر <strong>موعد العشاء</strong> أدناه لحجز طاولتك لليلة.',
+          'أدخل <strong>رقم الغرفة</strong> و<strong>يوم المغادرة</strong> لإكمال التسجيل.',
         subtitle: 'الاسم والبريد والهاتف لتفعيل الخدمات الرقمية.',
         phone: 'رقم الهاتف *',
         email: 'البريد الإلكتروني *',
@@ -6373,6 +6382,7 @@
         room: 'رقم الغرفة *',
         roomShort: 'غرفة *',
         guestsShort: 'ضيوف',
+        checkoutShort: 'المغادرة *',
         staffShort: 'موظف الاستقبال *',
         staffPlaceholder: 'من يقوم بتسجيل دخولك',
         restDescShort: 'أدخل رقم الغرفة وموظف الاستقبال لتفعيل شهادة −10٪.',
@@ -6632,6 +6642,7 @@
     roomEl?.addEventListener('blur', sanitizeRoomInput);
     const staffEl = document.getElementById('receptionist');
     const guestsEl = document.getElementById('guests');
+    const checkoutEl = document.getElementById('checkoutDate');
     const privacyEl = document.getElementById('privacy');
     const privacyBox = document.getElementById('privacyBox');
     const btnNext = document.getElementById('btnNext');
@@ -6670,41 +6681,25 @@
     const SLIDE_MS = cssMs('--slide-ms', 640);
     const HEIGHT_MS = cssMs('--height-ms', 780);
 
-    /** Orario tavolo scelto nello Step 3 (default: no tavolo). */
-    let selectedTableTime = 'NO';
+    /** Checkout: scelto nello Step 3 (obbligatorio con coupon). */
+    function setupCheckoutField() {
+      if (!checkoutEl) return;
+      const today = romeYmd();
+      checkoutEl.min = today;
+      checkoutEl.max = addDaysYmd(today, 90);
+    }
 
-    function wantsTableTonight() {
-      return Boolean(selectedTableTime && selectedTableTime !== 'NO');
+    function isValidCheckoutDate(value) {
+      const raw = String(value || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return false;
+      const min = checkoutEl?.min || romeYmd();
+      const max = checkoutEl?.max || addDaysYmd(romeYmd(), 90);
+      return raw >= min && raw <= max;
     }
 
     function submitButtonLabel(dict = t()) {
-      if (wantsTableTonight()) {
-        return dict.buttonWithTable || dict.button;
-      }
       return dict.button || dict.buttonWithTable;
     }
-
-    function syncSubmitButtonLabel() {
-      if (!btnSubmit || btnSubmit.disabled) return;
-      btnSubmit.textContent = submitButtonLabel();
-    }
-
-    function selectBookingHour(element, hourValue) {
-      if (!element) return;
-      document.querySelectorAll('.hour-pill-ios').forEach((pill) => {
-        pill.classList.remove('is-selected');
-      });
-      element.classList.add('is-selected');
-      selectedTableTime = String(hourValue || 'NO').trim().toUpperCase() || 'NO';
-      syncSubmitButtonLabel();
-      playConfirmChime({ soft: true });
-    }
-
-    document.getElementById('bookingHourGrid')?.addEventListener('click', (e) => {
-      const pill = e.target.closest('.hour-pill-ios');
-      if (!pill) return;
-      selectBookingHour(pill, pill.getAttribute('data-hour') || 'NO');
-    });
 
     /* Carosello foto ristorante (legacy — no-op se rimosso dallo Step 2) */
 
@@ -7980,6 +7975,15 @@
         showFieldError(staffEl);
         return true;
       }
+      if (
+        errCode === 'checkout_invalid' ||
+        errCode === 'checkout_required' ||
+        /checkout|check-out|partenza|abreise|salida|d[ée]part/.test(msg)
+      ) {
+        setStep(3);
+        showFieldError(checkoutEl);
+        return true;
+      }
       return false;
     }
 
@@ -8002,6 +8006,7 @@
       privacyBox.classList.remove('is-invalid', 'shake');
       staffEl?.classList.remove('is-invalid');
       roomEl?.classList.remove('is-invalid');
+      checkoutEl?.classList.remove('is-invalid');
       document
         .querySelectorAll('.label-error-state')
         .forEach((el) => el.classList.remove('label-error-state'));
@@ -8094,22 +8099,6 @@
             .filter(Boolean)
             .join(' · ');
       }
-      const reserveLbl = document.getElementById('lbl-reserve-tonight');
-      if (reserveLbl) {
-        reserveLbl.textContent = dict.reserveTonight || 'Want a table tonight?';
-      }
-      const reserveKicker = document.getElementById('lbl-reserve-kicker');
-      if (reserveKicker) {
-        reserveKicker.textContent = dict.reserveKicker || 'Trattoria alla Terrazza';
-      }
-      const reserveHint = document.getElementById('lbl-reserve-hint');
-      if (reserveHint) {
-        reserveHint.textContent =
-          dict.reserveHint ||
-          'Pick a time and we send a request. They will call you to confirm.';
-      }
-      const pillSkip = document.getElementById('pillSkipTable');
-      if (pillSkip) pillSkip.textContent = dict.pillSkip || 'No thanks';
       const restBlurb = document.getElementById('lbl-rest-blurb');
       if (restBlurb) {
         restBlurb.textContent =
@@ -8139,18 +8128,20 @@
       if (btnDiningBack) btnDiningBack.textContent = dict.back;
       btnBack.textContent = dict.back;
       if (btnSkip) btnSkip.textContent = dict.skip || 'Skip';
-      syncSubmitButtonLabel();
+      if (btnSubmit && !btnSubmit.disabled) btnSubmit.textContent = submitButtonLabel(dict);
+      const checkoutLbl = document.getElementById('lbl-checkout');
+      if (checkoutLbl) checkoutLbl.textContent = dict.checkoutShort || dict.checkout || 'Checkout *';
       const roomTitle = document.getElementById('lbl-room-title');
       if (roomTitle) roomTitle.textContent = dict.roomTitle || dict.title2 || 'Room Details';
       const bookTitle = document.getElementById('lbl-book-title');
-      if (bookTitle) bookTitle.textContent = dict.bookTitle || 'Reservation';
+      if (bookTitle) bookTitle.textContent = dict.bookTitle || 'Stay details';
       const bookKicker = document.getElementById('lbl-book-kicker');
-      if (bookKicker) bookKicker.textContent = dict.bookKicker || 'Trattoria alla Terrazza';
+      if (bookKicker) bookKicker.textContent = dict.bookKicker || 'Hotel Canal';
       const bookSub = document.getElementById('lbl-book-sub');
       if (bookSub) {
         bookSub.innerHTML =
           dict.bookSub ||
-          'As our guest, you hold a <strong>10%</strong> exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>. Select a <strong>dining hour</strong> below to reserve your table.';
+          'Enter your <strong>room</strong> and <strong>checkout date</strong> to complete registration.';
       }
       applyGuestActionLabels(dict, lastCouponSent);
     }
@@ -8165,6 +8156,7 @@
       document.documentElement.dir = rtl ? 'rtl' : 'ltr';
       document.body?.style && (document.body.style.direction = rtl ? 'rtl' : 'ltr');
       document.querySelectorAll('.apple-input').forEach((input) => {
+        if (input.type === 'date') return;
         input.style.textAlign = rtl ? 'right' : '';
       });
 
@@ -8751,6 +8743,10 @@
         showFieldError(roomEl);
         return false;
       }
+      if (!isValidCheckoutDate(checkoutEl?.value)) {
+        showFieldError(checkoutEl);
+        return false;
+      }
       if (!normalizeReceptionist(staffRaw)) {
         showFieldError(staffEl);
         return false;
@@ -9048,6 +9044,7 @@
       if (submitting) return;
       staffEl.value = '';
       roomEl.value = '';
+      if (checkoutEl) checkoutEl.value = '';
       submitFinal({ clearStaff: true, requireCoupon: false });
     });
 
@@ -9068,6 +9065,7 @@
       const guestNameRaw = `${firstName} ${lastName}`.trim();
       const roomRaw = clearStaff ? '' : roomEl.value.trim();
       const staffRaw = clearStaff ? '' : staffEl.value.trim();
+      const checkoutRaw = clearStaff ? '' : String(checkoutEl?.value || '').trim();
       const receptionistNormalized = clearStaff
         ? null
         : normalizeReceptionist(staffRaw);
@@ -9095,10 +9093,10 @@
         roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
         receptionist: receptionistNormalized,
         guestsCount,
+        checkoutDate: checkoutRaw || null,
         wantCoupon: Boolean(requireCoupon),
         privacy: true,
         language: currentLang,
-        tableBooking: selectedTableTime || 'NO',
       };
 
       try {
@@ -9165,27 +9163,6 @@
               startFreshCheckin();
             };
           }
-        }
-
-        // Orario scelto allo Step 3: conferma prima di mandare l'alert a Payel
-        const tableTime = String(selectedTableTime || 'NO').trim().toUpperCase();
-        if (
-          !body.alreadyRegistered &&
-          tableTime &&
-          tableTime !== 'NO' &&
-          tableTime !== 'SKIP' &&
-          tableTime !== 'NONE' &&
-          body.id &&
-          body.guestAccessToken
-        ) {
-          const paxForTable = guestsCount;
-          const bookTimeEl = document.getElementById('bookTime');
-          const bookPaxEl = document.getElementById('bookPax');
-          if (bookTimeEl) bookTimeEl.value = tableTime;
-          if (bookPaxEl) bookPaxEl.value = String(paxForTable);
-          window.setTimeout(() => {
-            openTableConfirmSheet({ time: tableTime, pax: paxForTable });
-          }, reduceMotion ? 200 : 480);
         }
       } catch (err) {
         submitting = false;
@@ -9338,6 +9315,7 @@
     }
 
     setLanguage(currentLang);
+    setupCheckoutField();
 
     if (!isTestMode() && isRegistrationLocked()) {
       showAlreadyRegisteredScreen();

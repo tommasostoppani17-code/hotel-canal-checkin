@@ -26,6 +26,7 @@ function ensureColumn(name) {
     coupon_sent_at: 'coupon_sent_at TEXT',
     table_booking: 'table_booking TEXT',
     stay_date: 'stay_date TEXT',
+    checkout_date: 'checkout_date TEXT',
     starred_at: 'starred_at TEXT',
   };
   const ddl = ALLOWED[name];
@@ -70,6 +71,7 @@ export function initDb(databasePath) {
   ensureColumn('coupon_sent_at');
   ensureColumn('table_booking');
   ensureColumn('stay_date');
+  ensureColumn('checkout_date');
   ensureColumn('starred_at');
 
   db.exec(`
@@ -173,6 +175,14 @@ export function initDb(databasePath) {
       ON reception_notes (due_date, status, due_time, id DESC);
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS staff_credentials (
+      staff_id TEXT PRIMARY KEY,
+      pin_hash TEXT NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+  `);
+
   return db;
 }
 
@@ -197,6 +207,21 @@ export function romeCalendarDate(from = new Date()) {
     month: '2-digit',
     day: '2-digit',
   }).format(d);
+}
+
+/** YYYY-MM-DD checkout: null se vuoto, false se non valido, stringa se ok. */
+export function parseCheckoutDate(raw, stayDate = romeCalendarDate()) {
+  const s = String(raw || '').trim();
+  if (!s) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  if (s < stayDate) return false;
+  const [y, m, d] = String(stayDate).split('-').map(Number);
+  if (!y || !m || !d) return false;
+  const max = new Date(Date.UTC(y, m - 1, d + 90, 12, 0, 0))
+    .toISOString()
+    .slice(0, 10);
+  if (s > max) return false;
+  return s;
 }
 
 function backfillStayDates() {
@@ -548,15 +573,16 @@ export function insertCheckin({
   couponToken,
   withCoupon = false,
   skipStaffStats = false,
+  checkoutDate = null,
 }) {
   const stmt = db.prepare(`
     INSERT INTO checkins (
       phone, email, guest_name, room_number, receptionist, guests_count,
-      coupon_token, privacy_accepted_at, stay_date
+      coupon_token, privacy_accepted_at, stay_date, checkout_date
     )
     VALUES (
       @phone, @email, @guestName, @roomNumber, @receptionist, @guestsCount,
-      @couponToken, datetime('now'), @stayDate
+      @couponToken, datetime('now'), @stayDate, @checkoutDate
     )
   `);
 
@@ -569,6 +595,7 @@ export function insertCheckin({
     guestsCount: guestsCount ?? null,
     couponToken: couponToken || null,
     stayDate: romeCalendarDate(),
+    checkoutDate: checkoutDate || null,
   });
 
   if (!skipStaffStats) {
@@ -610,7 +637,7 @@ export function getCheckinById(id) {
       SELECT
         id, phone, email, guest_name, room_number, receptionist, guests_count,
         coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
-        stay_date, starred_at
+        stay_date, checkout_date, starred_at
       FROM checkins
       WHERE id = ?
     `,
@@ -732,6 +759,39 @@ export function getUnreportedCheckins() {
     .map((row) => decryptCheckinRow(row));
 }
 
+export function listCheckinsForCsv(date = '') {
+  const day = String(date || '').trim() || romeCalendarDate();
+  return db
+    .prepare(
+      `
+      SELECT
+        id,
+        phone,
+        email,
+        guest_name,
+        room_number,
+        receptionist,
+        guests_count,
+        coupon_token,
+        coupon_sent_at,
+        table_booking,
+        created_at,
+        stay_date,
+        starred_at
+      FROM checkins
+      WHERE stay_date = ?
+      ORDER BY
+        CASE WHEN room_number IS NULL OR TRIM(room_number) = '' THEN 1 ELSE 0 END,
+        CAST(room_number AS INTEGER) ASC,
+        room_number ASC,
+        created_at ASC
+      LIMIT 2000
+    `,
+    )
+    .all(day)
+    .map((row) => decryptCheckinRow(row));
+}
+
 export function markReported(ids) {
   if (!Array.isArray(ids) || !ids.length) return 0;
   // Solo id numerici; placeholder bound — mai concatenare valori nel SQL.
@@ -844,6 +904,7 @@ export function exportAllCheckins() {
         created_at,
         reported_at,
         stay_date,
+        checkout_date,
         starred_at
       FROM checkins
       ORDER BY id ASC
@@ -930,11 +991,11 @@ export function importCheckinsIfEmpty(rows) {
     INSERT INTO checkins (
       id, phone, email, guest_name, room_number, receptionist, guests_count,
       coupon_token, coupon_sent_at, table_booking, privacy_accepted_at, created_at,
-      reported_at, stay_date, starred_at
+      reported_at, stay_date, checkout_date, starred_at
     ) VALUES (
       @id, @phone, @email, @guest_name, @room_number, @receptionist, @guests_count,
       @coupon_token, @coupon_sent_at, @table_booking, @privacy_accepted_at, @created_at,
-      @reported_at, @stay_date, @starred_at
+      @reported_at, @stay_date, @checkout_date, @starred_at
     )
   `);
 
@@ -962,6 +1023,7 @@ export function importCheckinsIfEmpty(rows) {
         created_at: row.created_at || new Date().toISOString(),
         reported_at: row.reported_at || null,
         stay_date: row.stay_date || romeCalendarDate(row.created_at),
+        checkout_date: row.checkout_date || null,
         starred_at: row.starred_at || null,
       });
       n += 1;
@@ -1046,6 +1108,7 @@ function toStaffSafeRow(row, blacklistMap = null) {
     tableBooking: dec.table_booking || '',
     createdAt: dec.created_at || '',
     stayDate: dec.stay_date || romeCalendarDate(dec.created_at),
+    checkoutDate: dec.checkout_date || '',
     starred: Boolean(dec.starred_at),
     checkCode: `HC-${String(dec.id).padStart(4, '0')}`,
     blacklisted: Boolean(bl),
@@ -1115,7 +1178,7 @@ export function listStaffCheckins({ date = '', q = '' } = {}) {
       SELECT
         id, phone, email, guest_name, room_number, receptionist, guests_count,
         coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
-        stay_date, starred_at
+        stay_date, checkout_date, starred_at
       FROM checkins
       WHERE starred_at IS NOT NULL
          OR created_at >= ?
@@ -1131,15 +1194,7 @@ export function listStaffCheckins({ date = '', q = '' } = {}) {
   const day = String(date || '').trim();
   let list = query ? safe.filter((row) => matchesStaffQuery(row, query)) : safe;
   if (!query && day) {
-    const ofDay = list.filter((row) => row.stayDate === day);
-    if (day === today) {
-      const starredOld = list.filter(
-        (row) => row.starred && row.stayDate !== day,
-      );
-      list = [...ofDay, ...starredOld];
-    } else {
-      list = ofDay;
-    }
+    list = list.filter((row) => row.stayDate === day);
   }
   return {
     today,
@@ -1674,6 +1729,36 @@ export function countOpenReceptionNotes() {
     .get().n;
 }
 
+export function listInboxNotes({ staffName = '', limit = 40 } = {}) {
+  const actor = normalizeStaffActor(staffName);
+  const cap = Math.min(Math.max(Number(limit) || 40, 1), 80);
+  const notes = db
+    .prepare(
+      `
+      SELECT *
+      FROM reception_notes
+      WHERE status = 'open'
+        AND UPPER(TRIM(COALESCE(created_by, ''))) != ?
+      ORDER BY datetime(created_at) DESC, id DESC
+      LIMIT ?
+    `,
+    )
+    .all(actor, cap)
+    .map(toReceptionNoteRow)
+    .filter(Boolean);
+  const countRow = db
+    .prepare(
+      `
+      SELECT COUNT(*) AS n
+      FROM reception_notes
+      WHERE status = 'open'
+        AND UPPER(TRIM(COALESCE(created_by, ''))) != ?
+    `,
+    )
+    .get(actor);
+  return { notes, count: Number(countRow?.n) || 0 };
+}
+
 export function getReceptionNote(id) {
   const row = db
     .prepare(`SELECT * FROM reception_notes WHERE id = ?`)
@@ -1799,4 +1884,77 @@ export function deleteReceptionNote(id) {
   if (!note) return { ok: false, error: 'not_found' };
   db.prepare(`DELETE FROM reception_notes WHERE id = ?`).run(Number(id));
   return { ok: true, id: Number(id) };
+}
+
+export function getStaffPinHash(staffId) {
+  const id = String(staffId || '').trim().toLowerCase();
+  if (!id) return '';
+  const row = db
+    .prepare(`SELECT pin_hash FROM staff_credentials WHERE staff_id = ?`)
+    .get(id);
+  return String(row?.pin_hash || '').trim();
+}
+
+export function setStaffPinHash(staffId, pinHash) {
+  const id = String(staffId || '').trim().toLowerCase();
+  const hash = String(pinHash || '').trim();
+  if (!id || !hash) return { ok: false, error: 'invalid' };
+  db.prepare(
+    `
+    INSERT INTO staff_credentials (staff_id, pin_hash, updated_at)
+    VALUES (?, ?, datetime('now'))
+    ON CONFLICT(staff_id) DO UPDATE SET
+      pin_hash = excluded.pin_hash,
+      updated_at = datetime('now')
+  `,
+  ).run(id, hash);
+  return { ok: true };
+}
+
+export function getStaffAccountStats(staffName) {
+  const name = normalizeReceptionist(staffName);
+  const today = romeCalendarDate();
+  const yearMonth = romeYearMonthNow();
+  const monthly = getMonthlyStaffStats(yearMonth);
+  const ranking = (monthly.ranking || []).map((row, index) => {
+    const receptionist = normalizeReceptionist(row.receptionist);
+    return {
+      receptionist,
+      checkins: Number(row.totale_registrati) || 0,
+      coupons: Number(row.coupon_emessi) || 0,
+      rank: index + 1,
+      isMe: receptionist === name,
+    };
+  });
+  const mine = ranking.find((row) => row.isMe) || {
+    receptionist: name,
+    checkins: 0,
+    coupons: 0,
+    rank: null,
+    isMe: true,
+  };
+  const todayRow = db
+    .prepare(
+      `
+      SELECT COUNT(*) AS n
+      FROM checkins
+      WHERE UPPER(TRIM(COALESCE(receptionist, ''))) = ?
+        AND stay_date = ?
+    `,
+    )
+    .get(name, today);
+  return {
+    today,
+    yearMonth,
+    me: {
+      name,
+      todayCheckins: Number(todayRow?.n) || 0,
+      monthCheckins: mine.checkins,
+      monthCoupons: mine.coupons,
+      rank: mine.rank,
+      teamSize: ranking.length,
+    },
+    ranking,
+    totals: monthly.totals || { totale_mese: 0, totale_coupon: 0 },
+  };
 }

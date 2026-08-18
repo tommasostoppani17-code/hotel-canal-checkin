@@ -86,5 +86,7 @@ services:
         sync: false
       - key: STAFF_PIN_PAYEL
         sync: false
+      - key: STAFF_PIN_SAYEED
+        sync: false
 
   # Report notturno: .github/workflows/cron-reports.yml

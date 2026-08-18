@@ -26,6 +26,7 @@ import {
   mergeStaffMonthStats,
   mergeStaffMonthStatsFromCheckins,
   romeCalendarDate,
+  parseCheckoutDate,
   listStaffCheckins,
   updateCheckinRoom,
   toggleCheckinStar,
@@ -40,11 +41,16 @@ import {
   revealStaffCheckinEmail,
   listCheckinActivity,
   listReceptionNotes,
+  listInboxNotes,
+  listCheckinsForCsv,
   createReceptionNote,
   updateReceptionNote,
   setReceptionNoteStatus,
   deleteReceptionNote,
   getReceptionNote,
+  getStaffPinHash,
+  setStaffPinHash,
+  getStaffAccountStats,
   RECEPTION_NOTE_CATEGORIES,
 } from './db.js';
 import {
@@ -70,9 +76,9 @@ import {
   pullCheckinsBackup,
   pushCheckinsBackup,
 } from './backup.js';
-import { buildTableBookingEmail } from './report.js';
+import { buildCsv, buildTableBookingEmail } from './report.js';
 import { buildGuestServicesPayload } from './guest-services.js';
-import { verifyStaffPin } from './staff-auth.js';
+import { hashStaffPin, verifyStaffPin } from './staff-auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -245,7 +251,7 @@ function maskEmail(email) {
 /** Header di sicurezza (CSP tollera inline perché public/index.html è monolitico). */
 app.use((req, res, next) => {
   const proto = String(req.get('x-forwarded-proto') || req.protocol || '');
-  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-XSS-Protection', '0'); // browser moderni: CSP > legacy XSS auditor
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -260,7 +266,7 @@ app.use((req, res, next) => {
       "default-src 'self'",
       "base-uri 'self'",
       "form-action 'self'",
-      "frame-ancestors 'none'",
+      "frame-ancestors 'self'",
       "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
@@ -380,6 +386,14 @@ app.use((req, res, next) => {
     return res.status(204).end();
   }
   return next();
+});
+
+/** Lab viewport: noindex, solo per QA layout su più dispositivi. */
+app.get(['/lab/devices', '/lab-devices.html'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'lab-devices.html'));
 });
 
 /** Dashboard reception: noindex, mai in homepage ospite. */
@@ -684,6 +698,7 @@ const STAFF_ROSTER = [
   { id: 'maria', name: 'MARIA', label: 'Maria' },
   { id: 'mizan', name: 'MIZAN', label: 'Mizan' },
   { id: 'payel', name: 'PAYEL', label: 'Payel' },
+  { id: 'sayeed', name: 'SAYEED', label: 'Sayeed' },
 ];
 
 function staffMemberById(staffId) {
@@ -694,6 +709,8 @@ function staffMemberById(staffId) {
 function staffPinFor(staffId) {
   const member = staffMemberById(staffId);
   if (!member) return '';
+  const fromDb = getStaffPinHash(member.id);
+  if (fromDb) return fromDb;
   const envKey = `STAFF_PIN_${member.id.toUpperCase()}`;
   const fromEnv = String(process.env[envKey] || '').trim();
   if (fromEnv) return fromEnv;
@@ -1217,6 +1234,18 @@ async function handleCheckin(req, res) {
       req.body?.includeCoupon === true ||
       req.body?.includeCoupon === 'true';
 
+    const stayDate = romeCalendarDate();
+    const checkoutDate = parseCheckoutDate(
+      req.body?.checkoutDate ?? req.body?.checkout_date,
+      stayDate,
+    );
+    if (checkoutDate === false) {
+      return res.status(400).json({
+        error: 'Data di checkout non valida',
+        code: 'checkout_invalid',
+      });
+    }
+
     // Coupon: stanza + receptionist del check-in obbligatori
     if (wantCoupon) {
       if (!roomNumber) {
@@ -1226,6 +1255,12 @@ async function handleCheckin(req, res) {
         return res
           .status(400)
           .json({ error: 'Nome del receptionist del check-in obbligatorio per il coupon' });
+      }
+      if (!checkoutDate) {
+        return res.status(400).json({
+          error: 'Data di checkout obbligatoria',
+          code: 'checkout_required',
+        });
       }
     }
 
@@ -1295,6 +1330,7 @@ async function handleCheckin(req, res) {
         couponToken,
         withCoupon: includeCoupon,
         skipStaffStats: tester,
+        checkoutDate,
       });
     } catch (err) {
       const msg = String(err?.message || err || '');
@@ -1311,6 +1347,7 @@ async function handleCheckin(req, res) {
             couponToken,
             withCoupon: includeCoupon,
             skipStaffStats: true,
+            checkoutDate,
           });
         } else {
           return res.status(409).json({
@@ -1533,6 +1570,63 @@ app.get('/api/staff/session', (req, res) => {
 });
 
 app.get(
+  '/api/staff/stats',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const payload = getStaffAccountStats(req.staffUser?.staffName);
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({
+      ok: true,
+      staff: {
+        id: req.staffUser.staffId,
+        name: req.staffUser.staffName,
+        label: req.staffUser.staffLabel,
+      },
+      ...payload,
+    });
+  },
+);
+
+app.post(
+  '/api/staff/password',
+  rateLimit({ windowMs: 15 * 60_000, max: 8 }),
+  requireStaff,
+  (req, res) => {
+    const current = String(req.body?.currentPin || req.body?.current || '').trim();
+    const next = String(req.body?.newPin || req.body?.next || '').trim();
+    const confirm = String(req.body?.confirmPin || req.body?.confirm || '').trim();
+    const stored = staffPinFor(req.staffUser.staffId);
+    if (!stored || !current || !verifyStaffPin(current, stored)) {
+      return res.status(400).json({
+        error: 'Password attuale non corretta',
+        code: 'current_wrong',
+      });
+    }
+    if (!/^\d{4,8}$/.test(next)) {
+      return res.status(400).json({
+        error: 'La nuova password deve essere di 4–8 cifre',
+        code: 'pin_format',
+      });
+    }
+    if (next !== confirm) {
+      return res.status(400).json({
+        error: 'Le password non coincidono',
+        code: 'pin_mismatch',
+      });
+    }
+    if (verifyStaffPin(next, stored)) {
+      return res.status(400).json({
+        error: 'Scegli una password diversa da quella attuale',
+        code: 'pin_same',
+      });
+    }
+    setStaffPinHash(req.staffUser.staffId, hashStaffPin(next));
+    return res.json({ ok: true });
+  },
+);
+
+app.get(
   '/api/staff/checkins',
   rateLimit({ windowMs: 60_000, max: 60 }),
   requireStaff,
@@ -1545,6 +1639,25 @@ app.get(
     const payload = listStaffCheckins({ date, q });
     res.setHeader('Cache-Control', 'no-store');
     return res.json(payload);
+  },
+);
+
+app.get(
+  '/api/staff/checkins.csv',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  requireStaff,
+  (req, res) => {
+    const date = String(req.query.date || '').trim();
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Data non valida' });
+    }
+    const day = date || romeCalendarDate();
+    const csv = buildCsv(listCheckinsForCsv(day));
+    const filename = `checkin_hotelcanal_${day}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    return res.send(csv);
   },
 );
 
@@ -1668,6 +1781,20 @@ app.get(
   requireStaff,
   (req, res) => {
     const payload = listStaffAlerts();
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(payload);
+  },
+);
+
+app.get(
+  '/api/staff/inbox',
+  rateLimit({ windowMs: 60_000, max: 120 }),
+  requireStaff,
+  (req, res) => {
+    const payload = listInboxNotes({
+      staffName: req.staffUser?.staffName,
+      limit: 40,
+    });
     res.setHeader('Cache-Control', 'no-store');
     return res.json(payload);
   },

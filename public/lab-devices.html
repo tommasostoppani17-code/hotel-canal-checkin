@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Hotel Canal · 20 dispositivi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --petroleum: #124453;
+      --ink: #1a2e36;
+      --muted: #6b8494;
+      --line: #dfe5ea;
+      --cream: #eef5f9;
+      --bg: #f4f7f8;
+      --white: #fff;
+      --radius: 14px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Montserrat, system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+      padding: 16px 24px 14px;
+    }
+
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      font-family: Cinzel, Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--petroleum);
+    }
+
+    .sub {
+      margin: 4px 0 0;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .seg {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--cream);
+    }
+
+    .seg button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--petroleum);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .seg button.is-on {
+      background: var(--petroleum);
+      color: var(--white);
+    }
+
+    .lab {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px 24px 48px;
+    }
+
+    .group {
+      margin-top: 8px;
+    }
+
+    .group + .group { margin-top: 28px; }
+
+    .group-title {
+      margin: 0 0 12px;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    .grid.is-wide {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .card[hidden] { display: none !important; }
+
+    .card-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px 8px;
+    }
+
+    .card-name {
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--ink);
+    }
+
+    .card-size {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .stage {
+      position: relative;
+      margin: 0 12px 12px;
+      overflow: hidden;
+      background: #d7e6ef;
+      border-radius: 12px;
+      cursor: zoom-in;
+    }
+
+    .bezel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+      background: #0a2d37;
+      padding: 10px;
+      border-radius: 24px;
+    }
+
+    .bezel.is-tablet { border-radius: 16px; padding: 12px; }
+    .bezel.is-desktop {
+      border-radius: 8px;
+      padding: 8px 8px 22px;
+    }
+
+    .screen {
+      overflow: hidden;
+      background: #fff;
+      border-radius: 16px;
+    }
+
+    .bezel.is-tablet .screen { border-radius: 8px; }
+    .bezel.is-desktop .screen { border-radius: 4px; }
+
+    .screen iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+      pointer-events: none;
+    }
+
+    .sheet {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .sheet[hidden] { display: none !important; }
+
+    .sheet-bg {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      background: rgba(10, 45, 55, 0.55);
+      cursor: pointer;
+    }
+
+    .sheet-panel {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: min(96vw, 1100px);
+      max-height: 96vh;
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .sheet-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sheet-bar strong { font-size: 14px; }
+    .sheet-bar span { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+    .sheet-close {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .sheet-stage {
+      position: relative;
+      overflow: auto;
+      padding: 16px;
+      background: var(--cream);
+    }
+
+    .sheet .bezel { position: relative; transform: none; }
+
+    .sheet iframe { pointer-events: auto; }
+
+    @media (max-width: 720px) {
+      .top, .lab { padding-left: 16px; padding-right: 16px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <div>
+        <div class="brand">Hotel Canal</div>
+        <p class="sub">Stessa app, 20 viewport reali · clicca una cornice per aprirla</p>
+      </div>
+      <div class="controls">
+        <div class="seg" role="tablist" aria-label="Schermata">
+          <button type="button" class="is-on" data-src="/" aria-pressed="true">Check-in</button>
+          <button type="button" data-src="/staff" aria-pressed="false">Staff</button>
+        </div>
+        <div class="seg" role="tablist" aria-label="Categoria">
+          <button type="button" class="is-on" data-filter="all" aria-pressed="true">Tutti</button>
+          <button type="button" data-filter="phone" aria-pressed="false">Telefoni</button>
+          <button type="button" data-filter="tablet" aria-pressed="false">Tablet</button>
+          <button type="button" data-filter="desktop" aria-pressed="false">Desktop</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="lab" id="lab"></main>
+
+  <div class="sheet" id="sheet" hidden>
+    <button type="button" class="sheet-bg" id="sheetBg" aria-label="Chiudi"></button>
+    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheet-bar">
+        <div>
+          <strong id="sheetTitle"></strong>
+          <span id="sheetMeta"></span>
+        </div>
+        <button type="button" class="sheet-close" id="sheetClose" aria-label="Chiudi">×</button>
+      </div>
+      <div class="sheet-stage" id="sheetStage"></div>
+    </div>
+  </div>
+
+  <script>
+    const DEVICES = [
+      { name: 'iPhone SE', w: 375, h: 667, kind: 'phone', group: 'Telefoni' },
+      { name: 'iPhone 13 mini', w: 375, h: 812, kind: 'phone', group: 'Telefoni' },
+      { name: 'iPhone 14', w: 390, h: 844, kind: 'phone', group: 'Telefoni' },
+      { name: 'iPhone 16 Pro', w: 402, h: 874, kind: 'phone', group: 'Telefoni' },
+      { name: 'iPhone XR', w: 414, h: 896, kind: 'phone', group: 'Telefoni' },
+      { name: 'iPhone 15 Pro Max', w: 430, h: 932, kind: 'phone', group: 'Telefoni' },
+      { name: 'iPhone 16 Pro Max', w: 440, h: 956, kind: 'phone', group: 'Telefoni' },
+      { name: 'Galaxy S8+', w: 360, h: 740, kind: 'phone', group: 'Telefoni' },
+      { name: 'Galaxy S24', w: 384, h: 832, kind: 'phone', group: 'Telefoni' },
+      { name: 'Galaxy S24 Ultra', w: 412, h: 915, kind: 'phone', group: 'Telefoni' },
+      { name: 'Pixel 8 Pro', w: 448, h: 998, kind: 'phone', group: 'Telefoni' },
+      { name: 'Galaxy Z Fold 5 chiuso', w: 344, h: 882, kind: 'phone', group: 'Telefoni' },
+      { name: 'Galaxy Z Fold 5 aperto', w: 690, h: 829, kind: 'fold', group: 'Tablet e pieghevoli' },
+      { name: 'iPad mini', w: 744, h: 1133, kind: 'tablet', group: 'Tablet e pieghevoli' },
+      { name: 'iPad Air', w: 820, h: 1180, kind: 'tablet', group: 'Tablet e pieghevoli' },
+      { name: 'iPad Pro 11"', w: 834, h: 1194, kind: 'tablet', group: 'Tablet e pieghevoli' },
+      { name: 'iPad Pro 12.9"', w: 1024, h: 1366, kind: 'tablet', group: 'Tablet e pieghevoli' },
+      { name: 'Surface Pro 7', w: 912, h: 1368, kind: 'tablet', group: 'Tablet e pieghevoli' },
+      { name: 'MacBook Air 13"', w: 1440, h: 900, kind: 'desktop', group: 'Laptop e desktop' },
+      { name: 'Desktop Full HD', w: 1920, h: 1080, kind: 'desktop', group: 'Laptop e desktop' },
+    ];
+
+    const lab = document.getElementById('lab');
+    const sheet = document.getElementById('sheet');
+    const sheetStage = document.getElementById('sheetStage');
+    let currentSrc = '/';
+    let filter = 'all';
+
+    function bezelClass(kind) {
+      if (kind === 'desktop') return 'bezel is-desktop';
+      if (kind === 'tablet' || kind === 'fold') return 'bezel is-tablet';
+      return 'bezel';
+    }
+
+    function render() {
+      const groups = [];
+      for (const device of DEVICES) {
+        const last = groups[groups.length - 1];
+        if (!last || last.title !== device.group) groups.push({ title: device.group, items: [device] });
+        else last.items.push(device);
+      }
+      lab.innerHTML = groups.map((group) => {
+        const wide = group.items.some((d) => d.kind === 'desktop' || d.kind === 'tablet' || d.kind === 'fold');
+        const cards = group.items.map((d, i) => {
+          const id = `${d.kind}-${d.w}x${d.h}-${i}`;
+          return `
+            <article class="card" data-kind="${d.kind}" data-name="${d.name}" data-w="${d.w}" data-h="${d.h}">
+              <div class="card-head">
+                <span class="card-name">${d.name}</span>
+                <span class="card-size">${d.w} × ${d.h}</span>
+              </div>
+              <div class="stage" data-open="${id}">
+                <div class="${bezelClass(d.kind)}" data-bezel>
+                  <div class="screen" style="width:${d.w}px;height:${d.h}px">
+                    <iframe title="${d.name}" loading="lazy" data-src="${currentSrc}"></iframe>
+                  </div>
+                </div>
+              </div>
+            </article>`;
+        }).join('');
+        return `
+          <section class="group" data-group="${group.title}">
+            <h2 class="group-title">${group.title}</h2>
+            <div class="grid${wide ? ' is-wide' : ''}">${cards}</div>
+          </section>`;
+      }).join('');
+      applyFilter();
+      layout();
+      observeFrames();
+    }
+
+    function applyFilter() {
+      document.querySelectorAll('.card').forEach((card) => {
+        const kind = card.getAttribute('data-kind');
+        const show =
+          filter === 'all' ||
+          (filter === 'phone' && (kind === 'phone')) ||
+          (filter === 'tablet' && (kind === 'tablet' || kind === 'fold')) ||
+          (filter === 'desktop' && kind === 'desktop');
+        card.hidden = !show;
+      });
+      document.querySelectorAll('.group').forEach((group) => {
+        const visible = [...group.querySelectorAll('.card')].some((c) => !c.hidden);
+        group.hidden = !visible;
+      });
+    }
+
+    function layout() {
+      document.querySelectorAll('.card').forEach((card) => {
+        if (card.hidden) return;
+        const w = Number(card.getAttribute('data-w'));
+        const h = Number(card.getAttribute('data-h'));
+        const stage = card.querySelector('.stage');
+        const bezel = card.querySelector('[data-bezel]');
+        if (!stage || !bezel) return;
+        const pad = 20;
+        const maxW = Math.max(120, stage.clientWidth);
+        const maxH = card.getAttribute('data-kind') === 'desktop' ? 220 : 420;
+        const frameW = w + pad;
+        const frameH = h + pad;
+        const scale = Math.min(maxW / frameW, maxH / frameH, 1);
+        bezel.style.width = `${frameW}px`;
+        bezel.style.height = `${frameH}px`;
+        bezel.style.transform = `scale(${scale})`;
+        stage.style.height = `${Math.round(frameH * scale)}px`;
+      });
+    }
+
+    function observeFrames() {
+      const io = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const iframe = entry.target;
+          if (!iframe.getAttribute('src')) {
+            iframe.src = iframe.getAttribute('data-src') || currentSrc;
+          }
+          io.unobserve(iframe);
+        }
+      }, { rootMargin: '200px' });
+      document.querySelectorAll('.screen iframe').forEach((iframe) => io.observe(iframe));
+    }
+
+    function setSrc(src) {
+      currentSrc = src;
+      document.querySelectorAll('.screen iframe').forEach((iframe) => {
+        iframe.setAttribute('data-src', src);
+        if (iframe.getAttribute('src')) iframe.src = src;
+      });
+    }
+
+    function openDevice(card) {
+      const name = card.getAttribute('data-name');
+      const w = Number(card.getAttribute('data-w'));
+      const h = Number(card.getAttribute('data-h'));
+      const kind = card.getAttribute('data-kind');
+      document.getElementById('sheetTitle').textContent = name;
+      document.getElementById('sheetMeta').textContent = ` · ${w} × ${h}`;
+      const maxW = Math.min(window.innerWidth - 80, 1040);
+      const maxH = window.innerHeight - 140;
+      const pad = 24;
+      const scale = Math.min(maxW / (w + pad), maxH / (h + pad), 1);
+      sheetStage.innerHTML = `
+        <div class="${bezelClass(kind)}" style="width:${w + pad}px;height:${h + pad}px;transform:scale(${scale});transform-origin:top center;margin:0 auto;">
+          <div class="screen" style="width:${w}px;height:${h}px">
+            <iframe title="${name}" src="${currentSrc}"></iframe>
+          </div>
+        </div>`;
+      sheetStage.style.height = `${Math.round((h + pad) * scale) + 8}px`;
+      sheet.hidden = false;
+    }
+
+    function closeSheet() {
+      sheet.hidden = true;
+      sheetStage.innerHTML = '';
+    }
+
+    document.querySelectorAll('[data-src]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-src]').forEach((b) => {
+          b.classList.toggle('is-on', b === btn);
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+        setSrc(btn.getAttribute('data-src'));
+      });
+    });
+
+    document.querySelectorAll('[data-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filter = btn.getAttribute('data-filter');
+        document.querySelectorAll('[data-filter]').forEach((b) => {
+          b.classList.toggle('is-on', b === btn);
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+        applyFilter();
+        layout();
+      });
+    });
+
+    lab.addEventListener('click', (e) => {
+      const stage = e.target.closest('.stage');
+      if (!stage) return;
+      const card = stage.closest('.card');
+      if (card) openDevice(card);
+    });
+
+    document.getElementById('sheetBg').addEventListener('click', closeSheet);
+    document.getElementById('sheetClose').addEventListener('click', closeSheet);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !sheet.hidden) closeSheet();
+    });
+
+    window.addEventListener('resize', () => {
+      layout();
+    });
+
+    render();
+  </script>
+</body>
+</html>

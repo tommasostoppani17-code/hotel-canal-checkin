@@ -15,6 +15,7 @@ const ROSTER = [
   'maria',
   'mizan',
   'payel',
+  'sayeed',
 ];
 
 function randomPin() {
