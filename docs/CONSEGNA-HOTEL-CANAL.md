@@ -55,7 +55,7 @@ Variabili già previste su Render (`render.yaml`). **Obbligatorie in produzione:
 
 - `FIELD_ENCRYPTION_KEY` (≥32 char)
 - `GUEST_ACCESS_SECRET`, `CRON_SECRET`, `COUPON_SECRET` (≥24 char, tutti diversi)
-- `STAFF_PIN_*` per ogni receptionist (hash scrypt — **nessun PIN di fallback**)
+- `STAFF_PIN_*` per ogni receptionist (hash scrypt — **mai PIN in chiaro** su Render; all’avvio gli hash vanno nel database)
 - `TESTER_EMAILS` / `TESTER_PHONES` solo se servono account di prova (mai nomi)
 - `RESEND_API_KEY` + `SMTP_FROM` verificato
 - `REPORT_EMAIL` (destinazione report)
@@ -88,7 +88,7 @@ Secret `CRON_SECRET` + variable `PUBLIC_URL` nel repo GitHub (workflow `cron-rep
 ## 5. Checklist go-live
 
 - [ ] Deploy Render completato (`/health` → 200)
-- [ ] `/api/staff/login-info` → `configured: true`
+- [ ] `/api/staff/login-info` → `configured: true` (solo id + iniziali, non i nomi)
 - [ ] Tutti i `STAFF_PIN_*` impostati su Render (hash)
 - [ ] PIN consegnati agli incaricati nominati
 - [ ] Test login staff + lista clienti

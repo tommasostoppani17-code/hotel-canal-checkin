@@ -54,6 +54,7 @@ import {
   getReceptionNote,
   getStaffPinHash,
   setStaffPinHash,
+  logStaffAccess,
   getStaffAccountStats,
   listStaffRoster,
   getStaffMember,
@@ -86,7 +87,12 @@ import {
 } from './backup.js';
 import { buildCsv, buildTableBookingEmail, buildReportEmail, formatRomeDate } from './report.js';
 import { buildGuestServicesPayload } from './guest-services.js';
-import { hashStaffPin, isStaffPinHash, verifyStaffPin } from './staff-auth.js';
+import {
+  hashStaffPin,
+  isStaffPinHash,
+  isUsableStaffPassword,
+  verifyStaffPin,
+} from './staff-auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -159,6 +165,7 @@ function assertProductionSecrets() {
 assertProductionSecrets();
 
 initDb(DATABASE_PATH);
+bootstrapStaffPinHashesFromEnv();
 
 async function syncCheckinsBackup(reason = 'update') {
   if (!isBackupConfigured()) return;
@@ -792,17 +799,39 @@ function staffRoadmapPayload(staffId) {
 function staffPinFor(staffId) {
   const member = staffMemberById(staffId);
   if (!member) return '';
-  const fromDb = getStaffPinHash(member.id);
-  if (fromDb) return fromDb;
-  const envKey = `STAFF_PIN_${member.id.toUpperCase()}`;
-  return String(process.env[envKey] || '').trim();
+  return getStaffPinHash(member.id);
 }
 
 function staffPinUsable(stored) {
-  const ref = String(stored || '').trim();
-  if (!ref) return false;
-  if (isStaffPinHash(ref)) return true;
-  return !IS_PROD;
+  return isStaffPinHash(stored);
+}
+
+function bootstrapStaffPinHashesFromEnv() {
+  const roster = listStaffRoster({ activeOnly: false });
+  let copied = 0;
+  let skippedPlain = 0;
+  for (const member of roster) {
+    if (getStaffPinHash(member.id)) continue;
+    const envVal = String(process.env[`STAFF_PIN_${member.id.toUpperCase()}`] || '').trim();
+    if (!envVal) continue;
+    if (isStaffPinHash(envVal)) {
+      setStaffPinHash(member.id, envVal);
+      copied += 1;
+    } else if (process.env.RENDER !== 'true') {
+      setStaffPinHash(member.id, hashStaffPin(envVal));
+      copied += 1;
+    } else {
+      skippedPlain += 1;
+    }
+  }
+  if (copied) {
+    console.log(`[staff] Copiati ${copied} hash password da env al database`);
+  }
+  if (skippedPlain) {
+    console.warn(
+      `[staff] Ignorati ${skippedPlain} STAFF_PIN_* in chiaro su Render — usa hash scrypt (node scripts/hash-staff-pin.mjs)`,
+    );
+  }
 }
 
 function staffAuthConfigured() {
@@ -884,7 +913,7 @@ function setStaffCookie(res, token) {
     `${STAFF_COOKIE}=${encodeURIComponent(token)}`,
     'Path=/',
     'HttpOnly',
-    'SameSite=Lax',
+    'SameSite=Strict',
     `Max-Age=${STAFF_SESSION_TTL_SEC}`,
   ];
   if (IS_PROD) parts.push('Secure');
@@ -896,7 +925,7 @@ function clearStaffCookie(res) {
     `${STAFF_COOKIE}=`,
     'Path=/',
     'HttpOnly',
-    'SameSite=Lax',
+    'SameSite=Strict',
     'Max-Age=0',
   ];
   if (IS_PROD) parts.push('Secure');
@@ -1631,7 +1660,38 @@ app.post(
   }
 });
 
-const staffLoginLimit = rateLimit({ windowMs: 15 * 60_000, max: 8 });
+const STAFF_LOGIN_WINDOW_MS = 15 * 60_000;
+const STAFF_LOGIN_MAX_FAILS = 5;
+
+function clientIp(req) {
+  return String(req.ip || req.socket?.remoteAddress || '').trim().slice(0, 64);
+}
+
+function staffLoginFailBucket(key) {
+  const now = Date.now();
+  let bucket = rateBuckets.get(key);
+  if (!bucket || now - bucket.start >= STAFF_LOGIN_WINDOW_MS) {
+    bucket = { start: now, count: 0 };
+    rateBuckets.set(key, bucket);
+  }
+  return bucket;
+}
+
+function staffLoginBlocked(req, staffId) {
+  const ip = clientIp(req) || 'unknown';
+  const ipBucket = staffLoginFailBucket(`staff-login:ip:${ip}`);
+  if (ipBucket.count >= STAFF_LOGIN_MAX_FAILS) return true;
+  const id = String(staffId || '').trim().toLowerCase();
+  if (!id) return false;
+  return staffLoginFailBucket(`staff-login:user:${id}`).count >= STAFF_LOGIN_MAX_FAILS;
+}
+
+function recordStaffLoginFail(req, staffId) {
+  const ip = clientIp(req) || 'unknown';
+  staffLoginFailBucket(`staff-login:ip:${ip}`).count += 1;
+  const id = String(staffId || '').trim().toLowerCase();
+  if (id) staffLoginFailBucket(`staff-login:user:${id}`).count += 1;
+}
 
 function publicReceptionistList() {
   try {
@@ -1649,13 +1709,57 @@ function publicReceptionistList() {
   }
 }
 
-app.get('/api/staff/login-info', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  return res.json({
-    configured: staffAuthConfigured(),
-    staff: publicReceptionistList(),
+function staffLoginInitial(member, used) {
+  const source = String(member.label || member.name || member.id || '?').trim();
+  const letters = source.replace(/[^A-Za-zÀ-ÿ]/g, '') || String(member.id || 'x');
+  let base = letters.slice(0, 2).toUpperCase();
+  if (base.length < 2) {
+    base = String(member.id || 'xx').slice(0, 2).toUpperCase();
+  }
+  let candidate = base;
+  let n = 2;
+  while (used.has(candidate)) {
+    candidate = `${base}${n}`;
+    n += 1;
+  }
+  used.add(candidate);
+  return candidate;
+}
+
+/** Menu login staff: solo id interno + iniziali, mai il nome completo. */
+function staffLoginList() {
+  try {
+    const used = new Set();
+    return listStaffRoster({ activeOnly: true }).map((member) => ({
+      id: member.id,
+      initial: staffLoginInitial(member, used),
+    }));
+  } catch (_) {
+    return [];
+  }
+}
+
+function sendStaffLoginTooMany(res) {
+  res.setHeader('Retry-After', String(Math.ceil(STAFF_LOGIN_WINDOW_MS / 1000)));
+  return res.status(429).json({
+    error: 'Troppe richieste. Riprova tra 15 minuti.',
+    code: 'rate_limited',
   });
-});
+}
+
+const staffLoginBurstLimit = rateLimit({ windowMs: 60_000, max: 20 });
+
+app.get(
+  '/api/staff/login-info',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({
+      configured: staffAuthConfigured(),
+      staff: staffLoginList(),
+    });
+  },
+);
 
 app.get(
   '/api/receptionists',
@@ -1666,11 +1770,17 @@ app.get(
   },
 );
 
-app.post('/api/staff/login', staffLoginLimit, (req, res) => {
+app.post('/api/staff/login', staffLoginBurstLimit, (req, res) => {
+  const staffId = String(req.body?.staff || req.body?.staffId || '').trim().toLowerCase();
+  const ip = clientIp(req);
+  if (staffLoginBlocked(req, staffId)) {
+    logStaffAccess({ staffId, ip, success: false });
+    console.warn(`[staff-login] blocked staff=${staffId || '-'} ip=${ip || '-'}`);
+    return sendStaffLoginTooMany(res);
+  }
   if (!staffAuthConfigured()) {
     return res.status(503).json({ error: 'Dashboard staff non configurata' });
   }
-  const staffId = String(req.body?.staff || req.body?.staffId || '').trim().toLowerCase();
   const pin = String(req.body?.pin || '').trim();
   const member = staffMemberById(staffId);
   const expected = member ? staffPinFor(member.id) : '';
@@ -1680,8 +1790,16 @@ app.post('/api/staff/login', staffLoginLimit, (req, res) => {
     !pin ||
     !verifyStaffPin(pin, expected)
   ) {
+    recordStaffLoginFail(req, staffId);
+    logStaffAccess({ staffId, ip, success: false });
+    console.warn(`[staff-login] fail staff=${staffId || '-'} ip=${ip || '-'}`);
+    if (staffLoginBlocked(req, staffId)) {
+      return sendStaffLoginTooMany(res);
+    }
     return res.status(401).json({ error: 'Nome o password non validi', code: 'bad_pin' });
   }
+  logStaffAccess({ staffId: member.id, ip, success: true });
+  console.log(`[staff-login] ok staff=${member.id} ip=${ip || '-'}`);
   setStaffCookie(res, issueStaffSession(member.id));
   return res.json({
     ok: true,
@@ -1767,9 +1885,9 @@ app.post(
     const label = String(req.body?.label || req.body?.name || '').trim();
     const pin = String(req.body?.pin || req.body?.password || '').trim();
     const pinConfirm = String(req.body?.confirmPin || req.body?.pinConfirm || '').trim();
-    if (!/^\d{4,8}$/.test(pin)) {
+    if (!isUsableStaffPassword(pin)) {
       return res.status(400).json({
-        error: 'La password deve essere di 4–8 cifre',
+        error: 'La password deve essere di 4–64 caratteri, senza spazi',
         code: 'pin_format',
       });
     }
@@ -1846,9 +1964,9 @@ app.post(
         code: 'current_wrong',
       });
     }
-    if (!/^\d{4,8}$/.test(next)) {
+    if (!isUsableStaffPassword(next)) {
       return res.status(400).json({
-        error: 'La nuova password deve essere di 4–8 cifre',
+        error: 'La nuova password deve essere di 4–64 caratteri, senza spazi',
         code: 'pin_format',
       });
     }
@@ -2476,7 +2594,7 @@ app.listen(PORT, async () => {
   );
   console.log(`Cron staff: 00:05 il 1° del mese (${CRON_TZ}) → mese precedente`);
   console.log(
-    `[staff] Dashboard /staff ${staffAuthConfigured() ? 'attiva' : 'NON configurata — imposta STAFF_PIN_* hash su Render'}`,
+    `[staff] Dashboard /staff ${staffAuthConfigured() ? 'attiva (hash in database)' : 'NON configurata — hash scrypt in DB o STAFF_PIN_*'}`,
   );
   if (IS_PROD && !String(process.env.WIFI_PASSWORD || '').trim()) {
     console.warn('[boot] WIFI_PASSWORD mancante: lo step ospite non potra mostrare la rete');

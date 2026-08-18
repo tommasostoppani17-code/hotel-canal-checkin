@@ -26,7 +26,7 @@ Documento operativo per allineare **CANAL S.r.l. (Hotel Canal)** e il fornitore 
 - Backup Gist con payload cifrato (stesso formato DB)
 - API guest (Wi‑Fi/porte) solo con token post check-in
 - Dashboard staff `/staff`: sessione cookie 12h, telefono/email mascherati, reveal tracciato
-- PIN staff: hash scrypt in env (`STAFF_PIN_*`), mai in chiaro su Render
+- PIN staff: hash scrypt nel database (bootstrap da `STAFF_PIN_*`), mai in chiaro su Render; cookie sessione HttpOnly + Secure + SameSite=Strict (12h); log accessi login
 
 ## 4. Cosa resta fuori dal codice (obblighi del Titolare)
 

@@ -6344,7 +6344,7 @@
         <h1>Accesso personale</h1>
         <p class="gate-lead">Riservato al personale autorizzato</p>
       </div>
-      <form id="gateForm" class="gate-form" action="#" autocomplete="off">
+      <form id="gateForm" class="gate-form" action="" method="post" autocomplete="off" novalidate>
         <div class="form-group">
           <label id="lbl-staff" for="staffMemberTrigger">Receptionist</label>
           <div class="ui-dropdown input-with-icon" id="staffDropdown">
@@ -6749,15 +6749,15 @@
                     <form id="settingsPasswordForm" class="sys-settings-pin-grid" action="#" autocomplete="off">
                       <div class="sheet-field">
                         <label class="sheet-label" id="lbl-pin-current" for="pinCurrent">Password attuale</label>
-                        <input class="field" id="pinCurrent" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password" placeholder="••••">
+                        <input class="field" id="pinCurrent" type="password" inputmode="text" maxlength="64" autocomplete="current-password" placeholder="••••">
                       </div>
                       <div class="sheet-field">
                         <label class="sheet-label" id="lbl-pin-new" for="pinNew">Nuova password</label>
-                        <input class="field" id="pinNew" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="4–8 cifre">
+                        <input class="field" id="pinNew" type="password" inputmode="text" maxlength="64" autocomplete="new-password" placeholder="4–64 caratteri">
                       </div>
                       <div class="sheet-field">
                         <label class="sheet-label" id="lbl-pin-confirm" for="pinConfirm">Conferma</label>
-                        <input class="field" id="pinConfirm" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="Ripeti la nuova">
+                        <input class="field" id="pinConfirm" type="password" inputmode="text" maxlength="64" autocomplete="new-password" placeholder="Ripeti la nuova">
                       </div>
                       <button class="btn-primary" id="btnSavePin" type="submit">Salva password</button>
                     </form>
@@ -7025,11 +7025,11 @@
           </div>
           <div class="sheet-field">
             <label class="sheet-label" id="lbl-team-pin" for="teamSheetPin">Password di accesso</label>
-            <input class="field" id="teamSheetPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="4–8 cifre">
+            <input class="field" id="teamSheetPin" type="password" inputmode="text" maxlength="64" autocomplete="new-password" placeholder="4–64 caratteri">
           </div>
           <div class="sheet-field">
             <label class="sheet-label" id="lbl-team-pin-confirm" for="teamSheetPinConfirm">Conferma password</label>
-            <input class="field" id="teamSheetPinConfirm" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="Ripeti la password">
+            <input class="field" id="teamSheetPinConfirm" type="password" inputmode="text" maxlength="64" autocomplete="new-password" placeholder="Ripeti la password">
           </div>
           <div class="sheet-foot sheet-foot--minimal">
             <button type="button" class="btn-exit" id="teamSheetCancel">Annulla</button>
@@ -7570,13 +7570,7 @@
     }
 
     function shake(el) {
-      if (el?.classList?.contains('gate-card')) {
-        el.classList.remove('is-rubber');
-        void el.offsetWidth;
-        el.classList.add('is-rubber');
-        window.setTimeout(() => el.classList.remove('is-rubber'), 560);
-        return;
-      }
+      if (!el) return;
       el.classList.remove('ios-shake');
       void el.offsetWidth;
       el.classList.add('ios-shake');
@@ -7613,11 +7607,20 @@
       else openStaffMenu();
     }
 
+    function isUsableStaffPassword(value) {
+      const pin = String(value || '');
+      return pin.length >= 4 && pin.length <= 64 && !/\s/.test(pin);
+    }
+
+    function staffMenuCaption(member) {
+      return member?.initial || member?.label || member?.id || '';
+    }
+
     function setStaffSelection(id) {
       const member = staffRoster.find((m) => m.id === id);
       if (staffMemberEl) staffMemberEl.value = member ? member.id : '';
       if (staffMemberLabel) {
-        staffMemberLabel.textContent = member ? member.label : 'Seleziona…';
+        staffMemberLabel.textContent = member ? staffMenuCaption(member) : 'Seleziona…';
         staffMemberLabel.classList.toggle('is-placeholder', !member);
       }
       staffMemberMenu?.querySelectorAll('[data-staff-id]').forEach((btn) => {
@@ -7635,7 +7638,7 @@
         return;
       }
       staffMemberMenu.innerHTML = staff.map((member) => (
-        `<button type="button" class="ui-menu-item" role="option" data-staff-id="${escapeAttr(member.id)}" aria-selected="false">${escapeHtml(member.label)}</button>`
+        `<button type="button" class="ui-menu-item" role="option" data-staff-id="${escapeAttr(member.id)}" aria-selected="false">${escapeHtml(staffMenuCaption(member))}</button>`
       )).join('');
       setStaffSelection(staffMemberEl?.value || '');
     }
@@ -9608,6 +9611,7 @@
     }
 
     function showLogin() {
+      const alreadyOpen = !loginCard.classList.contains('hidden');
       document.body.classList.remove('is-dashboard');
       clearStaffIdleTimer();
       stopAlertPolling();
@@ -9616,7 +9620,9 @@
       paintInboxBadge(0);
       dash.classList.add('hidden');
       loginCard.classList.remove('hidden');
-      replayMotion(document.getElementById('gateCard'), 'motion-intro');
+      if (!alreadyOpen) {
+        replayMotion(document.getElementById('gateCard'), 'motion-intro');
+      }
       clearServerToast();
       closeDashNav();
     }
@@ -9703,7 +9709,7 @@
         showSettingsPinError('pinCurrent', 'lbl-pin-current');
         return;
       }
-      if (!/^\d{4,8}$/.test(newPin)) {
+      if (!isUsableStaffPassword(newPin)) {
         showSettingsPinError('pinNew', 'lbl-pin-new');
         return;
       }
@@ -9772,7 +9778,7 @@
         showTeamSheetError('teamSheetName', 'lbl-team-name');
         return;
       }
-      if (!/^\d{4,8}$/.test(pin)) {
+      if (!isUsableStaffPassword(pin)) {
         showTeamSheetError('teamSheetPin', 'lbl-team-pin');
         return;
       }
@@ -10181,12 +10187,13 @@
 
     document.getElementById('gateForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      e.stopPropagation();
       clearPinError();
       closeStaffMenu();
       const btnLogin = document.getElementById('btnLogin');
       const staff = staffMemberEl?.value?.trim() || '';
       const pin = pinEl.value.trim();
-      if (!staff || !pin) { showPinError(); return; }
+      if (!staff || !pin) { showPinError(); return false; }
       btnLogin.disabled = true;
       try {
         const res = await fetch('/api/staff/login', {
@@ -10195,15 +10202,18 @@
           credentials: 'same-origin',
           body: JSON.stringify({ staff, pin }),
         });
-        if (!res.ok) { showPinError(); return; }
+        if (!res.ok) { showPinError(); return false; }
         const body = await res.json().catch(() => ({}));
         currentStaff = body.staff || null;
         setStaffUserLabel(currentStaff);
         pinEl.value = '';
         showDash();
+      } catch (_) {
+        showPinError();
       } finally {
         btnLogin.disabled = false;
       }
+      return false;
     });
 
     staffMemberTrigger?.addEventListener('click', (e) => {

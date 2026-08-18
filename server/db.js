@@ -194,6 +194,22 @@ export function initDb(databasePath) {
   `);
 
   db.exec(`
+    CREATE TABLE IF NOT EXISTS staff_access_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      staff_id TEXT,
+      ip TEXT,
+      success INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_staff_access_log_created
+      ON staff_access_log (created_at DESC);
+
+    CREATE INDEX IF NOT EXISTS idx_staff_access_log_staff
+      ON staff_access_log (staff_id, created_at DESC);
+  `);
+
+  db.exec(`
     CREATE TABLE IF NOT EXISTS staff_roster (
       staff_id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -2192,6 +2208,22 @@ export function setStaffPinHash(staffId, pinHash) {
   `,
   ).run(id, hash);
   return { ok: true };
+}
+
+export function logStaffAccess({ staffId, ip, success } = {}) {
+  db.prepare(
+    `
+    INSERT INTO staff_access_log (staff_id, ip, success, created_at)
+    VALUES (?, ?, ?, datetime('now'))
+  `,
+  ).run(
+    String(staffId || '').trim().toLowerCase() || null,
+    String(ip || '').trim().slice(0, 64) || null,
+    success ? 1 : 0,
+  );
+  db.prepare(
+    `DELETE FROM staff_access_log WHERE created_at < datetime('now', '-90 days')`,
+  ).run();
 }
 
 export function getStaffAccountStats(staffName) {
