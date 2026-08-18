@@ -4175,8 +4175,8 @@
       }
 
       body:not(.is-dashboard) .staff-shell {
-        width: 100%;
-        max-width: 100%;
+        width: min(100%, 380px);
+        max-width: 380px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -4196,7 +4196,7 @@
       }
 
       .gate-card {
-        max-width: 100%;
+        max-width: 380px;
         width: 100%;
         border-radius: var(--radius-ios);
         padding-top: 28px;
@@ -6767,7 +6767,7 @@
       }
 
       if (!n) {
-        listEl.innerHTML = '<tr><td colspan="5"><p class="empty">Nessun check-in in questa vista.</p></td></tr>';
+        listEl.innerHTML = '<tr><td colspan="5"><p class="empty">In questa schermata non ci sono check-in.</p></td></tr>';
         return;
       }
 
