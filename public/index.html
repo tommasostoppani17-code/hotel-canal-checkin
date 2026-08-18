@@ -707,9 +707,9 @@
     .step-body {
       display: flex;
       flex-direction: column;
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
-      overflow: visible;
+      overflow: hidden;
     }
 
     .step-footer-fixed {
@@ -1719,9 +1719,9 @@
     .step-body {
       display: flex;
       flex-direction: column;
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
-      overflow: visible;
+      overflow: hidden;
     }
 
     .step-footer-fixed {
@@ -3706,7 +3706,7 @@
     }
 
     .slide-step:has(.is-picker-open) > .step-body.step-scroll {
-      overflow: visible;
+      overflow: visible !important;
     }
 
     .slide-step:has(.is-picker-open) > .step-body {
@@ -5622,14 +5622,11 @@
     }
 
     body.is-keyboard-open .slide-step.is-active > .step-body.step-scroll {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden !important;
+      overscroll-behavior: none !important;
       padding-bottom: calc(var(--kb-inset, 0px) + 16px);
-      scroll-padding-top: 80px;
-      scroll-padding-bottom: calc(var(--kb-inset, 0px) + 24px);
     }
 
     body.is-keyboard-open .slide-step.is-active > .step-footer-fixed {
@@ -5888,6 +5885,23 @@
     #tablePanel {
       overscroll-behavior: contain;
       touch-action: pan-y;
+    }
+
+    /* Form: un blocco solo. Mai scroll interno tra titolo e Continua. */
+    #step1 .step-body.step-scroll,
+    #step2 .step-body.step-scroll,
+    #step3 .step-body.step-scroll,
+    .slide-step.is-viewport-clamped > .step-body.step-scroll,
+    body.is-keyboard-open .slide-step.is-active > .step-body.step-scroll {
+      overflow: hidden !important;
+      overscroll-behavior: none !important;
+      flex-grow: 0;
+      flex-shrink: 0;
+      touch-action: manipulation;
+    }
+
+    .slide-step:has(.is-picker-open) > .step-body.step-scroll {
+      overflow: visible !important;
     }
   </style>
 </head>
@@ -8050,45 +8064,15 @@
       stepEl.style.maxHeight = '';
     }
 
-    /** Se il contenuto supera #sliderViewport, scroll solo nel body — footer/CTA restano visibili. */
+    /** Mai stringere lo step in un corpo scorrevole: i campi restano visibili. */
     function reconcileStepViewportFit(step) {
       const viewport = document.getElementById('sliderViewport');
       const stepEl = document.getElementById(`step${step}`);
-      if (!viewport || !stepEl || !stepEl.classList.contains('is-active')) return;
-
-      viewport.style.clipPath = '';
-      viewport.style.webkitClipPath = '';
-
-      const vpH = Math.round(
-        frozenKeyboardViewportH
-          || parseFloat(viewport.style.height)
-          || viewport.getBoundingClientRect().height,
-      );
-      if (vpH < 80) return;
-
-      if (keyboardLock) {
-        const frozen = Math.round(frozenKeyboardViewportH || vpH);
-        if (frozen >= 80) {
-          stepEl.classList.add('is-viewport-clamped');
-          stepEl.style.height = `${frozen}px`;
-          stepEl.style.maxHeight = `${frozen}px`;
-        }
-        return;
+      if (viewport) {
+        viewport.style.clipPath = '';
+        viewport.style.webkitClipPath = '';
       }
-
-      const natural = measureStepContentHeight(step);
-      if (!Number.isFinite(natural) || natural < 80) {
-        clearStepViewportClamp(step);
-        return;
-      }
-
-      if (natural > vpH + 6) {
-        stepEl.classList.add('is-viewport-clamped');
-        stepEl.style.height = `${vpH}px`;
-        stepEl.style.maxHeight = `${vpH}px`;
-      } else {
-        clearStepViewportClamp(step);
-      }
+      if (stepEl) clearStepViewportClamp(step);
     }
 
     /**
@@ -8198,21 +8182,11 @@
 
     function scrollFieldIntoScroller(el) {
       if (!el || !(el instanceof HTMLElement)) return;
+      pinCardInView();
       const scroller = el.closest('.step-scroll');
-      const topPad = 80;
-      const botPad = Math.max(24, keyboardInsetPx() + 24);
-      const visibleBottom = visibleViewportBottomPx();
-
-      if (!scroller) {
-        pinCardInView();
-        return;
-      }
-      const sr = scroller.getBoundingClientRect();
-      const er = el.getBoundingClientRect();
-      if (er.top < sr.top + topPad) {
-        scroller.scrollTop -= sr.top + topPad - er.top;
-      } else if (er.bottom > Math.min(sr.bottom, visibleBottom) - botPad) {
-        scroller.scrollTop += er.bottom - (Math.min(sr.bottom, visibleBottom) - botPad);
+      if (scroller && !scroller.closest('#step4')) {
+        scroller.scrollTop = 0;
+        scroller.scrollLeft = 0;
       }
     }
 
@@ -8988,16 +8962,9 @@
 
     function isPageScrollPassthrough(target) {
       if (!(target instanceof Element)) return false;
-      if (target.closest('.apple-inline-scroll, .form-picker-list, #brandCalendar, .guest-sheet-scroll, #tablePanel')) {
-        return true;
-      }
-      if (
-        document.body.classList.contains('is-keyboard-open') &&
-        target.closest('.step-scroll')
-      ) {
-        return true;
-      }
-      return false;
+      return Boolean(
+        target.closest('.apple-inline-scroll, .form-picker-list, #brandCalendar, .guest-sheet-scroll, #tablePanel'),
+      );
     }
 
     function lockBackgroundScroll(e) {
@@ -10732,6 +10699,12 @@
     window.addEventListener('scroll', () => {
       if (!keyboardLock) pinCardInView();
     }, { passive: true });
+    document.querySelectorAll('#step1 .step-scroll, #step2 .step-scroll, #step3 .step-scroll').forEach((sc) => {
+      sc.addEventListener('scroll', () => {
+        sc.scrollTop = 0;
+        sc.scrollLeft = 0;
+      }, { passive: true });
+    });
     guestsTrigger?.addEventListener('click', () => openFormPicker('guests'));
     staffTrigger?.addEventListener('click', () => openFormPicker('staff'));
     checkinTrigger?.addEventListener('click', () => openBrandCalendar('checkin'));
