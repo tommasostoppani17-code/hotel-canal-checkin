@@ -26,6 +26,7 @@ import {
   mergeStaffMonthStats,
   mergeStaffMonthStatsFromCheckins,
   romeCalendarDate,
+  parseStayDate,
   parseCheckoutDate,
   listStaffCheckins,
   updateCheckinRoom,
@@ -708,6 +709,48 @@ function staffMemberById(staffId) {
   return STAFF_ROSTER.find((member) => member.id === id) || null;
 }
 
+function isStaffManager(staffId) {
+  const id = String(staffId || '').trim().toLowerCase();
+  return id === 'mizan' || id === 'payel';
+}
+
+function staffClientJson(staff) {
+  if (!staff) return null;
+  const id = staff.id || staff.staffId;
+  return {
+    id,
+    name: staff.name || staff.staffName,
+    label: staff.label || staff.staffLabel,
+    manager: isStaffManager(id),
+  };
+}
+
+function staffRoadmapPayload(staffId) {
+  const manager = isStaffManager(staffId);
+  return {
+    ok: true,
+    manager,
+    managerBlock: manager
+      ? {
+          intro:
+            'Fatturazione, API e hosting restano visibili solo a Mizan e Payel. I numeri arrivano dai progetti Emily AI e Sestriere Care: qui è il quadro, non uno strumento di turno.',
+          items: [
+            {
+              title: 'WhatsApp Business (API Meta)',
+              body: 'L’ospite scrive per primo dal QR in camera. Coupon e riepilogo stanza partono solo dopo quella chat. Non si inviano messaggi di marketing outbound da Hotel Canal: costano e chiudono il margine.',
+              cost: 'Fino a ~1.000 conversazioni service/mese: 0 € (soglia Meta). Oltre: ~0,03 € a conversazione. Dentro le 24 ore i messaggi sono a 0 €. Gemini stimato 1–3 €/mese su un hotel medio.',
+            },
+            {
+              title: 'Hub Emily AI + Sestriere Care',
+              body: 'Emily è già in cloud: canone di riferimento 29 €/mese, costo vivo ~8 € (hosting ~5 € + IA ~2 €, margine ~21 €). Sestriere Care oggi gira in locale sul Mac con tunnel. Un solo stack cloud toglie hosting e manutenzione duplicati.',
+              cost: 'Target: un canone unico al posto di due piattaforme. Architettura “zero-cost” Emily: ~12 €/mese vivi (SIM ~7 € + hosting ~5 €) se si evita la Cloud API Meta.',
+            },
+          ],
+        }
+      : null,
+  };
+}
+
 function staffPinFor(staffId) {
   const member = staffMemberById(staffId);
   if (!member) return '';
@@ -1237,7 +1280,16 @@ async function handleCheckin(req, res) {
       req.body?.includeCoupon === true ||
       req.body?.includeCoupon === 'true';
 
-    const stayDate = romeCalendarDate();
+    const stayDateParsed = parseStayDate(
+      req.body?.stayDate ?? req.body?.checkinDate ?? req.body?.stay_date,
+    );
+    if (stayDateParsed === false) {
+      return res.status(400).json({
+        error: 'Data di check-in non valida',
+        code: 'checkin_invalid',
+      });
+    }
+    const stayDate = stayDateParsed || romeCalendarDate();
     const checkoutDate = parseCheckoutDate(
       req.body?.checkoutDate ?? req.body?.checkout_date,
       stayDate,
@@ -1272,14 +1324,14 @@ async function handleCheckin(req, res) {
       guestName,
     });
 
-    if (roomNumber && isRoomTaken(roomNumber)) {
+    if (roomNumber && isRoomTaken(roomNumber, null, stayDate)) {
       if (tester) {
-        const removed = deleteCheckinsByRoom(roomNumber);
+        const removed = deleteCheckinsByRoom(roomNumber, stayDate);
         console.log(
           `[tester] stanza ${roomNumber} liberata (${removed} check-in) per ${maskEmail(email)}`,
         );
       } else {
-        const existing = getActiveCheckinByRoom(roomNumber);
+        const existing = getActiveCheckinByRoom(roomNumber, stayDate);
         const sameEmail =
           existing?.email &&
           normalizeEmail(existing.email) === email;
@@ -1323,13 +1375,14 @@ async function handleCheckin(req, res) {
         couponToken,
         withCoupon: includeCoupon,
         skipStaffStats: tester,
+        stayDate,
         checkoutDate,
       });
     } catch (err) {
       const msg = String(err?.message || err || '');
       if (/UNIQUE|idx_checkins_room_unique|idx_checkins_room_day_unique/i.test(msg)) {
         if (tester && roomNumber) {
-          deleteCheckinsByRoom(roomNumber);
+          deleteCheckinsByRoom(roomNumber, stayDate);
           id = insertCheckin({
             phone,
             email,
@@ -1340,6 +1393,7 @@ async function handleCheckin(req, res) {
             couponToken,
             withCoupon: includeCoupon,
             skipStaffStats: true,
+            stayDate,
             checkoutDate,
           });
         } else {
@@ -1540,7 +1594,7 @@ app.post('/api/staff/login', staffLoginLimit, (req, res) => {
   setStaffCookie(res, issueStaffSession(member.id));
   return res.json({
     ok: true,
-    staff: { id: member.id, name: member.name, label: member.label },
+    staff: staffClientJson(member),
   });
 });
 
@@ -1554,13 +1608,19 @@ app.get('/api/staff/session', (req, res) => {
   if (!session) return res.json({ ok: false });
   return res.json({
     ok: true,
-    staff: {
-      id: session.staffId,
-      name: session.staffName,
-      label: session.staffLabel,
-    },
+    staff: staffClientJson(session),
   });
 });
+
+app.get(
+  '/api/staff/roadmap',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(staffRoadmapPayload(req.staffUser?.staffId));
+  },
+);
 
 app.get(
   '/api/staff/stats',
@@ -1571,11 +1631,7 @@ app.get(
     res.setHeader('Cache-Control', 'no-store');
     return res.json({
       ok: true,
-      staff: {
-        id: req.staffUser.staffId,
-        name: req.staffUser.staffName,
-        label: req.staffUser.staffLabel,
-      },
+      staff: staffClientJson(req.staffUser),
       ...payload,
     });
   },

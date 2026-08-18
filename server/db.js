@@ -209,18 +209,33 @@ export function romeCalendarDate(from = new Date()) {
   }).format(d);
 }
 
+function addDaysYmd(ymd, days) {
+  const [y, m, d] = String(ymd).split('-').map(Number);
+  if (!y || !m || !d) return '';
+  return new Date(Date.UTC(y, m - 1, d + days, 12, 0, 0))
+    .toISOString()
+    .slice(0, 10);
+}
+
+/** YYYY-MM-DD check-in: null se vuoto, false se non valido, stringa se ok. */
+export function parseStayDate(raw, today = romeCalendarDate()) {
+  const s = String(raw || '').trim();
+  if (!s) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const min = addDaysYmd(today, -1);
+  const max = addDaysYmd(today, 90);
+  if (!min || !max || s < min || s > max) return false;
+  return s;
+}
+
 /** YYYY-MM-DD checkout: null se vuoto, false se non valido, stringa se ok. */
 export function parseCheckoutDate(raw, stayDate = romeCalendarDate()) {
   const s = String(raw || '').trim();
   if (!s) return null;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
   if (s < stayDate) return false;
-  const [y, m, d] = String(stayDate).split('-').map(Number);
-  if (!y || !m || !d) return false;
-  const max = new Date(Date.UTC(y, m - 1, d + 90, 12, 0, 0))
-    .toISOString()
-    .slice(0, 10);
-  if (s > max) return false;
+  const max = addDaysYmd(stayDate, 90);
+  if (!max || s > max) return false;
   return s;
 }
 
@@ -593,6 +608,7 @@ export function insertCheckin({
   couponToken,
   withCoupon = false,
   skipStaffStats = false,
+  stayDate = null,
   checkoutDate = null,
 }) {
   const stmt = db.prepare(`
@@ -614,7 +630,7 @@ export function insertCheckin({
     receptionist: receptionist || null,
     guestsCount: guestsCount ?? null,
     couponToken: couponToken || null,
-    stayDate: romeCalendarDate(),
+    stayDate: stayDate || romeCalendarDate(),
     checkoutDate: checkoutDate || null,
   });
 

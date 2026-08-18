@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=overlays-content">
   <meta name="robots" content="noindex, nofollow">
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#0A2D37">
@@ -60,13 +60,16 @@
       --radius-s: 8px;
       --radius-m: 12px;
       --radius-outer: 28px;
+      --table-border: #e5e5ea;
+      --table-row-divider: #f2f2f7;
+      --table-head-bg: #fafafa;
       --space-xs: 4px;
       --space-s: 8px;
       --space-m: 12px;
       --space-l: 16px;
       --space-xl: 24px;
       --cell-x: 16px;
-      --row-h: 52px;
+      --row-h: 56px;
       --cell-control-h: 32px;
       --surface-card: #FFFFFF;
       --bg-main: var(--sky-50);
@@ -81,6 +84,7 @@
       --ios-blue-ring: rgba(18, 68, 83, 0.1);
       --ios-green: #34C759;
       --hover-ease: 180ms ease;
+      --kb-inset: 0px;
     }
 
     * {
@@ -93,9 +97,7 @@
 
     html, body {
       width: 100%;
-      height: 100%;
-      min-height: 100dvh;
-      overflow: hidden;
+      min-height: 100%;
       color-scheme: light only;
     }
 
@@ -106,23 +108,36 @@
     }
 
     body:not(.is-dashboard) {
+      min-height: 100dvh;
+      height: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding:
         calc(16px + env(safe-area-inset-top, 0px))
         24px
-        calc(16px + env(safe-area-inset-bottom, 0px))
+        calc(16px + env(safe-area-inset-bottom, 0px) + var(--kb-inset, 0px))
         24px;
       display: flex;
       justify-content: center;
       align-items: center;
+      box-sizing: border-box;
     }
 
     body.is-dashboard {
+      height: 100%;
+      overflow: hidden;
       background: linear-gradient(
         165deg,
         var(--sky-100) 0%,
         var(--card-cream-top) 42%,
         var(--card-cream-bottom) 100%
       );
+    }
+
+    html:has(body.is-dashboard) {
+      height: 100%;
+      overflow: hidden;
     }
 
     html.report-sheet-open,
@@ -198,12 +213,6 @@
     }
 
     .hidden { display: none !important; }
-
-    /* Temporarily hide Settings section from dashboard navigation and panel. */
-    #tabSettings,
-    #settingsPanel {
-      display: none !important;
-    }
 
     /* ── Motion (allineato al lato ospite) ── */
     @keyframes cardIntro {
@@ -348,6 +357,7 @@
       border-radius: var(--radius-outer);
       padding: var(--ios-card-pad-top) 0 var(--ios-card-pad-bottom);
       overflow: hidden;
+      flex-shrink: 0;
       isolation: isolate;
       box-shadow:
         0 1px 2px rgba(0, 0, 0, 0.04),
@@ -450,11 +460,10 @@
       letter-spacing: 0.06em;
       color: var(--canal-petroleum);
       margin-bottom: var(--ios-2);
-      transition: color 0.2s var(--ios-ease), transform 0.2s var(--ios-ease);
+      transition: color 0.2s var(--ios-ease);
     }
 
     .gate-form .form-group:focus-within label:not(.label-error-state) {
-      transform: translate3d(0, -2px, 0);
       color: var(--canal-petroleum-hover);
     }
 
@@ -469,10 +478,19 @@
       letter-spacing: -0.02em;
       border: 1.5px solid transparent;
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+      scroll-margin-top: 80px;
+      scroll-margin-bottom: 24px;
     }
 
-    .gate-form .ui-dropdown-trigger.field {
-      font-weight: 500;
+    .gate-form .field::-webkit-contacts-auto-fill-button,
+    .gate-form .field::-webkit-credentials-auto-fill-button,
+    .gate-form .field::-webkit-caps-lock-indicator {
+      visibility: hidden !important;
+      display: none !important;
+      pointer-events: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      margin: 0 !important;
     }
 
     .gate-form .field::placeholder {
@@ -563,11 +581,10 @@
     }
 
     .field:focus {
+      outline: none;
       border-color: rgba(18, 68, 83, 0.45);
-      transform: translateZ(0);
-      box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.02),
-        0 0 0 3.5px rgba(18, 68, 83, 0.12);
+      transform: none;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     .field.is-invalid {
@@ -640,6 +657,129 @@
 
     .ui-dropdown-menu.is-flip-up:not(.hidden) {
       animation-name: uiMenuInUp;
+    }
+
+    .apple-inline-list {
+      display: none;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 220px;
+      margin-top: 8px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #d1d1d6;
+      border-radius: var(--radius-ui);
+      box-shadow: 0 4px 16px rgba(18, 68, 83, 0.08);
+    }
+
+    .apple-inline-list[hidden] {
+      display: none !important;
+    }
+
+    .apple-inline-list:not([hidden]) {
+      display: block;
+    }
+
+    /* Login: ruota fluttuante. Non entra nel flusso, non deforma la card. */
+    .gate-form .apple-inline-list {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 176px;
+      margin-top: 0;
+      z-index: 40;
+      box-shadow:
+        0 8px 24px rgba(18, 68, 83, 0.14),
+        0 2px 6px rgba(18, 68, 83, 0.06);
+    }
+
+    .gate-form .ui-dropdown.is-open .apple-inline-list:not([hidden]) {
+      animation: uiMenuIn 180ms var(--slide-ease) both;
+    }
+
+    .gate-form .apple-inline-spacer {
+      height: 66px;
+    }
+
+    .apple-inline-scroll {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .apple-inline-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .apple-inline-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 44px;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 0;
+      background: transparent;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: #1d1d1f;
+      scroll-snap-align: center;
+      cursor: pointer;
+    }
+
+    .apple-inline-item.is-selected,
+    .apple-inline-item.is-focused {
+      font-weight: 700;
+      color: var(--canal-petroleum);
+    }
+
+    .apple-inline-spacer {
+      height: 88px;
+      pointer-events: none;
+    }
+
+    .apple-inline-window {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 50%;
+      height: 44px;
+      margin-top: -22px;
+      border-radius: 10px;
+      background: rgba(18, 68, 83, 0.08);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .apple-inline-fade {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .apple-inline-fade--top {
+      top: 0;
+      background: linear-gradient(to bottom, #ffffff 18%, rgba(255, 255, 255, 0));
+    }
+
+    .apple-inline-fade--bottom {
+      bottom: 0;
+      background: linear-gradient(to top, #ffffff 18%, rgba(255, 255, 255, 0));
     }
 
     @keyframes uiMenuInUp {
@@ -720,9 +860,7 @@
 
     .ui-dropdown.is-open .ui-dropdown-trigger {
       border-color: rgba(18, 68, 83, 0.45);
-      box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.02),
-        0 0 0 3.5px rgba(18, 68, 83, 0.12);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     .ui-menu-item {
@@ -1378,10 +1516,10 @@
 
     .workspace-toolbar {
       flex-shrink: 0;
-      background: linear-gradient(180deg, #fff 0%, var(--card-cream-top) 100%);
-      border: 1px solid var(--input-border);
+      background: linear-gradient(180deg, #fff 0%, var(--table-head-bg) 100%);
+      border: 1px solid var(--table-border);
       border-bottom: none;
-      border-radius: var(--radius-ios) var(--radius-ios) 0 0;
+      border-radius: var(--radius-sheet-top) var(--radius-sheet-top) 0 0;
       padding: 0 var(--cell-x);
     }
 
@@ -1394,7 +1532,7 @@
     }
 
     .workspace-body .table-panel {
-      border-radius: 0 0 var(--radius-ios) var(--radius-ios);
+      border-radius: 0 0 var(--radius-sheet-top) var(--radius-sheet-top);
       border-top: none;
     }
 
@@ -1404,9 +1542,9 @@
       display: flex;
       flex-direction: column;
       background: #fff;
-      border: 1px solid var(--input-border);
-      border-radius: var(--radius-ios);
-      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-sheet-top);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.03);
       overflow: hidden;
     }
 
@@ -1819,8 +1957,8 @@
     .table-head-wrap {
       flex-shrink: 0;
       overflow: hidden;
-      background: var(--card-cream-top);
-      border-bottom: 1px solid var(--input-border);
+      background: var(--table-head-bg);
+      border-bottom: 1px solid var(--table-border);
     }
 
     .table-scroll {
@@ -1829,12 +1967,13 @@
       overflow: auto;
       overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
+      background: #fff;
     }
 
     .matrix-table {
       width: 100%;
       min-width: 0;
-      border-collapse: separate;
+      border-collapse: collapse;
       border-spacing: 0;
       table-layout: fixed;
     }
@@ -1876,10 +2015,10 @@
       font-weight: 700;
       letter-spacing: 0.09em;
       text-transform: uppercase;
-      color: #6b8494;
+      color: #86868b;
       text-align: left;
-      background: var(--card-cream-top);
-      border-bottom: 0;
+      background: var(--table-head-bg);
+      border-bottom: none;
       white-space: nowrap;
     }
 
@@ -1888,8 +2027,20 @@
       padding-right: var(--cell-x);
       font-size: 13px;
       color: var(--text-main);
-      border-bottom: 1px solid #F0F2F4;
+      border-bottom: 1px solid var(--table-row-divider);
+      border-left: none;
+      border-right: none;
       text-align: left;
+      background: #fff;
+    }
+
+    .matrix-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .matrix-table th.col-phone,
+    .matrix-table td.col-phone {
+      text-align: right;
     }
 
     .matrix-table tbody td {
@@ -1948,27 +2099,60 @@
       position: relative;
       cursor: default;
       background-color: #fff;
+      transition: background-color 0.15s ease;
+    }
+
+    .matrix-table tbody tr:nth-child(even) {
+      background-color: #fcfcfd;
+    }
+
+    .matrix-table tbody tr:nth-child(even) td {
+      background-color: #fcfcfd;
     }
 
     .matrix-table tbody tr:hover {
-      background-color: rgba(18, 68, 83, 0.028);
+      background-color: #f2f2f7;
+    }
+
+    .matrix-table tbody tr:hover td {
+      background-color: #f2f2f7;
     }
 
     .matrix-table tbody tr:active:not(:has(:focus-within)) {
-      background-color: rgba(18, 68, 83, 0.04);
+      background-color: #ebebf0;
+    }
+
+    .matrix-table tbody tr:active:not(:has(:focus-within)) td {
+      background-color: #ebebf0;
     }
 
     .matrix-table tbody tr:has(.btn-row-menu.is-open) {
-      background-color: rgba(18, 68, 83, 0.032);
+      background-color: #f2f2f7;
+    }
+
+    .matrix-table tbody tr:has(.btn-row-menu.is-open) td {
+      background-color: #f2f2f7;
     }
 
     .matrix-table tbody tr:has(:focus-within):not(:has(.btn-row-menu.is-open)) {
-      background-color: rgba(18, 68, 83, 0.028);
+      background-color: #f2f2f7;
+    }
+
+    .matrix-table tbody tr:has(:focus-within):not(:has(.btn-row-menu.is-open)) td {
+      background-color: #f2f2f7;
     }
 
     .matrix-table tbody tr.is-blacklisted { background: rgba(198, 40, 40, 0.028); }
 
+    .matrix-table tbody tr.is-blacklisted td {
+      background: rgba(198, 40, 40, 0.028);
+    }
+
     .matrix-table tbody tr.is-blacklisted:hover {
+      background: rgba(198, 40, 40, 0.045);
+    }
+
+    .matrix-table tbody tr.is-blacklisted:hover td {
       background: rgba(198, 40, 40, 0.045);
     }
 
@@ -1976,11 +2160,15 @@
       background: rgba(198, 40, 40, 0.05);
     }
 
+    .matrix-table tbody tr.is-blacklisted:has(.btn-row-menu.is-open) td {
+      background: rgba(198, 40, 40, 0.05);
+    }
+
     .cell-name {
-      font-weight: 600;
+      font-weight: 500;
       font-size: 14px;
       letter-spacing: -0.01em;
-      color: #1a2e36;
+      color: var(--canal-petroleum);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -2001,9 +2189,19 @@
     }
 
     .cell-room.is-empty {
-      font-weight: 500;
-      letter-spacing: 0;
-      color: #8a9ba8;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: #c7c7cc;
+    }
+
+    .data-empty {
+      display: inline-block;
+      min-height: var(--cell-control-h);
+      line-height: var(--cell-control-h);
+      color: #c7c7cc;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
     }
 
     .cell-guest-head {
@@ -2546,15 +2744,6 @@
       overflow-wrap: normal;
     }
 
-    .cell-muted {
-      display: inline-flex;
-      align-items: center;
-      min-height: var(--cell-control-h);
-      color: var(--text-secondary);
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
     .time-badge {
       display: inline-flex;
       align-items: center;
@@ -2691,30 +2880,14 @@
       color: #515154;
     }
 
-    /* ── Note + Blacklist — feed minimal (Apple / IG) ── */
-    .blacklist-panel,
-    .notes-panel,
+    /* ── Impostazioni (SaaS / Apple) ── */
     .settings-panel {
-      background: var(--sky-50);
+      background: #f5f5f7;
     }
 
-    .blacklist-panel .footer-summary,
-    .notes-panel .footer-summary,
     .settings-panel .footer-summary {
-      background: var(--sky-50);
-      padding-left: clamp(16px, 2.5vw, 24px);
-      padding-right: clamp(16px, 2.5vw, 24px);
-      border-top: 0;
-    }
-
-    .settings-toolbar-hint {
-      flex: 1;
-      min-width: 0;
-      margin: 0;
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 1.45;
-      color: #8a9ba8;
+      background: #fafafa;
+      border-top: 1px solid var(--table-row-divider);
     }
 
     .settings-scroll {
@@ -2722,49 +2895,98 @@
       min-height: 0;
       overflow: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 10px clamp(14px, 2.2vw, 20px) 16px;
-      background: var(--sky-50);
+      padding: clamp(16px, 2.5vw, 28px) clamp(14px, 2.2vw, 24px) calc(20px + env(safe-area-inset-bottom, 0px));
+      background: #f5f5f7;
     }
 
-    .settings-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+    .sys-settings {
       width: 100%;
-      max-width: none;
-      margin: 0;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
-    .settings-block {
+    .sys-settings-header {
+      margin-bottom: 24px;
+    }
+
+    .sys-settings-header h2 {
+      margin: 0 0 4px;
+      font-size: clamp(22px, 2.4vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--canal-petroleum);
+    }
+
+    .sys-settings-header p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.45;
+      color: #86868b;
+    }
+
+    .sys-settings-account {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      background: #fff;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-sheet-top);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.03);
     }
 
-    .settings-block-title {
-      margin: 0;
-      padding: 0 2px;
-      font-size: 12px;
+    .sys-settings-account-avatar {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    .sys-settings-account-body {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .sys-settings-account-name {
+      display: block;
+      font-size: 16px;
       font-weight: 600;
-      color: #8a9ba8;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
     }
 
-    .settings-kpis {
+    .sys-settings-account-meta {
+      display: block;
+      margin-top: 2px;
+      font-size: 13px;
+      color: #86868b;
+    }
+
+    .sys-settings-kpis {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
-    .settings-kpi {
-      border: 1px solid rgba(18, 68, 83, 0.08);
-      border-radius: var(--radius-ios);
-      background: #fff;
-      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+    .sys-settings-kpi {
       padding: 14px 10px 12px;
       text-align: center;
+      background: #fff;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-m);
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.02);
     }
 
-    .settings-kpi-value {
+    .sys-settings-kpi-value {
       display: block;
       font-size: 22px;
       font-weight: 700;
@@ -2774,75 +2996,271 @@
       line-height: 1.1;
     }
 
-    .settings-kpi-label {
+    .sys-settings-kpi-label {
       display: block;
       margin-top: 6px;
       font-size: 11px;
       font-weight: 600;
-      color: #8a9ba8;
+      color: #86868b;
     }
 
-    .settings-rank {
+    .sys-settings-kpi-kicker {
+      grid-column: 1 / -1;
+      margin: 0 0 -4px 2px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #86868b;
+    }
+
+    .sys-settings-group {
+      margin-bottom: 20px;
+      background: #fff;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-sheet-top);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.02);
+    }
+
+    .sys-settings-group-title {
+      padding: 14px 18px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #86868b;
+      background: var(--table-head-bg);
+      border-bottom: 1px solid var(--table-border);
+    }
+
+    .sys-settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--table-row-divider);
+      transition: background-color 0.15s ease;
+    }
+
+    .sys-settings-row:last-child {
+      border-bottom: none;
+    }
+
+    @media (hover: hover) {
+      .sys-settings-row:hover {
+        background: #fdfdfd;
+      }
+    }
+
+    .sys-settings-row--stack {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .sys-settings-row--disabled {
+      opacity: 0.72;
+    }
+
+    .sys-settings-row-info {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
+      padding-right: 8px;
     }
 
-    .settings-account-row,
-    .settings-rank .feed-row {
-      align-items: center;
+    .sys-settings-row-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-main);
     }
 
-    #settingsAccountAvatar,
-    .settings-rank .feed-row-avatar {
-      color: #fff;
-      margin-top: 0;
+    .sys-settings-row-desc {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #86868b;
     }
 
-    .settings-rank .feed-row.is-me {
-      border-color: rgba(18, 68, 83, 0.16);
-    }
-
-    .settings-rank .feed-row.is-me .feed-row-name {
+    .sys-settings-row-badge {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(18, 68, 83, 0.08);
+      font-size: 12px;
+      font-weight: 600;
       color: var(--canal-petroleum);
     }
 
-    .settings-password-card {
-      display: block;
-      padding: 16px;
+    .sys-switch {
+      position: relative;
+      display: inline-block;
+      width: 51px;
+      height: 31px;
+      flex-shrink: 0;
     }
 
-    .settings-form {
+    .sys-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .sys-switch-slider {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: #e5e5ea;
+      border-radius: 34px;
+      transition: background 0.25s ease;
+    }
+
+    .sys-switch-slider::before {
+      content: "";
+      position: absolute;
+      width: 27px;
+      height: 27px;
+      left: 2px;
+      bottom: 2px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      transition: transform 0.25s ease;
+    }
+
+    .sys-switch input:checked + .sys-switch-slider {
+      background: #34c759;
+    }
+
+    .sys-switch input:checked + .sys-switch-slider::before {
+      transform: translateX(20px);
+    }
+
+    .sys-switch input:disabled + .sys-switch-slider {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .sys-settings-select,
+    .sys-settings-input {
+      height: 36px;
+      min-width: 112px;
+      padding: 0 12px;
+      border: 1px solid #d1d1d6;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #fff;
+      outline: none;
+      flex-shrink: 0;
+    }
+
+    .sys-settings-select:focus,
+    .sys-settings-input:focus {
+      border-color: var(--canal-petroleum);
+      box-shadow: 0 0 0 3px rgba(18, 68, 83, 0.12);
+    }
+
+    .sys-settings-select:disabled,
+    .sys-settings-input:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      background: #f2f2f7;
+    }
+
+    .sys-settings-rank {
       display: flex;
       flex-direction: column;
+      gap: 8px;
+      padding: 12px 14px 14px;
+    }
+
+    .sys-settings-rank .feed-row {
+      margin: 0;
+    }
+
+    .sys-settings-rank .feed-row.is-me {
+      border-color: rgba(18, 68, 83, 0.16);
+    }
+
+    .sys-settings-rank .feed-row.is-me .feed-row-name {
+      color: var(--canal-petroleum);
+    }
+
+    .sys-settings-empty {
+      margin: 0;
+      padding: 14px 12px;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-m);
+      background: #fafafa;
+      font-size: 13px;
+      font-weight: 500;
+      color: #86868b;
+      text-align: center;
+    }
+
+    .sys-settings-pin-grid {
+      display: grid;
       gap: 12px;
       width: 100%;
     }
 
-    .settings-form .sheet-field {
+    .sys-settings-pin-grid .sheet-field {
       margin: 0;
     }
 
-    .settings-form .field {
+    .sys-settings-pin-grid .field {
       font-size: 16px;
     }
 
-    .settings-form .btn-primary {
+    .sys-settings-pin-grid .btn-primary {
       width: 100%;
-      height: 48px;
+      height: 44px;
       margin-top: 4px;
     }
 
-    .settings-empty {
-      margin: 0;
-      padding: 16px 12px;
-      border: 1px solid rgba(18, 68, 83, 0.08);
-      border-radius: var(--radius-ios);
-      background: #fff;
-      font-size: 13px;
+    .sys-settings-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    .btn-settings-secondary {
+      height: 44px;
+      padding: 0 20px;
+      border: 1px solid #d1d1d6;
+      border-radius: 10px;
+      background: transparent;
+      font-size: 14px;
       font-weight: 500;
-      color: #8a9ba8;
-      text-align: center;
+      color: #48484a;
+      cursor: pointer;
+    }
+
+    .btn-settings-secondary:active {
+      transform: scale(0.99);
+    }
+
+    .btn-settings-primary {
+      height: 44px;
+      padding: 0 24px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--canal-petroleum);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.2);
+    }
+
+    .btn-settings-primary:active {
+      transform: scale(0.99);
+      background: var(--canal-petroleum-hover);
     }
 
     .settings-lead {
@@ -2851,6 +3269,246 @@
       font-weight: 500;
       color: #8a9ba8;
       line-height: 1.45;
+    }
+
+    .info-panel {
+      background: #f5f5f7;
+    }
+
+    .info-panel .footer-summary {
+      background: #fafafa;
+      border-top: 1px solid var(--table-row-divider);
+    }
+
+    .info-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: clamp(16px, 2.5vw, 28px) clamp(14px, 2.2vw, 24px) calc(20px + env(safe-area-inset-bottom, 0px));
+      background: #f5f5f7;
+    }
+
+    .info-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .info-header {
+      margin: 0;
+    }
+
+    .info-header h2 {
+      margin: 0 0 6px;
+      font-size: clamp(22px, 2.4vw, 26px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--canal-petroleum);
+    }
+
+    .info-header p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: #86868b;
+    }
+
+    .info-version {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 6px;
+      background: #e5e5ea;
+      color: #1d1d1f;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .info-card {
+      background: #fff;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-sheet-top);
+      padding: 20px 18px;
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.02);
+    }
+
+    .info-card-title {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      letter-spacing: -0.01em;
+    }
+
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--table-row-divider);
+      cursor: default;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .info-item:first-child {
+      padding-top: 0;
+    }
+
+    .info-item-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(18, 68, 83, 0.07);
+      color: var(--canal-petroleum);
+    }
+
+    .info-item-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .info-item-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .info-item-body {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: #86868b;
+      line-height: 1.45;
+    }
+
+    .info-manager {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px 18px;
+      border: 1px solid #bce1ec;
+      border-radius: var(--radius-sheet-top);
+      background: linear-gradient(135deg, #ffffff 0%, #f4f9f9 100%);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.03);
+      overflow: hidden;
+    }
+
+    .info-manager-head {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 118px;
+    }
+
+    .info-manager-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--canal-petroleum);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .info-manager-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      letter-spacing: -0.01em;
+    }
+
+    .info-manager-intro {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: #48484a;
+      line-height: 1.45;
+      max-width: 52ch;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .info-project {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px;
+      border: 1px solid #d1d1d6;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .info-project h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      letter-spacing: -0.01em;
+    }
+
+    .info-project p {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6e6e73;
+      line-height: 1.45;
+    }
+
+    .info-cost {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ios-green);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 720px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-manager-head {
+        padding-right: 0;
+        padding-top: 28px;
+      }
     }
 
     .workspace.is-settings .workspace-toolbar {
@@ -2867,8 +3525,8 @@
     }
 
     .workspace.is-settings .workspace-body .table-panel {
-      border-radius: var(--radius-ios);
-      border-top: 1px solid var(--input-border);
+      border-radius: var(--radius-sheet-top);
+      border-top: 1px solid var(--table-border);
     }
 
     .blacklist-scroll,
@@ -4165,19 +4823,22 @@
     /* Login Accesso personale — mobile / iPhone */
     @media (max-width: 720px) {
       body:not(.is-dashboard) {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: 100dvh;
+        max-height: none;
         padding:
           calc(10px + env(safe-area-inset-top, 0px))
           max(12px, env(safe-area-inset-left, 0px))
-          calc(10px + env(safe-area-inset-bottom, 0px))
+          calc(10px + env(safe-area-inset-bottom, 0px) + var(--kb-inset, 0px))
           max(12px, env(safe-area-inset-right, 0px));
         align-items: center;
         justify-content: center;
         overflow-x: hidden;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        overscroll-behavior-y: contain;
-        min-height: 100dvh;
-        height: auto;
+        overscroll-behavior: contain;
       }
 
       body:not(.is-dashboard) .staff-shell {
@@ -4188,7 +4849,7 @@
         justify-content: center;
         align-items: stretch;
         flex: 1 0 auto;
-        min-height: calc(100dvh - (20px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)));
+        min-height: 0;
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
 
@@ -4211,7 +4872,6 @@
 
       .gate-card.is-menu-open {
         overflow: visible;
-        margin-bottom: min(160px, 28dvh);
       }
 
       .gate-header {
@@ -4306,6 +4966,11 @@
       line-height: 1.2;
       display: block;
       padding-right: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .matrix-table td.col-phone .secure-cell-wrapper .phone-text {
+      text-align: right;
     }
 
     .phone-text,
@@ -4363,6 +5028,19 @@
       max-width: 100%;
     }
 
+    .matrix-table td.col-phone .secure-cell-wrapper {
+      justify-content: flex-end;
+    }
+
+    .matrix-table td.col-phone .secure-cell-wrapper.is-empty {
+      justify-content: flex-end;
+    }
+
+    .matrix-table td.col-phone .contact-stack {
+      align-items: flex-end;
+      text-align: right;
+    }
+
     .email-text.is-revealed {
       max-width: 100%;
       color: var(--text-main);
@@ -4387,8 +5065,24 @@
       cursor: pointer;
       padding: 0;
       flex-shrink: 0;
-      opacity: 0.45;
+      opacity: 0;
+      pointer-events: none;
       transition: opacity var(--hover-ease), background var(--hover-ease), color var(--hover-ease);
+    }
+
+    .matrix-table tbody tr:hover .btn-reveal,
+    .matrix-table tbody tr:focus-within .btn-reveal,
+    .matrix-table .btn-reveal.is-locked,
+    .matrix-table .btn-reveal:focus-visible {
+      opacity: 0.45;
+      pointer-events: auto;
+    }
+
+    @media (hover: none) {
+      .matrix-table .btn-reveal {
+        opacity: 0.4;
+        pointer-events: auto;
+      }
     }
 
     .btn-reveal:hover {
@@ -4453,8 +5147,8 @@
       gap: 12px;
       flex-wrap: wrap;
       padding: 11px var(--cell-x);
-      border-top: 1px solid var(--input-border);
-      background: linear-gradient(180deg, var(--card-cream-top) 0%, #fff 100%);
+      border-top: 1px solid var(--table-row-divider);
+      background: var(--table-head-bg);
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.02em;
@@ -4581,12 +5275,22 @@
         border-top: 0;
       }
 
-      .settings-kpi {
+      .sys-settings-kpi {
         padding: 12px 8px 10px;
       }
 
-      .settings-kpi-value {
+      .sys-settings-kpi-value {
         font-size: 20px;
+      }
+
+      .sys-settings-row {
+        flex-wrap: wrap;
+      }
+
+      .sys-settings-select,
+      .sys-settings-input {
+        width: 100%;
+        min-width: 0;
       }
 
       .workspace-toolbar {
@@ -4807,17 +5511,18 @@
         font-size: 15px;
       }
 
-      #checkinsPanel .cell-muted {
+      #checkinsPanel .data-empty {
         min-height: 0;
-        font-size: 16px;
-        color: #C7C7CC;
+        line-height: 1.25;
+        color: #c7c7cc;
       }
 
       #checkinsPanel .btn-reveal {
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        opacity: 0.7;
+        opacity: 0.45;
+        pointer-events: auto;
         align-self: center;
       }
 
@@ -4891,7 +5596,12 @@
                 </svg>
               </span>
             </button>
-            <div class="ui-dropdown-menu ui-menu hidden" id="staffMemberMenu" role="listbox" hidden aria-labelledby="lbl-staff"></div>
+            <div class="apple-inline-list" id="staffMemberList" hidden>
+              <div class="apple-inline-window" aria-hidden="true"></div>
+              <div class="apple-inline-fade apple-inline-fade--top" aria-hidden="true"></div>
+              <div class="apple-inline-scroll" id="staffMemberMenu" role="listbox" aria-labelledby="lbl-staff"></div>
+              <div class="apple-inline-fade apple-inline-fade--bottom" aria-hidden="true"></div>
+            </div>
             <input type="hidden" id="staffMember" value="" autocomplete="username">
           </div>
         </div>
@@ -4952,6 +5662,16 @@
       </nav>
       <nav class="dash-nav-secondary" aria-label="Account">
         <span class="dash-nav-section-label">Account</span>
+        <button type="button" class="dash-nav-item" id="tabInfo">
+          <span class="dash-nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 10.5V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="7.5" r="1.1" fill="currentColor"/>
+            </svg>
+          </span>
+          Informazioni
+        </button>
         <button type="button" class="dash-nav-item" id="tabSettings">
           <span class="dash-nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -5099,48 +5819,127 @@
           </div>
 
           <div class="table-panel hidden settings-panel" id="settingsPanel">
-            <div class="notes-toolbar-inline">
-              <p class="settings-toolbar-hint" id="settingsToolbarHint">Account personale</p>
-            </div>
             <div class="settings-scroll">
-              <div class="settings-stack">
-                <article class="feed-row settings-account-row" id="settingsAccountCard">
-                  <span class="feed-row-avatar feed-row-avatar--note" id="settingsAccountAvatar" aria-hidden="true">—</span>
-                  <div class="feed-row-body">
-                    <div class="feed-row-top">
-                      <span class="feed-row-name" id="settingsAccountName">—</span>
-                    </div>
-                    <div class="feed-row-meta">Accesso personale · visibile solo a te</div>
+              <div class="sys-settings">
+                <header class="sys-settings-header">
+                  <h2>Impostazioni di Sistema</h2>
+                  <p>Gestisci le configurazioni della reception e le automazioni dell'Hotel Canal.</p>
+                </header>
+
+                <article class="sys-settings-account" id="settingsAccountCard">
+                  <span class="sys-settings-account-avatar" id="settingsAccountAvatar" aria-hidden="true">—</span>
+                  <div class="sys-settings-account-body">
+                    <span class="sys-settings-account-name" id="settingsAccountName">—</span>
+                    <span class="sys-settings-account-meta">Accesso personale · visibile solo a te</span>
                   </div>
                 </article>
 
-                <section class="settings-block">
-                  <p class="settings-block-title" id="settingsStatsKicker">Questo mese</p>
-                  <div class="settings-kpis">
-                    <div class="settings-kpi">
-                      <span class="settings-kpi-value" id="statToday">0</span>
-                      <span class="settings-kpi-label">Oggi</span>
+                <div class="sys-settings-kpis" aria-label="Statistiche mensili">
+                  <p class="sys-settings-kpi-kicker" id="settingsStatsKicker">Questo mese</p>
+                  <div class="sys-settings-kpi">
+                    <span class="sys-settings-kpi-value" id="statToday">0</span>
+                    <span class="sys-settings-kpi-label">Oggi</span>
+                  </div>
+                  <div class="sys-settings-kpi">
+                    <span class="sys-settings-kpi-value" id="statMonth">0</span>
+                    <span class="sys-settings-kpi-label">Check-in</span>
+                  </div>
+                  <div class="sys-settings-kpi">
+                    <span class="sys-settings-kpi-value" id="statCoupons">0</span>
+                    <span class="sys-settings-kpi-label">Voucher</span>
+                  </div>
+                </div>
+
+                <form id="settingsPrefsForm" action="#" autocomplete="off">
+                  <div class="sys-settings-group">
+                    <div class="sys-settings-group-title">Automazioni Reception &amp; Check-in</div>
+
+                    <div class="sys-settings-row">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Privacy GDPR (Privacy Shield)</span>
+                        <span class="sys-settings-row-desc">Maschera email e telefono nella lista clienti finché non li sveli manualmente.</span>
+                      </div>
+                      <label class="sys-switch">
+                        <input type="checkbox" id="prefGdprMask" checked disabled>
+                        <span class="sys-switch-slider"></span>
+                      </label>
                     </div>
-                    <div class="settings-kpi">
-                      <span class="settings-kpi-value" id="statMonth">0</span>
-                      <span class="settings-kpi-label">Check-in</span>
+
+                    <div class="sys-settings-row">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Check-in rapido (Fast Registration)</span>
+                        <span class="sys-settings-row-desc">Preferenza locale per velocizzare i passaggi quando i dati sono già noti.</span>
+                      </div>
+                      <label class="sys-switch">
+                        <input type="checkbox" id="prefFastRegistration">
+                        <span class="sys-switch-slider"></span>
+                      </label>
                     </div>
-                    <div class="settings-kpi">
-                      <span class="settings-kpi-value" id="statCoupons">0</span>
-                      <span class="settings-kpi-label">Voucher</span>
+
+                    <div class="sys-settings-row">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Disconnessione automatica per inattività</span>
+                        <span class="sys-settings-row-desc">Tempo limite prima che il receptionist venga disconnesso da questo browser.</span>
+                      </div>
+                      <select class="sys-settings-select" id="prefSessionTimeout" aria-label="Timeout sessione">
+                        <option value="15">15 minuti</option>
+                        <option value="30" selected>30 minuti</option>
+                        <option value="60">1 ora</option>
+                        <option value="never">Mai disconnettere</option>
+                      </select>
                     </div>
                   </div>
-                </section>
 
-                <section class="settings-block">
-                  <p class="settings-block-title">Reception</p>
-                  <div class="settings-rank" id="settingsRank"></div>
-                </section>
+                  <div class="sys-settings-group">
+                    <div class="sys-settings-group-title">Notifiche e Report spediti</div>
 
-                <section class="settings-block" id="settingsPasswordCard">
-                  <p class="settings-block-title">Password</p>
-                  <div class="feed-row settings-password-card">
-                    <form id="settingsPasswordForm" class="settings-form" action="#" autocomplete="off">
+                    <div class="sys-settings-row">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Invia report contatti automatico</span>
+                        <span class="sys-settings-row-desc">Il report notturno parte ogni giorno alle 00:00 (fuso Roma) verso l'amministrazione.</span>
+                      </div>
+                      <span class="sys-settings-row-badge">Attivo</span>
+                    </div>
+
+                    <div class="sys-settings-row sys-settings-row--disabled">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Orario di spedizione report</span>
+                        <span class="sys-settings-row-desc">Gestito dal server. Contatta l'amministratore per modificare la pianificazione.</span>
+                      </div>
+                      <input type="time" class="sys-settings-input" id="prefReportTime" value="00:00" disabled aria-label="Orario report automatico">
+                    </div>
+                  </div>
+
+                  <div class="sys-settings-group">
+                    <div class="sys-settings-group-title">Integrazioni esterne (Sincronizzazione)</div>
+
+                    <div class="sys-settings-row sys-settings-row--disabled">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Sincronizzazione in tempo reale OTA</span>
+                        <span class="sys-settings-row-desc">Booking.com, Expedia e Airbnb — disponibile in una prossima versione.</span>
+                      </div>
+                      <label class="sys-switch">
+                        <input type="checkbox" id="prefOtaSync" disabled>
+                        <span class="sys-switch-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="sys-settings-actions">
+                    <button type="button" class="btn-settings-secondary" id="btnSettingsCancel">Annulla</button>
+                    <button type="submit" class="btn-settings-primary" id="btnSettingsSave">Salva modifiche</button>
+                  </div>
+                </form>
+
+                <div class="sys-settings-group">
+                  <div class="sys-settings-group-title">Classifica reception</div>
+                  <div class="sys-settings-rank" id="settingsRank"></div>
+                </div>
+
+                <div class="sys-settings-group" id="settingsPasswordCard">
+                  <div class="sys-settings-group-title">Password personale</div>
+                  <div class="sys-settings-row sys-settings-row--stack">
+                    <form id="settingsPasswordForm" class="sys-settings-pin-grid" action="#" autocomplete="off">
                       <div class="sheet-field">
                         <label class="sheet-label" id="lbl-pin-current" for="pinCurrent">Password attuale</label>
                         <input class="field" id="pinCurrent" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password" placeholder="••••">
@@ -5156,11 +5955,61 @@
                       <button class="btn-primary" id="btnSavePin" type="submit">Salva password</button>
                     </form>
                   </div>
-                </section>
+                </div>
               </div>
             </div>
             <div class="footer-summary">
               <span id="settingsRowCount">Il tuo account</span>
+            </div>
+          </div>
+
+          <div class="table-panel hidden info-panel" id="infoPanel">
+            <div class="info-scroll">
+              <div class="info-stack">
+                <header class="info-header">
+                  <h2>Informazioni &amp; Roadmap</h2>
+                  <p>Cosa arriverà in reception e, per i manager, il quadro dei costi.</p>
+                  <span class="info-version">Beta v1.4</span>
+                </header>
+
+                <section class="info-card">
+                  <h3 class="info-card-title">Prossimi aggiornamenti · Front Desk</h3>
+                  <ul class="info-list">
+                    <li class="info-item">
+                      <span class="info-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M11 10h9v3M17 10v6M20 10v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                      </span>
+                      <div>
+                        <strong class="info-item-title">Codice porta al check-in</strong>
+                        <p class="info-item-body">Alla conferma del check-in, il codice del tastierino della stanza verrà generato in automatico per l’ospite.</p>
+                      </div>
+                    </li>
+                    <li class="info-item">
+                      <span class="info-item-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                      </span>
+                      <div>
+                        <strong class="info-item-title">Archivio storico</strong>
+                        <p class="info-item-body">Trovare più in fretta gli ospiti passati, filtrando per nazionalità e periodo dell’anno.</p>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+
+                <section class="hidden" id="infoManagerWrap" hidden>
+                  <div class="info-manager" id="infoManagerSection">
+                    <p class="info-manager-badge">Area manager</p>
+                    <div class="info-manager-head">
+                      <h3 class="info-manager-title">Pannello strategico · Mizan / Payel</h3>
+                      <p class="info-manager-intro" id="infoManagerIntro"></p>
+                    </div>
+                    <div class="info-grid" id="infoManagerGrid"></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+            <div class="footer-summary">
+              <span>Prossimi aggiornamenti</span>
             </div>
           </div>
           </div>
@@ -5317,6 +6166,7 @@
     const staffDropdown = document.getElementById('staffDropdown');
     const staffMemberTrigger = document.getElementById('staffMemberTrigger');
     const staffMemberMenu = document.getElementById('staffMemberMenu');
+    const staffMemberList = document.getElementById('staffMemberList');
     const staffMemberLabel = document.getElementById('staffMemberLabel');
     const lblPin = document.getElementById('lbl-pin');
     const lblStaff = document.getElementById('lbl-staff');
@@ -5345,10 +6195,15 @@
     const checkinsPanel = document.getElementById('checkinsPanel');
     const blacklistPanel = document.getElementById('blacklistPanel');
     const settingsPanel = document.getElementById('settingsPanel');
+    const infoPanel = document.getElementById('infoPanel');
+    const infoManagerWrap = document.getElementById('infoManagerWrap');
+    const infoManagerIntro = document.getElementById('infoManagerIntro');
+    const infoManagerGrid = document.getElementById('infoManagerGrid');
     const workspaceEl = document.getElementById('workspace');
     const tabRequests = document.getElementById('tabRequests');
     const tabCheckins = document.getElementById('tabCheckins');
     const tabBlacklist = document.getElementById('tabBlacklist');
+    const tabInfo = document.getElementById('tabInfo');
     const tabSettings = document.getElementById('tabSettings');
     const btnAddBlacklist = document.getElementById('btnAddBlacklist');
     const btnAddNote = document.getElementById('btnAddNote');
@@ -5682,6 +6537,7 @@
       if (activeView === 'requests') return requestsPanel;
       if (activeView === 'blacklist') return blacklistPanel;
       if (activeView === 'settings') return settingsPanel;
+      if (activeView === 'info') return infoPanel;
       return checkinsPanel;
     }
 
@@ -5789,25 +6645,39 @@
     function closeStaffMenu() {
       if (!staffDropdown || !staffMemberMenu || !staffMemberTrigger) return;
       staffDropdown.classList.remove('is-open');
-      staffMemberMenu.hidden = true;
-      staffMemberMenu.classList.add('hidden');
-      staffMemberMenu.classList.remove('is-flip-up');
-      staffMemberMenu.querySelectorAll('.ui-menu-item.is-focused').forEach((el) => el.classList.remove('is-focused'));
+      if (staffMemberList) {
+        staffMemberList.hidden = true;
+        staffMemberList.setAttribute('hidden', '');
+      }
+      staffMemberMenu.querySelectorAll('.apple-inline-item.is-focused').forEach((el) => el.classList.remove('is-focused'));
       staffMemberTrigger.setAttribute('aria-expanded', 'false');
       gateCard?.classList.remove('is-menu-open');
+    }
+
+    function centerStaffWheelItem(item) {
+      if (!staffMemberMenu || !item) return;
+      const rowH = item.offsetHeight || 44;
+      staffMemberMenu.scrollTop = Math.max(
+        0,
+        item.offsetTop - (staffMemberMenu.clientHeight / 2 - rowH / 2),
+      );
     }
 
     function openStaffMenu() {
       if (!staffDropdown || !staffMemberMenu || !staffMemberTrigger) return;
       staffDropdown.classList.add('is-open');
-      staffMemberMenu.hidden = false;
-      staffMemberMenu.classList.remove('hidden');
+      if (staffMemberList) {
+        staffMemberList.hidden = false;
+        staffMemberList.removeAttribute('hidden');
+      }
       staffMemberTrigger.setAttribute('aria-expanded', 'true');
       gateCard?.classList.add('is-menu-open');
-      positionDropdownMenu(staffDropdown, staffMemberMenu);
-      const items = dropdownMenuItems(staffMemberMenu);
+      const items = dropdownMenuItems(staffMemberMenu, '.apple-inline-item[role="option"]');
       const selected = items.findIndex((el) => el.classList.contains('is-selected'));
       items.forEach((el, i) => el.classList.toggle('is-focused', i === (selected >= 0 ? selected : 0)));
+      window.requestAnimationFrame(() => {
+        centerStaffWheelItem(items[selected >= 0 ? selected : 0]);
+      });
     }
 
     function toggleStaffMenu() {
@@ -5836,12 +6706,13 @@
         staffMemberMenu.innerHTML = '<span class="ui-menu-empty">Nessun receptionist configurato</span>';
         return;
       }
-      staffMemberMenu.innerHTML = staff.map((member) => (
-        `<button type="button" class="ui-menu-item" role="option" data-staff-id="${escapeAttr(member.id)}" aria-selected="false">
-          <span class="ui-menu-item-label">${escapeHtml(member.label)}</span>
-          ${MENU_ITEM_CHECK}
-        </button>`
-      )).join('');
+      staffMemberMenu.innerHTML = [
+        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
+        ...staff.map((member) => (
+          `<button type="button" class="apple-inline-item" role="option" data-staff-id="${escapeAttr(member.id)}" aria-selected="false">${escapeHtml(member.label)}</button>`
+        )),
+        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
+      ].join('');
       setStaffSelection(staffMemberEl?.value || '');
     }
 
@@ -5958,13 +6829,114 @@
       requests: 'Richieste speciali',
       checkins: 'Clienti',
       blacklist: 'Segnalazioni',
+      settings: 'Impostazioni',
+      info: 'Informazioni',
     };
 
     const VIEW_SUBTITLES = {
       requests: 'Turno · ordinate per scadenza',
       checkins: 'Oggi',
       blacklist: 'Lista reception',
+      settings: 'Reception · account e automazioni',
+      info: 'Prossimi aggiornamenti',
     };
+
+    const STAFF_SETTINGS_KEY = 'hotelCanalStaffSettings';
+    const STAFF_SETTINGS_DEFAULTS = {
+      gdprMask: true,
+      fastRegistration: true,
+      sessionTimeoutMin: '30',
+      reportTime: '00:00',
+      otaSync: false,
+    };
+
+    let staffIdleTimer = null;
+    let staffIdleBound = false;
+
+    function readStaffSettings() {
+      try {
+        const raw = localStorage.getItem(STAFF_SETTINGS_KEY);
+        return { ...STAFF_SETTINGS_DEFAULTS, ...(raw ? JSON.parse(raw) : {}) };
+      } catch (_) {
+        return { ...STAFF_SETTINGS_DEFAULTS };
+      }
+    }
+
+    function writeStaffSettings(prefs) {
+      localStorage.setItem(STAFF_SETTINGS_KEY, JSON.stringify(prefs));
+    }
+
+    function paintStaffSettingsForm(prefs = readStaffSettings()) {
+      const gdprEl = document.getElementById('prefGdprMask');
+      const fastEl = document.getElementById('prefFastRegistration');
+      const timeoutEl = document.getElementById('prefSessionTimeout');
+      const reportTimeEl = document.getElementById('prefReportTime');
+      const otaEl = document.getElementById('prefOtaSync');
+      if (gdprEl) gdprEl.checked = prefs.gdprMask !== false;
+      if (fastEl) fastEl.checked = prefs.fastRegistration !== false;
+      if (timeoutEl) timeoutEl.value = String(prefs.sessionTimeoutMin ?? '30');
+      if (reportTimeEl) reportTimeEl.value = prefs.reportTime || '00:00';
+      if (otaEl) otaEl.checked = Boolean(prefs.otaSync);
+    }
+
+    function collectStaffSettingsFromForm() {
+      return {
+        gdprMask: true,
+        fastRegistration: document.getElementById('prefFastRegistration')?.checked !== false,
+        sessionTimeoutMin: document.getElementById('prefSessionTimeout')?.value || '30',
+        reportTime: document.getElementById('prefReportTime')?.value || '00:00',
+        otaSync: false,
+      };
+    }
+
+    function clearStaffIdleTimer() {
+      if (staffIdleTimer) {
+        window.clearTimeout(staffIdleTimer);
+        staffIdleTimer = null;
+      }
+    }
+
+    async function staffIdleLogout() {
+      clearStaffIdleTimer();
+      try {
+        await fetch('/api/staff/logout', { method: 'POST', credentials: 'same-origin' });
+      } catch (_) { /* ignore */ }
+      currentStaff = null;
+      setStaffUserLabel(null);
+      showLogin();
+      await loadLoginInfo();
+    }
+
+    function scheduleStaffIdleLogout() {
+      clearStaffIdleTimer();
+      if (!document.body.classList.contains('is-dashboard')) return;
+      const prefs = readStaffSettings();
+      const value = String(prefs.sessionTimeoutMin ?? '30');
+      if (value === 'never') return;
+      const minutes = Number(value);
+      if (!Number.isFinite(minutes) || minutes <= 0) return;
+      staffIdleTimer = window.setTimeout(() => {
+        staffIdleLogout();
+      }, minutes * 60 * 1000);
+    }
+
+    function bindStaffIdleWatch() {
+      if (staffIdleBound) {
+        scheduleStaffIdleLogout();
+        return;
+      }
+      staffIdleBound = true;
+      const bump = () => scheduleStaffIdleLogout();
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach((evt) => {
+        window.addEventListener(evt, bump, { passive: true });
+      });
+      scheduleStaffIdleLogout();
+    }
+
+    function applyStaffSettings(prefs) {
+      writeStaffSettings(prefs);
+      bindStaffIdleWatch();
+    }
 
     function populateNoteCategories(selected = 'other') {
       renderNoteCategoryMenu(selected);
@@ -5973,10 +6945,12 @@
     function setActiveView(view) {
       closeRowMenu();
       closeNotifyMenu();
-      activeView = ['requests', 'checkins', 'blacklist'].includes(view) ? view : 'checkins';
+      activeView = ['requests', 'checkins', 'blacklist', 'settings', 'info'].includes(view) ? view : 'checkins';
       tabRequests.classList.toggle('is-on', activeView === 'requests');
       tabCheckins.classList.toggle('is-on', activeView === 'checkins');
       tabBlacklist.classList.toggle('is-on', activeView === 'blacklist');
+      tabSettings?.classList.toggle('is-on', activeView === 'settings');
+      tabInfo?.classList.toggle('is-on', activeView === 'info');
       if (pageTitle) pageTitle.textContent = VIEW_TITLES[activeView] || 'Reception';
       if (pageSubtitle) {
         const subtitle = VIEW_SUBTITLES[activeView] || '';
@@ -5990,8 +6964,9 @@
       requestsPanel.classList.toggle('hidden', activeView !== 'requests');
       checkinsPanel.classList.toggle('hidden', activeView !== 'checkins');
       blacklistPanel.classList.toggle('hidden', activeView !== 'blacklist');
-      settingsPanel?.classList.add('hidden');
-      workspaceEl?.classList.remove('is-settings');
+      infoPanel?.classList.toggle('hidden', activeView !== 'info');
+      settingsPanel?.classList.toggle('hidden', activeView !== 'settings');
+      workspaceEl?.classList.toggle('is-settings', activeView === 'settings' || activeView === 'info');
       workspaceEl?.classList.toggle('is-feed', activeView === 'requests' || activeView === 'blacklist');
       const showDateToolbar = activeView === 'checkins';
       daysEl.classList.toggle('hidden', !showDateToolbar);
@@ -6009,8 +6984,53 @@
       replayMotion(activePanelEl(), 'motion-panel-in', 480);
       if (activeView === 'blacklist') loadBlacklist();
       else if (activeView === 'requests') loadReceptionNotes();
+      else if (activeView === 'settings') loadSettings();
+      else if (activeView === 'info') loadRoadmap();
       else if (lastCheckins.length) renderList(lastCheckins);
       else loadList();
+    }
+
+    function resetRoadmap() {
+      if (infoManagerWrap) {
+        infoManagerWrap.hidden = true;
+        infoManagerWrap.classList.add('hidden');
+      }
+      if (infoManagerIntro) infoManagerIntro.textContent = '';
+      if (infoManagerGrid) infoManagerGrid.innerHTML = '';
+    }
+
+    function paintManagerRoadmap(block) {
+      if (!infoManagerWrap || !infoManagerGrid) return;
+      if (!block) {
+        resetRoadmap();
+        return;
+      }
+      if (infoManagerIntro) infoManagerIntro.textContent = block.intro || '';
+      const items = Array.isArray(block.items) ? block.items : [];
+      infoManagerGrid.innerHTML = items.map((item) => `
+        <article class="info-project">
+          <h3>${escapeHtml(item.title || '')}</h3>
+          <p>${escapeHtml(item.body || '')}</p>
+          ${item.cost ? `<span class="info-cost">${escapeHtml(item.cost)}</span>` : ''}
+        </article>
+      `).join('');
+      infoManagerWrap.hidden = false;
+      infoManagerWrap.classList.remove('hidden');
+    }
+
+    async function loadRoadmap() {
+      try {
+        const res = await fetch('/api/staff/roadmap', { credentials: 'same-origin' });
+        if (res.status === 401) {
+          resetRoadmap();
+          showLogin();
+          return;
+        }
+        const body = await res.json().catch(() => ({}));
+        paintManagerRoadmap(body.manager && body.managerBlock ? body.managerBlock : null);
+      } catch (_) {
+        resetRoadmap();
+      }
     }
 
     function openDashNav() {
@@ -6104,6 +7124,17 @@
       checkout: `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.8"/><rect x="6" y="7" width="12" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M10 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
       other: `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
     };
+
+    function formatGuestDisplayName(name) {
+      const raw = String(name || '').trim();
+      if (!raw) return '—';
+      const letters = raw.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
+      const isAllCaps = letters.length > 1 && letters === letters.toUpperCase() && letters !== letters.toLowerCase();
+      if (!isAllCaps) return raw;
+      return raw
+        .toLowerCase()
+        .replace(/(^|[\s'’-])([\p{L}])/gu, (_, sep, ch) => sep + ch.toUpperCase());
+    }
 
     function guestInitial(name) {
       const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
@@ -6501,7 +7532,7 @@
         return `<div class="secure-cell-wrapper is-empty">
           <div class="contact-stack">
             <span class="contact-ios-label">${label}</span>
-            <span class="cell-muted">Non indicato</span>
+            <span class="data-empty" aria-hidden="true">—</span>
           </div>
         </div>`;
       }
@@ -6791,11 +7822,13 @@
       listEl.innerHTML = rows.map((row) => {
         const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
         const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
+        const guestLabel = formatGuestDisplayName(row.guestName);
+        const guestTitle = String(row.guestName || '').trim() || '—';
         return `
         <tr data-id="${row.id}" class="${row.blacklisted ? 'is-blacklisted' : ''}">
           <td class="col-guest">
             <div class="cell-guest">
-              <div class="cell-name" title="${escapeAttr(row.guestName || '')}">${escapeHtml(row.guestName || '—')}</div>
+              <div class="cell-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
             </div>
           </td>
           <td class="col-room">
@@ -7419,7 +8452,7 @@
       if (!rankEl) return;
       const ranking = Array.isArray(body.ranking) ? body.ranking : [];
       if (!ranking.length) {
-        rankEl.innerHTML = '<p class="settings-empty">Ancora nessun check-in questo mese.</p>';
+        rankEl.innerHTML = '<p class="sys-settings-empty">Ancora nessun check-in questo mese.</p>';
         return;
       }
       rankEl.innerHTML = ranking.map((row) => {
@@ -7442,6 +8475,7 @@
     async function loadSettings() {
       setPanelBusy(true);
       try {
+        paintStaffSettingsForm();
         if (currentStaff?.label) paintSettingsIdentity(currentStaff.label, currentStaff.id);
         const res = await fetch('/api/staff/stats', { credentials: 'same-origin' });
         if (res.status === 401) { showLogin(); return; }
@@ -7454,6 +8488,7 @@
 
     function showLogin() {
       document.body.classList.remove('is-dashboard');
+      clearStaffIdleTimer();
       stopAlertPolling();
       closeNotifyMenu();
       lastInboxNotes = [];
@@ -7470,6 +8505,8 @@
       loginCard.classList.add('hidden');
       dash.classList.remove('hidden');
       replayMotion(dash, 'motion-rise');
+      paintStaffSettingsForm();
+      bindStaffIdleWatch();
       setActiveView('checkins');
       startAlertPolling();
     }
@@ -7515,6 +8552,20 @@
     tabRequests.addEventListener('click', () => setActiveView('requests'));
     tabCheckins.addEventListener('click', () => setActiveView('checkins'));
     tabBlacklist.addEventListener('click', () => setActiveView('blacklist'));
+    tabInfo?.addEventListener('click', () => setActiveView('info'));
+    tabSettings?.addEventListener('click', () => setActiveView('settings'));
+
+    document.getElementById('settingsPrefsForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const prefs = collectStaffSettingsFromForm();
+      applyStaffSettings(prefs);
+      showServerToast('Impostazioni salvate');
+    });
+
+    document.getElementById('btnSettingsCancel')?.addEventListener('click', () => {
+      paintStaffSettingsForm();
+      clearServerToast();
+    });
 
     document.getElementById('settingsPasswordForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -7929,9 +8980,9 @@
       if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         if (!staffDropdown?.classList.contains('is-open')) openStaffMenu();
-        const items = dropdownMenuItems(staffMemberMenu);
+        const items = dropdownMenuItems(staffMemberMenu, '.apple-inline-item[role="option"]');
         const selected = items.findIndex((el) => el.classList.contains('is-selected'));
-        focusDropdownItem(staffMemberMenu, '.ui-menu-item[role="option"]', selected >= 0 ? selected : 0);
+        focusDropdownItem(staffMemberMenu, '.apple-inline-item[role="option"]', selected >= 0 ? selected : 0);
       }
     });
 
@@ -7945,7 +8996,7 @@
     });
 
     staffMemberMenu?.addEventListener('keydown', (e) => {
-      if (staffMemberMenu.hidden) return;
+      if (staffMemberList?.hidden) return;
       handleDropdownListKeys(e, {
         menuEl: staffMemberMenu,
         triggerEl: staffMemberTrigger,
@@ -7960,7 +9011,11 @@
     });
 
     document.addEventListener('click', (e) => {
-      if (staffDropdown?.classList.contains('is-open') && !staffDropdown.contains(e.target)) {
+      if (
+        staffDropdown?.classList.contains('is-open') &&
+        !staffDropdown.contains(e.target) &&
+        !staffMemberList?.contains(e.target)
+      ) {
         closeStaffMenu();
       }
       if (notifyWrap?.classList.contains('is-open') && !notifyWrap.contains(e.target)) {
@@ -7979,6 +9034,7 @@
       await fetch('/api/staff/logout', { method: 'POST', credentials: 'same-origin' });
       currentStaff = null;
       setStaffUserLabel(null);
+      resetRoadmap();
       showLogin();
       await loadLoginInfo();
     });
@@ -8233,6 +9289,64 @@
       const note = lastInboxNotes.find((n) => String(n.id) === item.getAttribute('data-inbox-id'));
       if (note) openInboxNote(note);
     });
+
+    (function initStaffKeyboardLock() {
+      let lock = false;
+      const restH = () => Math.round(window.innerHeight || document.documentElement.clientHeight || 0);
+      let rest = restH();
+      const usesVirtualKeyboard = () => {
+        try {
+          return window.matchMedia('(pointer: coarse)').matches
+            || window.matchMedia('(max-width: 767px) and (hover: none)').matches;
+        } catch (_) {
+          return false;
+        }
+      };
+      const sync = () => {
+        if (document.body.classList.contains('is-dashboard')) {
+          document.documentElement.style.setProperty('--kb-inset', '0px');
+          return;
+        }
+        if (!lock || !usesVirtualKeyboard()) {
+          document.documentElement.style.setProperty('--kb-inset', '0px');
+          return;
+        }
+        const vv = window.visualViewport;
+        const inset = vv && rest > 0
+          ? Math.max(0, rest - Math.round(vv.height + (vv.offsetTop || 0)))
+          : 0;
+        document.documentElement.style.setProperty('--kb-inset', `${inset}px`);
+        const el = document.activeElement;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+          try {
+            el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          } catch (_) {
+            /* ignore */
+          }
+        }
+      };
+      document.addEventListener('focusin', (e) => {
+        if (document.body.classList.contains('is-dashboard')) return;
+        if (e.target?.tagName !== 'INPUT' && e.target?.tagName !== 'TEXTAREA') return;
+        if (!usesVirtualKeyboard()) return;
+        if (!lock) rest = restH();
+        lock = true;
+        sync();
+      });
+      document.addEventListener('focusout', () => {
+        window.setTimeout(() => {
+          const el = document.activeElement;
+          if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+            sync();
+            return;
+          }
+          lock = false;
+          document.documentElement.style.setProperty('--kb-inset', '0px');
+        }, 50);
+      });
+      window.visualViewport?.addEventListener('resize', sync, { passive: true });
+      window.visualViewport?.addEventListener('scroll', sync, { passive: true });
+    })();
 
     checkSession();
   </script>

@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#0a2d37">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -81,8 +81,9 @@
       --type-label: 11px;
       --type-body: 16px;
       --type-cta: 16px;
-      /* Viewport stabile; JS scrive --vvh da visualViewport */
-      --app-vh: var(--vvh, 100dvh);
+      /* Layout stabile (svh): la tastiera non deve ricalcolare l'altezza card */
+      --kb-inset: 0px;
+      --app-vh: var(--vvh, 100svh);
       /* Soft CSS fallbacks — JS misura e scrive --card-h in px */
       --card-h-1: 480px;
       --card-h-2: 560px;
@@ -107,9 +108,8 @@
       width: 100%;
       height: 100%;
       height: 100svh;
-      height: 100dvh;
       height: -webkit-fill-available;
-      max-height: 100dvh;
+      max-height: 100svh;
       max-height: -webkit-fill-available;
       overflow: hidden !important;
       overscroll-behavior: none !important;
@@ -130,7 +130,9 @@
       justify-content: center;
       align-items: center;
       -webkit-font-smoothing: antialiased;
-      position: relative;
+      position: fixed;
+      inset: 0;
+      width: 100%;
       background-color: #074a63;
     }
 
@@ -226,6 +228,7 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
       overflow: hidden;
       isolation: isolate;
+      flex-shrink: 0;
       transform: translate3d(0, 0, 0) scale(1);
       -webkit-transform: translate3d(0, 0, 0) scale(1);
       will-change: transform, opacity;
@@ -355,9 +358,10 @@
         gap: 8px;
       }
 
-      #step3 .form-grid-container {
-        padding: var(--ios-gap);
+      #step3 .form-grid-container,
+      #step3 #roomFormGrid {
         gap: 12px;
+        padding: 0;
       }
 
       .apple-input,
@@ -1382,19 +1386,29 @@
     .dining-book .form-grid-container .span-2 {
       grid-column: 1 / -1;
     }
+    #step3 .form-group.is-picker-open {
+      z-index: 4;
+    }
     #step3 .form-group {
       margin-bottom: 0;
     }
     #step3 .input-with-icon .field-glyph {
       left: 14px;
+      top: 50%;
+      bottom: auto;
       width: 16px;
       height: 16px;
+      margin: 0;
+      transform: translateY(-50%);
+      opacity: 1;
+      color: #86868b;
     }
     #step3 .input-with-icon .field-glyph svg {
       width: 16px;
       height: 16px;
     }
-    #step3 .input-with-icon .apple-input {
+    #step3 .input-with-icon .apple-input,
+    #step3 .input-with-icon .apple-picker-trigger {
       height: var(--ios-touch);
       padding-left: 42px;
       padding-right: 14px;
@@ -3588,9 +3602,7 @@
     .book-field .book-select:focus {
       outline: none;
       border-color: rgba(18, 68, 83, 0.35);
-      box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.02),
-        0 0 0 3.5px rgba(18, 68, 83, 0.12);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     .book-field .book-select {
@@ -3621,6 +3633,107 @@
 
     body.ios-picker-open #sliderViewport {
       contain: layout paint size;
+    }
+
+    /* Picker inline Apple: si espande sul posto, ruota sopra e sotto */
+    .apple-inline-list {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 220px;
+      margin-top: 8px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #d1d1d6;
+      border-radius: var(--radius-ios);
+      box-shadow: 0 4px 16px rgba(18, 68, 83, 0.08);
+    }
+
+    .apple-inline-list[hidden] {
+      display: none !important;
+    }
+
+    .form-group.is-picker-open .apple-inline-list {
+      display: block;
+    }
+
+    .apple-inline-scroll {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .apple-inline-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .apple-inline-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 44px;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 0;
+      background: transparent;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: #1d1d1f;
+      scroll-snap-align: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .apple-inline-item.is-selected,
+    .apple-inline-item.is-focused {
+      font-weight: 700;
+      color: var(--canal-petroleum);
+    }
+
+    .apple-inline-spacer {
+      height: 88px;
+      pointer-events: none;
+    }
+
+    .apple-inline-window {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 50%;
+      height: 44px;
+      margin-top: -22px;
+      border-radius: 10px;
+      background: rgba(18, 68, 83, 0.08);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .apple-inline-fade {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .apple-inline-fade--top {
+      top: 0;
+      background: linear-gradient(to bottom, #ffffff 18%, rgba(255, 255, 255, 0));
+    }
+
+    .apple-inline-fade--bottom {
+      bottom: 0;
+      background: linear-gradient(to top, #ffffff 18%, rgba(255, 255, 255, 0));
     }
 
     .book-field input[type="time"] {
@@ -3818,11 +3931,10 @@
       color: var(--canal-petroleum);
       margin-bottom: var(--ios-gap);
       padding-left: 0;
-      transition: color 0.2s var(--ios-snap), transform 0.2s var(--ios-snap);
+      transition: color 0.2s var(--ios-snap);
     }
 
     .form-group:focus-within label:not(.label-error-state) {
-      transform: translate3d(0, -2px, 0);
       color: var(--canal-petroleum-hover);
     }
 
@@ -3846,10 +3958,8 @@
       letter-spacing: -0.02em;
       color: var(--text-main);
       box-sizing: border-box;
-      transition:
-        border-color 0.35s var(--ios-ease),
-        box-shadow 0.35s var(--ios-ease),
-        transform 0.28s var(--ios-ease);
+      transform: none;
+      transition: border-color 0.2s var(--ios-ease);
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
       color-scheme: light;
     }
@@ -3884,10 +3994,7 @@
       background: #FFFFFF !important;
       background-color: #FFFFFF !important;
       transform: none;
-      /* Anello esterno: focus ring tipo iOS / Apple Pay */
-      box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.02),
-        0 0 0 3.5px rgba(18, 68, 83, 0.12);
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
     .apple-input.is-invalid {
@@ -3938,12 +4045,8 @@
     .apple-input:autofill:focus,
     .apple-input.is-autofilled:focus {
       border-color: rgba(18, 68, 83, 0.45) !important;
-      -webkit-box-shadow:
-        inset 0 0 0 100vmax #FFFFFF,
-        inset 0 0 0 1px rgba(18, 68, 83, 0.12) !important;
-      box-shadow:
-        inset 0 0 0 100vmax #FFFFFF,
-        inset 0 0 0 1px rgba(18, 68, 83, 0.12) !important;
+      -webkit-box-shadow: inset 0 0 0 100vmax #FFFFFF !important;
+      box-shadow: inset 0 0 0 100vmax #FFFFFF !important;
     }
 
     .apple-input.is-invalid:-webkit-autofill,
@@ -4590,24 +4693,24 @@
       box-shadow: none;
     }
 
-    /* Input + glyph: asse verticale condiviso */
+    /* Input + glyph: icona fissa a sinistra, testo protetto da padding */
     #step3 .input-with-icon {
       position: relative;
-      display: flex;
-      align-items: center;
+      display: block;
       width: 100%;
     }
 
     #step3 .input-with-icon .field-glyph {
       position: absolute;
-      left: var(--ios-4);
+      left: 14px;
       top: 50%;
       bottom: auto;
       width: 16px;
       height: 16px;
       margin: 0;
       transform: translateY(-50%);
-      opacity: 0.5;
+      opacity: 1;
+      color: #86868b;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -4621,13 +4724,33 @@
       display: block;
     }
 
-    #step3 .input-with-icon .apple-input {
+    #step3 .input-with-icon .apple-input,
+    #step3 .input-with-icon .apple-picker-trigger {
+      width: 100%;
       height: 48px;
-      padding-left: 40px;
-      padding-right: var(--ios-4);
+      min-height: 48px;
+      padding-left: 42px;
+      padding-right: 14px;
       line-height: normal;
       border: 1.5px solid rgba(18, 68, 83, 0.12);
       border-radius: var(--radius-ios);
+      box-sizing: border-box;
+    }
+
+    #step3 .input-with-icon .apple-picker-trigger {
+      justify-content: flex-start;
+    }
+
+    #step3 .input-with-icon .apple-picker-value {
+      text-align: left;
+    }
+
+    #step3 input[type="date"].apple-input {
+      min-width: 0;
+    }
+
+    #step3 input[type="date"].apple-input::-webkit-date-and-time-value {
+      text-align: left;
     }
 
     #step3 .form-group label {
@@ -5079,6 +5202,7 @@
     #step2 .apple-input {
       height: var(--ios-touch) !important;
       min-height: var(--ios-touch);
+      max-height: var(--ios-touch);
       background: #FFFFFF !important;
       background-color: #FFFFFF !important;
       border: 1.5px solid var(--input-border) !important;
@@ -5090,6 +5214,20 @@
     #step3 .input-with-icon .apple-input:focus {
       border-color: rgba(18, 68, 83, 0.45) !important;
       background: #FFFFFF !important;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04) !important;
+      transform: none !important;
+    }
+
+    .apple-input::-webkit-contacts-auto-fill-button,
+    .apple-input::-webkit-credentials-auto-fill-button,
+    .apple-input::-webkit-caps-lock-indicator,
+    .apple-input::-webkit-strong-password-auto-fill-button {
+      visibility: hidden !important;
+      display: none !important;
+      pointer-events: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      margin: 0 !important;
     }
 
     .btn-canal,
@@ -5176,22 +5314,36 @@
     }
 
     #step3 .form-grid-container,
-    #step3 .dining-book .form-grid-container {
-      gap: 12px 12px !important;
+    #step3 .dining-book .form-grid-container,
+    #step3 #roomFormGrid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px !important;
       margin: 0 !important;
-      padding: var(--ios-gap) !important;
+      padding: 0 !important;
+      width: 100%;
+    }
+
+    #step3 #roomFormGrid .form-group {
+      min-width: 0;
+    }
+
+    #step3 #roomFormGrid .form-group.span-2 {
+      grid-column: 1 / -1;
     }
 
     #step3 .form-group label {
-      margin-bottom: 4px !important;
-      margin-left: 2px;
+      margin-bottom: 6px !important;
+      margin-left: 0;
     }
 
-    #step3 .input-with-icon .apple-input {
-      height: 46px !important;
-      min-height: 46px;
-      padding-left: 38px;
-      font-size: 15px;
+    #step3 #roomFormGrid .input-with-icon .apple-input,
+    #step3 #roomFormGrid .input-with-icon .apple-picker-trigger {
+      height: 48px !important;
+      min-height: 48px;
+      padding-left: 42px !important;
+      padding-right: 14px;
+      font-size: 16px;
     }
 
     #step3Footer.step-footer-fixed {
@@ -5215,6 +5367,246 @@
       min-height: 40px;
       padding: 4px 8px;
       font-size: 13px;
+    }
+
+    .apple-input,
+    .apple-picker-trigger {
+      scroll-margin-top: 80px;
+      scroll-margin-bottom: 24px;
+    }
+
+    body.is-keyboard-open .slide-step.is-active {
+      overflow: hidden;
+    }
+
+    body.is-keyboard-open {
+      align-items: flex-start;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+      min-height: var(--rest-vh, 100dvh);
+      height: auto !important;
+      max-height: none !important;
+    }
+
+    body.is-keyboard-open .apple-card {
+      flex-shrink: 0;
+      max-height: none;
+      margin-top: 0;
+      margin-bottom: calc(var(--kb-inset, 0px) + 12px);
+    }
+
+    body.is-keyboard-open #sliderViewport {
+      flex-shrink: 0;
+    }
+
+    body.is-keyboard-open #step3.is-active {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    body.is-keyboard-open #step3.is-active > .step-body.step-scroll {
+      overflow: visible;
+      flex: 0 0 auto;
+    }
+
+    body.is-keyboard-open .slide-step.is-active > .step-body.step-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(var(--kb-inset, 0px) + 16px);
+      scroll-padding-top: 80px;
+      scroll-padding-bottom: 24px;
+    }
+
+    /* Desktop / trackpad: la card resta centrata. Nessuno spostamento al focus. */
+    @media (hover: hover) and (pointer: fine) {
+      body.is-keyboard-open,
+      html:has(body.is-keyboard-open) {
+        align-items: center !important;
+        overflow: hidden !important;
+        height: 100% !important;
+        max-height: 100svh !important;
+        min-height: 100% !important;
+      }
+
+      body.is-keyboard-open .apple-card {
+        margin-bottom: 0 !important;
+        max-height: var(--card-max);
+      }
+    }
+
+    @media (max-width: 480px) {
+      body.is-keyboard-open,
+      html:has(body.is-keyboard-open) {
+        height: auto !important;
+        min-height: var(--rest-vh, var(--app-vh, 100dvh)) !important;
+        max-height: none !important;
+      }
+    }
+
+    .apple-picker-trigger {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin: 0;
+      text-align: left;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
+      color: var(--text-main);
+    }
+
+    .apple-picker-value {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .apple-picker-value.is-placeholder {
+      color: var(--placeholder);
+      font-weight: 500;
+    }
+
+    .apple-picker-chevron {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      margin-left: 8px;
+      color: #8E8E93;
+      pointer-events: none;
+    }
+
+    .input-with-icon .apple-picker-trigger {
+      padding-right: 14px;
+    }
+
+    #checkinDate[readonly] {
+      pointer-events: none;
+      color: var(--canal-petroleum);
+      opacity: 1;
+    }
+
+    .form-picker-sheet {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .form-picker-sheet[hidden] {
+      display: none !important;
+    }
+
+    .form-picker-backdrop {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      background: rgba(10, 45, 55, 0.45);
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+    }
+
+    .form-picker-panel {
+      position: relative;
+      z-index: 1;
+      width: min(420px, 100%);
+      max-height: min(52svh, 420px);
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0 0 calc(10px + env(safe-area-inset-bottom, 0px));
+      border-radius: 16px 16px 0 0;
+      background: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 -12px 40px rgba(18, 68, 83, 0.18);
+      overflow: hidden;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .form-picker-sheet.is-opening .form-picker-panel {
+      animation: formPickerIn 380ms cubic-bezier(0.32, 0.72, 0, 1) both;
+    }
+
+    .form-picker-sheet.is-closing .form-picker-panel {
+      animation: formPickerOut 260ms cubic-bezier(0.32, 0.72, 0, 1) both;
+    }
+
+    @keyframes formPickerIn {
+      from { transform: translate3d(0, 100%, 0); }
+      to { transform: translate3d(0, 0, 0); }
+    }
+
+    @keyframes formPickerOut {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(0, 100%, 0); }
+    }
+
+    .form-picker-handle {
+      width: 36px;
+      height: 4px;
+      margin: 8px auto 0;
+      border-radius: 999px;
+      background: #dbdbdb;
+      flex-shrink: 0;
+    }
+
+    .form-picker-title {
+      margin: 0;
+      padding: 10px 16px 8px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #262626;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .form-picker-list {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 4px 8px 8px;
+      max-height: min(42svh, 340px);
+      mask-image: linear-gradient(#000 0%, #000 88%, transparent 100%);
+      -webkit-mask-image: linear-gradient(#000 0%, #000 88%, transparent 100%);
+    }
+
+    .form-picker-option {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: var(--radius-ios);
+      background: transparent;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 500;
+      color: #1d1d1f;
+      cursor: pointer;
+    }
+
+    .form-picker-option.is-selected {
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      font-weight: 700;
+    }
+
+    .form-picker-option:active {
+      background: rgba(18, 68, 83, 0.12);
     }
   </style>
 </head>
@@ -5316,7 +5708,7 @@
             <p class="dining-book-kicker" id="lbl-book-kicker">Hotel Canal</p>
             <h2 class="dining-book-title" id="lbl-book-title">Dettagli soggiorno</h2>
             <p class="dining-book-sub" id="lbl-book-sub">
-              Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.
+              Inserisci <strong>stanza</strong>, <strong>date</strong> e <strong>receptionist</strong> per completare la registrazione.
             </p>
           </div>
 
@@ -5331,6 +5723,34 @@
               </div>
             </div>
             <div class="form-group">
+              <label id="lbl-guests" for="guestsTrigger">Ospiti</label>
+              <div class="input-with-icon">
+                <span class="field-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M14.5 19c.4-2.2 2-3.6 4.5-3.6 1.2 0 2.2.3 3 .9"/></svg>
+                </span>
+                <input type="hidden" id="guests" name="guests" value="">
+                <button type="button" class="apple-input apple-picker-trigger" id="guestsTrigger" data-error-for="guests" aria-haspopup="listbox" aria-expanded="false" aria-controls="guestsPickerMenu">
+                  <span class="apple-picker-value is-placeholder" id="guestsValue">2</span>
+                  <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
+                </button>
+              </div>
+              <div class="apple-inline-list" id="guestsPickerList" hidden>
+                <div class="apple-inline-window" aria-hidden="true"></div>
+                <div class="apple-inline-fade apple-inline-fade--top" aria-hidden="true"></div>
+                <div class="apple-inline-scroll" id="guestsPickerMenu" role="listbox"></div>
+                <div class="apple-inline-fade apple-inline-fade--bottom" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label id="lbl-checkin" for="checkinDate">Check-in *</label>
+              <div class="input-with-icon">
+                <span class="field-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+                </span>
+                <input type="date" id="checkinDate" name="checkinDate" class="apple-input" enterkeyhint="next">
+              </div>
+            </div>
+            <div class="form-group">
               <label id="lbl-checkout" for="checkoutDate">Checkout *</label>
               <div class="input-with-icon">
                 <span class="field-glyph" aria-hidden="true">
@@ -5339,22 +5759,23 @@
                 <input type="date" id="checkoutDate" name="checkoutDate" class="apple-input" enterkeyhint="next">
               </div>
             </div>
-            <div class="form-group">
-              <label id="lbl-guests" for="guests">Ospiti</label>
-              <div class="input-with-icon">
-                <span class="field-glyph" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M14.5 19c.4-2.2 2-3.6 4.5-3.6 1.2 0 2.2.3 3 .9"/></svg>
-                </span>
-                <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="" placeholder="2" enterkeyhint="next">
-              </div>
-            </div>
             <div class="form-group span-2">
-              <label id="lbl-staff" for="receptionist">Receptionist *</label>
+              <label id="lbl-staff" for="receptionistTrigger">Receptionist *</label>
               <div class="input-with-icon">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 0.7 4 2.2"/></svg>
                 </span>
-                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Chi fa il check-in" inputmode="text" enterkeyhint="done">
+                <input type="hidden" id="receptionist" name="receptionist" value="">
+                <button type="button" class="apple-input apple-picker-trigger" id="receptionistTrigger" data-error-for="receptionist" aria-haspopup="listbox" aria-expanded="false" aria-controls="staffPickerMenu">
+                  <span class="apple-picker-value is-placeholder" id="receptionistValue">Chi fa il check-in</span>
+                  <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
+                </button>
+              </div>
+              <div class="apple-inline-list" id="staffPickerList" hidden>
+                <div class="apple-inline-window" aria-hidden="true"></div>
+                <div class="apple-inline-fade apple-inline-fade--top" aria-hidden="true"></div>
+                <div class="apple-inline-scroll" id="staffPickerMenu" role="listbox"></div>
+                <div class="apple-inline-fade apple-inline-fade--bottom" aria-hidden="true"></div>
               </div>
             </div>
           </div>
@@ -5624,7 +6045,7 @@
         roomTitle: 'Dettagli stanza',
         bookTitle: 'Dettagli soggiorno',
         bookKicker: 'Hotel Canal',
-        bookSub: 'Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.',
+        bookSub: 'Inserisci <strong>stanza</strong>, <strong>date</strong> e <strong>receptionist</strong> per completare la registrazione.',
         subtitle: 'Nome, cognome, email e telefono per attivare i servizi digitali.',
         phone: 'Numero di Telefono *',
         email: 'Email *',
@@ -5637,6 +6058,7 @@
         room: 'Numero di Stanza *',
         roomShort: 'Stanza *',
         guestsShort: 'Ospiti',
+        checkinShort: 'Check-in',
         checkoutShort: 'Checkout *',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Chi fa il check-in',
@@ -5741,7 +6163,7 @@
         roomTitle: 'Room Details',
         bookTitle: 'Stay details',
         bookKicker: 'Hotel Canal',
-        bookSub: 'Enter your <strong>room</strong> and <strong>checkout date</strong> to complete registration.',
+        bookSub: 'Enter your <strong>room</strong>, <strong>dates</strong> and <strong>receptionist</strong> to complete registration.',
         subtitle: 'First name, last name, email and phone to activate digital services.',
         phone: 'Phone Number *',
         email: 'Email *',
@@ -5754,6 +6176,7 @@
         room: 'Room Number *',
         roomShort: 'Room *',
         guestsShort: 'Guests',
+        checkinShort: 'Check-in',
         checkoutShort: 'Checkout *',
         staffShort: 'Receptionist *',
         staffPlaceholder: 'Who is checking you in',
@@ -5864,6 +6287,7 @@
         room: 'Numéro de chambre *',
         roomShort: 'Chambre *',
         guestsShort: 'Pers.',
+        checkinShort: 'Arrivée',
         checkoutShort: 'Départ *',
         staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
@@ -5967,6 +6391,7 @@
         room: 'Zimmernummer *',
         roomShort: 'Zimmer *',
         guestsShort: 'Gäste',
+        checkinShort: 'Anreise',
         checkoutShort: 'Abreise *',
         staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
@@ -6070,6 +6495,7 @@
         room: 'Número de habitación *',
         roomShort: 'Habitación *',
         guestsShort: 'Huéspedes',
+        checkinShort: 'Entrada',
         checkoutShort: 'Salida *',
         staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
@@ -6181,6 +6607,7 @@
         room: '房间号 *',
         roomShort: '房间 *',
         guestsShort: '人数',
+        checkinShort: '入住',
         checkoutShort: '退房 *',
         staffShort: '接待员 *',
         staffPlaceholder: '谁为您办理入住',
@@ -6291,6 +6718,7 @@
         room: '部屋番号 *',
         roomShort: '部屋 *',
         guestsShort: '人数',
+        checkinShort: 'チェックイン',
         checkoutShort: 'チェックアウト *',
         staffShort: '担当者 *',
         staffPlaceholder: 'チェックイン担当者',
@@ -6403,6 +6831,7 @@
         room: 'رقم الغرفة *',
         roomShort: 'غرفة *',
         guestsShort: 'ضيوف',
+        checkinShort: 'الوصول',
         checkoutShort: 'المغادرة *',
         staffShort: 'موظف الاستقبال *',
         staffPlaceholder: 'من يقوم بتسجيل دخولك',
@@ -6664,6 +7093,25 @@
     const staffEl = document.getElementById('receptionist');
     const guestsEl = document.getElementById('guests');
     const checkoutEl = document.getElementById('checkoutDate');
+    const checkinEl = document.getElementById('checkinDate');
+    const guestsTrigger = document.getElementById('guestsTrigger');
+    const guestsValueEl = document.getElementById('guestsValue');
+    const staffTrigger = document.getElementById('receptionistTrigger');
+    const staffValueEl = document.getElementById('receptionistValue');
+    const guestsPickerList = document.getElementById('guestsPickerList');
+    const guestsPickerMenu = document.getElementById('guestsPickerMenu');
+    const staffPickerList = document.getElementById('staffPickerList');
+    const staffPickerMenu = document.getElementById('staffPickerMenu');
+    const GUEST_ROSTER = [
+      { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso' },
+      { id: 'john', name: 'JOHN', label: 'John' },
+      { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro' },
+      { id: 'maria', name: 'MARIA', label: 'Maria' },
+      { id: 'mizan', name: 'MIZAN', label: 'Mizan' },
+      { id: 'payel', name: 'PAYEL', label: 'Payel' },
+      { id: 'sayeed', name: 'SAYEED', label: 'Sayeed' },
+    ];
+    let wheelKind = null;
     const privacyEl = document.getElementById('privacy');
     const privacyBox = document.getElementById('privacyBox');
     const btnNext = document.getElementById('btnNext');
@@ -6702,20 +7150,160 @@
     const SLIDE_MS = cssMs('--slide-ms', 640);
     const HEIGHT_MS = cssMs('--height-ms', 780);
 
-    /** Checkout: scelto nello Step 3 (obbligatorio con coupon). */
-    function setupCheckoutField() {
-      if (!checkoutEl) return;
+    /** Checkout e check-in: scelti nello Step 3 (obbligatori con coupon). */
+    function setupStayDateFields() {
       const today = romeYmd();
-      checkoutEl.min = today;
-      checkoutEl.max = addDaysYmd(today, 90);
+      if (checkinEl) {
+        checkinEl.min = addDaysYmd(today, -1);
+        checkinEl.max = addDaysYmd(today, 90);
+        if (!checkinEl.value) checkinEl.value = today;
+      }
+      syncCheckoutBounds();
+    }
+
+    function syncCheckoutBounds() {
+      if (!checkoutEl) return;
+      const stay = checkinEl?.value || romeYmd();
+      checkoutEl.min = stay;
+      checkoutEl.max = addDaysYmd(stay, 90);
+      if (checkoutEl.value && checkoutEl.value < checkoutEl.min) checkoutEl.value = '';
+    }
+
+    function isValidCheckinDate(value) {
+      const raw = String(value || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return false;
+      const today = romeYmd();
+      const min = addDaysYmd(today, -1);
+      const max = addDaysYmd(today, 90);
+      return raw >= min && raw <= max;
     }
 
     function isValidCheckoutDate(value) {
       const raw = String(value || '').trim();
       if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return false;
-      const min = checkoutEl?.min || romeYmd();
-      const max = checkoutEl?.max || addDaysYmd(romeYmd(), 90);
+      const min = checkoutEl?.min || checkinEl?.value || romeYmd();
+      const max = checkoutEl?.max || addDaysYmd(min, 90);
       return raw >= min && raw <= max;
+    }
+
+    function visualField(el) {
+      if (!el) return null;
+      if (el.id) {
+        const trigger = document.querySelector(`[data-error-for="${el.id}"]`);
+        if (trigger) return trigger;
+      }
+      return el;
+    }
+
+    function setGuestsPicker(count, { placeholder = false } = {}) {
+      const n = Number.parseInt(String(count || ''), 10);
+      if (!guestsEl) return;
+      if (!Number.isFinite(n) || n < 1) {
+        guestsEl.value = '';
+        if (guestsValueEl) {
+          guestsValueEl.textContent = '2';
+          guestsValueEl.classList.add('is-placeholder');
+        }
+        return;
+      }
+      guestsEl.value = String(Math.min(20, n));
+      if (guestsValueEl) {
+        guestsValueEl.textContent = guestsEl.value;
+        guestsValueEl.classList.toggle('is-placeholder', Boolean(placeholder));
+      }
+    }
+
+    function setStaffPicker(name) {
+      const member = GUEST_ROSTER.find((m) => m.name === String(name || '').trim().toUpperCase());
+      if (!staffEl) return;
+      staffEl.value = member ? member.name : '';
+      if (staffValueEl) {
+        const dict = t();
+        staffValueEl.textContent = member
+          ? member.label
+          : (dict.staffPlaceholder || dict.staffNone || 'Chi fa il check-in');
+        staffValueEl.classList.toggle('is-placeholder', !member);
+      }
+    }
+
+    function closeFormPicker() {
+      guestsPickerList?.setAttribute('hidden', '');
+      staffPickerList?.setAttribute('hidden', '');
+      guestsTrigger?.closest('.form-group')?.classList.remove('is-picker-open');
+      staffTrigger?.closest('.form-group')?.classList.remove('is-picker-open');
+      guestsTrigger?.setAttribute('aria-expanded', 'false');
+      staffTrigger?.setAttribute('aria-expanded', 'false');
+      wheelKind = null;
+      if (typeof invalidateGeometry === 'function') invalidateGeometry(3);
+    }
+
+    function pickerParts(kind) {
+      return kind === 'staff'
+        ? { list: staffPickerList, menu: staffPickerMenu, trigger: staffTrigger }
+        : { list: guestsPickerList, menu: guestsPickerMenu, trigger: guestsTrigger };
+    }
+
+    function centerWheelItem(menu, item) {
+      if (!menu || !item) return;
+      const rowH = item.offsetHeight || 44;
+      menu.scrollTop = Math.max(
+        0,
+        item.offsetTop - (menu.clientHeight / 2 - rowH / 2),
+      );
+    }
+
+    function openFormPicker(kind) {
+      const { list, menu, trigger } = pickerParts(kind);
+      if (!list || !menu || !trigger) return;
+      if (wheelKind === kind && !list.hidden) {
+        closeFormPicker();
+        return;
+      }
+      closeFormPicker();
+      wheelKind = kind;
+      const current = kind === 'staff'
+        ? String(staffEl?.value || '').trim().toUpperCase()
+        : String(guestsEl?.value || '2').trim();
+      const options = kind === 'staff'
+        ? GUEST_ROSTER.map((m) => ({ value: m.name, label: m.label }))
+        : Array.from({ length: 20 }, (_, i) => ({
+            value: String(i + 1),
+            label: String(i + 1),
+          }));
+      menu.innerHTML = [
+        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
+        ...options.map((opt) => {
+          const selected = opt.value === current;
+          return `<button type="button" class="apple-inline-item${selected ? ' is-selected' : ''}" role="option" aria-selected="${selected ? 'true' : 'false'}" data-value="${opt.value}">${opt.label}</button>`;
+        }),
+        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
+      ].join('');
+      list.hidden = false;
+      list.removeAttribute('hidden');
+      trigger.closest('.form-group')?.classList.add('is-picker-open');
+      guestsTrigger?.setAttribute('aria-expanded', kind === 'guests' ? 'true' : 'false');
+      staffTrigger?.setAttribute('aria-expanded', kind === 'staff' ? 'true' : 'false');
+      if (typeof invalidateGeometry === 'function') invalidateGeometry(3);
+      window.requestAnimationFrame(() => {
+        centerWheelItem(
+          menu,
+          menu.querySelector('.is-selected') || menu.querySelector('.apple-inline-item'),
+        );
+        scrollFieldIntoScroller(list);
+      });
+    }
+
+    function pickWheelValue(value) {
+      if (wheelKind === 'staff') {
+        setStaffPicker(value);
+        staffTrigger?.classList.remove('is-invalid');
+        document.getElementById('lbl-staff')?.classList.remove('label-error-state');
+      } else {
+        setGuestsPicker(value);
+        guestsTrigger?.classList.remove('is-invalid');
+        document.getElementById('lbl-guests')?.classList.remove('label-error-state');
+      }
+      closeFormPicker();
     }
 
     function submitButtonLabel(dict = t()) {
@@ -6960,8 +7548,17 @@
       viewport.style.clipPath = '';
       viewport.style.webkitClipPath = '';
 
-      const vpH = Math.round(viewport.getBoundingClientRect().height);
+      const vpH = Math.round(
+        frozenKeyboardViewportH
+          || parseFloat(viewport.style.height)
+          || viewport.getBoundingClientRect().height,
+      );
       if (vpH < 80) return;
+
+      if (keyboardLock) {
+        clearStepViewportClamp(step);
+        return;
+      }
 
       const natural = measureStepContentHeight(step);
       if (!Number.isFinite(natural) || natural < 80) {
@@ -6999,11 +7596,152 @@
       return window.matchMedia('(max-width: 480px)').matches;
     }
 
-    function availableCardMax() {
-      const vv = window.visualViewport;
-      const viewportH = Math.round(
-        (vv && vv.height) || window.innerHeight || 0,
+    function usesVirtualKeyboard() {
+      try {
+        return window.matchMedia('(pointer: coarse)').matches
+          || window.matchMedia('(max-width: 767px) and (hover: none)').matches;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    let restLayoutH = 0;
+    let keyboardLock = false;
+    let frozenKeyboardViewportH = 0;
+
+    function captureRestLayout() {
+      if (keyboardLock || iosPickerOpen) return restLayoutH;
+      const inner = Math.round(
+        window.innerHeight || document.documentElement.clientHeight || 0,
       );
+      if (inner >= 280) restLayoutH = inner;
+      if (restLayoutH > 0) {
+        document.documentElement.style.setProperty('--vvh', `${restLayoutH}px`);
+      }
+      document.documentElement.style.setProperty('--kb-inset', '0px');
+      return restLayoutH;
+    }
+
+    function layoutHeightPx() {
+      return restLayoutH || captureRestLayout() || Math.round(window.innerHeight || 0);
+    }
+
+    function isEditableField(el) {
+      if (!el || el === document.body) return false;
+      if (el.type === 'hidden' || el.disabled) return false;
+      const tag = el.tagName;
+      return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    }
+
+    function keyboardInsetPx() {
+      const vv = window.visualViewport;
+      if (!vv || restLayoutH <= 0) return 0;
+      return Math.max(0, restLayoutH - Math.round(vv.height + (vv.offsetTop || 0)));
+    }
+
+    function visibleViewportBottomPx() {
+      const vv = window.visualViewport;
+      if (!vv) {
+        return Math.round(window.innerHeight || document.documentElement.clientHeight || 0);
+      }
+      return Math.round(vv.offsetTop + vv.height);
+    }
+
+    function freezeViewportForKeyboard() {
+      const viewport = document.getElementById('sliderViewport');
+      if (!viewport) return;
+      const current = Math.round(
+        parseFloat(viewport.style.height) || viewport.offsetHeight || 0,
+      );
+      const natural = Math.round(measureStepContentHeight(currentStep) || 0);
+      const h = Math.max(
+        frozenKeyboardViewportH || 0,
+        current,
+        natural,
+        mappedStepHeight(currentStep) || 0,
+        280,
+      );
+      frozenKeyboardViewportH = h;
+      viewport.style.height = `${h}px`;
+      clearStepViewportClamp(currentStep);
+    }
+
+    function scrollFieldIntoScroller(el) {
+      if (!el || !(el instanceof HTMLElement)) return;
+      const scroller = el.closest('.step-scroll');
+      const topPad = 80;
+      const botPad = Math.max(24, keyboardInsetPx() + 24);
+      const visibleBottom = visibleViewportBottomPx();
+
+      if (!scroller) {
+        try {
+          const er = el.getBoundingClientRect();
+          if (er.bottom > visibleBottom - botPad) {
+            window.scrollBy(0, er.bottom - (visibleBottom - botPad));
+          } else if (er.top < (window.visualViewport?.offsetTop || 0) + topPad) {
+            window.scrollBy(0, er.top - ((window.visualViewport?.offsetTop || 0) + topPad));
+          }
+        } catch (_) {
+          /* ignore */
+        }
+        return;
+      }
+      const sr = scroller.getBoundingClientRect();
+      const er = el.getBoundingClientRect();
+      if (er.top < sr.top + topPad) {
+        scroller.scrollTop -= sr.top + topPad - er.top;
+      } else if (er.bottom > Math.min(sr.bottom, visibleBottom) - botPad) {
+        scroller.scrollTop += er.bottom - (Math.min(sr.bottom, visibleBottom) - botPad);
+      }
+    }
+
+    function syncKeyboardScroll() {
+      pinCardInView();
+      if (!keyboardLock) {
+        document.documentElement.style.setProperty('--kb-inset', '0px');
+        return;
+      }
+      document.documentElement.style.setProperty('--kb-inset', `${keyboardInsetPx()}px`);
+      const el = document.activeElement;
+      if (isEditableField(el)) {
+        window.requestAnimationFrame(() => scrollFieldIntoScroller(el));
+      }
+    }
+
+    function initKeyboardLayoutLock() {
+      captureRestLayout();
+      document.addEventListener('focusin', (e) => {
+        if (!isEditableField(e.target)) return;
+        if (!usesVirtualKeyboard()) return;
+        if (!keyboardLock) captureRestLayout();
+        keyboardLock = true;
+        document.documentElement.style.setProperty(
+          '--rest-vh',
+          `${layoutHeightPx()}px`,
+        );
+        document.body.classList.add('ios-keyboard-open');
+        document.body.classList.add('is-keyboard-open');
+        freezeViewportForKeyboard();
+        syncKeyboardScroll();
+      });
+      document.addEventListener('focusout', () => {
+        window.setTimeout(() => {
+          if (isEditableField(document.activeElement)) {
+            syncKeyboardScroll();
+            return;
+          }
+          keyboardLock = false;
+          frozenKeyboardViewportH = 0;
+          document.body.classList.remove('ios-keyboard-open');
+          document.body.classList.remove('is-keyboard-open');
+          document.documentElement.style.setProperty('--kb-inset', '0px');
+          syncAppViewportHeight();
+        }, 50);
+      });
+    }
+
+    function availableCardMax() {
+      const viewportH = Math.round(layoutHeightPx());
       const body = document.body;
       const bs = getComputedStyle(body);
       const pad =
@@ -7088,6 +7826,7 @@
     }
 
     function ensurePrimaryCtaVisible() {
+      if (keyboardLock || iosPickerOpen) return;
       const viewport = document.getElementById('sliderViewport');
       const btn =
         currentStep === 3
@@ -7128,6 +7867,7 @@
     }
 
     function applyViewportHeightPx(h, { animate = true } = {}) {
+      if (keyboardLock) return;
       const viewport = document.getElementById('sliderViewport');
       if (!viewport || !Number.isFinite(h)) return;
       const clamped = Math.min(
@@ -7145,7 +7885,7 @@
     }
 
     /** Matrice live (375×667): seed antifallo + misura a freddo. */
-    const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 568, 4: 292 };
+    const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 640, 4: 292 };
     const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0 };
     let iosPickerOpen = false;
 
@@ -7195,7 +7935,7 @@
     }
 
     function invalidateGeometry(stepOrNull = null) {
-      if (iosPickerOpen) return;
+      if (iosPickerOpen || keyboardLock) return;
       if (stepOrNull == null) {
         preCalculateGeometry({ applyCurrent: !stepBusy });
         return;
@@ -7516,12 +8256,12 @@
     }
 
     function syncAppViewportHeight() {
-      if (iosPickerOpen) return;
-      const vv = window.visualViewport;
-      const h = Math.round((vv && vv.height) || window.innerHeight || 0);
-      if (h > 0) {
-        document.documentElement.style.setProperty('--vvh', `${h}px`);
+      if (iosPickerOpen || keyboardLock) {
+        pinCardInView();
+        syncKeyboardScroll();
+        return;
       }
+      captureRestLayout();
       stepHeightCache[1] = 0;
       stepHeightCache[2] = 0;
       stepHeightCache[3] = 0;
@@ -7694,6 +8434,18 @@
 
     function pinCardInView() {
       try {
+        if (keyboardLock) {
+          const card = document.getElementById('card');
+          const vv = window.visualViewport;
+          if (card && vv) {
+            const cr = card.getBoundingClientRect();
+            const topLimit = vv.offsetTop + 8;
+            if (cr.top < topLimit) {
+              window.scrollBy(0, cr.top - topLimit);
+            }
+          }
+          return;
+        }
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
@@ -7707,6 +8459,7 @@
       if (stepBusy && !instant && step !== TOTAL_STEPS && step !== currentStep) {
         return;
       }
+      if (step !== 3 && typeof closeFormPicker === 'function') closeFormPicker();
       const prev = currentStep;
       currentStep = step;
       document.body.dataset.step = String(step);
@@ -7862,9 +8615,10 @@
     }
 
     function markFieldError(el) {
-      if (!el) return;
-      el.classList.add('is-invalid');
-      const group = el.closest('.form-group');
+      const target = visualField(el) || el;
+      if (!target) return;
+      target.classList.add('is-invalid');
+      const group = target.closest('.form-group') || el?.closest?.('.form-group');
       const label =
         group?.querySelector('label') ||
         document.querySelector(`label[for="${el.id}"]`);
@@ -7883,11 +8637,12 @@
         return;
       }
       markFieldError(fieldEl);
+      const focusEl = visualField(fieldEl) || fieldEl;
       try {
-        fieldEl.focus({ preventScroll: true });
+        focusEl.focus({ preventScroll: true });
       } catch (_) {
         try {
-          fieldEl.focus();
+          focusEl.focus();
         } catch (__) {
           /* ignore */
         }
@@ -7993,7 +8748,16 @@
       }
       if (/reception|staff|impiegat/.test(msg)) {
         setStep(3);
-        showFieldError(staffEl);
+        showFieldError(staffTrigger || staffEl);
+        return true;
+      }
+      if (
+        errCode === 'checkin_invalid' ||
+        errCode === 'checkin_required' ||
+        /check-in|checkin|arrivo|anreise|entrada/.test(msg)
+      ) {
+        setStep(3);
+        showFieldError(checkinEl);
         return true;
       }
       if (
@@ -8026,8 +8790,11 @@
       lastNameEl.classList.remove('is-invalid');
       privacyBox.classList.remove('is-invalid', 'shake');
       staffEl?.classList.remove('is-invalid');
+      staffTrigger?.classList.remove('is-invalid');
+      guestsTrigger?.classList.remove('is-invalid');
       roomEl?.classList.remove('is-invalid');
       checkoutEl?.classList.remove('is-invalid');
+      checkinEl?.classList.remove('is-invalid');
       document
         .querySelectorAll('.label-error-state')
         .forEach((el) => el.classList.remove('label-error-state'));
@@ -8141,9 +8908,12 @@
       const restDiscount = document.getElementById('lbl-rest-discount');
       if (restDiscount) restDiscount.textContent = dict.restDiscount || '−10%';
       document.getElementById('lbl-staff').textContent = dict.staffShort || dict.staff;
-      if (staffEl) staffEl.placeholder = dict.staffPlaceholder || 'Nome';
+      setStaffPicker(staffEl?.value);
       const guestsLbl = document.getElementById('lbl-guests');
       if (guestsLbl) guestsLbl.textContent = dict.guestsShort || dict.guests || 'Ospiti';
+      if (guestsEl && !guestsEl.value) setGuestsPicker(2);
+      const checkinLbl = document.getElementById('lbl-checkin');
+      if (checkinLbl) checkinLbl.textContent = dict.checkinShort || 'Check-in *';
       btnNext.textContent = dict.nextBtn;
       if (btnDiningNext) btnDiningNext.textContent = dict.nextBtn;
       if (btnDiningBack) btnDiningBack.textContent = dict.back;
@@ -8162,7 +8932,7 @@
       if (bookSub) {
         bookSub.innerHTML =
           dict.bookSub ||
-          'Enter your <strong>room</strong> and <strong>checkout date</strong> to complete registration.';
+          'Enter your <strong>room</strong>, <strong>dates</strong> and <strong>receptionist</strong> to complete registration.';
       }
       applyGuestActionLabels(dict, lastCouponSent);
     }
@@ -8764,12 +9534,16 @@
         showFieldError(roomEl);
         return false;
       }
+      if (!isValidCheckinDate(checkinEl?.value)) {
+        showFieldError(checkinEl);
+        return false;
+      }
       if (!isValidCheckoutDate(checkoutEl?.value)) {
         showFieldError(checkoutEl);
         return false;
       }
       if (!normalizeReceptionist(staffRaw)) {
-        showFieldError(staffEl);
+        showFieldError(staffTrigger || staffEl);
         return false;
       }
       return true;
@@ -8946,7 +9720,7 @@
 
       if (currentStep === 3) {
         return {
-          chain: [roomEl, guestsEl, staffEl].filter(Boolean),
+          chain: [roomEl, checkinEl, checkoutEl].filter(Boolean),
           cta: btnSubmit,
         };
       }
@@ -8981,7 +9755,7 @@
 
     document.addEventListener('keydown', handleEnterFieldNav, true);
 
-    [firstNameEl, lastNameEl, phoneEl, emailEl, staffEl, roomEl, guestsEl]
+    [firstNameEl, lastNameEl, phoneEl, emailEl, roomEl, guestsEl, checkinEl, checkoutEl]
       .filter(Boolean)
       .forEach((input) => {
         input.addEventListener('input', () => {
@@ -9066,6 +9840,9 @@
       staffEl.value = '';
       roomEl.value = '';
       if (checkoutEl) checkoutEl.value = '';
+      if (checkinEl) checkinEl.value = romeYmd();
+      setStaffPicker('');
+      setGuestsPicker(2);
       submitFinal({ clearStaff: true, requireCoupon: false });
     });
 
@@ -9087,6 +9864,7 @@
       const roomRaw = clearStaff ? '' : roomEl.value.trim();
       const staffRaw = clearStaff ? '' : staffEl.value.trim();
       const checkoutRaw = clearStaff ? '' : String(checkoutEl?.value || '').trim();
+      const stayRaw = clearStaff ? '' : String(checkinEl?.value || '').trim();
       const receptionistNormalized = clearStaff
         ? null
         : normalizeReceptionist(staffRaw);
@@ -9114,6 +9892,7 @@
         roomNumber: roomRaw ? roomRaw.toUpperCase() : null,
         receptionist: receptionistNormalized,
         guestsCount,
+        stayDate: stayRaw || null,
         checkoutDate: checkoutRaw || null,
         wantCoupon: Boolean(requireCoupon),
         privacy: true,
@@ -9216,15 +9995,12 @@
     }
 
     function paintInputSurface(input) {
-      if (!input) return;
+      if (!input || input.tagName === 'BUTTON') return;
       const autofilled = isAutofilled(input);
       input.classList.toggle('is-autofilled', autofilled);
       if (autofilled) {
         const fill = input.classList.contains('is-invalid') ? '#FFF9F9' : '#FFFFFF';
-        const focused = document.activeElement === input;
-        const shadow = focused
-          ? `inset 0 0 0 100vmax ${fill}, inset 0 0 0 1px rgba(18, 68, 83, 0.12)`
-          : `inset 0 0 0 100vmax ${fill}`;
+        const shadow = `inset 0 0 0 100vmax ${fill}`;
         input.style.setProperty('background', fill, 'important');
         input.style.setProperty('background-color', fill, 'important');
         input.style.setProperty('background-image', 'none', 'important');
@@ -9336,7 +10112,10 @@
     }
 
     setLanguage(currentLang);
-    setupCheckoutField();
+    setupStayDateFields();
+    setGuestsPicker(guestsEl?.value || 2);
+    initKeyboardLayoutLock();
+    checkinEl?.addEventListener('change', syncCheckoutBounds);
 
     if (!isTestMode() && isRegistrationLocked()) {
       showAlreadyRegisteredScreen();
@@ -9370,18 +10149,47 @@
       card.addEventListener('animationend', endIntro);
       setTimeout(() => card.classList.remove('is-entering'), 700);
     }
-    window.addEventListener('resize', syncAppViewportHeight, { passive: true });
+    window.addEventListener('resize', () => {
+      if (keyboardLock) {
+        syncKeyboardScroll();
+        return;
+      }
+      syncAppViewportHeight();
+    }, { passive: true });
     window.addEventListener('orientationchange', () => {
-      setTimeout(syncAppViewportHeight, 120);
+      keyboardLock = false;
+      frozenKeyboardViewportH = 0;
+      restLayoutH = 0;
+      setTimeout(syncAppViewportHeight, 180);
     });
     if (window.visualViewport) {
       const onVvChange = () => {
-        syncAppViewportHeight();
-        ensurePrimaryCtaVisible();
+        pinCardInView();
+        if (keyboardLock) {
+          syncKeyboardScroll();
+          return;
+        }
       };
       window.visualViewport.addEventListener('resize', onVvChange, { passive: true });
       window.visualViewport.addEventListener('scroll', onVvChange, { passive: true });
     }
+    guestsTrigger?.addEventListener('click', () => openFormPicker('guests'));
+    staffTrigger?.addEventListener('click', () => openFormPicker('staff'));
+    const onPickerPick = (e) => {
+      const opt = e.target.closest('[data-value]');
+      if (!opt) return;
+      pickWheelValue(opt.getAttribute('data-value') || '');
+    };
+    guestsPickerMenu?.addEventListener('click', onPickerPick);
+    staffPickerMenu?.addEventListener('click', onPickerPick);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && wheelKind) closeFormPicker();
+    });
+    document.addEventListener('click', (e) => {
+      if (!wheelKind) return;
+      if (e.target.closest('#guestsPickerList, #staffPickerList, #guestsTrigger, #receptionistTrigger')) return;
+      closeFormPicker();
+    });
     initSelectStability();
 
     // Foto dining: se caricano dopo la misura, riallinea senza scatto
