@@ -6755,6 +6755,21 @@
       });
     }
 
+    function uiLang() {
+      const htmlLang = String(document.documentElement.lang || '').trim().toLowerCase();
+      if (htmlLang) return htmlLang;
+      return String(navigator.language || 'en').trim().toLowerCase();
+    }
+
+    function emptyCheckinsViewText() {
+      const lang = uiLang();
+      if (lang.startsWith('it')) return 'In questa schermata non ci sono check-in.';
+      if (lang.startsWith('fr')) return 'Aucun check-in dans cette vue.';
+      if (lang.startsWith('de')) return 'In dieser Ansicht gibt es keine Check-ins.';
+      if (lang.startsWith('es')) return 'No hay check-ins en esta vista.';
+      return 'No check-ins in this view.';
+    }
+
     function renderList(rows) {
       const n = rows.length;
       const viewingToday = Boolean(lastToday && selectedDate === lastToday);
@@ -6767,7 +6782,7 @@
       }
 
       if (!n) {
-        listEl.innerHTML = '<tr><td colspan="5"><p class="empty">In questa schermata non ci sono check-in.</p></td></tr>';
+        listEl.innerHTML = `<tr><td colspan="5"><p class="empty">${escapeHtml(emptyCheckinsViewText())}</p></td></tr>`;
         return;
       }
 
