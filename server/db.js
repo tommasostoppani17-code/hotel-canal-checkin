@@ -4,7 +4,9 @@ import crypto from 'node:crypto';
 import Database from 'better-sqlite3';
 import {
   encryptField,
+  decryptField,
   decryptCheckinRow,
+  isEncryptedField,
 } from './crypto-fields.js';
 
 let db;
@@ -23,6 +25,8 @@ function ensureColumn(name) {
     coupon_token: 'coupon_token TEXT',
     coupon_sent_at: 'coupon_sent_at TEXT',
     table_booking: 'table_booking TEXT',
+    stay_date: 'stay_date TEXT',
+    starred_at: 'starred_at TEXT',
   };
   const ddl = ALLOWED[name];
   if (!ddl) {
@@ -65,6 +69,8 @@ export function initDb(databasePath) {
   ensureColumn('coupon_token');
   ensureColumn('coupon_sent_at');
   ensureColumn('table_booking');
+  ensureColumn('stay_date');
+  ensureColumn('starred_at');
 
   db.exec(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_coupon_token
@@ -77,19 +83,13 @@ export function initDb(databasePath) {
       ON checkins (created_at);
   `);
 
-  // Max 1 check-in attivo per stanza (dopo purge GDPR 24h la stanza si libera)
-  try {
-    db.exec(`
-      CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_room_unique
-        ON checkins (UPPER(TRIM(room_number)))
-        WHERE room_number IS NOT NULL AND TRIM(room_number) != '';
-    `);
-  } catch (err) {
-    console.warn(
-      '[db] idx_checkins_room_unique non creato (possibili duplicati esistenti):',
-      err.message || err,
-    );
-  }
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_checkins_stay_date
+      ON checkins (stay_date);
+  `);
+
+  backfillStayDates();
+  migrateRoomUniqueToStayDate();
 
   // Contatori mensili senza PII (sopravvivono al purge GDPR 24h)
   db.exec(`
@@ -102,7 +102,140 @@ export function initDb(databasePath) {
     );
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS guest_blacklist (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name_key TEXT NOT NULL UNIQUE,
+      guest_name TEXT NOT NULL,
+      notes TEXT,
+      checkin_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_guest_blacklist_created
+      ON guest_blacklist (created_at DESC);
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS staff_alerts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      kind TEXT NOT NULL DEFAULT 'blacklist_checkin',
+      checkin_id INTEGER NOT NULL,
+      blacklist_id INTEGER,
+      guest_name TEXT NOT NULL,
+      room_number TEXT,
+      notes TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      dismissed_at TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_staff_alerts_open
+      ON staff_alerts (dismissed_at, created_at DESC);
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_staff_alerts_checkin_kind
+      ON staff_alerts (checkin_id, kind);
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS checkin_activity (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      checkin_id INTEGER NOT NULL,
+      staff_name TEXT NOT NULL,
+      action TEXT NOT NULL,
+      detail TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_checkin_activity_checkin
+      ON checkin_activity (checkin_id, created_at DESC);
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS reception_notes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      checkin_id INTEGER,
+      guest_name TEXT NOT NULL,
+      room_number TEXT,
+      category TEXT NOT NULL DEFAULT 'other',
+      instruction TEXT NOT NULL,
+      due_date TEXT NOT NULL,
+      due_time TEXT,
+      status TEXT NOT NULL DEFAULT 'open',
+      created_by TEXT NOT NULL,
+      completed_by TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT,
+      completed_at TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_reception_notes_due
+      ON reception_notes (due_date, status, due_time, id DESC);
+  `);
+
   return db;
+}
+
+function parseSqliteUtc(createdAt) {
+  const raw = String(createdAt || '').trim();
+  if (!raw) return new Date();
+  const iso = /Z$|[+-]\d{2}:\d{2}$/.test(raw)
+    ? raw
+    : raw.includes('T')
+      ? `${raw}Z`
+      : `${raw.replace(' ', 'T')}Z`;
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? new Date() : d;
+}
+
+/** YYYY-MM-DD in Europe/Rome. */
+export function romeCalendarDate(from = new Date()) {
+  const d = from instanceof Date ? from : parseSqliteUtc(from);
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(d);
+}
+
+function backfillStayDates() {
+  const rows = db
+    .prepare(
+      `SELECT id, created_at FROM checkins WHERE stay_date IS NULL OR TRIM(stay_date) = ''`,
+    )
+    .all();
+  if (!rows.length) return;
+  const stmt = db.prepare(`UPDATE checkins SET stay_date = ? WHERE id = ?`);
+  const tx = db.transaction((list) => {
+    for (const row of list) {
+      stmt.run(romeCalendarDate(row.created_at), row.id);
+    }
+  });
+  tx(rows);
+}
+
+function migrateRoomUniqueToStayDate() {
+  try {
+    db.exec(`DROP INDEX IF EXISTS idx_checkins_room_unique`);
+  } catch (err) {
+    console.warn('[db] drop idx_checkins_room_unique:', err.message || err);
+  }
+  try {
+    db.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_room_day_unique
+        ON checkins (stay_date, UPPER(TRIM(room_number)))
+        WHERE room_number IS NOT NULL
+          AND TRIM(room_number) != ''
+          AND stay_date IS NOT NULL
+          AND TRIM(stay_date) != '';
+    `);
+  } catch (err) {
+    console.warn(
+      '[db] idx_checkins_room_day_unique non creato:',
+      err.message || err,
+    );
+  }
 }
 
 function couponSecrets() {
@@ -340,10 +473,11 @@ export function mergeStaffMonthStatsFromCheckins() {
   return mergeStaffMonthStats([...map.values()]);
 }
 
-/** Elimina check-in attivi su una stanza (solo per account tester). */
-export function deleteCheckinsByRoom(roomNumber) {
+/** Elimina check-in del giorno (Rome) su una stanza (solo account tester). */
+export function deleteCheckinsByRoom(roomNumber, stayDate = null) {
   const room = String(roomNumber || '').trim();
   if (!room) return 0;
+  const day = String(stayDate || romeCalendarDate()).trim();
   return db
     .prepare(
       `
@@ -351,15 +485,17 @@ export function deleteCheckinsByRoom(roomNumber) {
       WHERE room_number IS NOT NULL
         AND TRIM(room_number) != ''
         AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
+        AND stay_date = @day
     `,
     )
-    .run({ room }).changes;
+    .run({ room, day }).changes;
 }
 
-/** True se la stanza è già usata da un altro check-in attivo. */
-export function isRoomTaken(roomNumber, excludeId = null) {
+/** True se la stanza è già usata in quel giorno (default: oggi a Roma). */
+export function isRoomTaken(roomNumber, excludeId = null, stayDate = null) {
   const room = String(roomNumber || '').trim();
   if (!room) return false;
+  const day = String(stayDate || romeCalendarDate()).trim();
   const row = db
     .prepare(
       `
@@ -367,34 +503,38 @@ export function isRoomTaken(roomNumber, excludeId = null) {
       WHERE room_number IS NOT NULL
         AND TRIM(room_number) != ''
         AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
+        AND stay_date = @day
       LIMIT 1
     `,
     )
-    .get({ room });
+    .get({ room, day });
   if (!row) return false;
   if (excludeId != null && Number(row.id) === Number(excludeId)) return false;
   return true;
 }
 
-/** Check-in attivo per numero stanza (email/telefono già decifrati). */
-export function getActiveCheckinByRoom(roomNumber) {
+/** Check-in attivo per numero stanza nel giorno (email/telefono già decifrati). */
+export function getActiveCheckinByRoom(roomNumber, stayDate = null) {
   const room = String(roomNumber || '').trim();
   if (!room) return null;
+  const day = String(stayDate || romeCalendarDate()).trim();
   const row = db
     .prepare(
       `
       SELECT
         id, phone, email, guest_name, room_number, receptionist, guests_count,
-        coupon_token, coupon_sent_at, table_booking, created_at, reported_at
+        coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
+        stay_date, starred_at
       FROM checkins
       WHERE room_number IS NOT NULL
         AND TRIM(room_number) != ''
         AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
+        AND stay_date = @day
       ORDER BY id DESC
       LIMIT 1
     `,
     )
-    .get({ room });
+    .get({ room, day });
   return row ? decryptCheckinRow(row) : null;
 }
 
@@ -411,10 +551,12 @@ export function insertCheckin({
 }) {
   const stmt = db.prepare(`
     INSERT INTO checkins (
-      phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, privacy_accepted_at
+      phone, email, guest_name, room_number, receptionist, guests_count,
+      coupon_token, privacy_accepted_at, stay_date
     )
     VALUES (
-      @phone, @email, @guestName, @roomNumber, @receptionist, @guestsCount, @couponToken, datetime('now')
+      @phone, @email, @guestName, @roomNumber, @receptionist, @guestsCount,
+      @couponToken, datetime('now'), @stayDate
     )
   `);
 
@@ -426,6 +568,7 @@ export function insertCheckin({
     receptionist: receptionist || null,
     guestsCount: guestsCount ?? null,
     couponToken: couponToken || null,
+    stayDate: romeCalendarDate(),
   });
 
   if (!skipStaffStats) {
@@ -437,6 +580,16 @@ export function insertCheckin({
     } catch (err) {
       console.error('[stats] bumpStaffMonthStats failed:', err.message || err);
     }
+  }
+
+  try {
+    createBlacklistCheckinAlert({
+      checkinId: info.lastInsertRowid,
+      guestName: guestName || '',
+      roomNumber: roomNumber || '',
+    });
+  } catch (err) {
+    console.error('[alert] blacklist checkin failed:', err.message || err);
   }
 
   return info.lastInsertRowid;
@@ -456,7 +609,8 @@ export function getCheckinById(id) {
       `
       SELECT
         id, phone, email, guest_name, room_number, receptionist, guests_count,
-        coupon_token, coupon_sent_at, table_booking, created_at, reported_at
+        coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
+        stay_date, starred_at
       FROM checkins
       WHERE id = ?
     `,
@@ -465,9 +619,25 @@ export function getCheckinById(id) {
   return row ? decryptCheckinRow(row) : null;
 }
 
-/** Save dinner table preference (e.g. 20:15) and optional party size. */
+/** Save dinner table preference (e.g. 20:15 or 2026-08-17 20:15) and optional party size. */
 export function setTableBooking(id, tableBooking, guestsCount = null) {
-  const time = String(tableBooking || '').trim().slice(0, 32).toUpperCase();
+  const raw = String(tableBooking || '').trim().slice(0, 32);
+  const dateTime = raw.match(
+    /^(\d{4}-\d{2}-\d{2})[ T](\d{1,2}):(\d{2})/,
+  );
+  const timeOnly = raw.match(/^(\d{1,2}):(\d{2})/);
+  let time = '';
+  if (dateTime) {
+    const hh = String(Math.min(23, Number(dateTime[2]))).padStart(2, '0');
+    const mm = String(Math.min(59, Number(dateTime[3]))).padStart(2, '0');
+    time = `${dateTime[1]} ${hh}:${mm}`;
+  } else if (timeOnly) {
+    const hh = String(Math.min(23, Number(timeOnly[1]))).padStart(2, '0');
+    const mm = String(Math.min(59, Number(timeOnly[2]))).padStart(2, '0');
+    time = `${hh}:${mm}`;
+  } else {
+    time = raw.toUpperCase();
+  }
   if (!time || time === 'NO' || time === 'SKIP' || time === 'NONE') {
     return getCheckinById(id);
   }
@@ -497,7 +667,7 @@ export function getCheckinByCouponToken(token) {
   const row = db
     .prepare(
       `
-      SELECT id, phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, coupon_sent_at, created_at
+      SELECT id, phone, email, guest_name, room_number, receptionist, guests_count, coupon_token, coupon_sent_at, created_at, stay_date
       FROM checkins
       WHERE coupon_token = ?
       LIMIT 1
@@ -546,7 +716,9 @@ export function getUnreportedCheckins() {
         coupon_token,
         coupon_sent_at,
         table_booking,
-        created_at
+        created_at,
+        stay_date,
+        starred_at
       FROM checkins
       WHERE reported_at IS NULL
       ORDER BY
@@ -670,7 +842,9 @@ export function exportAllCheckins() {
         table_booking,
         privacy_accepted_at,
         created_at,
-        reported_at
+        reported_at,
+        stay_date,
+        starred_at
       FROM checkins
       ORDER BY id ASC
     `,
@@ -679,29 +853,69 @@ export function exportAllCheckins() {
 }
 
 /**
- * GDPR retention: elimina check-in più vecchi di `hours` ore.
- * Default 24h — dopo report notturno il caveau si svuota.
- * Offset sempre bound come parametro (?), mai interpolato.
+ * Dopo il report: toglie telefono/email dal DB. Nome e stanza restano per la dashboard.
  */
-export function purgeCheckinsOlderThanHours(hours = 24) {
+export function wipeContactPii(ids) {
+  if (!Array.isArray(ids) || !ids.length) return 0;
+  const safeIds = ids
+    .map((id) => Number(id))
+    .filter((id) => Number.isInteger(id) && id > 0)
+    .slice(0, 5000);
+  if (!safeIds.length) return 0;
+  const placeholders = safeIds.map(() => '?').join(',');
+  return db
+    .prepare(
+      `UPDATE checkins SET phone = '', email = NULL WHERE id IN (${placeholders})`,
+    )
+    .run(...safeIds).changes;
+}
+
+/** PII contatto più vecchia di 24h: azzera anche se il report non è ancora partito. */
+export function wipeContactPiiOlderThanHours(hours = 24) {
   const h = Math.max(1, Math.min(168, Number(hours) || 24));
-  const result = db
-    .prepare(`DELETE FROM checkins WHERE created_at < datetime('now', ?)`)
-    .run(`-${h} hours`);
-  return result.changes || 0;
+  return db
+    .prepare(
+      `
+      UPDATE checkins
+      SET phone = '', email = NULL
+      WHERE created_at < datetime('now', ?)
+        AND (
+          (phone IS NOT NULL AND TRIM(phone) != '')
+          OR (email IS NOT NULL AND TRIM(email) != '')
+        )
+    `,
+    )
+    .run(`-${h} hours`).changes;
 }
 
 /**
- * Retention ferrea 24h (letterale SQL fisso, nessun input runtime).
- * Chiamare subito dopo l'invio riuscito del report CSV.
+ * Dashboard: elimina unstarred più vecchi di 7 giorni. Le stelline restano.
  */
-export function purgeCheckinsOlderThan24Hours() {
-  const result = db
+export function purgeUnstarredOlderThanDays(days = 7) {
+  const d = Math.max(1, Math.min(90, Number(days) || 7));
+  return db
     .prepare(
-      `DELETE FROM checkins WHERE created_at < datetime('now', '-24 hours')`,
+      `
+      DELETE FROM checkins
+      WHERE starred_at IS NULL
+        AND created_at < datetime('now', ?)
+    `,
     )
-    .run();
-  return result.changes || 0;
+    .run(`-${d} days`).changes;
+}
+
+/**
+ * GDPR / post-report: wipe PII 24h + purge dashboard 7 giorni (unstarred).
+ * Nome della funzione storica tenuta per i caller esistenti.
+ */
+export function purgeCheckinsOlderThanHours(hours = 24) {
+  wipeContactPiiOlderThanHours(hours);
+  return purgeUnstarredOlderThanDays(7);
+}
+
+export function purgeCheckinsOlderThan24Hours() {
+  wipeContactPiiOlderThanHours(24);
+  return purgeUnstarredOlderThanDays(7);
 }
 
 /**
@@ -715,10 +929,12 @@ export function importCheckinsIfEmpty(rows) {
   const stmt = db.prepare(`
     INSERT INTO checkins (
       id, phone, email, guest_name, room_number, receptionist, guests_count,
-      coupon_token, coupon_sent_at, table_booking, privacy_accepted_at, created_at, reported_at
+      coupon_token, coupon_sent_at, table_booking, privacy_accepted_at, created_at,
+      reported_at, stay_date, starred_at
     ) VALUES (
       @id, @phone, @email, @guest_name, @room_number, @receptionist, @guests_count,
-      @coupon_token, @coupon_sent_at, @table_booking, @privacy_accepted_at, @created_at, @reported_at
+      @coupon_token, @coupon_sent_at, @table_booking, @privacy_accepted_at, @created_at,
+      @reported_at, @stay_date, @starred_at
     )
   `);
 
@@ -745,6 +961,8 @@ export function importCheckinsIfEmpty(rows) {
           row.privacy_accepted_at || row.created_at || new Date().toISOString(),
         created_at: row.created_at || new Date().toISOString(),
         reported_at: row.reported_at || null,
+        stay_date: row.stay_date || romeCalendarDate(row.created_at),
+        starred_at: row.starred_at || null,
       });
       n += 1;
     }
@@ -752,4 +970,833 @@ export function importCheckinsIfEmpty(rows) {
   });
 
   return tx(rows);
+}
+
+function hasVoucherFlag(row) {
+  const staff = String(row?.receptionist || '').trim().toUpperCase();
+  return Boolean(staff && staff !== 'RECEPTION');
+}
+
+export function normalizeGuestNameKey(name) {
+  return String(name || '')
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, ' ');
+}
+
+function maskPhoneForStaff(phone) {
+  const raw = String(phone || '').trim();
+  if (!raw || raw === '[illeggibile]') return null;
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length < 4) return '••• ••• ••••';
+  const last2 = digits.slice(-2);
+  if (digits.startsWith('39') && digits.length >= 10) {
+    return `+39 ••• ••• ••${last2}`;
+  }
+  if (raw.startsWith('+')) {
+    const ccLen = digits.length > 10 ? 2 : 1;
+    const cc = digits.slice(0, ccLen);
+    return `+${cc} ••• ••• ••${last2}`;
+  }
+  return `••• ••• ••${last2}`;
+}
+
+function maskEmailForStaff(email) {
+  const raw = String(email || '').trim();
+  if (!raw || raw === '[illeggibile]') return null;
+  const at = raw.indexOf('@');
+  if (at < 1) return '•••@•••';
+  const local = raw.slice(0, at);
+  const domain = raw.slice(at + 1);
+  if (!domain) return '•••@•••';
+  const first = local.slice(0, 1);
+  return `${first}•••@${domain}`;
+}
+
+function isCheckinVisibleToStaff(row) {
+  if (!row) return false;
+  if (row.starred_at) return true;
+  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const cutoffIso = cutoff.toISOString().slice(0, 19).replace('T', ' ');
+  if (String(row.created_at || '') >= cutoffIso) return true;
+  const stay = row.stay_date || romeCalendarDate(row.created_at);
+  return stay >= romeCalendarDate(cutoff);
+}
+
+function toStaffSafeRow(row, blacklistMap = null) {
+  const dec = decryptCheckinRow(row);
+  const guestName = dec.guest_name || '';
+  const nameKey = normalizeGuestNameKey(guestName);
+  const bl = nameKey && blacklistMap?.get(nameKey);
+  const phonePlain = decryptFieldSoft(row.phone, 'phone', row.id);
+  const phoneMasked = maskPhoneForStaff(phonePlain);
+  const emailPlain = decryptFieldSoft(row.email, 'email', row.id);
+  const emailMasked = maskEmailForStaff(emailPlain);
+  return {
+    id: dec.id,
+    guestName,
+    phoneMasked: phoneMasked || '—',
+    hasPhone: Boolean(phonePlain && phonePlain !== '[illeggibile]' && phoneMasked),
+    emailMasked: emailMasked || '—',
+    hasEmail: Boolean(emailPlain && emailPlain !== '[illeggibile]' && emailMasked),
+    roomNumber: dec.room_number || '',
+    receptionist: dec.receptionist || '',
+    guestsCount: dec.guests_count ?? null,
+    voucher: hasVoucherFlag(dec),
+    tableBooking: dec.table_booking || '',
+    createdAt: dec.created_at || '',
+    stayDate: dec.stay_date || romeCalendarDate(dec.created_at),
+    starred: Boolean(dec.starred_at),
+    checkCode: `HC-${String(dec.id).padStart(4, '0')}`,
+    blacklisted: Boolean(bl),
+    blacklistId: bl?.id ?? null,
+    blacklistNotes: bl?.notes ?? '',
+  };
+}
+
+function toBlacklistRow(row) {
+  return {
+    id: row.id,
+    guestName: decryptFieldSoft(row.guest_name, 'guest_name', row.id),
+    notes: decryptFieldSoft(row.notes, 'notes', row.id),
+    checkinId: row.checkin_id ?? null,
+    createdAt: row.created_at || '',
+    updatedAt: row.updated_at || null,
+  };
+}
+
+function decryptFieldSoft(value, field, rowId) {
+  if (value == null) return '';
+  const raw = String(value);
+  if (!raw) return '';
+  if (!isEncryptedField(raw)) return raw;
+  try {
+    return decryptField(raw) || '';
+  } catch (err) {
+    console.error(
+      `[crypto] decrypt ${field} failed (id=${rowId ?? '?'}):`,
+      err.message || err,
+    );
+    return '[illeggibile]';
+  }
+}
+
+function loadBlacklistMap() {
+  const rows = db
+    .prepare(`SELECT id, name_key, notes FROM guest_blacklist`)
+    .all();
+  const map = new Map();
+  for (const row of rows) {
+    map.set(row.name_key, {
+      id: row.id,
+      notes: decryptFieldSoft(row.notes, 'notes', row.id),
+    });
+  }
+  return map;
+}
+
+function matchesStaffQuery(safe, q) {
+  const needle = String(q || '').trim().toLowerCase();
+  if (!needle) return true;
+  const name = String(safe.guestName || '').toLowerCase();
+  const room = String(safe.roomNumber || '').toLowerCase();
+  const code = String(safe.checkCode || '').toLowerCase();
+  return name.includes(needle) || room.includes(needle) || code.includes(needle);
+}
+
+/** Lista staff: mai telefono/email. Ultimi 7 giorni + stellati. */
+export function listStaffCheckins({ date = '', q = '' } = {}) {
+  const today = romeCalendarDate();
+  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const cutoffIso = cutoff.toISOString().slice(0, 19).replace('T', ' ');
+  const rows = db
+    .prepare(
+      `
+      SELECT
+        id, phone, email, guest_name, room_number, receptionist, guests_count,
+        coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
+        stay_date, starred_at
+      FROM checkins
+      WHERE starred_at IS NOT NULL
+         OR created_at >= ?
+         OR stay_date >= ?
+      ORDER BY stay_date DESC, id DESC
+    `,
+    )
+    .all(cutoffIso, romeCalendarDate(cutoff));
+
+  const blacklistMap = loadBlacklistMap();
+  const safe = rows.map((row) => toStaffSafeRow(row, blacklistMap));
+  const query = String(q || '').trim();
+  const day = String(date || '').trim();
+  let list = query ? safe.filter((row) => matchesStaffQuery(row, query)) : safe;
+  if (!query && day) {
+    const ofDay = list.filter((row) => row.stayDate === day);
+    if (day === today) {
+      const starredOld = list.filter(
+        (row) => row.starred && row.stayDate !== day,
+      );
+      list = [...ofDay, ...starredOld];
+    } else {
+      list = ofDay;
+    }
+  }
+  return {
+    today,
+    date: day || today,
+    checkins: list,
+  };
+}
+
+const CHECKIN_ACTIVITY_LABELS = {
+  room_change: 'Stanza modificata',
+  star: 'Aggiunto ai preferiti',
+  unstar: 'Rimosso dai preferiti',
+  phone_reveal: 'Telefono visualizzato',
+  email_reveal: 'Email visualizzata',
+  blacklist_add: 'Segnalato in lista nera',
+  blacklist_edit: 'Segnalazione aggiornata',
+  note_add: 'Nota reception aggiunta',
+  note_done: 'Nota reception completata',
+};
+
+function normalizeStaffActor(raw) {
+  return String(raw || '').trim().toUpperCase().slice(0, 60) || 'STAFF';
+}
+
+export function logCheckinActivity({ checkinId, staffName, action, detail = '' } = {}) {
+  const cid = Number(checkinId);
+  const actor = normalizeStaffActor(staffName);
+  const kind = String(action || '').trim().slice(0, 40);
+  if (!Number.isInteger(cid) || cid < 1 || !actor || !kind) return null;
+  const result = db
+    .prepare(
+      `
+      INSERT INTO checkin_activity (checkin_id, staff_name, action, detail)
+      VALUES (?, ?, ?, ?)
+    `,
+    )
+    .run(
+      cid,
+      actor,
+      kind,
+      String(detail || '').trim().slice(0, 240) || null,
+    );
+  return result.lastInsertRowid;
+}
+
+export function listCheckinActivity(checkinId, limit = 12, actionFilter = null) {
+  const cid = Number(checkinId);
+  if (!Number.isInteger(cid) || cid < 1) return [];
+  const cap = Math.min(Math.max(Number(limit) || 12, 1), 30);
+  const action = String(actionFilter || '').trim().slice(0, 40);
+  const rows = action
+    ? db
+      .prepare(
+        `
+      SELECT id, checkin_id, staff_name, action, detail, created_at
+      FROM checkin_activity
+      WHERE checkin_id = ? AND action = ?
+      ORDER BY datetime(created_at) DESC, id DESC
+      LIMIT ?
+    `,
+      )
+      .all(cid, action, cap)
+    : db
+      .prepare(
+        `
+      SELECT id, checkin_id, staff_name, action, detail, created_at
+      FROM checkin_activity
+      WHERE checkin_id = ?
+      ORDER BY datetime(created_at) DESC, id DESC
+      LIMIT ?
+    `,
+      )
+      .all(cid, cap);
+  return rows.map((row) => ({
+    id: row.id,
+    checkinId: row.checkin_id,
+    staffName: row.staff_name || '',
+    action: row.action || '',
+    label: CHECKIN_ACTIVITY_LABELS[row.action] || row.action || 'Modifica',
+    detail: row.detail || '',
+    at: row.created_at || '',
+  }));
+}
+
+export function updateCheckinRoom(id, roomNumber, staffName = null) {
+  const row = getCheckinById(id);
+  if (!row) return { ok: false, error: 'not_found' };
+  const dec = decryptCheckinRow(row);
+  const oldRoom = String(dec.room_number || '').trim().toUpperCase() || '';
+  const nextRoom = String(roomNumber || '')
+    .trim()
+    .toUpperCase()
+    .slice(0, 8);
+  if (!nextRoom) return { ok: false, error: 'room_required' };
+  if (!/^[0-9A-Z]{1,8}$/.test(nextRoom)) {
+    return { ok: false, error: 'room_invalid' };
+  }
+  const stay = row.stay_date || romeCalendarDate(row.created_at);
+  if (isRoomTaken(nextRoom, id, stay)) {
+    return { ok: false, error: 'room_taken' };
+  }
+  db.prepare(`UPDATE checkins SET room_number = ? WHERE id = ?`).run(
+    nextRoom,
+    Number(id),
+  );
+  if (staffName && oldRoom !== nextRoom) {
+    logCheckinActivity({
+      checkinId: id,
+      staffName,
+      action: 'room_change',
+      detail: `${oldRoom || '—'} → ${nextRoom}`,
+    });
+  }
+  const keys = loadBlacklistMap();
+  return { ok: true, row: toStaffSafeRow(getCheckinById(id), keys) };
+}
+
+export function toggleCheckinStar(id, staffName = null) {
+  const row = getCheckinById(id);
+  if (!row) return { ok: false, error: 'not_found' };
+  const wasStarred = Boolean(row.starred_at);
+  if (wasStarred) {
+    db.prepare(`UPDATE checkins SET starred_at = NULL WHERE id = ?`).run(
+      Number(id),
+    );
+  } else {
+    db.prepare(
+      `UPDATE checkins SET starred_at = datetime('now') WHERE id = ?`,
+    ).run(Number(id));
+  }
+  if (staffName) {
+    logCheckinActivity({
+      checkinId: id,
+      staffName,
+      action: wasStarred ? 'unstar' : 'star',
+    });
+  }
+  const keys = loadBlacklistMap();
+  return { ok: true, row: toStaffSafeRow(getCheckinById(id), keys) };
+}
+
+function matchesBlacklistQuery(row, q) {
+  const needle = String(q || '').trim().toLowerCase();
+  if (!needle) return true;
+  const name = String(row.guestName || '').toLowerCase();
+  const notes = String(row.notes || '').toLowerCase();
+  return name.includes(needle) || notes.includes(needle);
+}
+
+/** Lista nera staff — nomi + note, persistenti. */
+export function listBlacklist({ q = '' } = {}) {
+  const rows = db
+    .prepare(
+      `
+      SELECT id, name_key, guest_name, notes, checkin_id, created_at, updated_at
+      FROM guest_blacklist
+      ORDER BY created_at DESC, id DESC
+    `,
+    )
+    .all();
+  const items = rows.map(toBlacklistRow);
+  const query = String(q || '').trim();
+  return {
+    count: items.length,
+    entries: query ? items.filter((row) => matchesBlacklistQuery(row, query)) : items,
+  };
+}
+
+export function getBlacklistEntry(id) {
+  const row = db
+    .prepare(
+      `
+      SELECT id, name_key, guest_name, notes, checkin_id, created_at, updated_at
+      FROM guest_blacklist
+      WHERE id = ?
+    `,
+    )
+    .get(Number(id));
+  if (!row) return null;
+  return toBlacklistRow(row);
+}
+
+export function addToBlacklist({ guestName, notes = '', checkinId = null, staffName = null } = {}) {
+  const name = String(guestName || '').trim();
+  const nameKey = normalizeGuestNameKey(name);
+  if (!nameKey) return { ok: false, error: 'name_required' };
+
+  const encName = encryptField(name);
+  const encNotes = encryptField(String(notes || '').trim()) || null;
+  const cid =
+    checkinId != null && Number.isInteger(Number(checkinId)) && Number(checkinId) > 0
+      ? Number(checkinId)
+      : null;
+
+  const existing = db
+    .prepare(`SELECT id FROM guest_blacklist WHERE name_key = ?`)
+    .get(nameKey);
+
+  if (existing) {
+    db.prepare(
+      `
+      UPDATE guest_blacklist
+      SET guest_name = ?, notes = ?, checkin_id = COALESCE(?, checkin_id), updated_at = datetime('now')
+      WHERE id = ?
+    `,
+    ).run(encName, encNotes, cid, existing.id);
+    const entry = getBlacklistEntry(existing.id);
+    if (staffName && entry?.checkinId) {
+      logCheckinActivity({
+        checkinId: entry.checkinId,
+        staffName,
+        action: 'blacklist_edit',
+        detail: String(notes || '').trim().slice(0, 120),
+      });
+    }
+    return { ok: true, updated: true, entry };
+  }
+
+  const result = db
+    .prepare(
+      `
+      INSERT INTO guest_blacklist (name_key, guest_name, notes, checkin_id)
+      VALUES (?, ?, ?, ?)
+    `,
+    )
+    .run(nameKey, encName, encNotes, cid);
+  const entry = getBlacklistEntry(result.lastInsertRowid);
+  if (staffName && cid) {
+    logCheckinActivity({
+      checkinId: cid,
+      staffName,
+      action: 'blacklist_add',
+      detail: String(notes || '').trim().slice(0, 120),
+    });
+  }
+  return { ok: true, updated: false, entry };
+}
+
+export function addCheckinToBlacklist(id, notes = '', staffName = null) {
+  const row = getCheckinById(id);
+  if (!row) return { ok: false, error: 'not_found' };
+  const dec = decryptCheckinRow(row);
+  const guestName = String(dec.guest_name || '').trim();
+  if (!guestName) return { ok: false, error: 'name_required' };
+  return addToBlacklist({ guestName, notes, checkinId: id, staffName });
+}
+
+export function updateBlacklistNotes(id, notes, staffName = null) {
+  const before = getBlacklistEntry(id);
+  if (!before) return { ok: false, error: 'not_found' };
+  const encNotes = encryptField(String(notes || '').trim()) || null;
+  db.prepare(
+    `UPDATE guest_blacklist SET notes = ?, updated_at = datetime('now') WHERE id = ?`,
+  ).run(encNotes, Number(id));
+  const entry = getBlacklistEntry(id);
+  if (staffName && entry?.checkinId) {
+    logCheckinActivity({
+      checkinId: entry.checkinId,
+      staffName,
+      action: 'blacklist_edit',
+      detail: String(notes || '').trim().slice(0, 120),
+    });
+  }
+  return { ok: true, entry };
+}
+
+export function removeFromBlacklist(id) {
+  const result = db
+    .prepare(`DELETE FROM guest_blacklist WHERE id = ?`)
+    .run(Number(id));
+  if (!result.changes) return { ok: false, error: 'not_found' };
+  return { ok: true };
+}
+
+function toStaffAlertRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    kind: row.kind || 'blacklist_checkin',
+    checkinId: row.checkin_id,
+    blacklistId: row.blacklist_id ?? null,
+    guestName: decryptFieldSoft(row.guest_name, 'guest_name', row.id),
+    roomNumber: row.room_number || '',
+    notes: decryptFieldSoft(row.notes, 'notes', row.id),
+    createdAt: row.created_at || '',
+  };
+}
+
+/** Crea alert staff se l'ospite è in segnalazione al momento del check-in. */
+export function createBlacklistCheckinAlert({ checkinId, guestName, roomNumber = '' } = {}) {
+  const cid = Number(checkinId);
+  if (!Number.isInteger(cid) || cid < 1) return null;
+
+  const name = String(guestName || '').trim();
+  const nameKey = normalizeGuestNameKey(name);
+  if (!nameKey) return null;
+
+  const bl = db
+    .prepare(`SELECT id, notes FROM guest_blacklist WHERE name_key = ?`)
+    .get(nameKey);
+  if (!bl) return null;
+
+  const existing = db
+    .prepare(
+      `SELECT id FROM staff_alerts WHERE checkin_id = ? AND kind = 'blacklist_checkin'`,
+    )
+    .get(cid);
+  if (existing) return toStaffAlertRow(db.prepare(`SELECT * FROM staff_alerts WHERE id = ?`).get(existing.id));
+
+  const encName = encryptField(name);
+  const encNotes = bl.notes || null;
+  const room = String(roomNumber || '').trim().toUpperCase().slice(0, 8) || null;
+
+  const result = db
+    .prepare(
+      `
+      INSERT INTO staff_alerts (kind, checkin_id, blacklist_id, guest_name, room_number, notes)
+      VALUES ('blacklist_checkin', ?, ?, ?, ?, ?)
+    `,
+    )
+    .run(cid, bl.id, encName, room, encNotes);
+
+  console.log(`[alert] blacklist check-in · ${name} · checkin=${cid} · room ${room || '—'}`);
+  return toStaffAlertRow(
+    db.prepare(`SELECT * FROM staff_alerts WHERE id = ?`).get(result.lastInsertRowid),
+  );
+}
+
+export function listStaffAlerts({ includeDismissed = false } = {}) {
+  const rows = db
+    .prepare(
+      `
+      SELECT *
+      FROM staff_alerts
+      WHERE (? = 1 OR dismissed_at IS NULL)
+      ORDER BY created_at DESC
+      LIMIT 30
+    `,
+    )
+    .all(includeDismissed ? 1 : 0);
+  const alerts = rows.map(toStaffAlertRow).filter(Boolean);
+  const openCount = db
+    .prepare(`SELECT COUNT(*) AS n FROM staff_alerts WHERE dismissed_at IS NULL`)
+    .get().n;
+  return { alerts, openCount };
+}
+
+export function dismissStaffAlert(id) {
+  const aid = Number(id);
+  if (!Number.isInteger(aid) || aid < 1) return { ok: false, error: 'invalid_id' };
+  const result = db
+    .prepare(
+      `UPDATE staff_alerts SET dismissed_at = datetime('now') WHERE id = ? AND dismissed_at IS NULL`,
+    )
+    .run(aid);
+  if (!result.changes) return { ok: false, error: 'not_found' };
+  return { ok: true };
+}
+
+/** Decrittazione telefono su richiesta — solo check-in visibili allo staff. */
+export function revealStaffCheckinPhone(id, staffName = null) {
+  const row = getCheckinById(id);
+  if (!row || !isCheckinVisibleToStaff(row)) {
+    return { ok: false, error: 'not_found' };
+  }
+  const dec = decryptCheckinRow(row);
+  const phone = String(dec.phone || '').trim();
+  if (!phone || phone === '[illeggibile]') {
+    return { ok: false, error: 'no_phone' };
+  }
+  if (staffName) {
+    logCheckinActivity({ checkinId: id, staffName, action: 'phone_reveal' });
+  }
+  return { ok: true, phone };
+}
+
+/** Decrittazione email su richiesta — solo check-in visibili allo staff. */
+export function revealStaffCheckinEmail(id, staffName = null) {
+  const row = getCheckinById(id);
+  if (!row || !isCheckinVisibleToStaff(row)) {
+    return { ok: false, error: 'not_found' };
+  }
+  const dec = decryptCheckinRow(row);
+  const email = String(dec.email || '').trim();
+  if (!email || email === '[illeggibile]') {
+    return { ok: false, error: 'no_email' };
+  }
+  if (staffName) {
+    logCheckinActivity({ checkinId: id, staffName, action: 'email_reveal' });
+  }
+  return { ok: true, email };
+}
+
+export const RECEPTION_NOTE_CATEGORIES = {
+  taxi: 'Taxi / transfer',
+  info: 'Info & documenti',
+  room_change: 'Cambio camera',
+  checkout: 'Checkout / partenza',
+  other: 'Altro',
+};
+
+const RECEPTION_NOTE_CATEGORY_KEYS = new Set(Object.keys(RECEPTION_NOTE_CATEGORIES));
+
+function normalizeReceptionNoteCategory(raw) {
+  const key = String(raw || '').trim().toLowerCase();
+  return RECEPTION_NOTE_CATEGORY_KEYS.has(key) ? key : 'other';
+}
+
+function normalizeDueTime(raw) {
+  const t = String(raw || '').trim();
+  if (!t) return null;
+  const m = t.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+  if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
+
+function normalizeDueDate(raw) {
+  const d = String(raw || '').trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null;
+}
+
+function toReceptionNoteRow(row) {
+  if (!row) return null;
+  const category = normalizeReceptionNoteCategory(row.category);
+  return {
+    id: row.id,
+    checkinId: row.checkin_id ?? null,
+    guestName: String(row.guest_name || '').trim(),
+    roomNumber: String(row.room_number || '').trim().toUpperCase(),
+    category,
+    categoryLabel: RECEPTION_NOTE_CATEGORIES[category] || RECEPTION_NOTE_CATEGORIES.other,
+    instruction: String(row.instruction || '').trim(),
+    dueDate: row.due_date || '',
+    dueTime: row.due_time || '',
+    status: row.status === 'done' ? 'done' : 'open',
+    createdBy: row.created_by || '',
+    completedBy: row.completed_by || '',
+    createdAt: row.created_at || '',
+    updatedAt: row.updated_at || null,
+    completedAt: row.completed_at || null,
+  };
+}
+
+function matchesReceptionNoteQuery(row, q) {
+  const needle = String(q || '').trim().toLowerCase();
+  if (!needle) return true;
+  return (
+    String(row.guestName || '').toLowerCase().includes(needle)
+    || String(row.roomNumber || '').toLowerCase().includes(needle)
+    || String(row.instruction || '').toLowerCase().includes(needle)
+    || String(row.categoryLabel || '').toLowerCase().includes(needle)
+  );
+}
+
+export function listReceptionNotes({ date = '', q = '', includeDone = false, shift = false } = {}) {
+  const today = romeCalendarDate(new Date().toISOString());
+  const dueDate = normalizeDueDate(date);
+  const shiftView = Boolean(shift) || !dueDate;
+  const params = [today, today];
+  let where = '1=1';
+  if (!shiftView && dueDate) {
+    where += ' AND due_date = ?';
+    params.push(dueDate);
+  }
+  if (!includeDone) {
+    where += " AND status = 'open'";
+  }
+  const rows = db
+    .prepare(
+      `
+      SELECT *
+      FROM reception_notes
+      WHERE ${where}
+      ORDER BY
+        CASE WHEN status = 'open' THEN 0 ELSE 1 END,
+        CASE
+          WHEN due_date < ? THEN 0
+          WHEN due_date = ? THEN 1
+          ELSE 2
+        END,
+        due_date ASC,
+        CASE WHEN due_time IS NULL OR TRIM(due_time) = '' THEN 1 ELSE 0 END,
+        due_time ASC,
+        datetime(created_at) DESC,
+        id DESC
+    `,
+    )
+    .all(...params)
+    .map(toReceptionNoteRow)
+    .filter(Boolean);
+  const query = String(q || '').trim();
+  const notes = query ? rows.filter((row) => matchesReceptionNoteQuery(row, query)) : rows;
+  const openCount = db
+    .prepare(`SELECT COUNT(*) AS n FROM reception_notes WHERE status = 'open'`)
+    .get().n;
+  const urgentOpenCount = db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM reception_notes WHERE status = 'open' AND due_date <= ?`,
+    )
+    .get(today).n;
+  const todayOpenCount = db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM reception_notes WHERE status = 'open' AND due_date = ?`,
+    )
+    .get(today).n;
+  return {
+    notes,
+    openCount,
+    urgentOpenCount,
+    todayOpenCount,
+    date: shiftView ? null : dueDate || null,
+    today,
+    shift: shiftView,
+  };
+}
+
+export function countUrgentOpenReceptionNotes() {
+  const today = romeCalendarDate(new Date().toISOString());
+  return db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM reception_notes WHERE status = 'open' AND due_date <= ?`,
+    )
+    .get(today).n;
+}
+
+export function countOpenReceptionNotes() {
+  return db
+    .prepare(`SELECT COUNT(*) AS n FROM reception_notes WHERE status = 'open'`)
+    .get().n;
+}
+
+export function getReceptionNote(id) {
+  const row = db
+    .prepare(`SELECT * FROM reception_notes WHERE id = ?`)
+    .get(Number(id));
+  return toReceptionNoteRow(row);
+}
+
+export function createReceptionNote({
+  checkinId = null,
+  guestName,
+  roomNumber = '',
+  category = 'other',
+  instruction,
+  dueDate,
+  dueTime = '',
+  createdBy,
+} = {}) {
+  const name = String(guestName || '').trim();
+  const text = String(instruction || '').trim();
+  const day = normalizeDueDate(dueDate) || romeCalendarDate(new Date().toISOString());
+  const actor = normalizeStaffActor(createdBy);
+  if (!name) return { ok: false, error: 'name_required' };
+  if (!text) return { ok: false, error: 'instruction_required' };
+  const room = String(roomNumber || '').trim().toUpperCase().slice(0, 8) || null;
+  const cid =
+    checkinId != null && Number.isInteger(Number(checkinId)) && Number(checkinId) > 0
+      ? Number(checkinId)
+      : null;
+  const result = db
+    .prepare(
+      `
+      INSERT INTO reception_notes (
+        checkin_id, guest_name, room_number, category, instruction,
+        due_date, due_time, created_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    )
+    .run(
+      cid,
+      name,
+      room,
+      normalizeReceptionNoteCategory(category),
+      text,
+      day,
+      normalizeDueTime(dueTime),
+      actor,
+    );
+  const note = getReceptionNote(result.lastInsertRowid);
+  if (cid) {
+    logCheckinActivity({
+      checkinId: cid,
+      staffName: actor,
+      action: 'note_add',
+      detail: `${RECEPTION_NOTE_CATEGORIES[note.category] || 'Nota'} · ${text.slice(0, 80)}`,
+    });
+  }
+  return { ok: true, note };
+}
+
+export function updateReceptionNote(id, patch = {}, staffName = null) {
+  const existing = getReceptionNote(id);
+  if (!existing) return { ok: false, error: 'not_found' };
+  const name = String(patch.guestName ?? existing.guestName).trim();
+  const text = String(patch.instruction ?? existing.instruction).trim();
+  const day = normalizeDueDate(patch.dueDate) || existing.dueDate;
+  if (!name) return { ok: false, error: 'name_required' };
+  if (!text) return { ok: false, error: 'instruction_required' };
+  const room = String(patch.roomNumber ?? existing.roomNumber).trim().toUpperCase().slice(0, 8) || null;
+  db.prepare(
+    `
+    UPDATE reception_notes
+    SET guest_name = ?, room_number = ?, category = ?, instruction = ?,
+        due_date = ?, due_time = ?, updated_at = datetime('now')
+    WHERE id = ?
+  `,
+  ).run(
+    name,
+    room,
+    normalizeReceptionNoteCategory(patch.category ?? existing.category),
+    text,
+    day,
+    normalizeDueTime(patch.dueTime ?? existing.dueTime),
+    Number(id),
+  );
+  return { ok: true, note: getReceptionNote(id) };
+}
+
+export function setReceptionNoteStatus(id, status, staffName = null) {
+  const note = getReceptionNote(id);
+  if (!note) return { ok: false, error: 'not_found' };
+  const next = status === 'done' ? 'done' : 'open';
+  const actor = normalizeStaffActor(staffName);
+  if (next === 'done') {
+    db.prepare(
+      `
+      UPDATE reception_notes
+      SET status = 'done', completed_by = ?, completed_at = datetime('now'), updated_at = datetime('now')
+      WHERE id = ?
+    `,
+    ).run(actor, Number(id));
+    if (note.checkinId) {
+      logCheckinActivity({
+        checkinId: note.checkinId,
+        staffName: actor,
+        action: 'note_done',
+        detail: RECEPTION_NOTE_CATEGORIES[note.category] || 'Nota',
+      });
+    }
+  } else {
+    db.prepare(
+      `
+      UPDATE reception_notes
+      SET status = 'open', completed_by = NULL, completed_at = NULL, updated_at = datetime('now')
+      WHERE id = ?
+    `,
+    ).run(Number(id));
+  }
+  return { ok: true, note: getReceptionNote(id) };
+}
+
+export function deleteReceptionNote(id) {
+  const note = getReceptionNote(id);
+  if (!note) return { ok: false, error: 'not_found' };
+  db.prepare(`DELETE FROM reception_notes WHERE id = ?`).run(Number(id));
+  return { ok: true, id: Number(id) };
 }

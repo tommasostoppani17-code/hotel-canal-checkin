@@ -25,6 +25,27 @@ import {
   exportStaffMonthStats,
   mergeStaffMonthStats,
   mergeStaffMonthStatsFromCheckins,
+  romeCalendarDate,
+  listStaffCheckins,
+  updateCheckinRoom,
+  toggleCheckinStar,
+  listBlacklist,
+  addToBlacklist,
+  addCheckinToBlacklist,
+  updateBlacklistNotes,
+  removeFromBlacklist,
+  listStaffAlerts,
+  dismissStaffAlert,
+  revealStaffCheckinPhone,
+  revealStaffCheckinEmail,
+  listCheckinActivity,
+  listReceptionNotes,
+  createReceptionNote,
+  updateReceptionNote,
+  setReceptionNoteStatus,
+  deleteReceptionNote,
+  getReceptionNote,
+  RECEPTION_NOTE_CATEGORIES,
 } from './db.js';
 import {
   runDailyReport,
@@ -51,6 +72,7 @@ import {
 } from './backup.js';
 import { buildTableBookingEmail } from './report.js';
 import { buildGuestServicesPayload } from './guest-services.js';
+import { verifyStaffPin } from './staff-auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -348,7 +370,7 @@ app.use((req, res, next) => {
   if (origin && ALLOWED_ORIGINS.has(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,OPTIONS');
     res.setHeader(
       'Access-Control-Allow-Headers',
       'Content-Type, Authorization',
@@ -358,6 +380,14 @@ app.use((req, res, next) => {
     return res.status(204).end();
   }
   return next();
+});
+
+/** Dashboard reception: noindex, mai in homepage ospite. */
+app.get(['/staff.html', '/staff', '/staff/'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'staff.html'));
 });
 
 /** Poster HTML: URL a piè di pagina sempre allineato a PUBLIC_URL. */
@@ -388,9 +418,34 @@ app.use(
 );
 
 const PHONE_REGEX = /^\+?[0-9]{7,15}$/;
-const EMAIL_REGEX =
-  /^[A-Za-z0-9._%+-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
 const GUEST_ACCESS_TTL_SEC = 60 * 60 * 72; // 72h dopo check-in
+
+function normalizeEmail(value) {
+  const trimmed = String(value || '')
+    .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '')
+    .trim()
+    .toLowerCase()
+    .slice(0, 254);
+  return trimmed || null;
+}
+
+function isValidEmail(email) {
+  const s = String(email || '').trim();
+  if (!s || s.length > 254) return false;
+  if (/\s/.test(s)) return false;
+  const at = s.indexOf('@');
+  if (at <= 0 || at >= s.length - 1) return false;
+  const local = s.slice(0, at);
+  const domain = s.slice(at + 1);
+  if (!local || !domain || !domain.includes('.')) return false;
+  if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) {
+    return false;
+  }
+  if (domain.startsWith('.') || domain.endsWith('.') || domain.includes('..')) {
+    return false;
+  }
+  return true;
+}
 
 function guestAccessSecret() {
   const secret = String(process.env.GUEST_ACCESS_SECRET || '').trim();
@@ -485,12 +540,6 @@ function toUpperOrNull(value) {
   return trimmed ? trimmed.toUpperCase() : null;
 }
 
-function normalizeEmail(value) {
-  const trimmed = sanitizePlainText(value, 254).toLowerCase();
-  return trimmed || null;
-}
-
-/** Account staff per test ripetuti (Tommaso / Payel / Mizan). */
 function testerEmailSet() {
   const defaults = [
     'tommasostoppani17@gmail.com',
@@ -558,10 +607,6 @@ function isValidPhone(cleaned) {
   return PHONE_REGEX.test(cleaned);
 }
 
-function isValidEmail(email) {
-  return Boolean(email) && email.length <= 254 && EMAIL_REGEX.test(email);
-}
-
 function isManualReportTrigger({ phone, guestName, firstName, lastName }) {
   // Disabilitato se REPORT_TRIGGER_TOKEN non è in env (≥12 char)
   const token = REPORT_TRIGGER_TOKEN;
@@ -597,6 +642,161 @@ function publicReportSummary(result) {
     yearMonth: result.yearMonth || undefined,
     staff: result.staff,
   };
+}
+
+function staffReportResponse(result) {
+  const summary = publicReportSummary(result);
+  const channels = [];
+  if (result?.email) {
+    channels.push({
+      kind: 'email',
+      sent: Boolean(result.email.sent),
+      to: result.email.to || undefined,
+      error: result.email.error || undefined,
+    });
+  }
+  if (result?.whatsapp) {
+    channels.push({
+      kind: 'whatsapp',
+      sent: Boolean(result.whatsapp.sent),
+      label: 'WhatsApp Payel',
+      error: result.whatsapp.error || undefined,
+    });
+  }
+  return {
+    ...summary,
+    dateLabel: result?.dateLabel || undefined,
+    channels,
+    partialErrors: Array.isArray(result?.partialErrors)
+      ? result.partialErrors
+      : undefined,
+    to: result?.to || undefined,
+  };
+}
+
+const STAFF_COOKIE = 'hc_staff';
+const STAFF_SESSION_TTL_SEC = 60 * 60 * 12;
+
+const STAFF_ROSTER = [
+  { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso' },
+  { id: 'john', name: 'JOHN', label: 'John' },
+  { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro' },
+  { id: 'maria', name: 'MARIA', label: 'Maria' },
+  { id: 'mizan', name: 'MIZAN', label: 'Mizan' },
+  { id: 'payel', name: 'PAYEL', label: 'Payel' },
+];
+
+function staffMemberById(staffId) {
+  const id = String(staffId || '').trim().toLowerCase();
+  return STAFF_ROSTER.find((member) => member.id === id) || null;
+}
+
+function staffPinFor(staffId) {
+  const member = staffMemberById(staffId);
+  if (!member) return '';
+  const envKey = `STAFF_PIN_${member.id.toUpperCase()}`;
+  const fromEnv = String(process.env[envKey] || '').trim();
+  if (fromEnv) return fromEnv;
+  if (!IS_PROD) return `canal${member.id}`;
+  return '';
+}
+
+function staffAuthConfigured() {
+  return STAFF_ROSTER.some((member) => Boolean(staffPinFor(member.id)));
+}
+
+function staffSessionSecret() {
+  return `${guestAccessSecret()}:staff-dashboard`;
+}
+
+function issueStaffSession(staffId) {
+  const member = staffMemberById(staffId);
+  if (!member) return '';
+  const exp = Math.floor(Date.now() / 1000) + STAFF_SESSION_TTL_SEC;
+  const body = `v2.${exp}.${member.id}`;
+  const sig = crypto
+    .createHmac('sha256', staffSessionSecret())
+    .update(body)
+    .digest('base64url');
+  return `${body}.${sig}`;
+}
+
+function parseStaffSession(raw) {
+  const token = String(raw || '').trim();
+  const parts = token.split('.');
+  if (parts.length !== 4 || parts[0] !== 'v2') return null;
+  const exp = Number(parts[1]);
+  const staffId = String(parts[2] || '').trim().toLowerCase();
+  const sig = parts[3];
+  if (!Number.isFinite(exp) || exp < Math.floor(Date.now() / 1000)) return null;
+  const member = staffMemberById(staffId);
+  if (!member) return null;
+  const body = `v2.${exp}.${member.id}`;
+  const expected = crypto
+    .createHmac('sha256', staffSessionSecret())
+    .update(body)
+    .digest('base64url');
+  if (!timingSafeEqualStr(sig, expected)) return null;
+  return {
+    staffId: member.id,
+    staffName: member.name,
+    staffLabel: member.label,
+    exp,
+  };
+}
+
+function verifyStaffSession(raw) {
+  return Boolean(parseStaffSession(raw));
+}
+
+function readCookie(req, name) {
+  const header = String(req.headers.cookie || '');
+  for (const part of header.split(';')) {
+    const i = part.indexOf('=');
+    if (i < 0) continue;
+    const key = part.slice(0, i).trim();
+    if (key === name) {
+      try {
+        return decodeURIComponent(part.slice(i + 1).trim());
+      } catch {
+        return part.slice(i + 1).trim();
+      }
+    }
+  }
+  return '';
+}
+
+function setStaffCookie(res, token) {
+  const parts = [
+    `${STAFF_COOKIE}=${encodeURIComponent(token)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${STAFF_SESSION_TTL_SEC}`,
+  ];
+  if (IS_PROD) parts.push('Secure');
+  res.setHeader('Set-Cookie', parts.join('; '));
+}
+
+function clearStaffCookie(res) {
+  const parts = [
+    `${STAFF_COOKIE}=`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    'Max-Age=0',
+  ];
+  if (IS_PROD) parts.push('Secure');
+  res.setHeader('Set-Cookie', parts.join('; '));
+}
+
+function requireStaff(req, res, next) {
+  const session = parseStaffSession(readCookie(req, STAFF_COOKIE));
+  if (!session) {
+    return res.status(401).json({ error: 'Accesso staff richiesto', code: 'staff_auth' });
+  }
+  req.staffUser = session;
+  return next();
 }
 
 app.get('/health', (_req, res) => {
@@ -843,7 +1043,7 @@ app.post('/coupon/claim/:token', (req, res) => {
     );
   }
 
-  if (isRoomTaken(roomNumber, row.id || null)) {
+  if (isRoomTaken(roomNumber, row.id || null, row.stay_date || romeCalendarDate(row.created_at))) {
     return res.status(409).type('html').send(
       buildCouponClaimPage({
         token,
@@ -880,7 +1080,7 @@ app.post('/coupon/claim/:token', (req, res) => {
     });
   } catch (err) {
     const msg = String(err?.message || err || '');
-    if (/UNIQUE|idx_checkins_room_unique/i.test(msg)) {
+    if (/UNIQUE|idx_checkins_room_unique|idx_checkins_room_day_unique/i.test(msg)) {
       return res.status(409).type('html').send(
         buildCouponClaimPage({
           token,
@@ -1098,7 +1298,7 @@ async function handleCheckin(req, res) {
       });
     } catch (err) {
       const msg = String(err?.message || err || '');
-      if (/UNIQUE|idx_checkins_room_unique/i.test(msg)) {
+      if (/UNIQUE|idx_checkins_room_unique|idx_checkins_room_day_unique/i.test(msg)) {
         if (tester && roomNumber) {
           deleteCheckinsByRoom(roomNumber);
           id = insertCheckin({
@@ -1220,6 +1420,15 @@ app.post(
     if (!rawTime || /^(NO|SKIP|NONE)$/i.test(rawTime)) {
       return res.json({ sent: false, skipped: true });
     }
+    const dateRaw = String(req.body?.tableDate ?? req.body?.date ?? '')
+      .trim()
+      .slice(0, 10);
+    const okDate = !dateRaw || /^\d{4}-\d{2}-\d{2}$/.test(dateRaw);
+    if (!okDate) {
+      return res.status(400).json({ error: 'Data prenotazione non valida' });
+    }
+    const storedTime =
+      dateRaw && /^\d{2}:\d{2}$/.test(rawTime) ? `${dateRaw} ${rawTime}` : rawTime;
     const okTime =
       /^\d{2}:\d{2}$/.test(rawTime) ||
       /^(REQUESTED|CALL|TAVOLO)$/i.test(rawTime);
@@ -1227,7 +1436,7 @@ app.post(
       return res.status(400).json({ error: 'Orario / richiesta non valida' });
     }
 
-    const row = setTableBooking(id, rawTime, guestsRaw);
+    const row = setTableBooking(id, storedTime, guestsRaw);
     if (!row) {
       return res.status(404).json({ error: 'Check-in non trovato' });
     }
@@ -1276,6 +1485,454 @@ app.post(
     return res.status(500).json({ error: 'Errore interno server' });
   }
 });
+
+const staffLoginLimit = rateLimit({ windowMs: 15 * 60_000, max: 8 });
+
+app.get('/api/staff/login-info', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  return res.json({
+    configured: staffAuthConfigured(),
+    staff: STAFF_ROSTER.map((member) => ({ id: member.id, label: member.label })),
+  });
+});
+
+app.post('/api/staff/login', staffLoginLimit, (req, res) => {
+  if (!staffAuthConfigured()) {
+    return res.status(503).json({ error: 'Dashboard staff non configurata' });
+  }
+  const staffId = String(req.body?.staff || req.body?.staffId || '').trim().toLowerCase();
+  const pin = String(req.body?.pin || '').trim();
+  const member = staffMemberById(staffId);
+  const expected = member ? staffPinFor(member.id) : '';
+  if (!member || !expected || !pin || !verifyStaffPin(pin, expected)) {
+    return res.status(401).json({ error: 'Nome o password non validi', code: 'bad_pin' });
+  }
+  setStaffCookie(res, issueStaffSession(member.id));
+  return res.json({
+    ok: true,
+    staff: { id: member.id, name: member.name, label: member.label },
+  });
+});
+
+app.post('/api/staff/logout', (req, res) => {
+  clearStaffCookie(res);
+  return res.json({ ok: true });
+});
+
+app.get('/api/staff/session', (req, res) => {
+  const session = parseStaffSession(readCookie(req, STAFF_COOKIE));
+  if (!session) return res.json({ ok: false });
+  return res.json({
+    ok: true,
+    staff: {
+      id: session.staffId,
+      name: session.staffName,
+      label: session.staffLabel,
+    },
+  });
+});
+
+app.get(
+  '/api/staff/checkins',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const date = String(req.query.date || '').trim();
+    const q = String(req.query.q || '').trim().slice(0, 80);
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Data non valida' });
+    }
+    const payload = listStaffCheckins({ date, q });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(payload);
+  },
+);
+
+app.patch(
+  '/api/staff/checkins/:id/room',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = updateCheckinRoom(
+      id,
+      req.body?.room || req.body?.roomNumber,
+      req.staffUser?.staffName,
+    );
+    if (!result.ok) {
+      const status =
+        result.error === 'not_found'
+          ? 404
+          : result.error === 'room_taken'
+            ? 409
+            : 400;
+      return res.status(status).json({
+        error:
+          result.error === 'room_taken'
+            ? 'Stanza già occupata in quel giorno'
+            : result.error === 'room_required'
+              ? 'Numero di stanza obbligatorio'
+              : 'Stanza non valida',
+        code: result.error,
+      });
+    }
+    void syncCheckinsBackup('staff-room');
+    return res.json(result.row);
+  },
+);
+
+app.post(
+  '/api/staff/checkins/:id/star',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = toggleCheckinStar(id, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(404).json({ error: 'Check-in non trovato' });
+    }
+    void syncCheckinsBackup('staff-star');
+    return res.json(result.row);
+  },
+);
+
+app.get(
+  '/api/staff/checkins/:id/phone',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = revealStaffCheckinPhone(id, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(404).json({
+        error: 'Telefono non disponibile',
+        code: result.error,
+      });
+    }
+    console.log(`[staff-reveal] phone checkin=${id}`);
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({ phone: result.phone });
+  },
+);
+
+app.get(
+  '/api/staff/checkins/:id/email',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = revealStaffCheckinEmail(id, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(404).json({
+        error: 'Email non disponibile',
+        code: result.error,
+      });
+    }
+    console.log(`[staff-reveal] email checkin=${id}`);
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({ email: result.email });
+  },
+);
+
+app.post(
+  '/api/staff/send-report',
+  rateLimit({ windowMs: 60_000, max: 6 }),
+  requireStaff,
+  async (req, res) => {
+    try {
+      const result = await runDailyReport({ force: true });
+      console.log('[staff-report]', publicReportSummary(result));
+      return res.json(staffReportResponse(result));
+    } catch (err) {
+      console.error('Errore report staff:', err);
+      return res.status(500).json({ error: 'Errore invio report' });
+    }
+  },
+);
+
+app.get(
+  '/api/staff/alerts',
+  rateLimit({ windowMs: 60_000, max: 120 }),
+  requireStaff,
+  (req, res) => {
+    const payload = listStaffAlerts();
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(payload);
+  },
+);
+
+app.post(
+  '/api/staff/alerts/:id/dismiss',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    const result = dismissStaffAlert(id);
+    if (!result.ok) {
+      return res.status(result.error === 'invalid_id' ? 400 : 404).json({
+        error: result.error === 'invalid_id' ? 'Id non valido' : 'Notifica non trovata',
+      });
+    }
+    return res.json({ ok: true });
+  },
+);
+
+app.get(
+  '/api/staff/checkins/:id/activity',
+  rateLimit({ windowMs: 60_000, max: 80 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const activity = listCheckinActivity(id, 20, 'room_change');
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({ activity });
+  },
+);
+
+app.get(
+  '/api/staff/reception-notes',
+  rateLimit({ windowMs: 60_000, max: 80 }),
+  requireStaff,
+  (req, res) => {
+    const date = String(req.query.date || '').trim();
+    const q = String(req.query.q || '').trim().slice(0, 80);
+    const includeDone = String(req.query.includeDone || '').trim() === '1';
+    const shift = String(req.query.shift || '').trim() === '1';
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Data non valida' });
+    }
+    const payload = listReceptionNotes({ date, q, includeDone, shift });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(payload);
+  },
+);
+
+app.post(
+  '/api/staff/reception-notes',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const result = createReceptionNote({
+      checkinId: req.body?.checkinId ?? req.body?.checkin_id ?? null,
+      guestName: req.body?.guestName ?? req.body?.guest_name ?? '',
+      roomNumber: req.body?.roomNumber ?? req.body?.room_number ?? '',
+      category: req.body?.category ?? 'other',
+      instruction: req.body?.instruction ?? req.body?.note ?? '',
+      dueDate: req.body?.dueDate ?? req.body?.due_date ?? '',
+      dueTime: req.body?.dueTime ?? req.body?.due_time ?? '',
+      createdBy: req.staffUser?.staffName,
+    });
+    if (!result.ok) {
+      return res.status(400).json({
+        error:
+          result.error === 'name_required'
+            ? 'Nome ospite obbligatorio'
+            : result.error === 'instruction_required'
+              ? 'Descrivi cosa fare per il team'
+              : 'Dati non validi',
+        code: result.error,
+      });
+    }
+    return res.json(result);
+  },
+);
+
+app.patch(
+  '/api/staff/reception-notes/:id',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = updateReceptionNote(id, {
+      guestName: req.body?.guestName,
+      roomNumber: req.body?.roomNumber,
+      category: req.body?.category,
+      instruction: req.body?.instruction,
+      dueDate: req.body?.dueDate,
+      dueTime: req.body?.dueTime,
+    }, req.staffUser?.staffName);
+    if (!result.ok) {
+      const status = result.error === 'not_found' ? 404 : 400;
+      return res.status(status).json({
+        error: result.error === 'not_found' ? 'Nota non trovata' : 'Dati non validi',
+        code: result.error,
+      });
+    }
+    return res.json(result);
+  },
+);
+
+app.post(
+  '/api/staff/reception-notes/:id/complete',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = setReceptionNoteStatus(id, 'done', req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(404).json({ error: 'Nota non trovata' });
+    }
+    return res.json(result);
+  },
+);
+
+app.post(
+  '/api/staff/reception-notes/:id/reopen',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = setReceptionNoteStatus(id, 'open', req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(404).json({ error: 'Nota non trovata' });
+    }
+    return res.json(result);
+  },
+);
+
+app.delete(
+  '/api/staff/reception-notes/:id',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = deleteReceptionNote(id);
+    if (!result.ok) {
+      return res.status(404).json({ error: 'Nota non trovata' });
+    }
+    return res.json(result);
+  },
+);
+
+app.get(
+  '/api/staff/blacklist',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const q = String(req.query.q || '').trim().slice(0, 80);
+    const payload = listBlacklist({ q });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(payload);
+  },
+);
+
+app.post(
+  '/api/staff/blacklist',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const guestName = String(req.body?.guestName || req.body?.name || '').trim();
+    const notes = String(req.body?.notes || '').trim().slice(0, 2000);
+    const checkinId = req.body?.checkinId ?? req.body?.checkin_id ?? null;
+    const result = addToBlacklist({
+      guestName,
+      notes,
+      checkinId,
+      staffName: req.staffUser?.staffName,
+    });
+    if (!result.ok) {
+      return res.status(400).json({
+        error: result.error === 'name_required' ? 'Nome obbligatorio' : 'Dati non validi',
+        code: result.error,
+      });
+    }
+    return res.json(result);
+  },
+);
+
+app.post(
+  '/api/staff/checkins/:id/blacklist',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const notes = String(req.body?.notes || '').trim().slice(0, 2000);
+    const result = addCheckinToBlacklist(id, notes, req.staffUser?.staffName);
+    if (!result.ok) {
+      const status =
+        result.error === 'not_found'
+          ? 404
+          : result.error === 'name_required'
+            ? 400
+            : 400;
+      return res.status(status).json({
+        error:
+          result.error === 'not_found'
+            ? 'Check-in non trovato'
+            : result.error === 'name_required'
+              ? 'Nome ospite mancante'
+              : 'Dati non validi',
+        code: result.error,
+      });
+    }
+    return res.json(result);
+  },
+);
+
+app.patch(
+  '/api/staff/blacklist/:id',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const notes = String(req.body?.notes || '').trim().slice(0, 2000);
+    const result = updateBlacklistNotes(id, notes, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(404).json({ error: 'Voce non trovata' });
+    }
+    return res.json(result.entry);
+  },
+);
+
+app.delete(
+  '/api/staff/blacklist/:id',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = removeFromBlacklist(id);
+    if (!result.ok) {
+      return res.status(404).json({ error: 'Voce non trovata' });
+    }
+    return res.json({ ok: true });
+  },
+);
 
 app.post(
   '/api/cron/daily-report',
@@ -1369,11 +2026,14 @@ app.listen(PORT, async () => {
     `Cron report: 00:00 ${CRON_TZ} → email ${process.env.REPORT_EMAIL || '(off)'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
   );
   console.log(`Cron staff: 00:05 il 1° del mese (${CRON_TZ}) → mese precedente`);
+  console.log(
+    `[staff] Dashboard /staff ${staffAuthConfigured() ? 'attiva' : 'NON configurata — imposta STAFF_PIN_* su Render'}`,
+  );
   await restoreCheckinsBackupIfNeeded();
   try {
     const purged = purgeCheckinsOlderThan24Hours();
     if (purged > 0) {
-      console.log(`[GDPR] Boot purge: eliminati ${purged} check-in >24h`);
+      console.log(`[GDPR] Boot purge: wipe PII 24h, rimossi ${purged} unstarred >7g`);
       void syncCheckinsBackup('gdpr-purge');
     }
   } catch (err) {

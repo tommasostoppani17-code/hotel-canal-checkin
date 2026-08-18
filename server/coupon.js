@@ -42,9 +42,9 @@ function getFrom() {
   );
 }
 
-/** Copia staff (tu): BCC welcome → REPORT_EMAIL / STAFF_NOTIFY_EMAIL. Mai hotel/Payel. */
+/** Copia staff (tu): BCC welcome → REPORT_EMAIL / STAFF_NOTIFY_EMAIL. Off di default (quota). */
 function staffNotifyBcc(to) {
-  if (env('STAFF_BCC', 'true').toLowerCase() === 'false') return '';
+  if (env('STAFF_BCC', 'false').toLowerCase() !== 'true') return '';
   const staff = sendableRecipientOrEmpty(
     env('STAFF_NOTIFY_EMAIL') || env('REPORT_EMAIL') || '',
   );

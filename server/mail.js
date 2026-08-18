@@ -12,6 +12,7 @@ import {
   markReported,
   getMonthlyStaffStats,
   purgeCheckinsOlderThan24Hours,
+  wipeContactPii,
   exportAllCheckins,
   exportStaffMonthStats,
 } from './db.js';
@@ -273,6 +274,7 @@ export async function runDailyReport({ force = false } = {}) {
       reason: 'no_new_checkins',
       count: 0,
       purged,
+      dateLabel: formatRomeDate(),
     };
   }
 
@@ -346,6 +348,11 @@ export async function runDailyReport({ force = false } = {}) {
 
   const ids = rows.map((row) => row.id);
   markReported(ids);
+  try {
+    wipeContactPii(ids);
+  } catch (err) {
+    console.error('[GDPR] wipe contact PII failed:', err.message || err);
+  }
 
   // Privacy by design: un attimo dopo l'invio riuscito del CSV → epurazione 24h.
   let purged = 0;
@@ -376,6 +383,7 @@ export async function runDailyReport({ force = false } = {}) {
     partialErrors: errors.length ? errors : undefined,
     purged,
     force,
+    dateLabel,
   };
 }
 

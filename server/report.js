@@ -274,8 +274,11 @@ function romeParts(date = new Date()) {
  */
 export function formatTableBookingWhen(rawTime, now = new Date()) {
   const raw = String(rawTime || '').trim();
+  const dated = raw.match(
+    /^(\d{4}-\d{2}-\d{2})[ T](\d{1,2}):(\d{2})/,
+  );
   const isOpen =
-    !raw || /REQUESTED|CALL|TAVOLO/i.test(raw) || !/^\d{1,2}:\d{2}$/.test(raw);
+    !raw || /REQUESTED|CALL|TAVOLO/i.test(raw) || (!dated && !/^\d{1,2}:\d{2}$/.test(raw));
 
   if (isOpen) {
     return {
@@ -287,20 +290,36 @@ export function formatTableBookingWhen(rawTime, now = new Date()) {
     };
   }
 
-  const [hh, mm] = raw.split(':').map((n) => Number(n));
+  const hh = dated ? Number(dated[2]) : Number(raw.split(':')[0]);
+  const mm = dated ? Number(dated[3]) : Number(raw.split(':')[1]);
   const timeLabel = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
   const nowR = romeParts(now);
-  const nowMins = nowR.hour * 60 + nowR.minute;
-  const bookMins = hh * 60 + mm;
-  // Se l'orario richiesto è già passato oggi (fuso Roma) → cena di domani
-  const dayOffset = bookMins <= nowMins ? 1 : 0;
+  const todayStamp = `${nowR.year}-${String(nowR.month).padStart(2, '0')}-${String(nowR.day).padStart(2, '0')}`;
+
+  let dayOffset = 0;
+  if (dated) {
+    const bookDay = dated[1];
+    if (bookDay > todayStamp) dayOffset = 1;
+    else if (bookDay < todayStamp) dayOffset = -1;
+    else dayOffset = 0;
+    if (bookDay !== todayStamp && bookDay !== nextRomeDate(now, 1) && bookDay !== nextRomeDate(now, -1)) {
+      return {
+        dayLabel: bookDay.slice(8, 10) + '/' + bookDay.slice(5, 7),
+        timeLabel,
+        timeDisplay: timeLabel,
+        whenPhrase: `per il ${bookDay.slice(8, 10)}/${bookDay.slice(5, 7)} alle ${timeLabel}`,
+        subjectWhen: `per il ${bookDay.slice(8, 10)}/${bookDay.slice(5, 7)} alle ${timeLabel}`,
+      };
+    }
+  } else {
+    const nowMins = nowR.hour * 60 + nowR.minute;
+    const bookMins = hh * 60 + mm;
+    dayOffset = bookMins <= nowMins ? 1 : 0;
+  }
 
   let dayLabel = 'oggi';
   if (dayOffset === 1) dayLabel = 'domani';
-  if (dayOffset > 1) {
-    const target = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
-    dayLabel = formatRomeDate(target).slice(0, 5);
-  }
+  if (dayOffset === -1) dayLabel = 'ieri';
 
   return {
     dayLabel,
@@ -309,6 +328,12 @@ export function formatTableBookingWhen(rawTime, now = new Date()) {
     whenPhrase: `per ${dayLabel} alle ${timeLabel}`,
     subjectWhen: `per ${dayLabel} alle ${timeLabel}`,
   };
+}
+
+function nextRomeDate(now, dayDelta) {
+  const d = new Date(now.getTime() + dayDelta * 24 * 60 * 60 * 1000);
+  const p = romeParts(d);
+  return `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')}`;
 }
 
 /** Subject / headline notifica tavolo → Trattoria (non Front Desk). */

@@ -74,5 +74,17 @@ services:
         sync: false
       - key: ALLOW_PAYEL_WHATSAPP
         sync: false
+      - key: STAFF_PIN_TOMMASO
+        sync: false
+      - key: STAFF_PIN_JOHN
+        sync: false
+      - key: STAFF_PIN_ALEJANDRO
+        sync: false
+      - key: STAFF_PIN_MARIA
+        sync: false
+      - key: STAFF_PIN_MIZAN
+        sync: false
+      - key: STAFF_PIN_PAYEL
+        sync: false
 
   # Report notturno: .github/workflows/cron-reports.yml

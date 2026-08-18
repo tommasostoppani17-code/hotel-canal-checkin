@@ -25,6 +25,8 @@ Documento operativo per allineare **CANAL S.r.l. (Hotel Canal)** e il fornitore 
 - Retention automatica 24h + purge dopo report / al boot
 - Backup Gist con payload cifrato (stesso formato DB)
 - API guest (Wi‑Fi/porte) solo con token post check-in
+- Dashboard staff `/staff`: sessione cookie 12h, telefono/email mascherati, reveal tracciato
+- PIN staff: hash scrypt in env (`STAFF_PIN_*`), mai in chiaro su Render
 
 ## 4. Cosa resta fuori dal codice (obblighi del Titolare)
 

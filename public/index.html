@@ -5181,19 +5181,19 @@
           <div class="form-grid-container">
             <div class="form-group">
               <label id="lbl-firstname" for="firstname">Nome *</label>
-              <input type="text" id="firstname" name="firstname" class="apple-input" autocomplete="given-name" placeholder="Mario">
+              <input type="text" id="firstname" name="firstname" class="apple-input" autocomplete="given-name" placeholder="Mario" enterkeyhint="next">
             </div>
             <div class="form-group">
               <label id="lbl-lastname" for="lastname">Cognome *</label>
-              <input type="text" id="lastname" name="lastname" class="apple-input" autocomplete="family-name" placeholder="Rossi">
+              <input type="text" id="lastname" name="lastname" class="apple-input" autocomplete="family-name" placeholder="Rossi" enterkeyhint="next">
             </div>
             <div class="form-group span-2">
               <label id="lbl-phone" for="phone">Numero di Telefono *</label>
-              <input type="tel" id="phone" name="phone" class="apple-input" autocomplete="tel" inputmode="tel" placeholder="+39 333 1234567">
+              <input type="tel" id="phone" name="phone" class="apple-input" autocomplete="tel" inputmode="tel" placeholder="+39 333 1234567" enterkeyhint="next">
             </div>
             <div class="form-group span-2">
               <label id="lbl-email" for="email">Email *</label>
-              <input type="email" id="email" name="email" class="apple-input" autocomplete="email" inputmode="email" placeholder="name@email.com">
+              <input type="email" id="email" name="email" class="apple-input" autocomplete="email" inputmode="email" maxlength="254" placeholder="name@email.com" enterkeyhint="next">
             </div>
           </div>
 
@@ -5284,7 +5284,7 @@
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M14.5 19c.4-2.2 2-3.6 4.5-3.6 1.2 0 2.2.3 3 .9"/></svg>
                 </span>
-                <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="" placeholder="2">
+                <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="" placeholder="2" enterkeyhint="next">
               </div>
             </div>
             <div class="form-group span-2">
@@ -5293,7 +5293,7 @@
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 0.7 4 2.2"/></svg>
                 </span>
-                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Chi fa il check-in" inputmode="text">
+                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Chi fa il check-in" inputmode="text" enterkeyhint="done">
               </div>
             </div>
           </div>
@@ -5528,6 +5528,31 @@
     </div>
   </div>
 
+  <div class="privacy-sheet" id="tableConfirmSheet" hidden aria-hidden="true">
+    <button type="button" class="privacy-sheet-backdrop" id="tableConfirmCloseBg" aria-label="Close"></button>
+    <div class="privacy-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="tableConfirmTitle">
+      <div class="privacy-sheet-head">
+        <h2 id="tableConfirmTitle">Confermi la prenotazione?</h2>
+        <button type="button" class="privacy-sheet-x" id="tableConfirmClose" aria-label="Chiudi">×</button>
+      </div>
+      <div class="privacy-sheet-body">
+        <p id="tableConfirmLead">Stai per richiedere un tavolo. Puoi ancora cambiare data e orario.</p>
+        <div class="book-fields" style="margin-top:14px">
+          <div class="book-field">
+            <label id="lbl-table-confirm-date" for="tableConfirmDate">Data</label>
+            <input id="tableConfirmDate" class="book-select" type="date">
+          </div>
+          <div class="book-field">
+            <label id="lbl-table-confirm-time" for="tableConfirmTime">Orario</label>
+            <select id="tableConfirmTime" class="book-select"></select>
+          </div>
+        </div>
+        <button type="button" class="btn-canal book-submit" id="btnTableConfirm">Conferma prenotazione</button>
+        <button type="button" class="btn-text-link" id="btnTableConfirmCancel">Annulla</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/i18n-privacy-sheet.js"></script>
   <script src="/i18n-ui-extra.js"></script>
   <script>
@@ -5598,6 +5623,11 @@
         bookError: 'Non inviata. Riprova o chiedi in reception.',
         bookNeedTime: 'Scegli un orario.',
         bookNeedPax: 'Indica quante persone siete.',
+        bookConfirmTitle: 'Confermi la prenotazione?',
+        bookConfirmLead: 'Stai per richiedere un tavolo. Puoi ancora cambiare data e orario.',
+        bookConfirmDate: 'Data',
+        bookConfirmBtn: 'Conferma prenotazione',
+        bookConfirmCancel: 'Annulla',
         actWifi: 'Accedi al Wi‑Fi',
         actWifiSub: 'Rete in tutta la struttura',
         actDoors: 'Codici della porta',
@@ -5708,6 +5738,11 @@
         bookError: 'Could not send. Try again or ask reception.',
         bookNeedTime: 'Please choose a time.',
         bookNeedPax: 'Please enter party size.',
+        bookConfirmTitle: 'Confirm this reservation?',
+        bookConfirmLead: 'You’re about to request a table. You can still change the date and time.',
+        bookConfirmDate: 'Date',
+        bookConfirmBtn: 'Confirm reservation',
+        bookConfirmCancel: 'Cancel',
         actWifi: 'Join the Wi‑Fi',
         actWifiSub: 'Hotel network on property',
         actDoors: 'Door codes',
@@ -6426,7 +6461,24 @@
     /** Lock dispositivo allineato alla retention GDPR (24h): poi il telefono può rifare check-in. */
     const LOCK_TTL_MS = 24 * 60 * 60 * 1000;
     const PHONE_REGEX = /^(\+|00)?[0-9]{7,15}$/;
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function isValidEmailClient(email) {
+      const s = String(email || '').trim();
+      if (!s || s.length > 254) return false;
+      if (/\s/.test(s)) return false;
+      const at = s.indexOf('@');
+      if (at <= 0 || at >= s.length - 1) return false;
+      const local = s.slice(0, at);
+      const domain = s.slice(at + 1);
+      if (!local || !domain || !domain.includes('.')) return false;
+      if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) {
+        return false;
+      }
+      if (domain.startsWith('.') || domain.endsWith('.') || domain.includes('..')) {
+        return false;
+      }
+      return true;
+    }
     /** Nome receptionist a testo libero (maiuscolo). */
     function normalizeReceptionist(raw) {
       const key = String(raw || '')
@@ -7401,6 +7453,128 @@
       return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
     }
 
+    function romeYmd(date = new Date()) {
+      return new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Rome',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(date);
+    }
+
+    function addDaysYmd(ymd, days) {
+      const [y, m, d] = String(ymd).split('-').map(Number);
+      const dt = new Date(Date.UTC(y, m - 1, d + days, 12, 0, 0));
+      return dt.toISOString().slice(0, 10);
+    }
+
+    function defaultTableDateForTime(timeHHmm) {
+      const today = romeYmd();
+      const time = normalizeBookTime(timeHHmm);
+      if (!time) return today;
+      const nowParts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Rome',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23',
+      }).formatToParts(new Date());
+      const map = Object.fromEntries(nowParts.map((p) => [p.type, p.value]));
+      const nowMins = Number(map.hour) * 60 + Number(map.minute);
+      const [hh, mm] = time.split(':').map(Number);
+      const bookMins = hh * 60 + mm;
+      return bookMins <= nowMins ? addDaysYmd(today, 1) : today;
+    }
+
+    function fillTableConfirmTimes(selected) {
+      const dest = document.getElementById('tableConfirmTime');
+      const src = document.getElementById('bookTime');
+      if (!dest) return;
+      dest.innerHTML = src ? src.innerHTML : '';
+      const want = normalizeBookTime(selected) || '19:30';
+      if ([...dest.options].some((o) => o.value === want)) dest.value = want;
+    }
+
+    function openTableConfirmSheet({ time, pax } = {}) {
+      const dict = t();
+      const sheet = document.getElementById('tableConfirmSheet');
+      if (!sheet) return;
+      document.getElementById('tableConfirmTitle').textContent =
+        dict.bookConfirmTitle || 'Confirm this reservation?';
+      document.getElementById('tableConfirmLead').textContent =
+        dict.bookConfirmLead || '';
+      document.getElementById('lbl-table-confirm-date').textContent =
+        dict.bookConfirmDate || 'Date';
+      document.getElementById('lbl-table-confirm-time').textContent =
+        dict.bookTime || 'Time';
+      document.getElementById('btnTableConfirm').textContent =
+        dict.bookConfirmBtn || 'Confirm reservation';
+      document.getElementById('btnTableConfirmCancel').textContent =
+        dict.bookConfirmCancel || 'Cancel';
+      const timeVal = normalizeBookTime(time) || normalizeBookTime(document.getElementById('bookTime')?.value) || '19:30';
+      fillTableConfirmTimes(timeVal);
+      const dateEl = document.getElementById('tableConfirmDate');
+      if (dateEl) {
+        dateEl.min = romeYmd();
+        dateEl.max = addDaysYmd(romeYmd(), 14);
+        dateEl.value = defaultTableDateForTime(timeVal);
+      }
+      if (pax && document.getElementById('bookPax')) {
+        document.getElementById('bookPax').value = String(pax);
+      }
+      sheet.hidden = false;
+      sheet.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeTableConfirmSheet() {
+      const sheet = document.getElementById('tableConfirmSheet');
+      if (!sheet) return;
+      sheet.hidden = true;
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+
+    async function sendConfirmedTableBooking() {
+      const dict = t();
+      const sendBtn = document.getElementById('btnTableConfirm');
+      const timeValue = normalizeBookTime(document.getElementById('tableConfirmTime')?.value);
+      const dateValue = String(document.getElementById('tableConfirmDate')?.value || '').trim();
+      let pax = Number.parseInt(String(document.getElementById('bookPax')?.value || '').trim(), 10);
+      if (!lastCheckinId || !guestAccessToken) {
+        return { ok: false, error: dict.bookError || 'Request failed.' };
+      }
+      if (!timeValue || !/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+        return { ok: false, error: dict.bookNeedTime || 'Choose a time.' };
+      }
+      if (!Number.isFinite(pax) || pax < 1) pax = 2;
+      if (pax > 20) pax = 20;
+      sendBtn.disabled = true;
+      try {
+        const res = await fetch('/api/table-booking', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${guestAccessToken}`,
+          },
+          body: JSON.stringify({
+            checkinId: lastCheckinId,
+            tableBooking: timeValue,
+            tableDate: dateValue,
+            guestsCount: pax,
+            language: currentLang,
+          }),
+        });
+        const body = await res.json().catch(() => ({}));
+        const savedOk = Boolean(body.saved || body.success || res.ok);
+        if (!savedOk) {
+          return { ok: false, error: body.error || dict.bookError };
+        }
+        return { ok: true };
+      } catch (_) {
+        return { ok: false, error: dict.bookError };
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
     function pinCardInView() {
       try {
         window.scrollTo(0, 0);
@@ -8363,30 +8537,21 @@
       flash.setAttribute('aria-hidden', 'true');
     }
 
-    document.getElementById('btnBookSend')?.addEventListener('click', async () => {
+    document.getElementById('btnBookSend')?.addEventListener('click', () => {
       const dict = t();
-      const sendBtn = document.getElementById('btnBookSend');
       const done = document.getElementById('bookDoneMsg');
       const timeEl = document.getElementById('bookTime');
       const paxEl = document.getElementById('bookPax');
-      if (!sendBtn) return;
-
       const showBookMsg = (text, isError = false) => {
         if (!done) return;
         done.hidden = false;
         done.textContent = text;
         done.classList.toggle('is-error', Boolean(isError));
       };
-
-      if (!lastCheckinId) {
+      if (!lastCheckinId || !guestAccessToken) {
         showBookMsg(dict.bookError || 'Request failed.', true);
         return;
       }
-      if (!guestAccessToken) {
-        showBookMsg(dict.bookError || 'Session expired. Restart check-in.', true);
-        return;
-      }
-
       const timeValue = normalizeBookTime(timeEl?.value);
       let pax = Number.parseInt(String(paxEl?.value || '').trim(), 10);
       if (!timeValue) {
@@ -8397,72 +8562,42 @@
         showBookMsg(dict.bookNeedPax || 'Enter guests.', true);
         return;
       }
-      if (pax > 20) pax = 20;
-
-      sendBtn.disabled = true;
-      sendBtn.textContent = dict.bookSending || '…';
       if (done) {
         done.hidden = true;
         done.textContent = '';
         done.classList.remove('is-error');
       }
+      openTableConfirmSheet({ time: timeValue, pax });
+    });
 
-      try {
-        const res = await fetch('/api/table-booking', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(guestAccessToken
-              ? { Authorization: `Bearer ${guestAccessToken}` }
-              : {}),
-          },
-          body: JSON.stringify({
-            checkinId: lastCheckinId,
-            tableBooking: timeValue,
-            guestsCount: pax,
-            language: currentLang,
-          }),
-        });
-        if (res.status === 401 || res.status === 403) {
-          sendBtn.disabled = false;
-          sendBtn.textContent = dict.bookSend;
-          showBookMsg(dict.bookError || 'Session expired. Restart check-in.', true);
-          return;
-        }
-        const body = await res.json().catch(() => ({}));
-        const savedOk = Boolean(body.saved || body.success || res.ok);
-        if (!savedOk) {
-          sendBtn.disabled = false;
-          sendBtn.textContent = dict.bookSend;
-          showBookMsg(body.error || dict.bookError, true);
-          return;
-        }
+    function closeTableConfirmUi() {
+      closeTableConfirmSheet();
+    }
 
-        // Solo check + suono, poi torna al menu (niente testo “Richiesta inviata”)
-        playConfirmChime();
-        showBookSuccessFlash();
-        const tableSub = document.getElementById('lbl-act-table-sub');
-        if (tableSub) {
-          tableSub.textContent = dict.bookSent || dict.bookDone || 'Sent';
+    document.getElementById('tableConfirmClose')?.addEventListener('click', closeTableConfirmUi);
+    document.getElementById('tableConfirmCloseBg')?.addEventListener('click', closeTableConfirmUi);
+    document.getElementById('btnTableConfirmCancel')?.addEventListener('click', closeTableConfirmUi);
+    document.getElementById('btnTableConfirm')?.addEventListener('click', async () => {
+      const dict = t();
+      const result = await sendConfirmedTableBooking();
+      if (!result.ok) {
+        const done = document.getElementById('bookDoneMsg');
+        if (done) {
+          done.hidden = false;
+          done.textContent = result.error || dict.bookError;
+          done.classList.add('is-error');
         }
-        window.setTimeout(() => {
-          closeGuestSheet();
-          hideBookSuccessFlash();
-          sendBtn.disabled = false;
-          sendBtn.textContent = dict.bookSend;
-          if (timeEl) timeEl.disabled = false;
-          if (paxEl) paxEl.disabled = false;
-          if (done) {
-            done.hidden = true;
-            done.textContent = '';
-            done.classList.remove('is-error');
-          }
-        }, reduceMotion ? 280 : 900);
-      } catch (_) {
-        sendBtn.disabled = false;
-        sendBtn.textContent = dict.bookSend;
-        showBookMsg(dict.bookError, true);
+        return;
       }
+      closeTableConfirmSheet();
+      playConfirmChime();
+      showBookSuccessFlash();
+      const tableSub = document.getElementById('lbl-act-table-sub');
+      if (tableSub) tableSub.textContent = dict.bookSent || dict.bookDone || 'Sent';
+      window.setTimeout(() => {
+        closeGuestSheet();
+        hideBookSuccessFlash();
+      }, reduceMotion ? 280 : 900);
     });
 
     function fullGuestName() {
@@ -8489,7 +8624,7 @@
       const invalid = [];
       if (!firstName) invalid.push(firstNameEl);
       if (!lastName) invalid.push(lastNameEl);
-      if (!emailNormalized || !EMAIL_REGEX.test(emailNormalized)) {
+      if (!emailNormalized || !isValidEmailClient(emailNormalized)) {
         invalid.push(emailEl);
       }
       if (!cleaned || !PHONE_REGEX.test(cleaned)) {
@@ -8637,6 +8772,96 @@
       }
       setStep(2);
     });
+
+    /** Invio = campo successivo nello stesso step. Mai salto automatico di schermata. */
+    function isEnterFieldNavTarget(el) {
+      if (!el || el.disabled) return false;
+      if (el.tagName === 'SELECT') return true;
+      if (el.tagName === 'INPUT') {
+        const type = String(el.type || 'text').toLowerCase();
+        return !['button', 'submit', 'reset', 'checkbox', 'radio', 'file', 'hidden'].includes(type);
+      }
+      return false;
+    }
+
+    function focusNextFormControl(el) {
+      if (!el || el.disabled) return;
+      try {
+        el.focus({ preventScroll: false });
+      } catch (_) {
+        el.focus();
+      }
+      pinCardInView?.();
+    }
+
+    function resolveEnterFieldChain(target) {
+      const tableConfirmSheet = document.getElementById('tableConfirmSheet');
+      if (tableConfirmSheet && !tableConfirmSheet.hidden) {
+        return {
+          chain: [
+            document.getElementById('tableConfirmDate'),
+            document.getElementById('tableConfirmTime'),
+          ].filter(Boolean),
+          cta: document.getElementById('btnTableConfirm'),
+        };
+      }
+
+      const guestSheet = document.getElementById('guestSheet');
+      const tablePanel = document.getElementById('tablePanel');
+      const guestSheetOpen = guestSheet && guestSheet.getAttribute('aria-hidden') === 'false';
+      if (guestSheetOpen && tablePanel && !tablePanel.hidden && tablePanel.contains(target)) {
+        return {
+          chain: [
+            document.getElementById('bookTime'),
+            document.getElementById('bookPax'),
+          ].filter(Boolean),
+          cta: document.getElementById('btnBookSend'),
+        };
+      }
+
+      if (currentStep === 1) {
+        return {
+          chain: [firstNameEl, lastNameEl, phoneEl, emailEl].filter(Boolean),
+          cta: btnNext,
+        };
+      }
+
+      if (currentStep === 3) {
+        return {
+          chain: [roomEl, guestsEl, staffEl].filter(Boolean),
+          cta: btnSubmit,
+        };
+      }
+
+      return { chain: [], cta: null };
+    }
+
+    function handleEnterFieldNav(e) {
+      if (e.key !== 'Enter' || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.isComposing) return;
+      if (submitting || !formMode) return;
+
+      const target = e.target;
+      if (!isEnterFieldNavTarget(target)) return;
+
+      const { chain, cta } = resolveEnterFieldChain(target);
+      if (!chain.length) return;
+
+      const idx = chain.indexOf(target);
+      if (idx < 0) return;
+
+      e.preventDefault();
+
+      if (idx < chain.length - 1) {
+        focusNextFormControl(chain[idx + 1]);
+        return;
+      }
+
+      if (cta && !cta.disabled) {
+        focusNextFormControl(cta);
+      }
+    }
+
+    document.addEventListener('keydown', handleEnterFieldNav, true);
 
     [firstNameEl, lastNameEl, phoneEl, emailEl, staffEl, roomEl, guestsEl]
       .filter(Boolean)
@@ -8841,7 +9066,7 @@
           }
         }
 
-        // Prenotazione tavolo scelta nello Step 2 → stesso endpoint dello Step 3
+        // Orario scelto allo Step 3: conferma prima di mandare l'alert a Payel
         const tableTime = String(selectedTableTime || 'NO').trim().toUpperCase();
         if (
           !body.alreadyRegistered &&
@@ -8857,19 +9082,9 @@
           const bookPaxEl = document.getElementById('bookPax');
           if (bookTimeEl) bookTimeEl.value = tableTime;
           if (bookPaxEl) bookPaxEl.value = String(paxForTable);
-          void fetch('/api/table-booking', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${body.guestAccessToken}`,
-            },
-            body: JSON.stringify({
-              checkinId: body.id,
-              tableBooking: tableTime,
-              guestsCount: paxForTable,
-              language: currentLang,
-            }),
-          }).catch(() => {});
+          window.setTimeout(() => {
+            openTableConfirmSheet({ time: tableTime, pax: paxForTable });
+          }, reduceMotion ? 200 : 480);
         }
       } catch (err) {
         submitting = false;
