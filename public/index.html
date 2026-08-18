@@ -45,8 +45,8 @@
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
       /* WAAPI engine: durata sotto soglia percettiva Apple + molla magnetica */
       --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --slide-ms: 420ms;
-      --height-ms: 420ms;
+      --slide-ms: 340ms;
+      --height-ms: 340ms;
       --height-ease: cubic-bezier(0.16, 1, 0.3, 1);
       /* Rimbalzo elastico SOLO su transform:scale (GPU, zero reflow) */
       --bounce-ease: cubic-bezier(0.25, 1, 0.5, 1.2);
@@ -5196,6 +5196,21 @@
       margin-top: 0;
     }
 
+    #step2 .header p {
+      display: block;
+      max-width: 34ch;
+      margin: 10px auto 0;
+      text-align: center;
+    }
+
+    #step2 .step-body {
+      padding-top: 0;
+    }
+
+    #step2 .form-grid-container {
+      margin-top: 0;
+    }
+
     /* =========================================================
        Step 3 Reservation — layout compresso (niente buchi)
        ========================================================= */
@@ -5371,15 +5386,16 @@
 
       <!-- STEP 2: Dettagli soggiorno -->
       <section class="slide-step stay-step" id="step2" aria-hidden="true">
-        <div class="step-body step-scroll dining-book">
-          <div class="dining-book-head">
-            <p class="dining-book-kicker" id="lbl-book-kicker">Hotel Canal</p>
-            <h2 class="dining-book-title" id="lbl-book-title">Dettagli soggiorno</h2>
-            <p class="dining-book-sub" id="lbl-book-sub">
-              Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.
-            </p>
-          </div>
+        <div class="header">
+          <span class="hotel-title">Hotel Canal</span>
+          <span class="hotel-subtitle">Venice Experience</span>
+          <h1 id="lbl-book-title">Dettagli soggiorno</h1>
+          <p id="lbl-book-sub">
+            Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.
+          </p>
+        </div>
 
+        <div class="step-body step-scroll">
           <div class="form-grid-container" id="roomFormGrid">
             <div class="form-group">
               <label id="lbl-room" for="room">Stanza *</label>
@@ -7348,7 +7364,7 @@
     let activeFlipAnims = [];
     let flipGeneration = 0;
     const WAAPI_EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
-    const WAAPI_MS = 420;
+    const WAAPI_MS = 340;
 
     function cancelActiveFlipAnims() {
       activeFlipAnims.forEach((anim) => {
@@ -8500,9 +8516,9 @@
       const actions = document.getElementById('guestActions');
       const note = document.getElementById('lbl-reception-note');
       if (note) note.textContent = dict.receptionNote || '';
-      // Menu a tendina sempre disponibili (anche se già registrato)
+      // Schermata finale pulita: nessuna griglia extra qui.
       if (actions) {
-        actions.hidden = false;
+        actions.hidden = true;
       }
       const reentry = document.getElementById('guestReentry');
       const reentryBtn = document.getElementById('btnNewCheckin');
