@@ -4788,15 +4788,27 @@
     .field--time {
       appearance: none;
       color-scheme: light;
+      accent-color: var(--canal-petroleum);
       font-weight: 600;
       font-variant-numeric: tabular-nums;
       min-height: 48px;
     }
 
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="time"] {
+      accent-color: var(--canal-petroleum);
+      color-scheme: light;
+    }
+
     .field--date::-webkit-calendar-picker-indicator,
-    .field--time::-webkit-calendar-picker-indicator {
-      opacity: 0.5;
+    .field--time::-webkit-calendar-picker-indicator,
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
       cursor: pointer;
+      opacity: 0.85;
+      filter: invert(28%) sepia(24%) saturate(900%) hue-rotate(148deg) brightness(0.75);
     }
 
     .table-panel.panel-busy {

@@ -3599,6 +3599,10 @@
         background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    .book-field input[type="hidden"] {
+      display: none !important;
+    }
+
     @media (hover: hover) and (pointer: fine) {
       .book-field input:hover,
       .book-field .book-select:hover {
@@ -3627,6 +3631,12 @@
       touch-action: manipulation;
       will-change: transform;
       transform: translateZ(0);
+    }
+
+    .book-field .brand-cal-trigger {
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
     }
 
     /* Congela scroll interno mentre il picker nativo iOS è aperto */
@@ -3797,6 +3807,131 @@
     .apple-inline-fade--bottom {
       bottom: 0;
       background: linear-gradient(to top, #ffffff 18%, rgba(255, 255, 255, 0));
+    }
+
+    .brand-calendar {
+      display: none;
+      position: fixed;
+      z-index: 90;
+      width: min(292px, calc(100vw - 24px));
+      padding: 12px 12px 14px;
+      box-sizing: border-box;
+      background: #fff;
+      border: 1px solid rgba(18, 68, 83, 0.14);
+      border-radius: var(--radius-ios);
+      box-shadow:
+        0 10px 28px rgba(18, 68, 83, 0.16),
+        0 2px 6px rgba(18, 68, 83, 0.06);
+    }
+
+    .brand-calendar:not([hidden]) {
+      display: block;
+    }
+
+    .brand-calendar-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .brand-calendar-title {
+      flex: 1;
+      margin: 0;
+      text-align: center;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: capitalize;
+      color: var(--canal-petroleum);
+    }
+
+    .brand-calendar-nav {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 10px;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .brand-calendar-nav:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .brand-calendar-nav svg {
+      width: 12px;
+      height: 12px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .brand-calendar-dows,
+    .brand-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    .brand-calendar-dow {
+      text-align: center;
+      padding: 4px 0 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #8aa0aa;
+    }
+
+    .brand-calendar-day {
+      aspect-ratio: 1;
+      min-height: 34px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1d1d1f;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .brand-calendar-day.is-pad {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .brand-calendar-day.is-today:not(.is-on) {
+      color: var(--canal-petroleum);
+      box-shadow: inset 0 0 0 1.5px var(--canal-petroleum);
+    }
+
+    .brand-calendar-day.is-on {
+      background: var(--canal-petroleum);
+      color: #fff;
+    }
+
+    .brand-calendar-day:disabled {
+      color: #c5d0d6;
+      cursor: default;
+    }
+
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="time"] {
+      accent-color: var(--canal-petroleum);
+      color-scheme: light;
     }
 
     .book-field input[type="time"] {
@@ -5862,21 +5997,29 @@
               </div>
             </div>
             <div class="form-group">
-              <label id="lbl-checkin" for="checkinDate">Check-in *</label>
+              <label id="lbl-checkin" for="checkinTrigger">Check-in *</label>
               <div class="input-with-icon">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
                 </span>
-                <input type="date" id="checkinDate" name="checkinDate" class="apple-input" enterkeyhint="next">
+                <input type="hidden" id="checkinDate" name="checkinDate" value="">
+                <button type="button" class="apple-input apple-picker-trigger" id="checkinTrigger" data-error-for="checkinDate" aria-haspopup="dialog" aria-expanded="false" aria-controls="brandCalendar">
+                  <span class="apple-picker-value" id="checkinValue"></span>
+                  <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
+                </button>
               </div>
             </div>
             <div class="form-group">
-              <label id="lbl-checkout" for="checkoutDate">Checkout *</label>
+              <label id="lbl-checkout" for="checkoutTrigger">Checkout *</label>
               <div class="input-with-icon">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
                 </span>
-                <input type="date" id="checkoutDate" name="checkoutDate" class="apple-input" enterkeyhint="next">
+                <input type="hidden" id="checkoutDate" name="checkoutDate" value="">
+                <button type="button" class="apple-input apple-picker-trigger" id="checkoutTrigger" data-error-for="checkoutDate" aria-haspopup="dialog" aria-expanded="false" aria-controls="brandCalendar">
+                  <span class="apple-picker-value is-placeholder" id="checkoutValue"></span>
+                  <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
+                </button>
               </div>
             </div>
             <div class="form-group span-2">
@@ -6141,8 +6284,9 @@
         <p id="tableConfirmLead">Stai per richiedere un tavolo. Puoi ancora cambiare data e orario.</p>
         <div class="book-fields" style="margin-top:14px">
           <div class="book-field">
-            <label id="lbl-table-confirm-date" for="tableConfirmDate">Data</label>
-            <input id="tableConfirmDate" class="book-select" type="date">
+            <label id="lbl-table-confirm-date" for="tableConfirmDateTrigger">Data</label>
+            <input id="tableConfirmDate" type="hidden" value="">
+            <button type="button" class="book-select brand-cal-trigger" id="tableConfirmDateTrigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="brandCalendar"></button>
           </div>
           <div class="book-field">
             <label id="lbl-table-confirm-time" for="tableConfirmTime">Orario</label>
@@ -6153,6 +6297,20 @@
         <button type="button" class="btn-text-link" id="btnTableConfirmCancel">Annulla</button>
       </div>
     </div>
+  </div>
+
+  <div class="brand-calendar" id="brandCalendar" hidden role="dialog" aria-modal="true" aria-labelledby="calTitle">
+    <div class="brand-calendar-head">
+      <button type="button" class="brand-calendar-nav" id="calPrev" aria-label="Mese precedente">
+        <svg viewBox="0 0 12 12"><path d="M8 2L4 6l4 4"/></svg>
+      </button>
+      <p class="brand-calendar-title" id="calTitle"></p>
+      <button type="button" class="brand-calendar-nav" id="calNext" aria-label="Mese successivo">
+        <svg viewBox="0 0 12 12"><path d="M4 2l4 4-4 4"/></svg>
+      </button>
+    </div>
+    <div class="brand-calendar-dows" id="calDows"></div>
+    <div class="brand-calendar-grid" id="calGrid"></div>
   </div>
 
   <script src="/i18n-privacy-sheet.js"></script>
@@ -7218,6 +7376,11 @@
     const guestsValueEl = document.getElementById('guestsValue');
     const staffTrigger = document.getElementById('receptionistTrigger');
     const staffValueEl = document.getElementById('receptionistValue');
+    const checkinTrigger = document.getElementById('checkinTrigger');
+    const checkoutTrigger = document.getElementById('checkoutTrigger');
+    const checkinValueEl = document.getElementById('checkinValue');
+    const checkoutValueEl = document.getElementById('checkoutValue');
+    const tableConfirmDateTrigger = document.getElementById('tableConfirmDateTrigger');
     const guestsPickerList = document.getElementById('guestsPickerList');
     const guestsPickerMenu = document.getElementById('guestsPickerMenu');
     const staffPickerList = document.getElementById('staffPickerList');
@@ -7232,6 +7395,7 @@
       { id: 'sayeed', name: 'SAYEED', label: 'Sayeed' },
     ];
     let wheelKind = null;
+    let calKind = null;
     const privacyEl = document.getElementById('privacy');
     const privacyBox = document.getElementById('privacyBox');
     const btnNext = document.getElementById('btnNext');
@@ -7274,19 +7438,23 @@
     function setupStayDateFields() {
       const today = romeYmd();
       if (checkinEl) {
-        checkinEl.min = addDaysYmd(today, -1);
-        checkinEl.max = addDaysYmd(today, 90);
+        checkinEl.setAttribute('min', addDaysYmd(today, -1));
+        checkinEl.setAttribute('max', addDaysYmd(today, 90));
         if (!checkinEl.value) checkinEl.value = today;
       }
       syncCheckoutBounds();
+      paintStayDateTriggers();
     }
 
     function syncCheckoutBounds() {
       if (!checkoutEl) return;
       const stay = checkinEl?.value || romeYmd();
-      checkoutEl.min = stay;
-      checkoutEl.max = addDaysYmd(stay, 90);
-      if (checkoutEl.value && checkoutEl.value < checkoutEl.min) checkoutEl.value = '';
+      checkoutEl.setAttribute('min', stay);
+      checkoutEl.setAttribute('max', addDaysYmd(stay, 90));
+      if (checkoutEl.value && checkoutEl.value < checkoutEl.getAttribute('min')) {
+        checkoutEl.value = '';
+      }
+      paintStayDateTriggers();
     }
 
     function isValidCheckinDate(value) {
@@ -7301,8 +7469,8 @@
     function isValidCheckoutDate(value) {
       const raw = String(value || '').trim();
       if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return false;
-      const min = checkoutEl?.min || checkinEl?.value || romeYmd();
-      const max = checkoutEl?.max || addDaysYmd(min, 90);
+      const min = checkoutEl?.getAttribute('min') || checkinEl?.value || romeYmd();
+      const max = checkoutEl?.getAttribute('max') || addDaysYmd(min, 90);
       return raw >= min && raw <= max;
     }
 
@@ -7346,6 +7514,196 @@
       }
     }
 
+    function dateLocale() {
+      const map = {
+        it: 'it-IT',
+        en: 'en-GB',
+        fr: 'fr-FR',
+        de: 'de-DE',
+        es: 'es-ES',
+        zh: 'zh-CN',
+        ja: 'ja-JP',
+        ar: 'ar',
+      };
+      return map[currentLang] || currentLang || 'it-IT';
+    }
+
+    function formatStayDateLabel(ymd) {
+      const raw = String(ymd || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return '';
+      const [y, m, d] = raw.split('-').map(Number);
+      return new Intl.DateTimeFormat(dateLocale(), {
+        day: 'numeric',
+        month: 'short',
+      }).format(new Date(y, m - 1, d));
+    }
+
+    function paintStayDateTriggers() {
+      const cin = String(checkinEl?.value || '').trim();
+      const cout = String(checkoutEl?.value || '').trim();
+      if (checkinValueEl) {
+        checkinValueEl.textContent = formatStayDateLabel(cin) || '—';
+        checkinValueEl.classList.toggle('is-placeholder', !cin);
+      }
+      if (checkoutValueEl) {
+        checkoutValueEl.textContent = formatStayDateLabel(cout) || '—';
+        checkoutValueEl.classList.toggle('is-placeholder', !cout);
+      }
+      const tableEl = document.getElementById('tableConfirmDate');
+      if (tableConfirmDateTrigger && tableEl) {
+        tableConfirmDateTrigger.textContent =
+          formatStayDateLabel(tableEl.value) || '—';
+      }
+    }
+
+    function calInputFor(kind = calKind) {
+      if (kind === 'checkout') return checkoutEl;
+      if (kind === 'table') return document.getElementById('tableConfirmDate');
+      return checkinEl;
+    }
+
+    function calTriggerFor(kind = calKind) {
+      if (kind === 'checkout') return checkoutTrigger;
+      if (kind === 'table') return tableConfirmDateTrigger;
+      return checkinTrigger;
+    }
+
+    function parseYmdParts(ymd) {
+      const m = String(ymd || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return null;
+      return { y: Number(m[1]), m: Number(m[2]) - 1, d: Number(m[3]) };
+    }
+
+    function ymdFromParts(y, monthIndex, d) {
+      return `${y}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    let calCursor = { y: 2026, m: 0 };
+
+    function weekdayLabels() {
+      const fmt = new Intl.DateTimeFormat(dateLocale(), { weekday: 'short' });
+      return Array.from({ length: 7 }, (_, i) =>
+        fmt.format(new Date(2026, 7, 17 + i)).replace('.', '').slice(0, 2),
+      );
+    }
+
+    function closeBrandCalendar() {
+      const cal = document.getElementById('brandCalendar');
+      cal?.setAttribute('hidden', '');
+      checkinTrigger?.setAttribute('aria-expanded', 'false');
+      checkoutTrigger?.setAttribute('aria-expanded', 'false');
+      tableConfirmDateTrigger?.setAttribute('aria-expanded', 'false');
+      calKind = null;
+    }
+
+    function positionBrandCalendar(trigger) {
+      const cal = document.getElementById('brandCalendar');
+      if (!cal || !trigger) return;
+      const tr = trigger.getBoundingClientRect();
+      const vw = window.innerWidth || 360;
+      const vh = window.innerHeight || 640;
+      const w = Math.min(292, vw - 24);
+      cal.style.width = `${w}px`;
+      cal.removeAttribute('hidden');
+      const h = Math.max(cal.offsetHeight || 300, 300);
+      let left = tr.left;
+      if (left + w > vw - 12) left = Math.max(12, vw - w - 12);
+      if (left < 12) left = 12;
+      let top = tr.bottom + 6;
+      if (top + h > vh - 12 && tr.top - h - 6 > 12) {
+        top = tr.top - h - 6;
+      }
+      cal.style.left = `${Math.round(left)}px`;
+      cal.style.top = `${Math.round(top)}px`;
+    }
+
+    function renderBrandCalendar() {
+      const cal = document.getElementById('brandCalendar');
+      const title = document.getElementById('calTitle');
+      const dows = document.getElementById('calDows');
+      const grid = document.getElementById('calGrid');
+      const prev = document.getElementById('calPrev');
+      const next = document.getElementById('calNext');
+      if (!cal || !title || !dows || !grid) return;
+      const input = calInputFor();
+      const selected = String(input?.value || '').trim();
+      const min = String(input?.getAttribute('min') || '').trim();
+      const max = String(input?.getAttribute('max') || '').trim();
+      const cursor = new Date(calCursor.y, calCursor.m, 1);
+      title.textContent = new Intl.DateTimeFormat(dateLocale(), {
+        month: 'long',
+        year: 'numeric',
+      }).format(cursor);
+      if (dows.dataset.lang !== currentLang) {
+        dows.dataset.lang = currentLang;
+        dows.innerHTML = weekdayLabels()
+          .map((label) => `<span class="brand-calendar-dow">${label}</span>`)
+          .join('');
+      }
+      const firstDow = (cursor.getDay() + 6) % 7;
+      const daysInMonth = new Date(calCursor.y, calCursor.m + 1, 0).getDate();
+      const today = romeYmd();
+      const cells = [];
+      for (let i = 0; i < firstDow; i += 1) {
+        cells.push('<span class="brand-calendar-day is-pad"></span>');
+      }
+      for (let d = 1; d <= daysInMonth; d += 1) {
+        const iso = ymdFromParts(calCursor.y, calCursor.m, d);
+        const disabled = Boolean((min && iso < min) || (max && iso > max));
+        const on = iso === selected;
+        const isToday = iso === today;
+        cells.push(
+          `<button type="button" class="brand-calendar-day${on ? ' is-on' : ''}${isToday ? ' is-today' : ''}" data-ymd="${iso}" ${disabled ? 'disabled' : ''}>${d}</button>`,
+        );
+      }
+      grid.innerHTML = cells.join('');
+      const monthStart = ymdFromParts(calCursor.y, calCursor.m, 1);
+      const monthEnd = ymdFromParts(calCursor.y, calCursor.m, daysInMonth);
+      if (prev) prev.disabled = Boolean(min && monthStart <= min);
+      if (next) next.disabled = Boolean(max && monthEnd >= max);
+    }
+
+    function openBrandCalendar(kind) {
+      const trigger = calTriggerFor(kind);
+      const input = calInputFor(kind);
+      if (!trigger || !input) return;
+      if (calKind === kind) {
+        closeBrandCalendar();
+        return;
+      }
+      closeFormPicker();
+      calKind = kind;
+      const parsed = parseYmdParts(input.value) || parseYmdParts(input.getAttribute('min')) || parseYmdParts(romeYmd());
+      if (parsed) calCursor = { y: parsed.y, m: parsed.m };
+      trigger.setAttribute('aria-expanded', 'true');
+      const viewport = document.getElementById('sliderViewport');
+      if (viewport) {
+        const h = Math.round(
+          parseFloat(viewport.style.height) || viewport.offsetHeight || 0,
+        );
+        if (h >= 280) viewport.style.height = `${h}px`;
+      }
+      renderBrandCalendar();
+      positionBrandCalendar(trigger);
+    }
+
+    function pickBrandCalendarDay(iso) {
+      const input = calInputFor();
+      if (!input || !iso) return;
+      input.value = iso;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      paintStayDateTriggers();
+      if (calKind === 'checkin') {
+        checkinTrigger?.classList.remove('is-invalid');
+        document.getElementById('lbl-checkin')?.classList.remove('label-error-state');
+      }
+      if (calKind === 'checkout') {
+        checkoutTrigger?.classList.remove('is-invalid');
+        document.getElementById('lbl-checkout')?.classList.remove('label-error-state');
+      }
+      closeBrandCalendar();
+    }
+
     function closeFormPicker() {
       guestsPickerList?.setAttribute('hidden', '');
       staffPickerList?.setAttribute('hidden', '');
@@ -7379,6 +7737,7 @@
         closeFormPicker();
         return;
       }
+      closeBrandCalendar();
       closeFormPicker();
       wheelKind = kind;
       const viewport = document.getElementById('sliderViewport');
@@ -7757,7 +8116,7 @@
     syncStableViewportFlags();
 
     function captureRestLayout() {
-      if (keyboardLock || iosPickerOpen || wheelKind) return restLayoutH;
+      if (keyboardLock || iosPickerOpen || wheelKind || calKind) return restLayoutH;
       const inner = Math.round(
         window.innerHeight || document.documentElement.clientHeight || 0,
       );
@@ -8027,7 +8386,7 @@
     }
 
     function layoutFrozen() {
-      return Boolean(keyboardLock || iosPickerOpen || wheelKind);
+      return Boolean(keyboardLock || iosPickerOpen || wheelKind || calKind);
     }
 
     function applyViewportHeightPx(h, { allowShrink = false } = {}) {
@@ -8436,7 +8795,7 @@
     /** Blocca reflow/scroll mentre Safari apre il picker nativo dei <select>. */
     function initSelectStability() {
       const viewport = document.getElementById('sliderViewport');
-      const fields = document.querySelectorAll('.book-select, input[type="date"]');
+      const fields = document.querySelectorAll('select.book-select');
       if (!viewport || !fields.length) return;
 
       const freeze = () => {
@@ -8531,9 +8890,10 @@
       fillTableConfirmTimes(timeVal);
       const dateEl = document.getElementById('tableConfirmDate');
       if (dateEl) {
-        dateEl.min = romeYmd();
-        dateEl.max = addDaysYmd(romeYmd(), 14);
+        dateEl.setAttribute('min', romeYmd());
+        dateEl.setAttribute('max', addDaysYmd(romeYmd(), 14));
         dateEl.value = defaultTableDateForTime(timeVal);
+        paintStayDateTriggers();
       }
       if (pax && document.getElementById('bookPax')) {
         document.getElementById('bookPax').value = String(pax);
@@ -8545,6 +8905,7 @@
     function closeTableConfirmSheet() {
       const sheet = document.getElementById('tableConfirmSheet');
       if (!sheet) return;
+      closeBrandCalendar();
       sheet.hidden = true;
       sheet.setAttribute('aria-hidden', 'true');
     }
@@ -8609,6 +8970,7 @@
         return;
       }
       if (step !== 3 && typeof closeFormPicker === 'function') closeFormPicker();
+      if (step !== 3 && typeof closeBrandCalendar === 'function') closeBrandCalendar();
       const prev = currentStep;
       currentStep = step;
       document.body.dataset.step = String(step);
@@ -9071,6 +9433,7 @@
       if (btnSubmit && !btnSubmit.disabled) btnSubmit.textContent = submitButtonLabel(dict);
       const checkoutLbl = document.getElementById('lbl-checkout');
       if (checkoutLbl) checkoutLbl.textContent = dict.checkoutShort || dict.checkout || 'Checkout *';
+      paintStayDateTriggers();
       const roomTitle = document.getElementById('lbl-room-title');
       if (roomTitle) roomTitle.textContent = dict.roomTitle || dict.title2 || 'Room Details';
       const bookTitle = document.getElementById('lbl-book-title');
@@ -9992,6 +10355,7 @@
       if (checkinEl) checkinEl.value = romeYmd();
       setStaffPicker('');
       setGuestsPicker(2);
+      paintStayDateTriggers();
       submitFinal({ clearStaff: true, requireCoupon: false });
     });
 
@@ -10328,6 +10692,32 @@
     }
     guestsTrigger?.addEventListener('click', () => openFormPicker('guests'));
     staffTrigger?.addEventListener('click', () => openFormPicker('staff'));
+    checkinTrigger?.addEventListener('click', () => openBrandCalendar('checkin'));
+    checkoutTrigger?.addEventListener('click', () => openBrandCalendar('checkout'));
+    tableConfirmDateTrigger?.addEventListener('click', () => openBrandCalendar('table'));
+    document.getElementById('calPrev')?.addEventListener('click', () => {
+      calCursor.m -= 1;
+      if (calCursor.m < 0) {
+        calCursor.m = 11;
+        calCursor.y -= 1;
+      }
+      renderBrandCalendar();
+      positionBrandCalendar(calTriggerFor());
+    });
+    document.getElementById('calNext')?.addEventListener('click', () => {
+      calCursor.m += 1;
+      if (calCursor.m > 11) {
+        calCursor.m = 0;
+        calCursor.y += 1;
+      }
+      renderBrandCalendar();
+      positionBrandCalendar(calTriggerFor());
+    });
+    document.getElementById('calGrid')?.addEventListener('click', (e) => {
+      const day = e.target.closest('[data-ymd]');
+      if (!day || day.disabled) return;
+      pickBrandCalendarDay(day.getAttribute('data-ymd') || '');
+    });
     const onPickerPick = (e) => {
       const opt = e.target.closest('[data-value]');
       if (!opt) return;
@@ -10336,9 +10726,16 @@
     guestsPickerMenu?.addEventListener('click', onPickerPick);
     staffPickerMenu?.addEventListener('click', onPickerPick);
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && wheelKind) closeFormPicker();
+      if (e.key !== 'Escape') return;
+      if (calKind) closeBrandCalendar();
+      if (wheelKind) closeFormPicker();
     });
     document.addEventListener('click', (e) => {
+      if (calKind) {
+        if (!e.target.closest('#brandCalendar, #checkinTrigger, #checkoutTrigger, #tableConfirmDateTrigger')) {
+          closeBrandCalendar();
+        }
+      }
       if (!wheelKind) return;
       if (e.target.closest('#guestsPickerList, #staffPickerList, #guestsTrigger, #receptionistTrigger')) return;
       closeFormPicker();
