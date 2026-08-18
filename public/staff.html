@@ -355,7 +355,6 @@
       animation: sheetOut 340ms var(--slide-ease) both;
     }
 
-    .is-staggering > tr,
     .is-staggering .feed-row,
     .is-staggering .note-shift-row,
     .is-staggering .blacklist-row {
@@ -756,8 +755,7 @@
       transition:
         border-color 0.32s var(--ios-ease),
         box-shadow 0.32s var(--ios-ease),
-        background-color 0.32s var(--ios-ease),
-        transform 0.28s var(--slide-ease);
+        background-color 0.32s var(--ios-ease);
     }
 
     @media (hover: hover) and (pointer: fine) {
@@ -1596,8 +1594,9 @@
     .notify-head {
       flex-shrink: 0;
       padding: 8px 10px 6px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 12px;
-      font-weight: 650;
+      font-weight: 600;
       color: #6b8494;
       letter-spacing: 0.02em;
     }
@@ -1632,7 +1631,7 @@
       background: transparent;
       text-align: left;
       cursor: pointer;
-      font-family: inherit;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     .notify-item:hover,
@@ -1642,13 +1641,15 @@
     }
 
     .notify-item-name {
-      font-size: 14px;
-      font-weight: 650;
-      letter-spacing: -0.01em;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
       color: #1a2e36;
     }
 
     .notify-item-meta {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 12px;
       font-weight: 500;
       color: #6b8494;
@@ -1656,7 +1657,9 @@
 
     .notify-item-text {
       margin-top: 2px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 13px;
+      font-weight: 500;
       line-height: 1.35;
       color: #515154;
       display: -webkit-box;
@@ -1668,10 +1671,49 @@
     .notify-empty {
       margin: 0;
       padding: 18px 12px 16px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 13px;
       font-weight: 500;
       color: #8a9aa4;
       text-align: center;
+      line-height: 1.4;
+    }
+
+    .notify-foot {
+      flex-shrink: 0;
+      padding: 6px 6px 4px;
+      border-top: 1px solid rgba(18, 68, 83, 0.08);
+    }
+
+    .notify-add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 12px;
+      border: 0;
+      border-radius: var(--radius-ui);
+      background: transparent;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--canal-petroleum);
+      cursor: pointer;
+    }
+
+    .notify-add svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .notify-add:hover,
+    .notify-add:focus-visible {
+      background: rgba(18, 68, 83, 0.06);
+      outline: none;
     }
 
     .dash-menu-btn {
@@ -2058,6 +2100,7 @@
 
     .staff-alert-name {
       margin-top: 2px;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 14px;
       font-weight: 700;
       letter-spacing: -0.01em;
@@ -2375,7 +2418,7 @@
       min-width: 0;
       min-height: var(--cell-control-h);
       line-height: var(--cell-control-h);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 14px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
@@ -3628,59 +3671,75 @@
 
     #infoPanel.table-panel,
     .info-panel {
-      background: #f5f5f7;
+      background: #fff;
     }
 
     .info-panel .footer-summary {
-      background: #fafafa;
+      background: #fff;
       border-top: 1px solid var(--table-row-divider);
     }
 
     .sys-settings--plans {
-      max-width: 960px;
+      max-width: 840px;
     }
 
-    .plan-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 8px;
+    .sys-settings--plans .sys-settings-header h2 {
+      font-size: clamp(32px, 5vw, 48px);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
     }
 
-    .plan-card {
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      padding: 18px 18px 16px;
-      background: #fff;
-      border: 1px solid var(--table-border);
-      border-radius: var(--radius-sheet-top);
-      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.02);
+    .sys-settings--plans .sys-settings-header {
+      margin-bottom: 32px;
     }
 
-    .plan-card--wide {
-      grid-column: 1 / -1;
-    }
-
-    .plan-card-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .plan-card-title {
-      margin: 0;
-      font-size: 15px;
+    .plan-section {
+      margin: 28px 0 10px;
+      font-size: 12px;
       font-weight: 600;
-      letter-spacing: -0.01em;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #86868b;
+    }
+
+    .plan-section:first-of-type {
+      margin-top: 0;
+    }
+
+    .plan-prose {
+      margin: 0;
+      max-width: 38em;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.55;
       color: var(--text-main);
-      line-height: 1.25;
+    }
+
+    .plan-prose + .plan-prose {
+      margin-top: 10px;
+    }
+
+    .plan-note {
+      margin: 8px 0 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: #86868b;
+      line-height: 1.45;
+    }
+
+    .plan-updates {
+      margin: 4px 0 8px;
+      border-top: 1px solid var(--table-row-divider);
+    }
+
+    .sys-settings--plans .plan-updates .sys-settings-row {
+      padding-left: 0;
+      padding-right: 0;
     }
 
     .plan-card-price {
-      margin: 18px 0 0;
-      font-size: clamp(32px, 4vw, 42px);
+      margin: 0;
+      font-size: clamp(36px, 5vw, 48px);
       font-weight: 700;
       letter-spacing: -0.04em;
       color: var(--canal-petroleum);
@@ -3689,129 +3748,173 @@
     }
 
     .plan-card-period {
-      margin: 6px 0 0;
-      font-size: 12px;
+      margin: 8px 0 0;
+      font-size: 13px;
       font-weight: 600;
       color: #86868b;
       letter-spacing: 0.01em;
     }
 
-    .plan-card-summary {
-      margin: 14px 0 0;
-      font-size: 13px;
+    .plan-canon {
+      display: grid;
+      grid-template-columns: minmax(140px, 200px) minmax(0, 1fr);
+      gap: 28px 40px;
+      align-items: start;
+    }
+
+    .plan-canon-includes {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .plan-canon-includes li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--table-row-divider);
+      font-size: 14px;
       font-weight: 500;
-      line-height: 1.45;
+      line-height: 1.4;
+      color: var(--text-main);
+    }
+
+    .plan-canon-includes li:first-child {
+      padding-top: 0;
+    }
+
+    .plan-canon-includes li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .plan-canon-includes span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 500;
       color: #86868b;
     }
 
-    .plan-card-terms {
-      list-style: none;
-      margin: 16px 0 0;
-      padding: 12px 0 0;
+    .plan-earn .plan-card-price {
+      margin-top: 16px;
+    }
+
+    .plan-emily-photos {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .plan-emily-photos img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #e8eef1;
+    }
+
+    .plan-break {
+      margin: 40px 0 8px;
+      border: 0;
       border-top: 1px solid var(--table-row-divider);
     }
 
-    .plan-card-terms li {
-      position: relative;
-      padding-left: 12px;
-      font-size: 11px;
-      font-weight: 500;
-      line-height: 1.45;
-      color: #8a9ba8;
+    .plan-flow {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin: 8px 0 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    .plan-card-terms li + li {
-      margin-top: 6px;
+    .plan-flow-step {
+      flex: 1 1 0;
+      min-width: 92px;
     }
 
-    .plan-kpis {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .plan-kpi {
-      padding: 14px 10px 12px;
-      text-align: center;
-      background: #fff;
-      border: 1px solid var(--table-border);
-      border-radius: var(--radius-m);
-      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.02);
-    }
-
-    .plan-kpi-value {
+    .plan-flow-num {
       display: block;
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 700;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.04em;
       color: var(--canal-petroleum);
-      line-height: 1.15;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
     }
 
-    .plan-kpi-label {
+    .plan-flow-step strong {
       display: block;
-      margin-top: 6px;
-      font-size: 11px;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .plan-flow-step span {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
       font-weight: 500;
       line-height: 1.35;
       color: #86868b;
     }
 
-    .plan-section {
-      margin: 8px 0 12px;
+    .plan-flow-arrow {
+      flex: 0 0 28px;
+      height: 22px;
+      margin-top: 6px;
+      background: linear-gradient(90deg, var(--canal-petroleum), var(--canal-petroleum)) no-repeat center / 100% 1px;
+      opacity: 0.28;
+    }
+
+    .plan-table-mini {
+      margin-top: 14px;
+      overflow: hidden;
+      pointer-events: none;
+      user-select: none;
+      transform: scale(0.92);
+      transform-origin: top left;
+      width: calc(100% / 0.92);
+    }
+
+    .plan-table-mini .matrix-table {
+      min-width: 0;
+    }
+
+    .plan-table-mini .matrix-table th,
+    .plan-table-mini .matrix-table td {
+      height: 40px;
+    }
+
+    .plan-table-mini .cell-name,
+    .plan-table-mini .phone-text,
+    .plan-table-mini .email-text {
       font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: #86868b;
     }
 
-    .plan-card-price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 18px;
+    .plan-table-mini .cell-room {
+      font-size: 13px;
     }
 
-    .plan-card-price-row .plan-card-price {
-      margin: 0;
+    .plan-table-mini .contact-ios-label {
+      display: none;
     }
 
-    .plan-card-price-row .plan-card-period {
-      margin: 0;
+    .plan-table-mini .secure-cell-wrapper,
+    .plan-table-mini .phone-wrapper {
+      grid-template-columns: minmax(0, 1fr);
     }
 
-    .plan-updates {
-      margin: 16px 0 20px;
-    }
+    .plan-table-mini .matrix-table--clients col.col-guest { width: 26%; }
+    .plan-table-mini .matrix-table--clients col.col-room { width: 12%; }
+    .plan-table-mini .matrix-table--clients col.col-phone { width: 22%; }
+    .plan-table-mini .matrix-table--clients col.col-email { width: 26%; }
+    .plan-table-mini .matrix-table--clients col.col-receptionist { width: 14%; }
 
-    .plan-goal {
-      margin: 8px 0 0;
-      padding: 18px;
-      background: #fff;
-      border: 1px solid var(--table-border);
-      border-radius: var(--radius-sheet-top);
-      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.02);
-    }
-
-    .plan-goal p {
-      margin: 0;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--canal-petroleum);
-      line-height: 1.45;
-    }
-
-    .plan-goal span {
-      display: block;
-      margin-top: 8px;
-      font-size: 12px;
-      font-weight: 500;
-      color: #86868b;
-      letter-spacing: 0;
+    .plan-table-mini .btn-reveal {
+      display: none;
     }
 
     body:not(.can-info) #tabInfo,
@@ -4200,10 +4303,12 @@
       background: var(--sky-50);
     }
 
-    .notes-toolbar-hint {
+    .notes-toolbar-hint,
+    .settings-toolbar-hint {
       flex: 1;
       min-width: 0;
       margin: 0;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 12px;
       font-weight: 500;
       line-height: 1.45;
@@ -4270,6 +4375,7 @@
     }
 
     .note-card-name {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 15px;
       font-weight: 700;
       color: #1a2e36;
@@ -4357,7 +4463,9 @@
       border-radius: var(--radius-ui);
       background: #F7F9FA;
       border: 1px solid #EEF1F4;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 13px;
+      font-weight: 500;
       line-height: 1.55;
       color: #1a2e36;
       white-space: pre-wrap;
@@ -4439,6 +4547,14 @@
     }
 
     .sheet-form--flat .sheet-field:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .sheet-form--flat .sheet-grid-2 {
+      margin-bottom: 16px;
+    }
+
+    .sheet-form--flat .sheet-grid-2 .sheet-field {
       margin-bottom: 0;
     }
 
@@ -5137,7 +5253,147 @@
     }
 
     .sheet-form .ui-dropdown-menu {
-      z-index: 40;
+      z-index: 140;
+    }
+
+    .sheet-form .ui-dropdown-trigger.field {
+      padding-right: 12px;
+    }
+
+    .sheet-form .ui-dropdown-leading {
+      width: 20px;
+      height: 20px;
+      color: var(--canal-petroleum);
+    }
+
+    .sheet-form .ui-dropdown-leading svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .sheet-form .ui-dropdown-menu.is-sheet-fixed {
+      position: fixed;
+      right: auto;
+      left: 0;
+      z-index: 140;
+    }
+
+    .brand-calendar {
+      display: none;
+      position: fixed;
+      z-index: 140;
+      width: min(292px, calc(100vw - 24px));
+      padding: 12px 12px 14px;
+      box-sizing: border-box;
+      background: #fff;
+      border: 1px solid rgba(18, 68, 83, 0.14);
+      border-radius: var(--radius-ios);
+      box-shadow:
+        0 10px 28px rgba(18, 68, 83, 0.16),
+        0 2px 6px rgba(18, 68, 83, 0.06);
+    }
+
+    .brand-calendar:not([hidden]) {
+      display: block;
+    }
+
+    .brand-calendar-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .brand-calendar-title {
+      flex: 1;
+      margin: 0;
+      text-align: center;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: capitalize;
+      color: var(--canal-petroleum);
+    }
+
+    .brand-calendar-nav {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: var(--radius-ios);
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .brand-calendar-nav:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .brand-calendar-nav svg {
+      width: 12px;
+      height: 12px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .brand-calendar-dows,
+    .brand-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    .brand-calendar-dow {
+      text-align: center;
+      padding: 4px 0 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #8aa0aa;
+    }
+
+    .brand-calendar-day {
+      aspect-ratio: 1;
+      min-height: 34px;
+      border: 0;
+      border-radius: var(--radius-ios);
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1d1d1f;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .brand-calendar-day.is-pad {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .brand-calendar-day.is-today:not(.is-on) {
+      color: var(--canal-petroleum);
+      box-shadow: inset 0 0 0 1.5px var(--canal-petroleum);
+    }
+
+    .brand-calendar-day.is-on {
+      background: var(--canal-petroleum);
+      color: #fff;
+    }
+
+    .brand-calendar-day:hover:not(:disabled):not(.is-on) {
+      background: rgba(18, 68, 83, 0.05);
     }
 
     .sheet-foot .btn-primary:disabled {
@@ -5272,8 +5528,7 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
-      flex: 0 1 auto;
-      max-width: calc(100% - var(--cell-control-h) - 6px);
+      max-width: none;
     }
 
     .contact-ios-label {
@@ -5282,10 +5537,10 @@
 
     .secure-cell-wrapper,
     .phone-wrapper {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--cell-control-h);
       align-items: center;
-      justify-content: flex-start;
-      gap: 6px;
+      column-gap: 6px;
       width: 100%;
       max-width: none;
       min-width: 0;
@@ -5296,12 +5551,8 @@
       vertical-align: middle;
     }
 
-    .secure-cell-wrapper.is-empty {
-      gap: 0;
-    }
-
     .secure-cell-wrapper.is-empty .contact-stack {
-      max-width: 100%;
+      max-width: none;
     }
 
     .secure-cell-wrapper .phone-text,
@@ -5382,11 +5633,6 @@
     .matrix-table td.col-email .secure-cell-wrapper {
       max-width: 100%;
       width: 100%;
-      justify-content: flex-start;
-    }
-
-    .matrix-table td.col-phone .secure-cell-wrapper.is-empty {
-      justify-content: flex-start;
     }
 
     .matrix-table td.col-phone .contact-stack,
@@ -5394,7 +5640,6 @@
       align-items: flex-start;
       text-align: left;
       min-width: 0;
-      flex: 0 1 auto;
     }
 
     .email-text.is-revealed {
@@ -5420,11 +5665,19 @@
       color: var(--text-muted);
       cursor: pointer;
       padding: 0;
-      flex-shrink: 0;
-      margin-left: 0;
+      grid-column: 2;
+      justify-self: end;
+      align-self: center;
+      margin: 0;
       opacity: 0.4;
       pointer-events: auto;
       transition: opacity var(--hover-ease), background var(--hover-ease), color var(--hover-ease);
+    }
+
+    .secure-cell-wrapper.is-empty .btn-reveal {
+      opacity: 0.22;
+      cursor: default;
+      pointer-events: none;
     }
 
     .matrix-table .btn-reveal.is-locked,
@@ -5660,7 +5913,6 @@
       .motion-rise,
       .motion-panel-in,
       .ui-menu:not(.hidden),
-      .is-staggering > tr,
       .is-staggering .feed-row,
       .is-staggering .note-shift-row,
       .is-staggering .blacklist-row {
@@ -5846,21 +6098,23 @@
         font-size: 20px;
       }
 
-      .plan-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .plan-kpi:last-child {
-        grid-column: 1 / -1;
-      }
-
-      .plan-grid {
+      .plan-canon {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 16px;
       }
 
-      .plan-card--wide {
-        grid-column: auto;
+      .plan-emily-photos {
+        grid-template-columns: 1fr;
+      }
+
+      .plan-flow-step {
+        min-width: 72px;
+      }
+
+      .plan-table-mini {
+        transform: none;
+        width: 100%;
+        overflow-x: auto;
       }
 
       .sys-settings-row {
@@ -5999,7 +6253,7 @@
 
       #checkinsPanel .cell-guest > .cell-name {
         font-size: 17px;
-        font-weight: 650;
+        font-weight: 700;
         letter-spacing: -0.03em;
         line-height: 1.2;
         min-height: 0;
@@ -6067,15 +6321,13 @@
       #checkinsPanel .phone-wrapper {
         max-width: none;
         width: 100%;
-        flex: 1;
         height: auto;
         min-height: 0;
-        align-items: flex-end;
-        justify-content: flex-start;
+        align-items: center;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
         font-size: 16px;
         color: #1D1D1F;
-        gap: 4px;
+        column-gap: 8px;
       }
 
       #checkinsPanel .secure-cell-wrapper.is-empty::after {
@@ -6121,8 +6373,9 @@
         border-radius: 50%;
         opacity: 0.45;
         pointer-events: auto;
-        align-self: flex-end;
-        margin: 0 0 -4px;
+        align-self: center;
+        justify-self: end;
+        margin: 0;
       }
 
       #checkinsPanel .cell-receptionist-wrap .btn-row-menu:hover,
@@ -6241,6 +6494,15 @@
       #inHousePanel .secure-cell-wrapper {
         max-width: none;
         width: 100%;
+        height: auto;
+        min-height: 0;
+        align-items: center;
+      }
+
+      #inHousePanel .btn-reveal {
+        align-self: center;
+        justify-self: end;
+        margin: 0;
       }
 
       #inHousePanel .footer-summary {
@@ -6297,17 +6559,12 @@
       </div>
       <form id="gateForm" class="gate-form" action="" method="post" autocomplete="off" novalidate>
         <div class="form-group">
-          <label id="lbl-staff" for="staffMemberTrigger">Receptionist</label>
-          <div class="ui-dropdown input-with-icon" id="staffDropdown">
+          <label id="lbl-staff" for="staffMember">Nome</label>
+          <div class="input-with-icon">
             <span class="field-glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 .7 4 2.2"/></svg>
             </span>
-            <button type="button" class="apple-input apple-picker-trigger ui-dropdown-trigger field" id="staffMemberTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="staffMemberMenu">
-              <span class="apple-picker-value ui-dropdown-value is-placeholder" id="staffMemberLabel">Seleziona…</span>
-              <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
-            </button>
-            <div class="ui-dropdown-menu ui-menu hidden" id="staffMemberMenu" role="listbox" aria-labelledby="lbl-staff" hidden></div>
-            <input type="hidden" id="staffMember" value="" autocomplete="username">
+            <input class="apple-input field" id="staffMember" type="text" inputmode="text" autocomplete="username" autocapitalize="words" spellcheck="false" maxlength="40" placeholder="Il tuo nome">
           </div>
         </div>
         <div class="form-group">
@@ -6316,7 +6573,7 @@
             <span class="field-glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
             </span>
-            <input class="apple-input field" id="pin" type="password" inputmode="text" autocomplete="off" maxlength="64" placeholder="Inserisci password">
+            <input class="apple-input field" id="pin" type="password" inputmode="text" autocomplete="current-password" maxlength="64" placeholder="Inserisci password">
           </div>
         </div>
         <button class="btn-canal" id="btnLogin" type="submit">Entra</button>
@@ -6433,6 +6690,14 @@
             <div class="notify-menu ui-menu hidden" id="notifyMenu" role="menu" hidden>
               <div class="notify-head">Note del team</div>
               <div class="notify-list" id="notifyList"></div>
+              <div class="notify-foot">
+                <button type="button" class="notify-add" id="btnNotifyAddNote">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  Nuova nota
+                </button>
+              </div>
             </div>
           </div>
           <button class="btn-action btn-action-ghost hidden" id="btnAddBlacklist" type="button">Nuova segnalazione</button>
@@ -6739,135 +7004,15 @@
             <div class="settings-scroll" id="infoScroll">
               <div class="sys-settings sys-settings--plans">
                 <header class="sys-settings-header">
-                  <h2>Registro direzione</h2>
-                  <p>Controllo di canoni, ricavi e impatto sul lavoro dello staff. Roadmap operativa Hotel Canal.</p>
+                  <h2>Beta v1.4</h2>
                 </header>
 
-                <p class="plan-section">Beta v1.4</p>
-                <div class="plan-kpis" aria-label="Indicatori beta">
-                  <div class="plan-kpi">
-                    <span class="plan-kpi-value">1</span>
-                    <span class="plan-kpi-label">Canone unico. Tutti i servizi nello stesso abbonamento.</span>
-                  </div>
-                  <div class="plan-kpi">
-                    <span class="plan-kpi-value">0 doppi</span>
-                    <span class="plan-kpi-label">Check-in, gestione operativa ed Emily AI nella stessa piattaforma.</span>
-                  </div>
-                  <div class="plan-kpi">
-                    <span class="plan-kpi-value">~1.000</span>
-                    <span class="plan-kpi-label">Chat inbound al mese avviate dagli ospiti.</span>
-                  </div>
-                  <div class="plan-kpi">
-                    <span class="plan-kpi-value">0 carta</span>
-                    <span class="plan-kpi-label">Pulizie, colazioni, segnalazioni e attività solo in digitale.</span>
-                  </div>
-                  <div class="plan-kpi">
-                    <span class="plan-kpi-value">Live</span>
-                    <span class="plan-kpi-label">Camere e colazioni aggiornate dallo staff in tempo reale.</span>
-                  </div>
-                </div>
+                <div id="infoManagerWrap">
+                <p class="plan-section">In sintesi</p>
+                <p class="plan-prose">L’ospite inquadra il QR, lascia stanza, telefono ed email e accetta la privacy. La reception vede i check-in in lista, svela i contatti solo quando servono, e a fine giornata parte il report. Niente fogli. Niente numeri da ricopiare a mano.</p>
 
-                <p class="plan-section">Canone</p>
-                <div class="plan-grid" id="infoManagerWrap">
-                  <article class="plan-card plan-card--wide">
-                    <div class="plan-card-head">
-                      <h3 class="plan-card-title">Un solo canone</h3>
-                      <span class="sys-settings-row-badge">Listino</span>
-                    </div>
-                    <div class="plan-card-price-row">
-                      <p class="plan-card-price">39 €</p>
-                      <p class="plan-card-period">al mese</p>
-                    </div>
-                    <p class="plan-card-summary">Check-in, Emily AI e gestione operativa in un unico sistema. Nessun abbonamento separato. Nessun costo nascosto da questa schermata.</p>
-                    <ul class="plan-card-terms">
-                      <li>Check-in digitale: informazioni ospite e attività di registrazione.</li>
-                      <li>Emily AI: assistenza 24/7 sulle domande frequenti degli ospiti.</li>
-                      <li>Gestione staff: camere, pulizie, colazioni e segnalazioni.</li>
-                      <li>Prenotazioni: predisposizione al collegamento con le OTA.</li>
-                      <li>Storico clienti: consultazione secondo le policy della struttura.</li>
-                    </ul>
-                  </article>
-
-                  <article class="plan-card">
-                    <div class="plan-card-head">
-                      <h3 class="plan-card-title">Emily AI</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Add-on ospite</span>
-                    </div>
-                    <div class="plan-card-price-row">
-                      <p class="plan-card-price">5 €</p>
-                      <p class="plan-card-period">a soggiorno</p>
-                    </div>
-                    <p class="plan-card-summary">L’ospite inquadra il QR in camera. Emily risponde 24/7 a Wi-Fi, orari e servizi, propone extra della struttura e invita i soddisfatti a lasciare una recensione.</p>
-                    <ul class="plan-card-terms">
-                      <li>Guida della struttura e della città. Più autonomia per l’ospite, meno chiamate al banco.</li>
-                      <li>Servizi extra (cena, colazione, late check-out) proposti senza coinvolgere di continuo lo staff.</li>
-                      <li>Si applicano condizioni. Margine di guadagno per la struttura secondo accordo.</li>
-                    </ul>
-                  </article>
-
-                  <article class="plan-card">
-                    <div class="plan-card-head">
-                      <h3 class="plan-card-title">Network locale</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Referral</span>
-                    </div>
-                    <p class="plan-card-price">Ricavi</p>
-                    <p class="plan-card-period">partner ristorante, spa, guide</p>
-                    <p class="plan-card-summary">Emily propone esperienze locali in modo amichevole e non invasivo: più flusso verso i partner, soggiorno più completo per l’ospite.</p>
-                    <ul class="plan-card-terms">
-                      <li>Si applicano condizioni ai programmi di referral.</li>
-                      <li>Niente marketing in uscita da Hotel Canal.</li>
-                      <li>Attivazione su richiesta della direzione.</li>
-                    </ul>
-                  </article>
-
-                  <article class="plan-card">
-                    <div class="plan-card-head">
-                      <h3 class="plan-card-title">Prenotazioni OTA</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">In coda</span>
-                    </div>
-                    <p class="plan-card-price">In coda</p>
-                    <p class="plan-card-period">quando il collegamento è reale</p>
-                    <p class="plan-card-summary">Collegamento a Booking.com, Expedia e alle principali agenzie per ridurre l’inserimento manuale, aggiornare le disponibilità e contenere l’overbooking.</p>
-                    <ul class="plan-card-terms">
-                      <li>Si applicano le condizioni di ciascun canale.</li>
-                      <li>La funzione si attiva solo con collegamento reale disponibile.</li>
-                      <li>Nessun addebito da questa schermata.</li>
-                    </ul>
-                  </article>
-
-                  <article class="plan-card">
-                    <div class="plan-card-head">
-                      <h3 class="plan-card-title">Gestione operativa</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">In arrivo</span>
-                    </div>
-                    <p class="plan-card-price">Digitale</p>
-                    <p class="plan-card-period">pulizie, colazioni, segnalazioni</p>
-                    <p class="plan-card-summary">Niente telefonate tra reparti né fogli sparsi. Un aggiornamento indica quando la camera è pulita e pronta al check-in. Reception e piano sulla stessa timeline.</p>
-                    <ul class="plan-card-terms">
-                      <li>Pulizie, colazioni, segnalazioni e check-in nella stessa piattaforma.</li>
-                      <li>Modulo interno, non un canale ospite.</li>
-                      <li>Incluso nel canone unico a 39 € quando attivo.</li>
-                    </ul>
-                  </article>
-
-                  <article class="plan-card plan-card--wide">
-                    <div class="plan-card-head">
-                      <h3 class="plan-card-title">Informazioni ospiti</h3>
-                      <span class="sys-settings-row-badge">In piattaforma</span>
-                    </div>
-                    <p class="plan-card-price">Sempre</p>
-                    <p class="plan-card-period">durante il soggiorno, secondo policy</p>
-                    <p class="plan-card-summary">Documento mancante, pagamento non andato a buon fine, minibar da verificare: i dati restano organizzati e recuperabili. Al check-in la struttura riceve un report riepilogativo.</p>
-                    <ul class="plan-card-terms">
-                      <li>Consultazione secondo le impostazioni e le policy di conservazione.</li>
-                      <li>Dati identificativi fino a checkout + 7 giorni, poi anonimizzazione.</li>
-                      <li>Accesso riservato al personale autorizzato.</li>
-                    </ul>
-                  </article>
-                </div>
-
-                <p class="plan-section">Aggiornamenti front desk</p>
-                <div class="sys-settings-group plan-updates">
+                <p class="plan-section">Prossimi aggiornamenti</p>
+                <div class="plan-updates">
                   <div class="sys-settings-row">
                     <div class="sys-settings-row-info">
                       <span class="sys-settings-row-title">Codici porta automatici</span>
@@ -6891,22 +7036,122 @@
                   </div>
                 </div>
 
-                <div class="plan-goal">
-                  <p>Meno lavoro manuale. Più controllo. Più ricavi. Un solo sistema.</p>
-                  <span>Registro direzione · Hotel Canal</span>
+                <p class="plan-section">Canone</p>
+                <div class="plan-canon">
+                  <div>
+                    <p class="plan-card-price">39 €</p>
+                    <p class="plan-card-period">al mese</p>
+                  </div>
+                  <ul class="plan-canon-includes">
+                    <li>Check-in digitale<span>Informazioni ospite, privacy, report in reception.</span></li>
+                    <li>Emily AI<span>WhatsApp 24/7 su Wi-Fi, orari, extra e recensioni.</span></li>
+                    <li>Gestione staff<span>Camere, pulizie, colazioni e segnalazioni.</span></li>
+                    <li>Prenotazioni<span>Predisposizione al collegamento con le OTA.</span></li>
+                    <li>Storico clienti<span>Consultazione secondo le policy della struttura.</span></li>
+                  </ul>
+                </div>
+
+                <p class="plan-section">Guadagni</p>
+                <div class="plan-earn">
+                  <p class="plan-prose">Emily propone tutto su WhatsApp. L’ospite inquadra il QR in camera e chiede dal telefono: Wi-Fi, orari, cena, late check-out, ristorante, spa, guida. Niente chiamata al banco. I partner locali ricevono flusso, la struttura vende extra, chi è soddisfatto lascia una recensione.</p>
+                  <p class="plan-card-price">5 €</p>
+                  <p class="plan-card-period">a soggiorno · facoltativo</p>
+                  <p class="plan-note">Referral e Emily si attivano solo se la direzione lo vuole. Non sono nel canone.</p>
+                  <div class="plan-emily-photos" hidden></div>
+                </div>
+
+                <hr class="plan-break">
+
+                <p class="plan-section">Prenotazioni</p>
+                <p class="plan-prose">Collegamento a Booking.com, Expedia e alle agenzie. Meno inserimento a mano, disponibilità allineate, overbooking sotto controllo. Si attiva quando il collegamento è reale.</p>
+
+                <p class="plan-section">Digitale</p>
+                <p class="plan-prose">Un aggiornamento e la camera è pulita. Reception e piano sulla stessa riga. Zero telefonate tra i reparti.</p>
+                <div class="plan-flow" aria-label="Flusso operativo">
+                  <div class="plan-flow-step">
+                    <span class="plan-flow-num">1</span>
+                    <strong>Piano</strong>
+                    <span>Camera da fare</span>
+                  </div>
+                  <span class="plan-flow-arrow" aria-hidden="true"></span>
+                  <div class="plan-flow-step">
+                    <span class="plan-flow-num">2</span>
+                    <strong>Pulita</strong>
+                    <span>Un tap</span>
+                  </div>
+                  <span class="plan-flow-arrow" aria-hidden="true"></span>
+                  <div class="plan-flow-step">
+                    <span class="plan-flow-num">3</span>
+                    <strong>Reception</strong>
+                    <span>Check-in</span>
+                  </div>
+                  <span class="plan-flow-arrow" aria-hidden="true"></span>
+                  <div class="plan-flow-step">
+                    <span class="plan-flow-num">4</span>
+                    <strong>Colazione</strong>
+                    <span>Coperti</span>
+                  </div>
+                </div>
+                <p class="plan-note">Pulizie, colazioni, segnalazioni e check-in nello stesso sistema.</p>
+
+                <p class="plan-section">Informazioni ospiti</p>
+                <p class="plan-prose">Come arriva in reception. Documento, pagamento, minibar: i dati restano in lista per tutto il soggiorno.</p>
+                <div class="plan-table-mini" aria-hidden="true">
+                  <table class="matrix-table matrix-table--clients">
+                    <colgroup>
+                      <col class="col-guest">
+                      <col class="col-room">
+                      <col class="col-phone">
+                      <col class="col-email">
+                      <col class="col-receptionist">
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th class="col-guest">Ospite</th>
+                        <th class="col-room">Stanza</th>
+                        <th class="col-phone">Telefono</th>
+                        <th class="col-email">Email</th>
+                        <th class="col-receptionist">Check-in da</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="col-guest"><div class="cell-guest"><div class="cell-name">Rossi Marco</div></div></td>
+                        <td class="col-room"><span class="cell-room">12</span></td>
+                        <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+39 ••• 4412</span></div></div></td>
+                        <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">m••••@gmail.com</span></div></div></td>
+                        <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">A</span></span></td>
+                      </tr>
+                      <tr>
+                        <td class="col-guest"><div class="cell-guest"><div class="cell-name">Chen Li</div></div></td>
+                        <td class="col-room"><span class="cell-room">8</span></td>
+                        <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+86 ••• 8801</span></div></div></td>
+                        <td class="col-email"><div class="secure-cell-wrapper is-empty"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="data-empty">—</span></div></div></td>
+                        <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">J</span></span></td>
+                      </tr>
+                      <tr>
+                        <td class="col-guest"><div class="cell-guest"><div class="cell-name">Dupont Sophie</div></div></td>
+                        <td class="col-room"><span class="cell-room">21</span></td>
+                        <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+33 ••• 2290</span></div></div></td>
+                        <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">s••••@icloud.com</span></div></div></td>
+                        <td class="col-receptionist"><span class="badge-container"><span class="initial-badge initial-badge--manager">M</span></span></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
 
                 <footer class="sys-settings-legal">
                   <h3>Condizioni</h3>
-                  <p>I prezzi sono di listino per Hotel Canal e non costituiscono un ordine. L’attivazione di add-on, referral e pre-release avviene solo su richiesta della direzione (Mizan, Payel).</p>
-                  <p>Nessun pagamento o rinnovo parte da questo pannello. IVA, fatturazione e contratti di canale si definiscono in sede.</p>
-                  <p>I moduli in coda o in arrivo non sono ancora disponibili in produzione. Il check-in digitale è il modulo già attivo.</p>
+                  <p>Listino per le strutture che adottano la piattaforma. Non è un ordine. L’attivazione di add-on, referral e moduli in coda avviene su richiesta della direzione di ciascuna struttura.</p>
+                  <p>Nessun pagamento o rinnovo parte da questo pannello. IVA, fatturazione e contratti si definiscono in sede.</p>
+                  <p>Il check-in digitale è il modulo già attivo. Codici porta, archivio, OTA e gestione operativa si rilasciano quando il collegamento è reale.</p>
                 </footer>
+                </div>
               </div>
             </div>
             <div class="footer-summary">
-              <span id="infoFooterLabel">Registro direzione</span>
-              <span class="footer-summary-meta">Solo direzione</span>
+              <span id="infoFooterLabel">Beta v1.4</span>
+              <span class="footer-summary-meta">Direzione</span>
             </div>
           </div>
           </div>
@@ -6933,19 +7178,49 @@
           <label class="sheet-label" id="lbl-note-guest" for="noteGuestName">Ospite</label>
           <input class="field" id="noteGuestName" maxlength="120" placeholder="Nome e cognome" autocomplete="off">
         </div>
-        <div class="sheet-inline-2">
-          <div class="sheet-field">
-            <label class="sheet-label" id="lbl-note-room" for="noteRoom">Stanza</label>
+        <div class="sheet-field">
+          <label class="sheet-label" id="lbl-note-room" for="noteRoom">Stanza</label>
           <input class="field field--room" id="noteRoom" maxlength="8" placeholder="" inputmode="numeric" autocomplete="off">
-          </div>
-          <div class="sheet-field">
-            <label class="sheet-label" id="lbl-note-category" for="noteCategory">Tipo</label>
-            <select class="field field--select" id="noteCategory"></select>
-          </div>
         </div>
         <div class="sheet-field">
-          <label class="sheet-label" id="lbl-note-date" for="noteDueAt">Quando</label>
-          <input class="field" id="noteDueAt" type="datetime-local">
+          <label class="sheet-label" id="lbl-note-category" for="noteCategoryTrigger">Tipo</label>
+          <div class="ui-dropdown" id="noteCategoryDropdown">
+            <input type="hidden" id="noteCategory" value="other">
+            <button type="button" class="field ui-dropdown-trigger" id="noteCategoryTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="noteCategoryMenu">
+              <span class="ui-dropdown-leading" id="noteCategoryIcon" aria-hidden="true"></span>
+              <span class="ui-dropdown-value" id="noteCategoryValue">Altro</span>
+              <span class="ui-dropdown-chevron-wrap" aria-hidden="true">
+                <svg class="ui-dropdown-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+            <div class="ui-dropdown-menu ui-menu hidden" id="noteCategoryMenu" role="listbox" hidden></div>
+          </div>
+        </div>
+        <div class="sheet-grid-2 sheet-grid-2--schedule">
+          <div class="sheet-field">
+            <label class="sheet-label" id="lbl-note-date" for="noteDueDateTrigger">Data</label>
+            <input type="hidden" id="noteDueDate" value="">
+            <input type="hidden" id="noteDueAt" value="">
+            <button type="button" class="field ui-dropdown-trigger" id="noteDueDateTrigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="brandCalendar">
+              <span class="ui-dropdown-value" id="noteDueDateValue"></span>
+              <span class="ui-dropdown-chevron-wrap" aria-hidden="true">
+                <svg class="ui-dropdown-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-label" id="lbl-note-time" for="noteDueTimeTrigger">Ora</label>
+            <div class="ui-dropdown" id="noteDueTimeDropdown">
+              <input type="hidden" id="noteDueTime" value="">
+              <button type="button" class="field ui-dropdown-trigger" id="noteDueTimeTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="noteDueTimeMenu">
+                <span class="ui-dropdown-value" id="noteDueTimeValue">Tutto il giorno</span>
+                <span class="ui-dropdown-chevron-wrap" aria-hidden="true">
+                  <svg class="ui-dropdown-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </button>
+              <div class="ui-dropdown-menu ui-menu hidden" id="noteDueTimeMenu" role="listbox" hidden></div>
+            </div>
+          </div>
         </div>
         <div class="sheet-field">
           <label class="sheet-label" id="lbl-note-instruction" for="noteInstruction">Nota</label>
@@ -7094,16 +7369,26 @@
   <div class="row-menu-backdrop hidden" id="rowMenuBackdrop" aria-hidden="true"></div>
   <div class="row-menu ui-menu hidden" id="rowMenu" role="menu" aria-label="Azioni ospite"></div>
 
+  <div class="brand-calendar" id="brandCalendar" hidden role="dialog" aria-modal="true" aria-labelledby="calTitle">
+    <div class="brand-calendar-head">
+      <button type="button" class="brand-calendar-nav" id="calPrev" aria-label="Mese precedente">
+        <svg viewBox="0 0 12 12"><path d="M8 2L4 6l4 4"/></svg>
+      </button>
+      <p class="brand-calendar-title" id="calTitle"></p>
+      <button type="button" class="brand-calendar-nav" id="calNext" aria-label="Mese successivo">
+        <svg viewBox="0 0 12 12"><path d="M4 2l4 4-4 4"/></svg>
+      </button>
+    </div>
+    <div class="brand-calendar-dows" id="calDows"></div>
+    <div class="brand-calendar-grid" id="calGrid"></div>
+  </div>
+
   <script>
     const loginCard = document.getElementById('loginCard');
     const gateCard = document.getElementById('gateCard');
     const dash = document.getElementById('dash');
     const pinEl = document.getElementById('pin');
     const staffMemberEl = document.getElementById('staffMember');
-    const staffDropdown = document.getElementById('staffDropdown');
-    const staffMemberTrigger = document.getElementById('staffMemberTrigger');
-    const staffMemberMenu = document.getElementById('staffMemberMenu');
-    const staffMemberLabel = document.getElementById('staffMemberLabel');
     const lblPin = document.getElementById('lbl-pin');
     const lblStaff = document.getElementById('lbl-staff');
     const staffUserLabel = document.getElementById('staffUserLabel');
@@ -7204,7 +7489,20 @@
     const noteGuestNameEl = document.getElementById('noteGuestName');
     const noteRoomEl = document.getElementById('noteRoom');
     const noteCategoryEl = document.getElementById('noteCategory');
+    const noteCategoryDropdown = document.getElementById('noteCategoryDropdown');
+    const noteCategoryTrigger = document.getElementById('noteCategoryTrigger');
+    const noteCategoryMenu = document.getElementById('noteCategoryMenu');
+    const noteCategoryValue = document.getElementById('noteCategoryValue');
+    const noteCategoryIconEl = document.getElementById('noteCategoryIcon');
     const noteDueAtEl = document.getElementById('noteDueAt');
+    const noteDueDateEl = document.getElementById('noteDueDate');
+    const noteDueTimeEl = document.getElementById('noteDueTime');
+    const noteDueDateTrigger = document.getElementById('noteDueDateTrigger');
+    const noteDueDateValue = document.getElementById('noteDueDateValue');
+    const noteDueTimeDropdown = document.getElementById('noteDueTimeDropdown');
+    const noteDueTimeTrigger = document.getElementById('noteDueTimeTrigger');
+    const noteDueTimeMenu = document.getElementById('noteDueTimeMenu');
+    const noteDueTimeValue = document.getElementById('noteDueTimeValue');
     const noteInstructionEl = document.getElementById('noteInstruction');
 
     let alertPollTimer = null;
@@ -7376,8 +7674,9 @@
     }
 
     function closeAllDropdowns() {
-      closeStaffMenu();
       closeNoteCategoryMenu();
+      closeNoteTimeMenu();
+      closeNoteBrandCalendar();
       closeNotifyMenu();
     }
 
@@ -7534,11 +7833,59 @@
       activePanelEl()?.classList.toggle('panel-busy', Boolean(busy));
     }
 
+    function resetFixedMenu(menuEl) {
+      if (!menuEl) return;
+      menuEl.hidden = true;
+      menuEl.classList.add('hidden');
+      menuEl.classList.remove('is-flip-up', 'is-sheet-fixed');
+      menuEl.style.position = '';
+      menuEl.style.zIndex = '';
+      menuEl.style.left = '';
+      menuEl.style.right = '';
+      menuEl.style.top = '';
+      menuEl.style.bottom = '';
+      menuEl.style.width = '';
+      menuEl.style.maxHeight = '';
+    }
+
+    function positionFixedMenu(triggerEl, menuEl, { preferredMax = 280 } = {}) {
+      if (!triggerEl || !menuEl) return;
+      const rect = triggerEl.getBoundingClientRect();
+      const vw = window.innerWidth || 360;
+      const vh = window.innerHeight || 640;
+      const gap = 8;
+      const pad = 12;
+      const width = Math.min(Math.max(rect.width, 220), vw - pad * 2);
+      let left = rect.left;
+      if (left + width > vw - pad) left = Math.max(pad, vw - width - pad);
+      if (left < pad) left = pad;
+      menuEl.classList.add('is-sheet-fixed');
+      menuEl.style.position = 'fixed';
+      menuEl.style.zIndex = '140';
+      menuEl.style.width = `${Math.round(width)}px`;
+      menuEl.style.left = `${Math.round(left)}px`;
+      menuEl.style.right = 'auto';
+      const spaceBelow = vh - rect.bottom - pad;
+      const spaceAbove = rect.top - pad;
+      let maxH = Math.min(preferredMax, spaceBelow - gap);
+      if (maxH < 132 && spaceAbove > spaceBelow) {
+        menuEl.classList.add('is-flip-up');
+        maxH = Math.min(preferredMax, spaceAbove - gap);
+        menuEl.style.bottom = `${Math.round(vh - rect.top + gap)}px`;
+        menuEl.style.top = 'auto';
+      } else {
+        menuEl.classList.remove('is-flip-up');
+        menuEl.style.top = `${Math.round(rect.bottom + gap)}px`;
+        menuEl.style.bottom = 'auto';
+      }
+      menuEl.style.maxHeight = `${Math.max(120, maxH)}px`;
+    }
+
     function noteDueAtFromParts(dueDate, dueTime) {
       const date = String(dueDate || '').trim();
       if (!date) return '';
       const time = String(dueTime || '').trim().slice(0, 5);
-      return time ? `${date}T${time}` : `${date}T09:00`;
+      return time ? `${date}T${time}` : date;
     }
 
     function noteDuePartsFromAt(value) {
@@ -7548,21 +7895,266 @@
       return { dueDate, dueTime: dueTime.slice(0, 5) };
     }
 
-    function closeNoteCategoryMenu() {}
-
-    function setNoteCategory(value) {
-      const key = NOTE_CATEGORY_META[value] ? value : 'other';
-      if (noteCategoryEl) noteCategoryEl.value = key;
+    function syncNoteDueAt() {
+      if (noteDueAtEl) {
+        noteDueAtEl.value = noteDueAtFromParts(noteDueDateEl?.value, noteDueTimeEl?.value);
+      }
     }
 
-    function renderNoteCategoryMenu(selected = 'other') {
-      if (!noteCategoryEl) return;
-      noteCategoryEl.innerHTML = Object.entries(NOTE_CATEGORY_META).map(([key, meta]) => (
-        `<option value="${escapeAttr(key)}"${key === selected ? ' selected' : ''}>${escapeHtml(meta.label)}</option>`
+    function ymdFromParts(y, m, d) {
+      return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    function parseYmdParts(iso) {
+      const match = String(iso || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!match) return null;
+      return { y: Number(match[1]), m: Number(match[2]) - 1, d: Number(match[3]) };
+    }
+
+    function formatNoteDateTrigger(iso) {
+      const raw = String(iso || '').trim();
+      if (!raw) return 'Scegli data';
+      if (raw === romeToday()) return 'Oggi';
+      const parsed = parseYmdParts(raw);
+      if (!parsed) return raw;
+      return new Intl.DateTimeFormat('it-IT', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }).format(new Date(parsed.y, parsed.m, parsed.d));
+    }
+
+    function paintNoteDueDateTrigger() {
+      const iso = String(noteDueDateEl?.value || '').trim();
+      if (noteDueDateValue) {
+        noteDueDateValue.textContent = formatNoteDateTrigger(iso);
+        noteDueDateValue.classList.toggle('is-placeholder', !iso);
+      }
+      noteDueDateTrigger?.classList.remove('is-invalid');
+      document.getElementById('lbl-note-date')?.classList.remove('label-error-state');
+      syncNoteDueAt();
+    }
+
+    function paintNoteDueTimeTrigger() {
+      const time = String(noteDueTimeEl?.value || '').trim().slice(0, 5);
+      if (noteDueTimeValue) {
+        noteDueTimeValue.textContent = time || 'Tutto il giorno';
+        noteDueTimeValue.classList.toggle('is-placeholder', !time);
+      }
+      syncNoteDueAt();
+    }
+
+    function setNoteSchedule(dueDate, dueTime) {
+      if (noteDueDateEl) noteDueDateEl.value = String(dueDate || '').trim();
+      if (noteDueTimeEl) noteDueTimeEl.value = String(dueTime || '').trim().slice(0, 5);
+      paintNoteDueDateTrigger();
+      paintNoteDueTimeTrigger();
+    }
+
+    const NOTE_CAL_DOWS = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+    let noteCalCursor = { y: 2026, m: 0 };
+    let noteCalOpen = false;
+
+    function closeNoteBrandCalendar() {
+      const cal = document.getElementById('brandCalendar');
+      if (!cal || cal.hidden) {
+        noteCalOpen = false;
+        noteDueDateTrigger?.setAttribute('aria-expanded', 'false');
+        return;
+      }
+      cal.hidden = true;
+      noteCalOpen = false;
+      noteDueDateTrigger?.setAttribute('aria-expanded', 'false');
+    }
+
+    function positionNoteBrandCalendar() {
+      const cal = document.getElementById('brandCalendar');
+      if (!cal || !noteDueDateTrigger) return;
+      const tr = noteDueDateTrigger.getBoundingClientRect();
+      const vw = window.innerWidth || 360;
+      const vh = window.innerHeight || 640;
+      const w = Math.min(292, vw - 24);
+      cal.style.width = `${w}px`;
+      cal.removeAttribute('hidden');
+      const h = Math.max(cal.offsetHeight || 300, 280);
+      let left = tr.left;
+      if (left + w > vw - 12) left = Math.max(12, vw - w - 12);
+      if (left < 12) left = 12;
+      let top = tr.bottom + 6;
+      if (top + h > vh - 12 && tr.top - h - 6 > 12) {
+        top = tr.top - h - 6;
+      }
+      cal.style.left = `${Math.round(left)}px`;
+      cal.style.top = `${Math.round(top)}px`;
+    }
+
+    function renderNoteBrandCalendar() {
+      const cal = document.getElementById('brandCalendar');
+      const title = document.getElementById('calTitle');
+      const dows = document.getElementById('calDows');
+      const grid = document.getElementById('calGrid');
+      if (!cal || !title || !dows || !grid) return;
+      const selected = String(noteDueDateEl?.value || '').trim();
+      const cursor = new Date(noteCalCursor.y, noteCalCursor.m, 1);
+      title.textContent = new Intl.DateTimeFormat('it-IT', {
+        month: 'long',
+        year: 'numeric',
+      }).format(cursor);
+      if (!dows.dataset.ready) {
+        dows.dataset.ready = '1';
+        dows.innerHTML = NOTE_CAL_DOWS
+          .map((label) => `<span class="brand-calendar-dow">${label}</span>`)
+          .join('');
+      }
+      const firstDow = (cursor.getDay() + 6) % 7;
+      const daysInMonth = new Date(noteCalCursor.y, noteCalCursor.m + 1, 0).getDate();
+      const today = romeToday();
+      const cells = [];
+      for (let i = 0; i < firstDow; i += 1) {
+        cells.push('<span class="brand-calendar-day is-pad"></span>');
+      }
+      for (let d = 1; d <= daysInMonth; d += 1) {
+        const iso = ymdFromParts(noteCalCursor.y, noteCalCursor.m, d);
+        const on = iso === selected;
+        const isToday = iso === today;
+        cells.push(
+          `<button type="button" class="brand-calendar-day${on ? ' is-on' : ''}${isToday ? ' is-today' : ''}" data-ymd="${iso}">${d}</button>`,
+        );
+      }
+      grid.innerHTML = cells.join('');
+    }
+
+    function openNoteBrandCalendar() {
+      closeNoteCategoryMenu();
+      closeNoteTimeMenu();
+      if (noteCalOpen) {
+        closeNoteBrandCalendar();
+        return;
+      }
+      const parsed = parseYmdParts(noteDueDateEl?.value) || parseYmdParts(romeToday()) || {
+        y: new Date().getFullYear(),
+        m: new Date().getMonth(),
+      };
+      noteCalCursor = { y: parsed.y, m: parsed.m };
+      noteCalOpen = true;
+      noteDueDateTrigger?.setAttribute('aria-expanded', 'true');
+      renderNoteBrandCalendar();
+      positionNoteBrandCalendar();
+    }
+
+    function pickNoteBrandCalendarDay(iso) {
+      if (!iso) return;
+      if (noteDueDateEl) noteDueDateEl.value = iso;
+      paintNoteDueDateTrigger();
+      closeNoteBrandCalendar();
+    }
+
+    function noteTimeSlots(selected) {
+      const slots = [{ value: '', label: 'Tutto il giorno' }];
+      for (let h = 6; h <= 23; h += 1) {
+        for (let m = 0; m < 60; m += 15) {
+          const value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+          slots.push({ value, label: value });
+        }
+      }
+      const extra = String(selected || '').trim().slice(0, 5);
+      if (extra && !slots.some((slot) => slot.value === extra)) {
+        slots.splice(1, 0, { value: extra, label: extra });
+      }
+      return slots;
+    }
+
+    function closeNoteTimeMenu() {
+      noteDueTimeDropdown?.classList.remove('is-open');
+      noteDueTimeTrigger?.setAttribute('aria-expanded', 'false');
+      resetFixedMenu(noteDueTimeMenu);
+    }
+
+    function renderNoteTimeMenu(selected = '') {
+      if (!noteDueTimeMenu) return;
+      const key = String(selected || '').trim().slice(0, 5);
+      noteDueTimeMenu.innerHTML = noteTimeSlots(key).map((slot) => (
+        `<button type="button" class="ui-menu-item${slot.value === key ? ' is-selected' : ''}" role="option" data-time="${escapeAttr(slot.value)}">
+          <span class="ui-menu-item-label">${escapeHtml(slot.label)}</span>
+          ${MENU_ITEM_CHECK}
+        </button>`
       )).join('');
     }
 
-    renderNoteCategoryMenu();
+    function openNoteTimeMenu() {
+      closeNoteCategoryMenu();
+      closeNoteBrandCalendar();
+      if (!noteDueTimeMenu || !noteDueTimeTrigger) return;
+      if (noteDueTimeDropdown?.classList.contains('is-open')) {
+        closeNoteTimeMenu();
+        return;
+      }
+      renderNoteTimeMenu(noteDueTimeEl?.value);
+      noteDueTimeDropdown?.classList.add('is-open');
+      noteDueTimeMenu.hidden = false;
+      noteDueTimeMenu.classList.remove('hidden');
+      noteDueTimeTrigger.setAttribute('aria-expanded', 'true');
+      positionFixedMenu(noteDueTimeTrigger, noteDueTimeMenu, { preferredMax: 240 });
+      const selected = noteDueTimeMenu.querySelector('.is-selected');
+      selected?.scrollIntoView({ block: 'nearest' });
+    }
+
+    function setNoteTime(value) {
+      if (noteDueTimeEl) noteDueTimeEl.value = String(value || '').trim().slice(0, 5);
+      paintNoteDueTimeTrigger();
+      closeNoteTimeMenu();
+    }
+
+    function closeNoteCategoryMenu() {
+      noteCategoryDropdown?.classList.remove('is-open');
+      noteCategoryTrigger?.setAttribute('aria-expanded', 'false');
+      resetFixedMenu(noteCategoryMenu);
+    }
+
+    function setNoteCategory(value) {
+      const key = NOTE_CATEGORY_META[value] ? value : 'other';
+      const meta = NOTE_CATEGORY_META[key];
+      if (noteCategoryEl) noteCategoryEl.value = key;
+      if (noteCategoryValue) noteCategoryValue.textContent = meta.label;
+      if (noteCategoryIconEl) {
+        noteCategoryIconEl.innerHTML = meta.icon;
+        noteCategoryIconEl.className = `ui-dropdown-leading ui-menu-item-icon--${meta.tone}`;
+      }
+      closeNoteCategoryMenu();
+    }
+
+    function renderNoteCategoryMenu(selected = 'other') {
+      if (!noteCategoryMenu) return;
+      const key = NOTE_CATEGORY_META[selected] ? selected : 'other';
+      noteCategoryMenu.innerHTML = Object.entries(NOTE_CATEGORY_META).map(([id, meta]) => (
+        `<button type="button" class="ui-menu-item${id === key ? ' is-selected' : ''}" role="option" data-category="${escapeAttr(id)}">
+          <span class="ui-menu-item-icon ui-menu-item-icon--${meta.tone}">${meta.icon}</span>
+          <span class="ui-menu-item-label">${escapeHtml(meta.label)}<span class="ui-menu-item-desc">${escapeHtml(meta.desc)}</span></span>
+          ${MENU_ITEM_CHECK}
+        </button>`
+      )).join('');
+    }
+
+    function openNoteCategoryMenu() {
+      closeNoteTimeMenu();
+      closeNoteBrandCalendar();
+      if (!noteCategoryMenu || !noteCategoryTrigger) return;
+      if (noteCategoryDropdown?.classList.contains('is-open')) {
+        closeNoteCategoryMenu();
+        return;
+      }
+      renderNoteCategoryMenu(noteCategoryEl?.value || 'other');
+      noteCategoryDropdown?.classList.add('is-open');
+      noteCategoryMenu.hidden = false;
+      noteCategoryMenu.classList.remove('hidden');
+      noteCategoryTrigger.setAttribute('aria-expanded', 'true');
+      positionFixedMenu(noteCategoryTrigger, noteCategoryMenu, { preferredMax: 320 });
+    }
+
+    function populateNoteCategories(selected = 'other') {
+      setNoteCategory(selected);
+      renderNoteCategoryMenu(selected);
+    }
 
     function clearServerToast() {
       errorEl.classList.remove('is-on', 'is-err');
@@ -7607,6 +8199,7 @@
 
     function animateStaggerContainer(container, itemSelector) {
       if (!container || prefersReducedMotion()) return;
+      if (itemSelector === 'tr') return;
       container.classList.remove('is-staggering');
       void container.offsetWidth;
       container.classList.add('is-staggering');
@@ -7623,78 +8216,18 @@
       el.classList.add('ios-shake');
     }
 
-    let staffRoster = [];
-
-    function closeStaffMenu() {
-      if (!staffDropdown || !staffMemberMenu || !staffMemberTrigger) return;
-      staffDropdown.classList.remove('is-open');
-      staffMemberMenu.hidden = true;
-      staffMemberMenu.classList.add('hidden');
-      staffMemberMenu.querySelectorAll('.ui-menu-item.is-focused').forEach((el) => el.classList.remove('is-focused'));
-      staffMemberTrigger.setAttribute('aria-expanded', 'false');
-      gateCard?.classList.remove('is-menu-open');
-    }
-
-    function openStaffMenu() {
-      if (!staffDropdown || !staffMemberMenu || !staffMemberTrigger) return;
-      closeNotifyMenu();
-      staffDropdown.classList.add('is-open');
-      staffMemberMenu.hidden = false;
-      staffMemberMenu.classList.remove('hidden');
-      staffMemberTrigger.setAttribute('aria-expanded', 'true');
-      gateCard?.classList.add('is-menu-open');
-      positionDropdownMenu(staffDropdown, staffMemberMenu);
-      const items = dropdownMenuItems(staffMemberMenu, '.ui-menu-item[role="option"]');
-      const selected = items.findIndex((el) => el.classList.contains('is-selected'));
-      items.forEach((el, i) => el.classList.toggle('is-focused', i === (selected >= 0 ? selected : 0)));
-    }
-
-    function toggleStaffMenu() {
-      if (staffDropdown?.classList.contains('is-open')) closeStaffMenu();
-      else openStaffMenu();
-    }
-
     function isUsableStaffPassword(value) {
       const pin = String(value || '');
       return pin.length >= 4 && pin.length <= 64 && !/\s/.test(pin);
     }
 
-    function staffMenuCaption(member) {
-      return member?.initial || member?.label || member?.id || '';
-    }
-
-    function setStaffSelection(id) {
-      const member = staffRoster.find((m) => m.id === id);
-      if (staffMemberEl) staffMemberEl.value = member ? member.id : '';
-      if (staffMemberLabel) {
-        staffMemberLabel.textContent = member ? staffMenuCaption(member) : 'Seleziona…';
-        staffMemberLabel.classList.toggle('is-placeholder', !member);
-      }
-      staffMemberMenu?.querySelectorAll('[data-staff-id]').forEach((btn) => {
-        const selected = btn.getAttribute('data-staff-id') === (member?.id || '');
-        btn.classList.toggle('is-selected', selected);
-        btn.setAttribute('aria-selected', selected ? 'true' : 'false');
-      });
-    }
-
-    function renderStaffMenu(staff) {
-      staffRoster = staff;
-      if (!staffMemberMenu) return;
-      if (!staff.length) {
-        staffMemberMenu.innerHTML = '<span class="ui-menu-empty">Nessun receptionist configurato</span>';
-        return;
-      }
-      staffMemberMenu.innerHTML = staff.map((member) => (
-        `<button type="button" class="ui-menu-item" role="option" data-staff-id="${escapeAttr(member.id)}" aria-selected="false">${escapeHtml(staffMenuCaption(member))}</button>`
-      )).join('');
-      setStaffSelection(staffMemberEl?.value || '');
-    }
+    function closeStaffMenu() {}
 
     function showPinError() {
       lblPin.classList.add('label-error-state');
       lblStaff?.classList.add('label-error-state');
       pinEl.classList.add('is-invalid');
-      staffMemberTrigger?.classList.add('is-invalid');
+      staffMemberEl?.classList.add('is-invalid');
       shake(gateCard);
     }
 
@@ -7702,7 +8235,7 @@
       lblPin.classList.remove('label-error-state');
       lblStaff?.classList.remove('label-error-state');
       pinEl.classList.remove('is-invalid');
-      staffMemberTrigger?.classList.remove('is-invalid');
+      staffMemberEl?.classList.remove('is-invalid');
     }
 
     function escapeHtml(s) {
@@ -7814,7 +8347,7 @@
       inhouse: 'Soggiorno in corso',
       blacklist: 'Lista reception',
       settings: 'Reception · account e automazioni',
-      info: 'Canoni, ricavi e impatto sullo staff',
+      info: 'Beta v1.4',
     };
 
     const STAFF_SETTINGS_KEY = 'hotelCanalStaffSettings';
@@ -7872,7 +8405,6 @@
       currentStaff = null;
       setStaffUserLabel(null);
       showLogin();
-      await loadLoginInfo();
     }
 
     function scheduleStaffIdleLogout() {
@@ -7904,10 +8436,6 @@
     function applyStaffSettings(prefs) {
       writeStaffSettings(prefs);
       bindStaffIdleWatch();
-    }
-
-    function populateNoteCategories(selected = 'other') {
-      renderNoteCategoryMenu(selected);
     }
 
     function canSeeStaffInfo() {
@@ -7979,7 +8507,7 @@
     }
 
     function resetRoadmap() {
-      if (infoFooterLabel) infoFooterLabel.textContent = 'Registro direzione';
+      if (infoFooterLabel) infoFooterLabel.textContent = 'Beta v1.4';
     }
 
     async function loadRoadmap() {
@@ -8510,21 +9038,20 @@
 
     function maskedContactCell(row, kind, masked, hasValue, textClass, revealAttr, labelShow, labelHide) {
       const label = kind === 'phone' ? 'Telefono' : 'Email';
-      if (!hasValue) {
-        return `<div class="secure-cell-wrapper is-empty">
-          <div class="contact-stack">
-            <span class="contact-ios-label">${label}</span>
-            <span class="data-empty" aria-hidden="true">—</span>
-          </div>
-        </div>`;
-      }
+      const empty = !hasValue;
       const copyHint = kind === 'phone' ? 'Doppio tap per copiare telefono' : 'Doppio tap per copiare email';
-      return `<div class="secure-cell-wrapper">
+      const textInner = empty
+        ? `<span class="data-empty" aria-hidden="true">—</span>`
+        : `<span class="phone-text contact-copy-target ${textClass}" data-${kind}-text="${row.id}" data-copy-kind="${kind}" data-mask="${escapeAttr(masked)}" title="${escapeAttr(copyHint)}" tabindex="0" role="button" aria-label="${escapeAttr(copyHint)}">${escapeHtml(masked)}</span>`;
+      const revealBtn = empty
+        ? `<button type="button" class="btn-reveal" disabled tabindex="-1" aria-hidden="true">${EYE_ICON}</button>`
+        : `<button type="button" class="btn-reveal" data-reveal-${kind}="${row.id}" aria-label="${labelShow}">${EYE_ICON}</button>`;
+      return `<div class="secure-cell-wrapper${empty ? ' is-empty' : ''}">
         <div class="contact-stack">
           <span class="contact-ios-label">${label}</span>
-          <span class="phone-text contact-copy-target ${textClass}" data-${kind}-text="${row.id}" data-copy-kind="${kind}" data-mask="${escapeAttr(masked)}" title="${escapeAttr(copyHint)}" tabindex="0" role="button" aria-label="${escapeAttr(copyHint)}">${escapeHtml(masked)}</span>
+          ${textInner}
         </div>
-        <button type="button" class="btn-reveal" data-reveal-${kind}="${row.id}" aria-label="${labelShow}">${EYE_ICON}</button>
+        ${revealBtn}
       </div>`;
     }
 
@@ -8668,6 +9195,8 @@
     function openNoteSheet(ctx = {}) {
       closeStaffMenu();
       closeNoteCategoryMenu();
+      closeNoteTimeMenu();
+      closeNoteBrandCalendar();
       closeNotifyMenu();
       closeRoomSheet();
       closeStaffSheet();
@@ -8676,9 +9205,9 @@
       noteGuestNameEl.value = ctx.guestName || '';
       noteRoomEl.value = ctx.roomNumber || '';
       populateNoteCategories(ctx.category || 'other');
-      noteDueAtEl.value = noteDueAtFromParts(ctx.dueDate || selectedDate || '', ctx.dueTime || '');
+      setNoteSchedule(ctx.dueDate || selectedDate || lastToday || '', ctx.dueTime || '');
       noteInstructionEl.value = ctx.instruction || '';
-      [noteGuestNameEl, noteRoomEl, noteDueAtEl, noteInstructionEl]
+      [noteGuestNameEl, noteRoomEl, noteDueDateTrigger, noteInstructionEl]
         .forEach((el) => el?.classList.remove('is-invalid'));
       ['lbl-note-guest', 'lbl-note-date', 'lbl-note-instruction'].forEach((id) => {
         document.getElementById(id)?.classList.remove('label-error-state');
@@ -8692,6 +9221,8 @@
 
     function closeNoteSheet() {
       closeNoteCategoryMenu();
+      closeNoteTimeMenu();
+      closeNoteBrandCalendar();
       animateSheetClose(noteSheet, () => {
         noteSheetContext = { mode: 'create', noteId: null, checkinId: null };
         unlockSheetScroll();
@@ -9207,7 +9738,7 @@
       paintInboxBadge(payload.count ?? lastInboxNotes.length);
       if (!notifyList) return;
       if (!lastInboxNotes.length) {
-        notifyList.innerHTML = '<p class="notify-empty">Nessuna nota da altri</p>';
+        notifyList.innerHTML = '<p class="notify-empty">Qui arrivano le note degli altri. Per aggiungerne una su un ospite, tocca Nuova nota.</p>';
         return;
       }
       notifyList.innerHTML = lastInboxNotes.map((note) => {
@@ -9794,6 +10325,68 @@
     dashScrim?.addEventListener('click', closeDashNav);
     btnAddBlacklist.addEventListener('click', () => openBlacklistSheet({ mode: 'manual', guestName: '', notes: '' }));
     btnAddNote?.addEventListener('click', () => openNoteSheet({ mode: 'create', dueDate: lastToday || selectedDate }));
+    document.getElementById('btnNotifyAddNote')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeNotifyMenu();
+      openNoteSheet({ mode: 'create', dueDate: lastToday || selectedDate });
+    });
+
+    noteCategoryTrigger?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openNoteCategoryMenu();
+    });
+    noteCategoryMenu?.addEventListener('click', (e) => {
+      const item = e.target.closest('[data-category]');
+      if (!item) return;
+      e.preventDefault();
+      setNoteCategory(item.getAttribute('data-category'));
+      noteCategoryTrigger?.focus();
+    });
+    noteDueDateTrigger?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openNoteBrandCalendar();
+    });
+    noteDueTimeTrigger?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openNoteTimeMenu();
+    });
+    noteDueTimeMenu?.addEventListener('click', (e) => {
+      const item = e.target.closest('[data-time]');
+      if (!item) return;
+      e.preventDefault();
+      setNoteTime(item.getAttribute('data-time') || '');
+      noteDueTimeTrigger?.focus();
+    });
+    document.getElementById('calPrev')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      noteCalCursor = noteCalCursor.m === 0
+        ? { y: noteCalCursor.y - 1, m: 11 }
+        : { y: noteCalCursor.y, m: noteCalCursor.m - 1 };
+      renderNoteBrandCalendar();
+      positionNoteBrandCalendar();
+    });
+    document.getElementById('calNext')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      noteCalCursor = noteCalCursor.m === 11
+        ? { y: noteCalCursor.y + 1, m: 0 }
+        : { y: noteCalCursor.y, m: noteCalCursor.m + 1 };
+      renderNoteBrandCalendar();
+      positionNoteBrandCalendar();
+    });
+    document.getElementById('calGrid')?.addEventListener('click', (e) => {
+      const day = e.target.closest('[data-ymd]');
+      if (!day) return;
+      e.preventDefault();
+      e.stopPropagation();
+      pickNoteBrandCalendarDay(day.getAttribute('data-ymd'));
+    });
+    document.getElementById('brandCalendar')?.addEventListener('click', (e) => e.stopPropagation());
 
     noteSheetCloseBg?.addEventListener('click', closeNoteSheet);
     document.getElementById('noteSheetClose')?.addEventListener('click', closeNoteSheet);
@@ -10002,10 +10595,11 @@
       const lblGuest = document.getElementById('lbl-note-guest');
       const lblDate = document.getElementById('lbl-note-date');
       const lblInstruction = document.getElementById('lbl-note-instruction');
-      [noteGuestNameEl, noteDueAtEl, noteInstructionEl].forEach((el) => el?.classList.remove('is-invalid'));
+      [noteGuestNameEl, noteDueDateTrigger, noteInstructionEl].forEach((el) => el?.classList.remove('is-invalid'));
       [lblGuest, lblDate, lblInstruction].forEach((el) => el?.classList.remove('label-error-state'));
-      const dueParts = noteDuePartsFromAt(noteDueAtEl.value);
-      if (!guestName || !instruction || !dueParts.dueDate) {
+      const dueDate = String(noteDueDateEl?.value || '').trim();
+      const dueTime = String(noteDueTimeEl?.value || '').trim().slice(0, 5);
+      if (!guestName || !instruction || !dueDate) {
         if (!guestName) {
           noteGuestNameEl.classList.add('is-invalid');
           lblGuest?.classList.add('label-error-state');
@@ -10014,8 +10608,8 @@
           noteInstructionEl.classList.add('is-invalid');
           lblInstruction?.classList.add('label-error-state');
         }
-        if (!dueParts.dueDate) {
-          noteDueAtEl.classList.add('is-invalid');
+        if (!dueDate) {
+          noteDueDateTrigger?.classList.add('is-invalid');
           lblDate?.classList.add('label-error-state');
         }
         shake(noteSheet.querySelector('.sheet-panel'));
@@ -10025,8 +10619,8 @@
         guestName,
         roomNumber: noteRoomEl.value.trim(),
         category: noteCategoryEl?.value || 'other',
-        dueDate: dueParts.dueDate,
-        dueTime: dueParts.dueTime,
+        dueDate,
+        dueTime,
         instruction,
         checkinId: noteSheetContext.checkinId,
       };
@@ -10208,15 +10802,6 @@
       }
     }
 
-    async function loadLoginInfo() {
-      if (!staffMemberMenu) return;
-      try {
-        const res = await fetch('/api/staff/login-info', { credentials: 'same-origin' });
-        const body = await res.json().catch(() => ({}));
-        renderStaffMenu(Array.isArray(body.staff) ? body.staff : []);
-      } catch (_) { /* ignore */ }
-    }
-
     async function checkSession() {
       const res = await fetch('/api/staff/session', { credentials: 'same-origin' });
       const body = await res.json().catch(() => ({}));
@@ -10228,7 +10813,6 @@
         currentStaff = null;
         setStaffUserLabel(null);
         showLogin();
-        await loadLoginInfo();
       }
     }
 
@@ -10236,7 +10820,6 @@
       e.preventDefault();
       e.stopPropagation();
       clearPinError();
-      closeStaffMenu();
       const btnLogin = document.getElementById('btnLogin');
       const staff = staffMemberEl?.value?.trim() || '';
       const pin = pinEl.value.trim();
@@ -10263,56 +10846,25 @@
       return false;
     });
 
-    staffMemberTrigger?.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      clearPinError();
-      toggleStaffMenu();
-    });
-
-    staffMemberTrigger?.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (!staffDropdown?.classList.contains('is-open')) openStaffMenu();
-        const items = dropdownMenuItems(staffMemberMenu, '.ui-menu-item[role="option"]');
-        const selected = items.findIndex((el) => el.classList.contains('is-selected'));
-        focusDropdownItem(staffMemberMenu, '.ui-menu-item[role="option"]', selected >= 0 ? selected : 0);
-      }
-    });
-
-    staffMemberMenu?.addEventListener('click', (e) => {
-      const item = e.target.closest('[data-staff-id]');
-      if (!item) return;
-      setStaffSelection(item.getAttribute('data-staff-id'));
-      clearPinError();
-      closeStaffMenu();
-      pinEl?.focus();
-    });
-
-    staffMemberMenu?.addEventListener('keydown', (e) => {
-      if (staffMemberMenu.hidden) return;
-      handleDropdownListKeys(e, {
-        menuEl: staffMemberMenu,
-        triggerEl: staffMemberTrigger,
-        itemSelector: '.ui-menu-item[role="option"]',
-        onPick: (item) => {
-          setStaffSelection(item.getAttribute('data-staff-id'));
-          clearPinError();
-          pinEl?.focus();
-        },
-        closeFn: closeStaffMenu,
-      });
-    });
+    staffMemberEl?.addEventListener('input', clearPinError);
+    pinEl?.addEventListener('input', clearPinError);
 
     document.addEventListener('click', (e) => {
-      if (
-        staffDropdown?.classList.contains('is-open') &&
-        !staffDropdown.contains(e.target)
-      ) {
-        closeStaffMenu();
-      }
       if (notifyWrap?.classList.contains('is-open') && !notifyWrap.contains(e.target)) {
         closeNotifyMenu();
+      }
+      if (noteCalOpen
+        && !e.target.closest('#brandCalendar')
+        && !e.target.closest('#noteDueDateTrigger')) {
+        closeNoteBrandCalendar();
+      }
+      if (noteCategoryDropdown?.classList.contains('is-open')
+        && !e.target.closest('#noteCategoryDropdown')) {
+        closeNoteCategoryMenu();
+      }
+      if (noteDueTimeDropdown?.classList.contains('is-open')
+        && !e.target.closest('#noteDueTimeDropdown')) {
+        closeNoteTimeMenu();
       }
     });
 
@@ -10321,6 +10873,13 @@
         positionRowMenu(rowMenuAnchor);
       }
       if (notifyWrap?.classList.contains('is-open')) positionNotifyMenu();
+      if (noteCalOpen) positionNoteBrandCalendar();
+      if (noteCategoryDropdown?.classList.contains('is-open')) {
+        positionFixedMenu(noteCategoryTrigger, noteCategoryMenu, { preferredMax: 320 });
+      }
+      if (noteDueTimeDropdown?.classList.contains('is-open')) {
+        positionFixedMenu(noteDueTimeTrigger, noteDueTimeMenu, { preferredMax: 240 });
+      }
     });
 
     document.getElementById('btnLogout').addEventListener('click', async () => {
@@ -10329,7 +10888,6 @@
       setStaffUserLabel(null);
       resetRoadmap();
       showLogin();
-      await loadLoginInfo();
     });
 
     daysEl.addEventListener('click', (e) => {
@@ -10428,6 +10986,12 @@
           return;
         }
         if (noteSheet && !noteSheet.hidden) {
+          if (noteCalOpen || noteCategoryDropdown?.classList.contains('is-open') || noteDueTimeDropdown?.classList.contains('is-open')) {
+            closeNoteCategoryMenu();
+            closeNoteTimeMenu();
+            closeNoteBrandCalendar();
+            return;
+          }
           closeNoteSheet();
           return;
         }
@@ -10447,11 +11011,6 @@
           closeBlacklistSheet();
           return;
         }
-      }
-      if (e.key === 'Escape' && staffDropdown?.classList.contains('is-open')) {
-        closeStaffMenu();
-        staffMemberTrigger?.focus();
-        return;
       }
       if (e.key === 'Escape' && notifyWrap?.classList.contains('is-open')) {
         closeNotifyMenu();
@@ -10650,24 +11209,10 @@
           }
         }
       };
-      const pinLayout = () => {
-        try {
-          window.scrollTo(0, 0);
-          document.documentElement.scrollTop = 0;
-          document.body.scrollTop = 0;
-        } catch (_) {
-          /* ignore */
-        }
-      };
       const sync = () => {
         applyAppVh(rest);
-        const vv = window.visualViewport;
-        const inset = lock && vv && rest > 0
-          ? Math.max(0, rest - Math.round(vv.height + (vv.offsetTop || 0)))
-          : 0;
-        document.documentElement.style.setProperty('--kb-inset', `${inset}px`);
+        document.documentElement.style.setProperty('--kb-inset', '0px');
         if (!lock) return;
-        pinLayout();
         const el = document.activeElement;
         if (isField(el)) {
           window.requestAnimationFrame(() => scrollField(el));
@@ -10690,7 +11235,6 @@
         document.body.classList.add('is-keyboard-open');
         freezeGate();
         applyAppVh(rest);
-        pinLayout();
         sync();
       });
       document.addEventListener('focusout', () => {
@@ -10722,12 +11266,7 @@
         if (lock) sync();
       }, { passive: true });
       window.visualViewport?.addEventListener('scroll', () => {
-        if (lock) {
-          pinLayout();
-          sync();
-          return;
-        }
-        if (!document.body.classList.contains('is-dashboard')) pinLayout();
+        if (lock) sync();
       }, { passive: true });
       document.addEventListener('touchmove', (e) => {
         if (document.body.classList.contains('is-dashboard')) return;

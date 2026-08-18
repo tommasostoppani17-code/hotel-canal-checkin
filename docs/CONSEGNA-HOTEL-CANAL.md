@@ -19,8 +19,7 @@ Documento per **CANAL S.r.l. / reception**. Aggiornato al deploy con dashboard s
 ## 2. Accesso dashboard staff
 
 1. Apri **https://checkin-hotelcanal.it/staff**
-2. Scegli il tuo nome (Tommaso, John, Alejandro, Maria, Mizan, Payel, Sayeed)
-3. Inserisci la **password personale** (consegnata dal titolare / IT)
+2. Scrivi il tuo nome e la password personale (consegnata dal titolare / IT)
 
 La sessione dura **12 ore**. Poi rifare login.
 
@@ -88,7 +87,7 @@ Secret `CRON_SECRET` + variable `PUBLIC_URL` nel repo GitHub (workflow `cron-rep
 ## 5. Checklist go-live
 
 - [ ] Deploy Render completato (`/health` → 200)
-- [ ] `/api/staff/login-info` → `configured: true` (solo id + iniziali, non i nomi)
+- [ ] `/api/staff/login-info` → `configured: true` (nessuna lista nomi)
 - [ ] Tutti i `STAFF_PIN_*` impostati su Render (hash)
 - [ ] PIN consegnati agli incaricati nominati
 - [ ] Test login staff + lista clienti

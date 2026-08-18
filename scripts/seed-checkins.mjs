@@ -12,8 +12,16 @@ import {
   romeCalendarDate,
   logCheckinActivity,
   addToBlacklist,
+  listStaffRoster,
+  setStaffPinHash,
 } from '../server/db.js';
 import { encryptField } from '../server/crypto-fields.js';
+import { hashStaffPin } from '../server/staff-auth.js';
+
+if (process.env.RENDER === 'true') {
+  console.error('[seed] bloccato su Render — solo database locale');
+  process.exit(1);
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -22,7 +30,7 @@ const dbPath = process.env.DATABASE_PATH || path.join(rootDir, 'data', 'checkins
 const SEED_PREFIX = 'seed-demo-50';
 const TARGET = 50;
 
-const RECEPTIONISTS = ['TOMMASO', 'JOHN', 'ALEJANDRO', 'MARIA', 'MIZAN', 'PAYEL'];
+const RECEPTIONISTS = ['TOMMASO', 'JOHN', 'ALEJANDRO', 'MARIA', 'MIZAN', 'PAYEL', 'SAYEED'];
 
 const GUESTS = [
   ['Marco', 'Rossi'], ['Elena', 'Bianchi'], ['Luca', 'Ferrari'], ['Giulia', 'Romano'],
@@ -83,14 +91,12 @@ function buildPlan(today) {
   for (let i = 0; i < TARGET; i += 1) {
     const offset = dayOffsets[i];
     const stayDate = shiftRomeDate(today, offset);
-    const roomBase = offset === 0 ? 101 : offset === -1 ? 201 : offset === -2 ? 301 : 401;
-    const roomIndex = offset === 0 ? i : i - (offset === -1 ? 35 : offset === -2 ? 40 : 45);
     const [first, last] = GUESTS[i];
     plan.push({
       index: i + 1,
       guestName: `${first} ${last}`,
       stayDate,
-      roomNumber: String(roomBase + roomIndex),
+      roomNumber: String(801 + i),
       receptionist: RECEPTIONISTS[i % RECEPTIONISTS.length],
       phone: `+393${String(100000000 + i).slice(-9)}`,
       email: `ospite${String(i + 1).padStart(2, '0')}@canal-demo.test`,
@@ -109,10 +115,12 @@ function insertSeedRows(db, plan) {
   const insert = db.prepare(`
     INSERT INTO checkins (
       phone, email, guest_name, room_number, receptionist, guests_count,
-      coupon_token, privacy_accepted_at, stay_date, created_at, starred_at
+      coupon_token, coupon_sent_at, table_booking, privacy_accepted_at,
+      stay_date, checkout_date, created_at, starred_at
     ) VALUES (
       @phone, @email, @guestName, @roomNumber, @receptionist, @guestsCount,
-      @couponToken, datetime('now'), @stayDate, @createdAt, @starredAt
+      @couponToken, @couponSentAt, @tableBooking, datetime('now'),
+      @stayDate, @checkoutDate, @createdAt, @starredAt
     )
   `);
 
@@ -127,7 +135,10 @@ function insertSeedRows(db, plan) {
         receptionist: row.receptionist,
         guestsCount: row.guestsCount,
         couponToken: `${SEED_PREFIX}-${String(row.index).padStart(3, '0')}`,
+        couponSentAt: row.index % 3 !== 0 ? createdAtForDay(row.stayDate, row.hour, row.minute) : null,
+        tableBooking: row.index % 8 === 0 ? '20:15' : null,
         stayDate: row.stayDate,
+        checkoutDate: shiftRomeDate(row.stayDate, 2 + (row.index % 3)),
         createdAt: createdAtForDay(row.stayDate, row.hour, row.minute),
         starredAt: row.starred ? createdAtForDay(row.stayDate, row.hour, row.minute) : null,
       });
@@ -176,9 +187,20 @@ const existing = db
   .prepare(`SELECT COUNT(*) AS n FROM checkins WHERE coupon_token LIKE ?`)
   .get(`${SEED_PREFIX}-%`).n;
 
+const DEMO_PIN = '1234';
+function seedStaffPins() {
+  const roster = listStaffRoster({ activeOnly: false });
+  for (const member of roster) {
+    setStaffPinHash(member.id, hashStaffPin(DEMO_PIN));
+  }
+  console.log(`[seed] password staff locale: ${DEMO_PIN} (tutti i receptionist)`);
+}
+
+seedStaffPins();
+
 if (existing >= TARGET) {
   console.log(`[seed] già presenti ${existing} check-in demo (prefisso ${SEED_PREFIX})`);
-  console.log('[seed] usa --clean per rigenerare');
+  console.log('[seed] usa --clean per rigenerare gli ospiti');
   process.exit(0);
 }
 

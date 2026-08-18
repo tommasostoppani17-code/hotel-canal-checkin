@@ -1383,7 +1383,7 @@ export function buildCouponClaimPage({ token, guestName, error = '' }) {
       <label for="room">Numero stanza</label>
       <input id="room" name="roomNumber" type="text" required maxlength="20" placeholder="104" autocomplete="off">
       <label for="staff">Receptionist</label>
-      <input id="staff" name="receptionist" type="text" required maxlength="40" value="TOMMASO" autocomplete="off">
+      <input id="staff" name="receptionist" type="text" maxlength="40" placeholder="" autocomplete="off">
       <button type="submit">Attiva coupon</button>
     </form>
   </div>

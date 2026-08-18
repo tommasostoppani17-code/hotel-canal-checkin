@@ -512,6 +512,32 @@ export function getStaffMember(staffId, { includeInactive = false } = {}) {
   return mapStaffRosterRow(row);
 }
 
+function normalizeStaffLoginKey(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
+
+/** Login staff: nome digitato (Tommaso / TOMMASO / tommaso), mai una lista. */
+export function findStaffMemberByLogin(raw) {
+  const typed = String(raw || '').trim();
+  if (!typed) return null;
+  const key = normalizeStaffLoginKey(typed);
+  const slug = slugStaffId(typed);
+  if (!key && !slug) return null;
+  return (
+    listStaffRoster({ activeOnly: true }).find((member) => {
+      const id = String(member.id || '').toLowerCase();
+      const label = normalizeStaffLoginKey(member.label);
+      const name = normalizeStaffLoginKey(member.name);
+      return key === id || key === label || key === name || (slug && slug === id);
+    }) || null
+  );
+}
+
 function slugStaffId(label) {
   return String(label || '')
     .normalize('NFD')
@@ -578,6 +604,36 @@ function officialStaffNames() {
 function isOfficialReceptionist(value) {
   const name = String(value || '').trim().replace(/\s+/g, ' ').toUpperCase();
   return officialStaffNames().has(name);
+}
+
+function staffNameLetters(value) {
+  return normalizeStaffLoginKey(value).replace(/[^a-z]/g, '');
+}
+
+/** Ospite scrive il nome a mano (tomaso/tomazo → T → Tommaso; ma/mi se c’è collisione). */
+export function resolveReceptionistByInitials(raw) {
+  const letters = staffNameLetters(raw);
+  if (!letters) return null;
+  const roster = listStaffRoster({ activeOnly: true });
+  if (!roster.length) return null;
+
+  const exact = roster.find((member) => {
+    const name = staffNameLetters(member.name);
+    const label = staffNameLetters(member.label);
+    const id = staffNameLetters(member.id);
+    return letters === name || letters === label || letters === id;
+  });
+  if (exact) return exact;
+
+  const first = letters[0];
+  const byFirst = roster.filter((member) => staffNameLetters(member.label || member.name)[0] === first);
+  if (byFirst.length === 1) return byFirst[0];
+  if (byFirst.length > 1 && letters.length >= 2) {
+    const two = letters.slice(0, 2);
+    const byTwo = byFirst.filter((member) => staffNameLetters(member.label || member.name).startsWith(two));
+    if (byTwo.length === 1) return byTwo[0];
+  }
+  return null;
 }
 
 function rankingForOfficialStaff(rows) {

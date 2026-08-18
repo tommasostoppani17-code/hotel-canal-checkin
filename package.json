@@ -8,7 +8,8 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "qr": "node scripts/generate-qr.mjs",
-    "gdpr:verify": "node scripts/verify-gdpr-retention.mjs"
+    "gdpr:verify": "node scripts/verify-gdpr-retention.mjs",
+    "seed:demo": "node scripts/seed-checkins.mjs --clean"
   },
   "engines": {
     "node": ">=20"

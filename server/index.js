@@ -58,6 +58,8 @@ import {
   getStaffAccountStats,
   listStaffRoster,
   getStaffMember,
+  findStaffMemberByLogin,
+  resolveReceptionistByInitials,
   createStaffMember,
   deactivateStaffMember,
   RECEPTION_NOTE_CATEGORIES,
@@ -593,6 +595,18 @@ function normalizeReceptionist(raw) {
   return key || null;
 }
 
+/** Refusi ospiti → nome ufficiale roster (Tomaso/Tomazo → TOMMASO). Vuoto = facoltativo. */
+function resolveGuestReceptionist(raw) {
+  const typed = normalizeReceptionist(raw);
+  if (!typed) return null;
+  try {
+    const member = resolveReceptionistByInitials(typed);
+    return member?.name || null;
+  } catch (_) {
+    return null;
+  }
+}
+
 /** Solo cifre e un eventuale + iniziale (00… → +…). */
 function cleanPhone(phone) {
   let s = String(phone || '').replace(/[^\d+]/g, '');
@@ -711,9 +725,14 @@ function staffReportResponse(result) {
 
 const STAFF_COOKIE = 'hc_staff';
 const STAFF_SESSION_TTL_SEC = 60 * 60 * 12;
+const STAFF_LOGIN_DUMMY_HASH = hashStaffPin('__staff-login-dummy__');
 
 function staffMemberById(staffId) {
   return getStaffMember(staffId);
+}
+
+function staffMemberFromLogin(raw) {
+  return findStaffMemberByLogin(raw) || staffMemberById(raw);
 }
 
 function isStaffManager(staffId) {
@@ -1177,7 +1196,7 @@ app.post('/coupon/claim/:token', (req, res) => {
 
   const { row, payload } = resolved;
   const roomNumber = toUpperOrNull(req.body?.roomNumber || req.body?.room || '');
-  const receptionist = normalizeReceptionist(
+  const receptionist = resolveGuestReceptionist(
     req.body?.receptionist || req.body?.staff || '',
   );
 
@@ -1187,15 +1206,6 @@ app.post('/coupon/claim/:token', (req, res) => {
         token,
         guestName: row.guest_name,
         error: 'Inserisci il numero di stanza.',
-      }),
-    );
-  }
-  if (!receptionist) {
-    return res.status(400).type('html').send(
-      buildCouponClaimPage({
-        token,
-        guestName: row.guest_name,
-        error: 'Inserisci il nome del receptionist.',
       }),
     );
   }
@@ -1362,7 +1372,7 @@ async function handleCheckin(req, res) {
 
     const guestName = `${firstName} ${lastName}`;
     let roomNumber = toUpperOrNull(roomNumberRaw);
-    let receptionist = normalizeReceptionist(receptionistRaw);
+    let receptionist = resolveGuestReceptionist(receptionistRaw);
 
     let guestsCount = Number.parseInt(String(guestsRaw).trim(), 10);
     if (!Number.isFinite(guestsCount) || guestsCount < 1) guestsCount = 2;
@@ -1707,36 +1717,6 @@ function publicReceptionistList() {
   }
 }
 
-function staffLoginInitial(member, used) {
-  const source = String(member.label || member.name || member.id || '?').trim();
-  const letters = source.replace(/[^A-Za-zÀ-ÿ]/g, '') || String(member.id || 'x');
-  let base = letters.slice(0, 2).toUpperCase();
-  if (base.length < 2) {
-    base = String(member.id || 'xx').slice(0, 2).toUpperCase();
-  }
-  let candidate = base;
-  let n = 2;
-  while (used.has(candidate)) {
-    candidate = `${base}${n}`;
-    n += 1;
-  }
-  used.add(candidate);
-  return candidate;
-}
-
-/** Menu login staff: solo id interno + iniziali, mai il nome completo. */
-function staffLoginList() {
-  try {
-    const used = new Set();
-    return listStaffRoster({ activeOnly: true }).map((member) => ({
-      id: member.id,
-      initial: staffLoginInitial(member, used),
-    }));
-  } catch (_) {
-    return [];
-  }
-}
-
 function sendStaffLoginTooMany(res) {
   res.setHeader('Retry-After', String(Math.ceil(STAFF_LOGIN_WINDOW_MS / 1000)));
   return res.status(429).json({
@@ -1754,7 +1734,6 @@ app.get(
     res.setHeader('Cache-Control', 'no-store');
     return res.json({
       configured: staffAuthConfigured(),
-      staff: staffLoginList(),
     });
   },
 );
@@ -1769,7 +1748,9 @@ app.get(
 );
 
 app.post('/api/staff/login', staffLoginBurstLimit, (req, res) => {
-  const staffId = String(req.body?.staff || req.body?.staffId || '').trim().toLowerCase();
+  const typedName = String(req.body?.staff || req.body?.staffId || '').trim();
+  const member = staffMemberFromLogin(typedName);
+  const staffId = member?.id || typedName.toLowerCase();
   const ip = clientIp(req);
   if (staffLoginBlocked(req, staffId)) {
     logStaffAccess({ staffId, ip, success: false });
@@ -1780,14 +1761,11 @@ app.post('/api/staff/login', staffLoginBurstLimit, (req, res) => {
     return res.status(503).json({ error: 'Dashboard staff non configurata' });
   }
   const pin = String(req.body?.pin || '').trim();
-  const member = staffMemberById(staffId);
   const expected = member ? staffPinFor(member.id) : '';
-  if (
-    !member ||
-    !staffPinUsable(expected) ||
-    !pin ||
-    !verifyStaffPin(pin, expected)
-  ) {
+  const pinOk =
+    Boolean(pin) &&
+    verifyStaffPin(pin, staffPinUsable(expected) ? expected : STAFF_LOGIN_DUMMY_HASH);
+  if (!member || !staffPinUsable(expected) || !pinOk) {
     recordStaffLoginFail(req, staffId);
     logStaffAccess({ staffId, ip, success: false });
     console.warn(`[staff-login] fail staff=${staffId || '-'} ip=${ip || '-'}`);
