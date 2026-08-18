@@ -4177,14 +4177,19 @@
       body:not(.is-dashboard) .staff-shell {
         width: 100%;
         max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
         flex: 1 0 auto;
-        min-height: min(100%, auto);
+        min-height: calc(100dvh - (20px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)));
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
 
       .login-view {
         width: 100%;
-        min-height: calc(100dvh - (20px + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)));
+        flex: 1 0 auto;
+        min-height: 100%;
         padding: 6px 0 12px;
         align-items: center;
         justify-content: center;
