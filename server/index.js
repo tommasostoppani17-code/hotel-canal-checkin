@@ -809,7 +809,7 @@ function staffPinUsable(stored) {
 function bootstrapStaffPinHashesFromEnv() {
   const roster = listStaffRoster({ activeOnly: false });
   let copied = 0;
-  let skippedPlain = 0;
+  let hashedPlain = 0;
   for (const member of roster) {
     if (getStaffPinHash(member.id)) continue;
     const envVal = String(process.env[`STAFF_PIN_${member.id.toUpperCase()}`] || '').trim();
@@ -817,19 +817,17 @@ function bootstrapStaffPinHashesFromEnv() {
     if (isStaffPinHash(envVal)) {
       setStaffPinHash(member.id, envVal);
       copied += 1;
-    } else if (process.env.RENDER !== 'true') {
+    } else if (isUsableStaffPassword(envVal)) {
       setStaffPinHash(member.id, hashStaffPin(envVal));
-      copied += 1;
-    } else {
-      skippedPlain += 1;
+      hashedPlain += 1;
     }
   }
   if (copied) {
     console.log(`[staff] Copiati ${copied} hash password da env al database`);
   }
-  if (skippedPlain) {
+  if (hashedPlain) {
     console.warn(
-      `[staff] Ignorati ${skippedPlain} STAFF_PIN_* in chiaro su Render — usa hash scrypt (node scripts/hash-staff-pin.mjs)`,
+      `[staff] Convertiti ${hashedPlain} STAFF_PIN_* da chiaro a hash nel database — rimuovi i valori in chiaro da Render dopo il login`,
     );
   }
 }
