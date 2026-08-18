@@ -85,6 +85,7 @@
       --ios-green: #34C759;
       --hover-ease: 180ms ease;
       --kb-inset: 0px;
+      --app-vh: 100svh;
     }
 
     * {
@@ -108,15 +109,14 @@
     }
 
     body:not(.is-dashboard) {
-      min-height: 100dvh;
-      height: auto;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      min-height: var(--app-vh, 100svh);
+      height: var(--app-vh, 100svh);
+      max-height: var(--app-vh, 100svh);
+      overflow: hidden;
       padding:
         calc(16px + env(safe-area-inset-top, 0px))
         24px
-        calc(16px + env(safe-area-inset-bottom, 0px) + var(--kb-inset, 0px))
+        calc(16px + env(safe-area-inset-bottom, 0px))
         24px;
       display: flex;
       justify-content: center;
@@ -125,7 +125,8 @@
     }
 
     body.is-dashboard {
-      height: 100%;
+      height: var(--app-vh, 100svh);
+      max-height: var(--app-vh, 100svh);
       overflow: hidden;
       background: linear-gradient(
         165deg,
@@ -136,7 +137,7 @@
     }
 
     html:has(body.is-dashboard) {
-      height: 100%;
+      height: var(--app-vh, 100svh);
       overflow: hidden;
     }
 
@@ -190,7 +191,7 @@
       z-index: 2;
       width: 100%;
       height: 100%;
-      min-height: 100dvh;
+      min-height: var(--app-vh, 100svh);
       display: flex;
       flex-direction: column;
     }
@@ -200,12 +201,16 @@
       max-width: 380px;
       height: auto;
       min-height: 0;
+      max-height: 100%;
       flex: 0 1 auto;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     body.is-dashboard .staff-shell {
-      height: 100dvh;
-      max-height: 100dvh;
+      height: var(--app-vh, 100svh);
+      max-height: var(--app-vh, 100svh);
+      min-height: 0;
     }
 
     input, button, textarea, select {
@@ -468,7 +473,7 @@
     }
 
     .gate-card.is-menu-open {
-      overflow: visible;
+      overflow: hidden;
     }
 
     .gate-form .field,
@@ -661,16 +666,20 @@
 
     .apple-inline-list {
       display: none;
-      position: relative;
-      z-index: 2;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
       width: 100%;
-      height: 220px;
-      margin-top: 8px;
+      height: 176px;
+      margin-top: 0;
       overflow: hidden;
       background: #fff;
       border: 1px solid #d1d1d6;
       border-radius: var(--radius-ui);
-      box-shadow: 0 4px 16px rgba(18, 68, 83, 0.08);
+      box-shadow:
+        0 8px 24px rgba(18, 68, 83, 0.14),
+        0 2px 6px rgba(18, 68, 83, 0.06);
+      z-index: 50;
     }
 
     .apple-inline-list[hidden] {
@@ -690,10 +699,7 @@
       width: 100%;
       height: 176px;
       margin-top: 0;
-      z-index: 40;
-      box-shadow:
-        0 8px 24px rgba(18, 68, 83, 0.14),
-        0 2px 6px rgba(18, 68, 83, 0.06);
+      z-index: 50;
     }
 
     .gate-form .ui-dropdown.is-open .apple-inline-list:not([hidden]) {
@@ -1070,7 +1076,7 @@
       flex-shrink: 0;
       width: 264px;
       height: 100%;
-      max-height: 100dvh;
+      max-height: var(--app-vh, 100svh);
       display: flex;
       flex-direction: column;
       padding: 0;
@@ -2897,6 +2903,12 @@
       -webkit-overflow-scrolling: touch;
       padding: clamp(16px, 2.5vw, 28px) clamp(14px, 2.2vw, 24px) calc(20px + env(safe-area-inset-bottom, 0px));
       background: #f5f5f7;
+    }
+
+    body.is-keyboard-open .settings-scroll,
+    body.is-keyboard-open .info-scroll,
+    body.is-keyboard-open .login-view {
+      padding-bottom: calc(24px + var(--kb-inset, 0px));
     }
 
     .sys-settings {
@@ -4825,20 +4837,18 @@
       body:not(.is-dashboard) {
         position: relative;
         width: 100%;
-        height: auto;
-        min-height: 100dvh;
-        max-height: none;
+        height: var(--app-vh, 100svh);
+        min-height: var(--app-vh, 100svh);
+        max-height: var(--app-vh, 100svh);
         padding:
           calc(10px + env(safe-area-inset-top, 0px))
           max(12px, env(safe-area-inset-left, 0px))
-          calc(10px + env(safe-area-inset-bottom, 0px) + var(--kb-inset, 0px))
+          calc(10px + env(safe-area-inset-bottom, 0px))
           max(12px, env(safe-area-inset-right, 0px));
         align-items: center;
         justify-content: center;
-        overflow-x: hidden;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
+        overflow: hidden;
+        overscroll-behavior: none;
       }
 
       body:not(.is-dashboard) .staff-shell {
@@ -4871,7 +4881,7 @@
       }
 
       .gate-card.is-menu-open {
-        overflow: visible;
+        overflow: hidden;
       }
 
       .gate-header {
@@ -9291,9 +9301,9 @@
     });
 
     (function initStaffKeyboardLock() {
-      let lock = false;
       const restH = () => Math.round(window.innerHeight || document.documentElement.clientHeight || 0);
       let rest = restH();
+      let lock = false;
       const usesVirtualKeyboard = () => {
         try {
           return window.matchMedia('(pointer: coarse)').matches
@@ -9302,22 +9312,33 @@
           return false;
         }
       };
-      const sync = () => {
-        if (document.body.classList.contains('is-dashboard')) {
-          document.documentElement.style.setProperty('--kb-inset', '0px');
-          return;
-        }
-        if (!lock || !usesVirtualKeyboard()) {
-          document.documentElement.style.setProperty('--kb-inset', '0px');
-          return;
-        }
+      const applyAppVh = (h) => {
+        const px = Math.max(280, Math.round(h || restH()));
+        document.documentElement.style.setProperty('--app-vh', `${px}px`);
+      };
+      const isField = (el) => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT');
+      const scrollerFor = (el) => el?.closest?.(
+        '.settings-scroll, .info-scroll, .sheet-panel, .login-view, .table-panel, .staff-shell, .dash-main',
+      ) || null;
+      const scrollField = (el) => {
+        if (!el) return;
         const vv = window.visualViewport;
-        const inset = vv && rest > 0
-          ? Math.max(0, rest - Math.round(vv.height + (vv.offsetTop || 0)))
-          : 0;
-        document.documentElement.style.setProperty('--kb-inset', `${inset}px`);
-        const el = document.activeElement;
-        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+        const visibleBottom = vv
+          ? Math.round(vv.offsetTop + vv.height)
+          : rest;
+        const pad = 24;
+        const er = el.getBoundingClientRect();
+        const scroller = scrollerFor(el);
+        if (scroller && scroller !== document.body) {
+          const sr = scroller.getBoundingClientRect();
+          if (er.top < sr.top + 12) {
+            scroller.scrollTop -= sr.top + 12 - er.top;
+          } else if (er.bottom > Math.min(sr.bottom, visibleBottom) - pad) {
+            scroller.scrollTop += er.bottom - (Math.min(sr.bottom, visibleBottom) - pad);
+          }
+          return;
+        }
+        if (er.bottom > visibleBottom - pad || er.top < 12) {
           try {
             el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
           } catch (_) {
@@ -9325,27 +9346,76 @@
           }
         }
       };
+      const pinLayout = () => {
+        try {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+        } catch (_) {
+          /* ignore */
+        }
+      };
+      const sync = () => {
+        applyAppVh(rest);
+        const vv = window.visualViewport;
+        const inset = lock && vv && rest > 0
+          ? Math.max(0, rest - Math.round(vv.height + (vv.offsetTop || 0)))
+          : 0;
+        document.documentElement.style.setProperty('--kb-inset', `${inset}px`);
+        if (!lock) return;
+        pinLayout();
+        const el = document.activeElement;
+        if (isField(el)) {
+          window.requestAnimationFrame(() => scrollField(el));
+        }
+      };
+      applyAppVh(rest);
+      try {
+        if (navigator.virtualKeyboard) {
+          navigator.virtualKeyboard.overlaysContent = true;
+        }
+      } catch (_) {
+        /* ignore */
+      }
       document.addEventListener('focusin', (e) => {
-        if (document.body.classList.contains('is-dashboard')) return;
-        if (e.target?.tagName !== 'INPUT' && e.target?.tagName !== 'TEXTAREA') return;
+        if (!isField(e.target)) return;
         if (!usesVirtualKeyboard()) return;
         if (!lock) rest = restH();
         lock = true;
+        document.body.classList.add('is-keyboard-open');
+        applyAppVh(rest);
+        pinLayout();
         sync();
       });
       document.addEventListener('focusout', () => {
         window.setTimeout(() => {
-          const el = document.activeElement;
-          if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+          if (isField(document.activeElement)) {
             sync();
             return;
           }
           lock = false;
+          document.body.classList.remove('is-keyboard-open');
           document.documentElement.style.setProperty('--kb-inset', '0px');
+          applyAppVh(restH());
         }, 50);
       });
-      window.visualViewport?.addEventListener('resize', sync, { passive: true });
-      window.visualViewport?.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', () => {
+        if (lock) {
+          sync();
+          return;
+        }
+        rest = restH();
+        applyAppVh(rest);
+      }, { passive: true });
+      window.visualViewport?.addEventListener('resize', () => {
+        if (lock) sync();
+      }, { passive: true });
+      window.visualViewport?.addEventListener('scroll', () => {
+        if (lock) {
+          pinLayout();
+          sync();
+        }
+      }, { passive: true });
     })();
 
     checkSession();

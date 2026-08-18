@@ -1387,7 +1387,7 @@
       grid-column: 1 / -1;
     }
     #step3 .form-group.is-picker-open {
-      z-index: 4;
+      z-index: 30;
     }
     #step3 .form-group {
       margin-bottom: 0;
@@ -3635,22 +3635,31 @@
       contain: layout paint size;
     }
 
-    /* Picker inline Apple: si espande sul posto, ruota sopra e sotto */
+    /* Picker fluttuante: copre i campi sotto, non spinge in alto il resto della card */
     .apple-inline-list {
       display: none;
-      position: relative;
+      position: absolute;
+      top: 100%;
+      left: 0;
       width: 100%;
-      height: 220px;
-      margin-top: 8px;
+      height: 176px;
+      margin-top: 4px;
       overflow: hidden;
       background: #fff;
       border: 1px solid #d1d1d6;
       border-radius: var(--radius-ios);
-      box-shadow: 0 4px 16px rgba(18, 68, 83, 0.08);
+      box-shadow:
+        0 8px 24px rgba(18, 68, 83, 0.14),
+        0 2px 6px rgba(18, 68, 83, 0.06);
+      z-index: 50;
     }
 
     .apple-inline-list[hidden] {
       display: none !important;
+    }
+
+    .form-group.is-picker-open {
+      z-index: 30;
     }
 
     .form-group.is-picker-open .apple-inline-list {
@@ -5375,39 +5384,31 @@
       scroll-margin-bottom: 24px;
     }
 
-    body.is-keyboard-open .slide-step.is-active {
-      overflow: hidden;
-    }
-
-    body.is-keyboard-open {
-      align-items: flex-start;
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-      -webkit-overflow-scrolling: touch;
-      min-height: var(--rest-vh, 100dvh);
-      height: auto !important;
-      max-height: none !important;
+    /* Tastiera = overlay. Html/body/card restano fermi: niente alzata, niente morph. */
+    body.is-keyboard-open,
+    html:has(body.is-keyboard-open) {
+      align-items: center !important;
+      overflow: hidden !important;
+      height: var(--rest-vh, var(--app-vh, 100svh)) !important;
+      max-height: var(--rest-vh, var(--app-vh, 100svh)) !important;
+      min-height: var(--rest-vh, var(--app-vh, 100svh)) !important;
     }
 
     body.is-keyboard-open .apple-card {
       flex-shrink: 0;
-      max-height: none;
       margin-top: 0;
-      margin-bottom: calc(var(--kb-inset, 0px) + 12px);
+      margin-bottom: 0;
+      max-height: var(--card-max);
     }
 
     body.is-keyboard-open #sliderViewport {
       flex-shrink: 0;
     }
 
-    body.is-keyboard-open #step3.is-active {
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    body.is-keyboard-open #step3.is-active > .step-body.step-scroll {
-      overflow: visible;
-      flex: 0 0 auto;
+    body.is-keyboard-open .slide-step.is-active {
+      overflow: hidden;
+      height: 100%;
+      max-height: 100%;
     }
 
     body.is-keyboard-open .slide-step.is-active > .step-body.step-scroll {
@@ -5418,33 +5419,11 @@
       -webkit-overflow-scrolling: touch;
       padding-bottom: calc(var(--kb-inset, 0px) + 16px);
       scroll-padding-top: 80px;
-      scroll-padding-bottom: 24px;
+      scroll-padding-bottom: calc(var(--kb-inset, 0px) + 24px);
     }
 
-    /* Desktop / trackpad: la card resta centrata. Nessuno spostamento al focus. */
-    @media (hover: hover) and (pointer: fine) {
-      body.is-keyboard-open,
-      html:has(body.is-keyboard-open) {
-        align-items: center !important;
-        overflow: hidden !important;
-        height: 100% !important;
-        max-height: 100svh !important;
-        min-height: 100% !important;
-      }
-
-      body.is-keyboard-open .apple-card {
-        margin-bottom: 0 !important;
-        max-height: var(--card-max);
-      }
-    }
-
-    @media (max-width: 480px) {
-      body.is-keyboard-open,
-      html:has(body.is-keyboard-open) {
-        height: auto !important;
-        min-height: var(--rest-vh, var(--app-vh, 100dvh)) !important;
-        max-height: none !important;
-      }
+    body.is-keyboard-open .slide-step.is-active > .step-footer-fixed {
+      flex-shrink: 0;
     }
 
     .apple-picker-trigger {
@@ -7234,7 +7213,6 @@
       guestsTrigger?.setAttribute('aria-expanded', 'false');
       staffTrigger?.setAttribute('aria-expanded', 'false');
       wheelKind = null;
-      if (typeof invalidateGeometry === 'function') invalidateGeometry(3);
     }
 
     function pickerParts(kind) {
@@ -7283,13 +7261,11 @@
       trigger.closest('.form-group')?.classList.add('is-picker-open');
       guestsTrigger?.setAttribute('aria-expanded', kind === 'guests' ? 'true' : 'false');
       staffTrigger?.setAttribute('aria-expanded', kind === 'staff' ? 'true' : 'false');
-      if (typeof invalidateGeometry === 'function') invalidateGeometry(3);
       window.requestAnimationFrame(() => {
         centerWheelItem(
           menu,
           menu.querySelector('.is-selected') || menu.querySelector('.apple-inline-item'),
         );
-        scrollFieldIntoScroller(list);
       });
     }
 
@@ -7556,7 +7532,12 @@
       if (vpH < 80) return;
 
       if (keyboardLock) {
-        clearStepViewportClamp(step);
+        const frozen = Math.round(frozenKeyboardViewportH || vpH);
+        if (frozen >= 80) {
+          stepEl.classList.add('is-viewport-clamped');
+          stepEl.style.height = `${frozen}px`;
+          stepEl.style.maxHeight = `${frozen}px`;
+        }
         return;
       }
 
@@ -7653,17 +7634,10 @@
       const current = Math.round(
         parseFloat(viewport.style.height) || viewport.offsetHeight || 0,
       );
-      const natural = Math.round(measureStepContentHeight(currentStep) || 0);
-      const h = Math.max(
-        frozenKeyboardViewportH || 0,
-        current,
-        natural,
-        mappedStepHeight(currentStep) || 0,
-        280,
-      );
+      const h = Math.max(frozenKeyboardViewportH || 0, current, 280);
       frozenKeyboardViewportH = h;
       viewport.style.height = `${h}px`;
-      clearStepViewportClamp(currentStep);
+      reconcileStepViewportFit(currentStep);
     }
 
     function scrollFieldIntoScroller(el) {
@@ -7696,10 +7670,16 @@
     }
 
     function syncKeyboardScroll() {
-      pinCardInView();
       if (!keyboardLock) {
         document.documentElement.style.setProperty('--kb-inset', '0px');
         return;
+      }
+      try {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      } catch (_) {
+        /* ignore */
       }
       document.documentElement.style.setProperty('--kb-inset', `${keyboardInsetPx()}px`);
       const el = document.activeElement;
@@ -7710,6 +7690,13 @@
 
     function initKeyboardLayoutLock() {
       captureRestLayout();
+      try {
+        if (navigator.virtualKeyboard) {
+          navigator.virtualKeyboard.overlaysContent = true;
+        }
+      } catch (_) {
+        /* ignore */
+      }
       document.addEventListener('focusin', (e) => {
         if (!isEditableField(e.target)) return;
         if (!usesVirtualKeyboard()) return;
@@ -8257,7 +8244,6 @@
 
     function syncAppViewportHeight() {
       if (iosPickerOpen || keyboardLock) {
-        pinCardInView();
         syncKeyboardScroll();
         return;
       }
@@ -8434,18 +8420,7 @@
 
     function pinCardInView() {
       try {
-        if (keyboardLock) {
-          const card = document.getElementById('card');
-          const vv = window.visualViewport;
-          if (card && vv) {
-            const cr = card.getBoundingClientRect();
-            const topLimit = vv.offsetTop + 8;
-            if (cr.top < topLimit) {
-              window.scrollBy(0, cr.top - topLimit);
-            }
-          }
-          return;
-        }
+        if (keyboardLock) return;
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
@@ -10164,11 +10139,11 @@
     });
     if (window.visualViewport) {
       const onVvChange = () => {
-        pinCardInView();
         if (keyboardLock) {
           syncKeyboardScroll();
           return;
         }
+        pinCardInView();
       };
       window.visualViewport.addEventListener('resize', onVvChange, { passive: true });
       window.visualViewport.addEventListener('scroll', onVvChange, { passive: true });
