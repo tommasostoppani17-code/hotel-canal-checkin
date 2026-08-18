@@ -39,30 +39,6 @@ function cleanCell(value) {
     .trim();
 }
 
-/** Title Case per nomi tutto-maiuscolo; lascia intatti i nomi già misti. */
-function formatGuestDisplayName(name) {
-  const raw = String(name || '').trim();
-  if (!raw) return '';
-  const letters = raw.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
-  const isAllCaps =
-    letters.length > 1 &&
-    letters === letters.toUpperCase() &&
-    letters !== letters.toLowerCase();
-  if (!isAllCaps) return raw;
-  return raw
-    .toLowerCase()
-    .replace(/(^|[\s'’-])([\p{L}])/gu, (_, sep, ch) => sep + ch.toUpperCase());
-}
-
-function formatStaffDisplayName(raw) {
-  return formatGuestDisplayName(raw) || '—';
-}
-
-function emptyDash(value) {
-  const v = String(value || '').trim();
-  return v || '—';
-}
-
 function publicBaseUrl() {
   return (process.env.PUBLIC_URL || 'http://localhost:3000').replace(/\/$/, '');
 }
@@ -102,9 +78,6 @@ const C = '#124453';
 const BOX = '#E9EEF0';
 const WHITE = '#FFFFFF';
 const BRASS = '#6E868F';
-const MUTED = '#86868b';
-const LINE = '#e5e5ea';
-const ZEBRA = '#fafafa';
 const bodyStyle = emailBodyStyle();
 const labelStyle = emailLabelStyle();
 
@@ -119,9 +92,8 @@ function sectionTitle(label) {
               </table>`;
 }
 
-function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml, maxWidth = 560 }) {
-  const hero = escapeHtml(publicAssetUrl('email', 'hero-01.jpg'));
-  const cardW = Number(maxWidth) || 560;
+function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml }) {
+  const hero = escapeHtml(publicAssetUrl('venice-bg.jpg'));
   return `
 <!DOCTYPE html>
 <html lang="it" xmlns="http://www.w3.org/1999/xhtml">
@@ -135,6 +107,14 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml, maxWidth 
     box: BOX,
     extraCss: `
     img { display: block; max-width: 100%; height: auto; border: 0; }
+    .utility-textarea {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      background-color: ${BOX} !important;
+      color: #1D1D1F !important;
+    }
     `,
   })}
 </head>
@@ -142,16 +122,16 @@ function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml, maxWidth 
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${WHITE};">
     ${escapeHtml(preheader)}
   </div>
-  <table role="presentation" class="email-bg force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#f5f5f7" style="background-color:#f5f5f7 !important;margin:0;padding:0;font-family:${SANS};">
+  <table role="presentation" class="email-bg force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="${WHITE}" style="background-color:${WHITE} !important;margin:0;padding:0;font-family:${SANS};">
     <tr>
-      <td align="center" class="force-white" bgcolor="#f5f5f7" style="padding:16px 10px;background-color:#f5f5f7 !important;">
-        <table role="presentation" class="email-card force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" style="max-width:${cardW}px;background-color:#FFFFFF !important;border-radius:16px;overflow:hidden;border:1px solid ${LINE};">
+      <td align="center" class="force-white" bgcolor="${WHITE}" style="padding:20px 10px;background-color:${WHITE} !important;">
+        <table role="presentation" class="email-card force-white" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" style="max-width:500px;background-color:#FFFFFF !important;border-radius:24px;overflow:hidden;border:1px solid #E2E6E8;">
           <tr>
             <td class="force-white" bgcolor="#FFFFFF" style="padding:20px 22px 0;background-color:#FFFFFF !important;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px;border-radius:16px;overflow:hidden;">
                 <tr>
                   <td style="padding:0;line-height:0;font-size:0;background-color:${BOX};border-radius:16px;">
-                    <img src="${hero}" width="556" alt="${escapeHtml(hotelName)}" style="display:block;width:100%;max-width:556px;height:auto;border:0;border-radius:16px;">
+                    <img src="${hero}" width="452" alt="${escapeHtml(hotelName)}" style="display:block;width:100%;max-width:452px;height:auto;border:0;border-radius:16px;">
                   </td>
                 </tr>
               </table>
@@ -215,7 +195,7 @@ function veniceStickersRow() {
     .map(([folder, file]) => {
       const src = escapeHtml(publicAssetUrl('email', folder, file));
       return `<td align="center" style="padding:0 6px;line-height:0;font-size:0;">
-                      <img src="${src}" width="24" height="24" alt="" style="display:block;width:24px;height:24px;border:0;">
+                      <img src="${src}" width="36" height="36" alt="" style="display:block;width:36px;height:36px;border:0;">
                     </td>`;
     })
     .join('');
@@ -366,164 +346,136 @@ export function buildTableBookingHeadline(rawTime, now = new Date()) {
   };
 }
 
-/** KPI in tre colonne: Gmail-safe, niente flex. */
-function kpiCell(value, label, isLast = false) {
-  return `
-                    <td width="33%" valign="top" style="width:33%;padding:0 ${isLast ? '0' : '5px'} 0 0;">
-                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="${ZEBRA}" style="width:100%;background-color:${ZEBRA};border:1px solid ${LINE};border-radius:10px;">
-                        <tr>
-                          <td align="center" style="padding:12px 8px;text-align:center;">
-                            <div style="font-family:${SANS};font-size:20px;font-weight:700;color:${C} !important;line-height:1.15;">${escapeHtml(String(value))}</div>
-                            <div style="font-family:${SANS};font-size:11px;font-weight:500;color:${MUTED} !important;margin-top:3px;line-height:1.2;">${escapeHtml(label)}</div>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>`;
-}
-
-function thCell(label, extra = '') {
-  return `<th align="left" style="padding:12px 10px;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73 !important;text-align:left;border-bottom:1px solid ${LINE};white-space:nowrap;${extra}">${label}</th>`;
-}
-
-function phoneHref(phone) {
-  const raw = String(phone || '').trim();
-  if (!raw || raw === '—') return '';
-  const tel = raw.replace(/[^\d+]/g, '');
-  return tel ? `tel:${tel}` : '';
-}
-
-function emailHref(email) {
-  const raw = String(email || '').trim();
-  if (!raw || raw === '—' || !raw.includes('@')) return '';
-  return `mailto:${raw}`;
-}
-
-function linkedCell(href, label, extraStyle = '') {
-  const text = escapeHtml(label);
-  const style = `font-family:${SANS};font-size:13px;color:#1d1d1f !important;text-decoration:none;${extraStyle}`;
-  if (!href) return `<span style="${style}">${text}</span>`;
-  return `<a href="${escapeHtml(href)}" style="color:${C} !important;text-decoration:none;${style}">${text}</a>`;
-}
-
 /**
- * Tabella ad alta densità (layout di ieri): una riga per ospite.
- * Font di oggi: stanza/nome 15px, contatti 13px, etichette 11px.
+ * Righe persona: stanza a sinistra, dati a destra.
+ * Nessuna card/riquadro — solo divider tra ospiti. nowrap per non spezzare su mobile.
  */
-function buildDailyGuestTable(rows) {
+function buildDailyGuestRows(rows) {
   if (!rows.length) {
     return `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border:1px solid ${LINE};border-radius:12px;">
-                <tr>
-                  <td style="padding:20px 16px;color:${MUTED};text-align:center;font-size:14px;font-family:${BODY};font-style:italic;">
-                    Nessuna registrazione in questo periodo
-                  </td>
-                </tr>
-              </table>`;
+      <tr>
+        <td colspan="2" style="padding:18px 0;border-bottom:1px solid #E8E4DC;color:#8E8E93;text-align:center;font-size:14px;font-family:${BODY};font-style:italic;">
+          Nessuna registrazione in questo periodo
+        </td>
+      </tr>
+    `;
   }
 
-  const bodyRows = rows
+  return rows
     .map((row, index) => {
-      const room = emptyDash(cleanCell(row.room_number));
-      const name = emptyDash(formatGuestDisplayName(cleanCell(row.guest_name)));
-      const phone = emptyDash(cleanCell(row.phone));
-      const email = emptyDash(cleanCell(row.email));
-      const staff = emptyDash(formatStaffDisplayName(cleanCell(row.receptionist)));
+      const room = cleanCell(row.room_number) || '-';
+      const name = cleanCell(row.guest_name) || 'Ospite';
+      const email = cleanCell(row.email);
+      const phone = cleanCell(row.phone) || '-';
+      const staff = cleanCell(row.receptionist) || '-';
+      const pax = cleanCell(row.guests_count ?? '2') || '2';
       const haVoucher = hasRestaurantCoupon(row);
-      const zebra = index % 2 === 1 ? ZEBRA : WHITE;
-      const border = index === rows.length - 1 ? '0' : `1px solid #f2f2f7`;
-      const emptyStyle = `color:#c7c7cc !important;`;
-      const phoneHtml =
-        phone === '—'
-          ? `<span style="${emptyStyle}">—</span>`
-          : linkedCell(phoneHref(phone), phone);
-      const emailHtml =
-        email === '—'
-          ? `<span style="${emptyStyle}">—</span>`
-          : linkedCell(emailHref(email), email);
-      const voucherHtml = haVoucher
-        ? `<span style="display:inline-block;background:#E8F1F4;color:${C} !important;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.04em;padding:2px 6px;border-radius:4px;">SÌ</span>`
-        : `<span style="${emptyStyle}">—</span>`;
+      const offer = haVoucher ? 'Voucher sì' : 'Voucher no';
+      const offerColor = haVoucher ? C : '#8A949C';
+      const tableTime = cleanCell(row.table_booking);
+      const border = index === rows.length - 1 ? '0' : '1px solid #E8E4DC';
 
       return `
-                <tr bgcolor="${zebra}">
-                  <td align="center" style="padding:12px 8px;font-family:${SANS};font-size:15px;font-weight:700;color:${C} !important;text-align:center;white-space:nowrap;border-bottom:${border};">${escapeHtml(room)}</td>
-                  <td style="padding:12px 10px;font-family:${SANS};font-size:15px;font-weight:700;color:${C} !important;white-space:nowrap;border-bottom:${border};">${escapeHtml(name)}</td>
-                  <td style="padding:12px 10px;font-family:${SANS};font-size:13px;color:#1d1d1f !important;white-space:nowrap;border-bottom:${border};">${phoneHtml}</td>
-                  <td style="padding:12px 10px;font-family:${SANS};font-size:13px;color:#1d1d1f !important;white-space:nowrap;border-bottom:${border};">${emailHtml}</td>
-                  <td align="center" style="padding:12px 8px;text-align:center;white-space:nowrap;border-bottom:${border};">${voucherHtml}</td>
-                  <td style="padding:12px 10px;font-family:${SANS};font-size:11px;font-weight:600;color:${MUTED} !important;white-space:nowrap;border-bottom:${border};">${escapeHtml(staff)}</td>
-                </tr>`;
+        <tr>
+          <td width="48" valign="top" style="width:48px;max-width:48px;padding:18px 12px 18px 0;border-bottom:${border};font-family:${SERIF};font-size:16px;font-weight:700;color:${C} !important;line-height:1.25;white-space:nowrap;vertical-align:top;">
+            ${escapeHtml(room)}
+          </td>
+          <td valign="top" style="padding:18px 0;border-bottom:${border};vertical-align:top;">
+            <div style="${emailValueStyle({ size: '18px', color: C })};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">
+              ${escapeHtml(name)}
+            </div>
+            <div style="font-family:${SERIF};font-size:15px;font-weight:500;color:#334155 !important;letter-spacing:0.01em;line-height:1.4;margin-top:5px;white-space:nowrap;">
+              ${escapeHtml(phone)}
+            </div>
+            ${
+              email
+                ? `<div style="font-family:${BODY};font-style:italic;font-size:13.5px;color:#8A949C !important;line-height:1.4;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px;">${escapeHtml(email)}</div>`
+                : ''
+            }
+            <div style="${emailLabelStyle({ color: '#5C6670' })};margin-top:10px;letter-spacing:0.06em;white-space:nowrap;">
+              ${escapeHtml(staff)}&nbsp;&nbsp;·&nbsp;&nbsp;${escapeHtml(pax)} pax&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${offerColor} !important;">${offer}</span>${
+                tableTime
+                  ? `&nbsp;&nbsp;·&nbsp;&nbsp;<span style="color:${C} !important;">Tavolo ${escapeHtml(tableTime)}</span>`
+                  : ''
+              }
+            </div>
+          </td>
+        </tr>
+      `;
     })
     .join('');
-
-  return `
-              <div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;">
-                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;min-width:540px;border-collapse:collapse;border:1px solid ${LINE};border-radius:12px;">
-                  <tr bgcolor="#f5f5f7">
-                    ${thCell('St.', 'text-align:center;width:40px;')}
-                    ${thCell('Ospite')}
-                    ${thCell('WhatsApp')}
-                    ${thCell('Email')}
-                    ${thCell('Voucher', 'text-align:center;')}
-                    ${thCell('By')}
-                  </tr>
-                  ${bodyRows}
-                </table>
-              </div>`;
 }
 
 /**
- * Report notturno Payel: KPI + una tabella. Un solo punto per nome/telefono/email.
+ * Report notturno Payel: un solo saluto, un solo blocco di testo, poi i dati.
  */
 export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
-  const subject = `Report contatti · ${dateLabel}`;
+  const subject = `🛶 Report contatti · ${dateLabel}`;
   const couponCount = rows.filter(hasRestaurantCoupon).length;
   const statsLine = couponCount
     ? `${count} check-in, ${couponCount} voucher ristorante`
     : `${count} check-in`;
   const reportPreheader = `Gentile Payel — report contatti del ${dateLabel}: ${statsLine}. CSV in allegato.`;
 
-  const introPlain = `in allegato il report contatti di oggi (${dateLabel}): ${statsLine}. Il CSV è pronto per Excel.`;
+  const listaSoloNumeri = rows
+    .map((row) => row.phone)
+    .filter(Boolean)
+    .join(', ');
 
-  const textLines = rows.map((row) => {
-    const room = emptyDash(cleanCell(row.room_number));
-    const name = emptyDash(formatGuestDisplayName(cleanCell(row.guest_name)));
-    const phone = emptyDash(cleanCell(row.phone));
-    const email = emptyDash(cleanCell(row.email));
-    const staff = emptyDash(formatStaffDisplayName(cleanCell(row.receptionist)));
-    const voucher = hasRestaurantCoupon(row) ? 'voucher sì' : 'voucher —';
-    return `${room}  ${name}  ${phone}  ${email}  ${voucher}  ${staff}`;
-  });
+  const listaEmail = rows
+    .map((row) => row.email)
+    .filter(Boolean)
+    .join(', ');
+
+  const copyBlockStyle = `display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 28px;padding:14px 16px;background-color:${BOX} !important;border:1px solid #E2E6E8;border-radius:16px;font-family:${SERIF};font-size:15px;font-weight:500;line-height:1.55;color:${C} !important;-webkit-user-select:text;user-select:text;resize:none;letter-spacing:0.01em;`;
+
+  const introPlain = `in allegato il report contatti di oggi (${dateLabel}): ${statsLine}. Il CSV è pronto per Excel.`;
 
   const text = [
     `Gentile Payel,`,
     ``,
     introPlain,
     ``,
-    `Arrivi: ${count}  ·  Voucher: ${couponCount}  ·  ${dateLabel}`,
+    `Numeri WhatsApp:`,
+    listaSoloNumeri || '-',
     ``,
-    ...textLines,
+    `Email:`,
+    listaEmail || '-',
     ``,
     `Front Desk — ${hotelName}`,
   ].join('\n');
 
   const bodyHtml = `
-              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 20px;text-align:left;">
-                Gentile <strong style="color:${C} !important;font-weight:600;">Payel</strong>,
-                in allegato il report di oggi
-                (<strong style="color:${C} !important;font-weight:600;">${escapeHtml(dateLabel)}</strong>).
+              <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
+                Gentile Payel,
+              </p>
+              <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
+                in allegato il report contatti di oggi
+                (<strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(dateLabel)}</strong>):
+                <strong style="color:${C} !important;font-weight:600;font-style:italic;">${count}</strong> check-in${
+                  couponCount
+                    ? `, <strong style="color:${C} !important;font-weight:600;font-style:italic;">${couponCount}</strong> voucher ristorante`
+                    : ''
+                }.
                 Il CSV &egrave; pronto per Excel.
               </p>
 
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 20px;">
-                <tr>
-                  ${kpiCell(count, 'Arrivi totali')}
-                  ${kpiCell(couponCount, 'Voucher rist.')}
-                  ${kpiCell(dateLabel, 'Data report', true)}
-                </tr>
+              ${sectionTitle('Presenze')}
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 12px;border-top:1px solid #E8E4DC;">
+                ${buildDailyGuestRows(rows)}
               </table>
 
-              ${buildDailyGuestTable(rows)}
+              ${sectionTitle('Numeri WhatsApp')}
+              <p style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C !important;margin:0 0 10px;line-height:1.4;">
+                Tieni premuto per copiare
+              </p>
+              <textarea class="utility-textarea" readonly rows="3" style="${copyBlockStyle}">${escapeHtml(listaSoloNumeri || '-')}</textarea>
+
+              ${sectionTitle('Email')}
+              <p style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8A949C !important;margin:0 0 10px;line-height:1.4;">
+                Tieni premuto per copiare
+              </p>
+              <textarea class="utility-textarea" readonly rows="3" style="${copyBlockStyle}">${escapeHtml(listaEmail || '-')}</textarea>
 
               ${closingFooter(
                 hotelName,
@@ -536,10 +488,9 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
   const html = reportShell({
     title: subject,
     hotelName,
-    eyebrow: 'Report presenze giornaliero',
+    eyebrow: 'Santa Croce 553 · Venezia',
     preheader: reportPreheader,
     bodyHtml,
-    maxWidth: 600,
   });
 
   return { subject, text, html };
