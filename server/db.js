@@ -2047,19 +2047,36 @@ export function getStaffAccountStats(staffName) {
   const todayRow = db
     .prepare(
       `
-      SELECT COUNT(*) AS n
+      SELECT
+        COUNT(*) AS total,
+        SUM(
+          CASE
+            WHEN UPPER(TRIM(COALESCE(receptionist, ''))) = ? THEN 1
+            ELSE 0
+          END
+        ) AS mine,
+        SUM(
+          CASE
+            WHEN coupon_token IS NOT NULL AND TRIM(coupon_token) != '' THEN 1
+            ELSE 0
+          END
+        ) AS coupons
       FROM checkins
-      WHERE UPPER(TRIM(COALESCE(receptionist, ''))) = ?
-        AND stay_date = ?
+      WHERE stay_date = ?
     `,
     )
     .get(name, today);
+  const todayTotal = Number(todayRow?.total) || 0;
+  const todayMine = Number(todayRow?.mine) || 0;
+  const todayCoupons = Number(todayRow?.coupons) || 0;
   return {
     today,
     yearMonth,
+    todayTotal,
+    todayCoupons,
     me: {
       name,
-      todayCheckins: Number(todayRow?.n) || 0,
+      todayCheckins: todayMine,
       monthCheckins: mine.checkins,
       monthCoupons: mine.coupons,
       rank: mine.rank,

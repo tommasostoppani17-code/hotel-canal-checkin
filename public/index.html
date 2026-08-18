@@ -320,7 +320,7 @@
     }
 
     /* V4: schermi corti (SE / Mini / landscape corto) — compressione intelligente */
-    @media (max-height: 670px) {
+    html.vp-h-670 {
       .apple-card {
         padding: 14px 0 12px;
         border-radius: 24px;
@@ -405,7 +405,7 @@
     }
 
     /* iPhone SE / schermi corti: respiro CTA + clamp viewport (no ghigliottina Continua) */
-    @media (max-width: 480px) and (max-height: 680px) {
+    html.vp-w-480.vp-h-680 {
       .apple-card {
         padding: 12px 0 10px;
         max-height: var(--card-max);
@@ -423,7 +423,7 @@
     }
 
     /* Ultra-compact phones: preserve Confirm visibility above links. */
-    @media (max-width: 480px) and (max-height: 620px) {
+    html.vp-w-480.vp-h-620 {
       #step3Footer .btn-canal {
         height: 48px !important;
         min-height: 48px;
@@ -1092,7 +1092,7 @@
       border: 0;
     }
 
-    @media (max-height: 670px) {
+    html.vp-h-670 {
       .concierge-hero { height: 140px; margin-bottom: 12px; }
     }
 
@@ -1464,7 +1464,7 @@
       text-underline-offset: 2px;
       color: #64748B !important;
     }
-    @media (max-height: 720px) {
+    html.vp-h-720 {
       .dining-hero { aspect-ratio: 2 / 1; margin-bottom: var(--ios-gap); }
       .dining-mosaic { gap: 8px; }
       .dining-book-sub { max-width: 32ch; font-size: 12.5px; }
@@ -2106,7 +2106,7 @@
       border: 0;
     }
 
-    @media (max-height: 670px) {
+    html.vp-h-670 {
       .concierge-hero { height: 140px; margin-bottom: 12px; }
     }
 
@@ -7381,6 +7381,13 @@
       }
       closeFormPicker();
       wheelKind = kind;
+      const viewport = document.getElementById('sliderViewport');
+      if (viewport) {
+        const h = Math.round(
+          parseFloat(viewport.style.height) || viewport.offsetHeight || 0,
+        );
+        if (h >= 280) viewport.style.height = `${h}px`;
+      }
       const current = kind === 'staff'
         ? String(staffEl?.value || '').trim().toUpperCase()
         : String(guestsEl?.value || '2').trim();
@@ -7732,17 +7739,38 @@
     let restLayoutH = 0;
     let keyboardLock = false;
     let frozenKeyboardViewportH = 0;
+    let iosPickerOpen = false;
+
+    function syncStableViewportFlags() {
+      const h = restLayoutH || Math.round(window.innerHeight || 0);
+      const w = Math.round(window.innerWidth || document.documentElement.clientWidth || 0);
+      const html = document.documentElement;
+      html.classList.toggle('vp-w-480', w <= 480);
+      html.classList.toggle('vp-w-720', w <= 720);
+      html.classList.toggle('vp-h-620', h <= 620);
+      html.classList.toggle('vp-h-670', h <= 670);
+      html.classList.toggle('vp-h-680', h <= 680);
+      html.classList.toggle('vp-h-720', h <= 720);
+      html.classList.toggle('vp-h-740', h <= 740);
+    }
+
+    syncStableViewportFlags();
 
     function captureRestLayout() {
-      if (keyboardLock || iosPickerOpen) return restLayoutH;
+      if (keyboardLock || iosPickerOpen || wheelKind) return restLayoutH;
       const inner = Math.round(
         window.innerHeight || document.documentElement.clientHeight || 0,
       );
-      if (inner >= 280) restLayoutH = inner;
+      if (inner >= 280) {
+        if (!(restLayoutH >= 280 && inner < restLayoutH - 80)) {
+          restLayoutH = inner;
+        }
+      }
       if (restLayoutH > 0) {
         document.documentElement.style.setProperty('--vvh', `${restLayoutH}px`);
       }
       document.documentElement.style.setProperty('--kb-inset', '0px');
+      syncStableViewportFlags();
       return restLayoutH;
     }
 
@@ -7865,7 +7893,7 @@
           document.body.classList.remove('ios-keyboard-open');
           document.body.classList.remove('is-keyboard-open');
           document.documentElement.style.setProperty('--kb-inset', '0px');
-          syncAppViewportHeight();
+          captureRestLayout();
         }, 50);
       });
     }
@@ -7956,7 +7984,7 @@
     }
 
     function ensurePrimaryCtaVisible() {
-      if (keyboardLock || iosPickerOpen) return;
+      if (layoutFrozen()) return;
       const viewport = document.getElementById('sliderViewport');
       const btn =
         currentStep === 3
@@ -7980,9 +8008,11 @@
         const natural = measureStepContentHeight(currentStep);
         const maxH = availableViewportMax();
         const target = Math.min(Math.max(natural, 280), maxH);
-        stepHeightCache[currentStep] = target;
-        geometryMap[currentStep] = target;
-        applyViewportHeightPx(target, { animate: false });
+        const prev = Number(geometryMap[currentStep]) || 0;
+        const stable = prev >= 200 ? Math.max(prev, target) : target;
+        stepHeightCache[currentStep] = stable;
+        geometryMap[currentStep] = stable;
+        applyViewportHeightPx(stable);
       }
 
       reconcileStepViewportFit(currentStep);
@@ -7996,19 +8026,28 @@
       });
     }
 
-    function applyViewportHeightPx(h, { animate = true } = {}) {
-      if (keyboardLock) return;
+    function layoutFrozen() {
+      return Boolean(keyboardLock || iosPickerOpen || wheelKind);
+    }
+
+    function applyViewportHeightPx(h, { allowShrink = false } = {}) {
+      if (layoutFrozen() && !allowShrink) return;
       const viewport = document.getElementById('sliderViewport');
       if (!viewport || !Number.isFinite(h)) return;
-      const clamped = Math.min(
+      const current = Math.round(
+        parseFloat(viewport.style.height) || viewport.offsetHeight || 0,
+      );
+      let next = Math.min(
         Math.max(Math.round(h), 280),
         availableViewportMax(),
       );
-      // Altezza = layout statico; mai transition su height (FLIP usa solo clip-path)
+      if (!allowShrink && current >= 280 && next < current) {
+        next = current;
+      }
       viewport.style.transition = 'none';
       viewport.style.clipPath = '';
       viewport.style.webkitClipPath = '';
-      viewport.style.height = `${clamped}px`;
+      viewport.style.height = `${next}px`;
       void viewport.offsetHeight;
       viewport.style.transition = '';
       reconcileStepViewportFit(currentStep);
@@ -8017,11 +8056,11 @@
     /** Matrice live (375×667): seed antifallo + misura a freddo. */
     const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 640, 4: 292 };
     const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0 };
-    let iosPickerOpen = false;
 
     function isCompactPhoneViewport() {
-      return window.matchMedia('(max-width: 480px) and (max-height: 680px)')
-        .matches;
+      const html = document.documentElement;
+      return html.classList.contains('vp-w-480')
+        && html.classList.contains('vp-h-680');
     }
 
     function mappedStepHeight(step) {
@@ -8043,26 +8082,29 @@
      */
     function preCalculateGeometry({ applyCurrent = true } = {}) {
       const maxH = availableViewportMax();
+      const compact = isCompactPhoneViewport();
       for (let i = 1; i <= TOTAL_STEPS; i++) {
         let natural = measureStepContentHeight(i);
         if (!Number.isFinite(natural) || natural < 200) {
           natural = stepHeightCache[i] >= 200 ? stepHeightCache[i] : 0;
         }
         const seed = Number(GEOMETRY_SEED[i]) || 0;
-        const base = Math.max(seed, natural || 0) || 420;
+        const base = compact
+          ? Math.max(seed, natural || 0)
+          : natural || seed || 420;
         const h = Math.min(Math.max(Math.round(base), 280), maxH);
         geometryMap[i] = h;
         stepHeightCache[i] = h;
         if (i === 1) measuredStep1Height = h;
       }
       if (applyCurrent) {
-        applyViewportHeightPx(mappedStepHeight(currentStep), { animate: false });
+        applyViewportHeightPx(mappedStepHeight(currentStep), { allowShrink: true });
       }
       return geometryMap;
     }
 
     function invalidateGeometry(stepOrNull = null) {
-      if (iosPickerOpen || keyboardLock) return;
+      if (layoutFrozen()) return;
       if (stepOrNull == null) {
         preCalculateGeometry({ applyCurrent: !stepBusy });
         return;
@@ -8072,10 +8114,12 @@
       let natural = measureStepContentHeight(step);
       if (!Number.isFinite(natural) || natural < 200) return;
       const h = Math.min(Math.max(Math.round(natural), 280), maxH);
-      geometryMap[step] = h;
-      stepHeightCache[step] = h;
+      const prev = Number(geometryMap[step]) || 0;
+      const stable = prev >= 200 ? Math.max(prev, h) : h;
+      geometryMap[step] = stable;
+      stepHeightCache[step] = stable;
       if (step === currentStep && !stepBusy) {
-        applyViewportHeightPx(h, { animate: false });
+        applyViewportHeightPx(stable);
       }
     }
 
@@ -8181,7 +8225,7 @@
         typeof track.animate === 'function';
 
       if (!canWaapi) {
-        applyViewportHeightPx(endH, { animate: false });
+        applyViewportHeightPx(endH, { allowShrink: true });
         applyParallax(toParallax, toScale);
         applyTrack(toSlide);
         markStepClasses(step, { slidingFrom: null });
@@ -8328,13 +8372,13 @@
      * Motore fluido: misura scrollHeight biologico → altezza #sliderViewport.
      * La card resta height:auto (niente pixel fissi sul vetro).
      */
-    function syncViewportHeight(stepNumber, { animate = false } = {}) {
+    function syncViewportHeight(stepNumber, { allowShrink = true } = {}) {
+      if (layoutFrozen()) return;
       const step = Number(stepNumber) || currentStep;
       const viewport = document.getElementById('sliderViewport');
       const card = document.getElementById('card');
       if (!viewport) return;
 
-      // Pulisci eventuali altezze legacy sulla card
       if (card) {
         card.style.height = '';
         card.style.maxHeight = '';
@@ -8342,17 +8386,10 @@
         card.classList.remove('is-height-shrink');
       }
 
-      const maxH = availableViewportMax();
-      let natural = measureStepContentHeight(step);
-      if (!Number.isFinite(natural) || natural < 200) {
-        const cached = stepHeightCache[step];
-        natural = cached >= 200 ? cached : Math.min(420, maxH);
-      }
-
-      const h = Math.min(Math.max(natural, 280), maxH);
-      stepHeightCache[step] = h;
+      const mapped = mappedStepHeight(step);
+      const h = Math.min(Math.max(mapped, 280), availableViewportMax());
       if (step === 1) measuredStep1Height = h;
-      applyViewportHeightPx(h, { animate: false });
+      applyViewportHeightPx(h, { allowShrink });
       reconcileStepViewportFit(step);
     }
 
@@ -8374,7 +8411,7 @@
         card.style.maxHeight = '';
         card.classList.toggle('is-height-shrink', Boolean(shrink));
       }
-      applyViewportHeightPx(h, { animate });
+      applyViewportHeightPx(h, { allowShrink: Boolean(shrink) });
     }
 
     function syncCardHeight(step, { preferCache = false, animate = false } = {}) {
@@ -8383,7 +8420,7 @@
     }
 
     function syncAppViewportHeight() {
-      if (iosPickerOpen || keyboardLock) {
+      if (layoutFrozen()) {
         syncKeyboardScroll();
         return;
       }
@@ -8399,8 +8436,8 @@
     /** Blocca reflow/scroll mentre Safari apre il picker nativo dei <select>. */
     function initSelectStability() {
       const viewport = document.getElementById('sliderViewport');
-      const selects = document.querySelectorAll('.book-select');
-      if (!viewport || !selects.length) return;
+      const fields = document.querySelectorAll('.book-select, input[type="date"]');
+      if (!viewport || !fields.length) return;
 
       const freeze = () => {
         iosPickerOpen = true;
@@ -8411,12 +8448,9 @@
       const thaw = () => {
         iosPickerOpen = false;
         document.body.classList.remove('ios-picker-open');
-        if (!stepBusy) {
-          applyViewportHeightPx(mappedStepHeight(currentStep), { animate: false });
-        }
       };
 
-      selects.forEach((select) => {
+      fields.forEach((select) => {
         select.addEventListener('focus', freeze);
         select.addEventListener('blur', thaw);
         select.addEventListener('change', () => {
@@ -10265,8 +10299,12 @@
       setTimeout(() => card.classList.remove('is-entering'), 700);
     }
     window.addEventListener('resize', () => {
-      if (keyboardLock) {
+      if (layoutFrozen()) {
         syncKeyboardScroll();
+        return;
+      }
+      const inner = Math.round(window.innerHeight || 0);
+      if (usesVirtualKeyboard() && restLayoutH >= 280 && inner < restLayoutH - 80) {
         return;
       }
       syncAppViewportHeight();
