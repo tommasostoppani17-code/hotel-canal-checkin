@@ -356,7 +356,7 @@
       }
 
       #step3 .form-grid-container {
-        padding: 0;
+        padding: var(--ios-gap);
         gap: 12px;
       }
 
@@ -4613,7 +4613,7 @@
 
     #step3 .form-group label {
       margin-bottom: 6px;
-      margin-left: 2px;
+      margin-left: 0;
     }
 
     /* Footer step 3: CTA + link touch-safe distanziati */
@@ -5084,7 +5084,7 @@
 
     .form-group label,
     #step3 .form-group label {
-      margin-left: 2px;
+      margin-left: 0;
       margin-bottom: var(--ios-2);
       font-size: var(--type-label);
       font-weight: 600;
@@ -5160,7 +5160,7 @@
     #step3 .dining-book .form-grid-container {
       gap: 12px 12px !important;
       margin: 0 !important;
-      padding: 0 !important;
+      padding: var(--ios-gap) !important;
     }
 
     #step3 .form-group label {
@@ -5646,8 +5646,9 @@
         back: 'Indietro',
         loading: 'Elaborazione…',
         successTitle: 'Registrato!',
-        successSub: 'Indicazioni via email. Azioni rapide qui sotto.',
-        successSubCoupon: 'Coupon −10% in arrivo. Azioni sotto.',
+        successSub: "Ti abbiamo inviato un'email con i dettagli del soggiorno. Aprila per le indicazioni.",
+        successSubCoupon:
+          "Ti abbiamo inviato un'email con i dettagli del soggiorno e il coupon -10%. Aprila per le indicazioni.",
         actTable: 'Prenota un tavolo',
         actTableSub: 'Scegli orario · ti richiamiamo',
         actTableSubNoCoupon: 'Scegli orario · ti richiamiamo',
@@ -5762,8 +5763,9 @@
         back: 'Back',
         loading: 'Processing…',
         successTitle: 'Registered!',
-        successSub: 'Guide emailed. Actions below.',
-        successSubCoupon: '−10% coupon on the way. Actions below.',
+        successSub: 'We emailed your stay details. Open the email for directions.',
+        successSubCoupon:
+          'We emailed your stay details and the -10% coupon. Open the email for directions.',
         actTable: 'Book a table',
         actTableSub: 'Pick a time · we’ll call back',
         actTableSubNoCoupon: 'Pick a time · we’ll call back',
