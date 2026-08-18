@@ -5,7 +5,7 @@ window.I18N_PRIVACY_PATCH = {
       '<p><strong>Titolare del trattamento:</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE), P.IVA / C.F. 04711930273.</p>' +
       '<p><strong>Finalità:</strong> esecuzione di misure precontrattuali e contrattuali relative al soggiorno (check-in digitale, invio istruzioni Wi‑Fi/accessi, coupon partner, prenotazione tavolo, report interni di portineria).</p>' +
       '<p><strong>Base giuridica:</strong> art. 6.1.b GDPR (contratto/misure precontrattuali) e art. 6.1.a (consenso esplicito raccolto in app).</p>' +
-      '<p><strong>Conservazione:</strong> i dati anagrafici di contatto sono conservati sul server al massimo 24 ore, poi eliminati automaticamente dopo l’uso operativo (report di portineria).</p>' +
+      '<p><strong>Conservazione:</strong> i dati anagrafici restano sul server fino alla data di checkout dichiarata in registrazione, più 7 giorni. Ogni notte alle 00:00 (Europa/Roma), dopo l’invio del report giornaliero al personale autorizzato, nome, telefono ed email vengono anonimizzati in modo irreversibile. Restano solo dati non identificativi (stanza, date, receptionist) per le statistiche interne.</p>' +
       '<p><strong>Destinatari:</strong> personale autorizzato dell’hotel (front desk). Nessuna cessione a piattaforme di remarketing o terzi commerciali. Fornitori tecnici (hosting/email/WhatsApp business) agiscono come responsabili del trattamento ove applicabile.</p>' +
       '<p><strong>Diritti:</strong> accesso, rettifica, cancellazione, limitazione, opposizione — contattare la reception o <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>',
     privacyFullLink: 'Apri versione completa',
@@ -16,7 +16,7 @@ window.I18N_PRIVACY_PATCH = {
       '<p><strong>Data controller:</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE), P.IVA / C.F. 04711930273.</p>' +
       '<p><strong>Purposes:</strong> performance of pre-contractual and contractual measures related to the stay (digital check-in, Wi‑Fi/access instructions, partner coupons, table booking, internal front-desk reports).</p>' +
       '<p><strong>Legal basis:</strong> Art. 6.1.b GDPR (contract/pre-contractual measures) and Art. 6.1.a (explicit consent collected in the app).</p>' +
-      '<p><strong>Retention:</strong> contact identity data are kept on the server for a maximum of 24 hours, then automatically deleted after operational use (front-desk report).</p>' +
+      '<p><strong>Retention:</strong> contact identity data are kept until the checkout date declared at registration, plus 7 days. Every night at 00:00 (Europe/Rome), after the daily report is sent to authorised staff, name, phone and email are irreversibly anonymised. Only non-identifying operational data (room, dates, receptionist) remain for internal statistics.</p>' +
       '<p><strong>Recipients:</strong> authorised hotel staff (front desk). No transfer to remarketing platforms or commercial third parties. Technical providers (hosting/email/WhatsApp Business) act as processors where applicable.</p>' +
       '<p><strong>Rights:</strong> access, rectification, erasure, restriction, objection — contact reception or <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>',
     privacyFullLink: 'Open full version',
@@ -27,7 +27,7 @@ window.I18N_PRIVACY_PATCH = {
       '<p><strong>Responsable du traitement :</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE), P.IVA / C.F. 04711930273.</p>' +
       '<p><strong>Finalités :</strong> exécution de mesures précontractuelles et contractuelles liées au séjour (check-in numérique, envoi d’instructions Wi‑Fi/accès, coupons partenaires, réservation de table, rapports internes de conciergerie).</p>' +
       '<p><strong>Base juridique :</strong> art. 6.1.b RGPD (contrat/mesures précontractuelles) et art. 6.1.a (consentement explicite recueilli dans l’application).</p>' +
-      '<p><strong>Conservation :</strong> les données d’identité de contact sont conservées sur le serveur au maximum 24 heures, puis supprimées automatiquement après usage opérationnel (rapport de conciergerie).</p>' +
+      '<p><strong>Conservation :</strong> les données d’identité sont conservées jusqu’à la date de départ déclarée à l’enregistrement, plus 7 jours. Chaque nuit à 00:00 (Europe/Rome), après l’envoi du rapport quotidien au personnel autorisé, nom, téléphone et e-mail sont anonymisés de façon irréversible.</p>' +
       '<p><strong>Destinataires :</strong> personnel autorisé de l’hôtel (réception). Aucune cession à des plateformes de remarketing ou à des tiers commerciaux. Les prestataires techniques (hébergement/e-mail/WhatsApp Business) agissent comme sous-traitants le cas échéant.</p>' +
       '<p><strong>Droits :</strong> accès, rectification, effacement, limitation, opposition — contacter la réception ou <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>',
     privacyFullLink: 'Ouvrir la version complète',
@@ -38,7 +38,7 @@ window.I18N_PRIVACY_PATCH = {
       '<p><strong>Verantwortlicher:</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE), P.IVA / C.F. 04711930273.</p>' +
       '<p><strong>Zwecke:</strong> Durchführung vorvertraglicher und vertraglicher Maßnahmen im Zusammenhang mit dem Aufenthalt (digitaler Check-in, Wi‑Fi-/Zugangs­anweisungen, Partner-Coupons, Tischreservierung, interne Portierberichte).</p>' +
       '<p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Vertrag/vorvertragliche Maßnahmen) und Art. 6 Abs. 1 lit. a (ausdrückliche Einwilligung in der App).</p>' +
-      '<p><strong>Speicherung:</strong> Kontaktdaten werden auf dem Server höchstens 24 Stunden gespeichert und nach dem betrieblichen Gebrauch (Portierbericht) automatisch gelöscht.</p>' +
+      '<p><strong>Speicherung:</strong> Kontaktdaten werden bis zum bei der Registrierung angegebenen Checkout-Datum plus 7 Tage gespeichert. Jede Nacht um 00:00 (Europa/Rom), nach dem Tagesbericht an das autorisierte Personal, werden Name, Telefon und E-Mail unumkehrbar anonymisiert.</p>' +
       '<p><strong>Empfänger:</strong> autorisiertes Hotelpersonal (Front Desk). Keine Weitergabe an Remarketing-Plattformen oder kommerzielle Dritte. Technische Anbieter (Hosting/E-Mail/WhatsApp Business) handeln gegebenenfalls als Auftragsverarbeiter.</p>' +
       '<p><strong>Rechte:</strong> Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch — Rezeption kontaktieren oder <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>',
     privacyFullLink: 'Vollständige Version öffnen',
@@ -49,7 +49,7 @@ window.I18N_PRIVACY_PATCH = {
       '<p><strong>Responsable del tratamiento:</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE), P.IVA / C.F. 04711930273.</p>' +
       '<p><strong>Finalidades:</strong> ejecución de medidas precontractuales y contractuales relativas a la estancia (check-in digital, envío de instrucciones Wi‑Fi/accesos, cupones de partners, reserva de mesa, informes internos de conserjería).</p>' +
       '<p><strong>Base jurídica:</strong> art. 6.1.b RGPD (contrato/medidas precontractuales) y art. 6.1.a (consentimiento explícito recogido en la app).</p>' +
-      '<p><strong>Conservación:</strong> los datos de contacto se conservan en el servidor como máximo 24 horas y luego se eliminan automáticamente tras el uso operativo (informe de conserjería).</p>' +
+      '<p><strong>Conservación:</strong> los datos de contacto se conservan hasta la fecha de checkout declarada en el registro, más 7 días. Cada noche a las 00:00 (Europa/Roma), tras el informe diario al personal autorizado, nombre, teléfono y email se anonimizan de forma irreversible.</p>' +
       '<p><strong>Destinatarios:</strong> personal autorizado del hotel (recepción). Ninguna cesión a plataformas de remarketing ni a terceros comerciales. Los proveedores técnicos (hosting/email/WhatsApp Business) actúan como encargados del tratamiento cuando corresponda.</p>' +
       '<p><strong>Derechos:</strong> acceso, rectificación, supresión, limitación, oposición — contactar con recepción o <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>',
     privacyFullLink: 'Abrir versión completa',

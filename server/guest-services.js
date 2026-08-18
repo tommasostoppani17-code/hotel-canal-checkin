@@ -1,71 +1,52 @@
-function env(name, fallback = '') {
-  return process.env[name] ?? fallback;
+function envTrim(name) {
+  return String(process.env[name] || '').trim();
 }
 
-/** Reti Wi-Fi per sede (Hotel Canal, Airone, appartamenti). */
+function wifiNetwork(id, label, ssid, password) {
+  if (!ssid || !password) return null;
+  return { id, label, ssid, password };
+}
+
+/** Reti Wi-Fi per sede. Password solo da env, nessun fallback in sorgente. */
 export function buildWifiNetworks() {
-  const canalPassword =
-    String(env('WIFI_PASSWORD', 'hotelcanal')).trim() || 'hotelcanal';
-  const canalSsid =
-    String(env('WIFI_SSID', 'hotel canal')).trim() || 'hotel canal';
-  const aironeSsid =
-    String(env('WIFI_SSID_AIRONE', 'hotel airone')).trim() || 'hotel airone';
-  const apartmentSsid =
-    String(env('WIFI_SSID_APARTMENT', 'Ca Pisani Vista Canal')).trim() ||
-    'Ca Pisani Vista Canal';
-  const apartmentPassword = String(
-    env('WIFI_PASSWORD_APARTMENT', '4dwnw5rgej3vqmd9'),
-  ).trim();
+  const canalPassword = envTrim('WIFI_PASSWORD');
+  const canalSsid = envTrim('WIFI_SSID');
+  const aironeSsid = envTrim('WIFI_SSID_AIRONE');
+  const apartmentSsid = envTrim('WIFI_SSID_APARTMENT');
+  const apartmentPassword = envTrim('WIFI_PASSWORD_APARTMENT');
 
   return [
-    {
-      id: 'canal',
-      label: 'Hotel Canal',
-      ssid: canalSsid,
-      password: canalPassword,
-    },
-    {
-      id: 'airone',
-      label: 'Airone',
-      ssid: aironeSsid,
-      password: canalPassword,
-    },
-    {
-      id: 'pisani',
-      label: 'Appartamenti',
-      ssid: apartmentSsid,
-      password: apartmentPassword,
-    },
-  ];
+    wifiNetwork('canal', 'Hotel Canal', canalSsid, canalPassword),
+    wifiNetwork('airone', 'Airone', aironeSsid, canalPassword),
+    wifiNetwork(
+      'pisani',
+      'Appartamenti',
+      apartmentSsid,
+      apartmentPassword,
+    ),
+  ].filter(Boolean);
 }
 
 export function buildGuestServicesPayload() {
-  let doorWalter = String(env('DOOR_CODE_WALTER', '')).trim();
+  let doorWalter = envTrim('DOOR_CODE_WALTER');
   if (doorWalter && !doorWalter.endsWith('#')) doorWalter = `${doorWalter}#`;
-  const doorAirone = String(env('DOOR_CODE_AIRONE', '')).trim();
+  const doorAirone = envTrim('DOOR_CODE_AIRONE');
   const wifiNetworks = buildWifiNetworks();
-  const primary = wifiNetworks[0];
+  const primary = wifiNetworks[0] || { ssid: '', password: '' };
 
   return {
-    wifiSsid: primary.ssid,
-    wifiPassword: primary.password,
+    wifiSsid: primary.ssid || null,
+    wifiPassword: primary.password || null,
     wifiNetworks,
-    doorMain: doorWalter,
-    doorInner: doorAirone,
-    doorWalter,
-    doorAirone,
-    trattoriaPhone: String(env('TRATTORIA_PHONE', '+393282464972')).trim(),
-    trattoriaPhoneDisplay: String(
-      env('TRATTORIA_PHONE_DISPLAY', '328 246 4972'),
-    ).trim(),
-    tripadvisorUrl: String(
-      env(
-        'TRATTORIA_TRIPADVISOR_URL',
-        'https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html',
-      ),
-    ).trim(),
-    tripadvisorRating: String(
-      env('TRATTORIA_TRIPADVISOR_RATING', '4.3'),
-    ).trim(),
+    doorMain: doorWalter || null,
+    doorInner: doorAirone || null,
+    doorWalter: doorWalter || null,
+    doorAirone: doorAirone || null,
+    trattoriaPhone: envTrim('TRATTORIA_PHONE') || '+393282464972',
+    trattoriaPhoneDisplay: envTrim('TRATTORIA_PHONE_DISPLAY') || '328 246 4972',
+    tripadvisorUrl:
+      envTrim('TRATTORIA_TRIPADVISOR_URL') ||
+      'https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html',
+    tripadvisorRating: envTrim('TRATTORIA_TRIPADVISOR_RATING') || '4.3',
   };
 }

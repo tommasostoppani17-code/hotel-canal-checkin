@@ -22,7 +22,7 @@ Documento operativo per allineare **CANAL S.r.l. (Hotel Canal)** e il fornitore 
 - Consenso attivo (checkbox non pre-selezionata; blocco invio senza consenso)
 - Link / sheet informativa in Step 1
 - Cifratura AES-256-GCM di telefono, email, nome at rest (`FIELD_ENCRYPTION_KEY`)
-- Retention automatica 24h + purge dopo report / al boot
+- Retention: dati identificativi fino a checkout + 7 giorni; dopo il report delle 00:00 (Roma) anonimizzazione irreversibile (restano stanza/date/receptionist)
 - Backup Gist con payload cifrato (stesso formato DB)
 - API guest (Wi‑Fi/porte) solo con token post check-in
 - Dashboard staff `/staff`: sessione cookie 12h, telefono/email mascherati, reveal tracciato
@@ -33,7 +33,7 @@ Documento operativo per allineare **CANAL S.r.l. (Hotel Canal)** e il fornitore 
 - Registro dei trattamenti aggiornato
 - Nomine scritte agli incaricati
 - Valutazione rischi / DPIA se il consulente la richiede
-- Gestione richieste diritti interessati (cancellazione manuale se arriva entro le 24h)
+- Gestione richieste diritti interessati (cancellazione manuale se arriva durante il soggiorno o nei 7 giorni dopo il checkout)
 
 ## 5. Contatti
 

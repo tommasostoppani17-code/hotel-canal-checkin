@@ -120,7 +120,7 @@ function sectionTitle(label) {
 }
 
 function reportShell({ title, hotelName, eyebrow, preheader, bodyHtml, maxWidth = 560 }) {
-  const hero = escapeHtml(publicAssetUrl('venice-bg.jpg'));
+  const hero = escapeHtml(publicAssetUrl('email', 'hero-01.jpg'));
   const cardW = Number(maxWidth) || 560;
   return `
 <!DOCTYPE html>
@@ -366,10 +366,7 @@ export function buildTableBookingHeadline(rawTime, now = new Date()) {
   };
 }
 
-/**
- * Tabella ad alta densità: una riga per ospite, niente dati duplicati.
- * Tabelle HTML (Gmail/Outlook); wrapper overflow-x per lo scroll su mobile.
- */
+/** KPI in tre colonne: Gmail-safe, niente flex. */
 function kpiCell(value, label, isLast = false) {
   return `
                     <td width="33%" valign="top" style="width:33%;padding:0 ${isLast ? '0' : '5px'} 0 0;">
@@ -385,9 +382,33 @@ function kpiCell(value, label, isLast = false) {
 }
 
 function thCell(label, extra = '') {
-  return `<th align="left" style="padding:10px 10px;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73 !important;text-align:left;border-bottom:1px solid ${LINE};white-space:nowrap;${extra}">${label}</th>`;
+  return `<th align="left" style="padding:12px 10px;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73 !important;text-align:left;border-bottom:1px solid ${LINE};white-space:nowrap;${extra}">${label}</th>`;
 }
 
+function phoneHref(phone) {
+  const raw = String(phone || '').trim();
+  if (!raw || raw === '—') return '';
+  const tel = raw.replace(/[^\d+]/g, '');
+  return tel ? `tel:${tel}` : '';
+}
+
+function emailHref(email) {
+  const raw = String(email || '').trim();
+  if (!raw || raw === '—' || !raw.includes('@')) return '';
+  return `mailto:${raw}`;
+}
+
+function linkedCell(href, label, extraStyle = '') {
+  const text = escapeHtml(label);
+  const style = `font-family:${SANS};font-size:13px;color:#1d1d1f !important;text-decoration:none;${extraStyle}`;
+  if (!href) return `<span style="${style}">${text}</span>`;
+  return `<a href="${escapeHtml(href)}" style="color:${C} !important;text-decoration:none;${style}">${text}</a>`;
+}
+
+/**
+ * Tabella ad alta densità (layout di ieri): una riga per ospite.
+ * Font di oggi: stanza/nome 15px, contatti 13px, etichette 11px.
+ */
 function buildDailyGuestTable(rows) {
   if (!rows.length) {
     return `
@@ -414,23 +435,23 @@ function buildDailyGuestTable(rows) {
       const phoneHtml =
         phone === '—'
           ? `<span style="${emptyStyle}">—</span>`
-          : escapeHtml(phone);
+          : linkedCell(phoneHref(phone), phone);
       const emailHtml =
         email === '—'
           ? `<span style="${emptyStyle}">—</span>`
-          : escapeHtml(email);
+          : linkedCell(emailHref(email), email);
       const voucherHtml = haVoucher
         ? `<span style="display:inline-block;background:#E8F1F4;color:${C} !important;font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.04em;padding:2px 6px;border-radius:4px;">SÌ</span>`
         : `<span style="${emptyStyle}">—</span>`;
 
       return `
                 <tr bgcolor="${zebra}">
-                  <td align="center" style="padding:11px 8px;font-family:${SANS};font-size:13px;font-weight:700;color:${C} !important;text-align:center;white-space:nowrap;border-bottom:${border};">${escapeHtml(room)}</td>
-                  <td style="padding:11px 10px;font-family:${SANS};font-size:13px;font-weight:600;color:${C} !important;white-space:nowrap;border-bottom:${border};">${escapeHtml(name)}</td>
-                  <td style="padding:11px 10px;font-family:${SANS};font-size:13px;color:#1d1d1f !important;white-space:nowrap;border-bottom:${border};">${phoneHtml}</td>
-                  <td style="padding:11px 10px;font-family:${SANS};font-size:13px;color:#1d1d1f !important;white-space:nowrap;border-bottom:${border};">${emailHtml}</td>
-                  <td align="center" style="padding:11px 8px;text-align:center;white-space:nowrap;border-bottom:${border};">${voucherHtml}</td>
-                  <td style="padding:11px 10px;font-family:${SANS};font-size:11px;font-weight:600;color:${MUTED} !important;white-space:nowrap;border-bottom:${border};">${escapeHtml(staff)}</td>
+                  <td align="center" style="padding:12px 8px;font-family:${SANS};font-size:15px;font-weight:700;color:${C} !important;text-align:center;white-space:nowrap;border-bottom:${border};">${escapeHtml(room)}</td>
+                  <td style="padding:12px 10px;font-family:${SANS};font-size:15px;font-weight:700;color:${C} !important;white-space:nowrap;border-bottom:${border};">${escapeHtml(name)}</td>
+                  <td style="padding:12px 10px;font-family:${SANS};font-size:13px;color:#1d1d1f !important;white-space:nowrap;border-bottom:${border};">${phoneHtml}</td>
+                  <td style="padding:12px 10px;font-family:${SANS};font-size:13px;color:#1d1d1f !important;white-space:nowrap;border-bottom:${border};">${emailHtml}</td>
+                  <td align="center" style="padding:12px 8px;text-align:center;white-space:nowrap;border-bottom:${border};">${voucherHtml}</td>
+                  <td style="padding:12px 10px;font-family:${SANS};font-size:11px;font-weight:600;color:${MUTED} !important;white-space:nowrap;border-bottom:${border};">${escapeHtml(staff)}</td>
                 </tr>`;
     })
     .join('');

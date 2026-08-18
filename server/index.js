@@ -18,7 +18,7 @@ import {
   countCheckins,
   setTableBooking,
   getCheckinById,
-  purgeCheckinsOlderThan24Hours,
+  applyGdprRetention,
   isRoomTaken,
   getActiveCheckinByRoom,
   deleteCheckinsByRoom,
@@ -29,6 +29,7 @@ import {
   parseStayDate,
   parseCheckoutDate,
   listStaffCheckins,
+  listInHouseStaffCheckins,
   updateCheckinRoom,
   updateCheckinReceptionist,
   toggleCheckinStar,
@@ -54,6 +55,10 @@ import {
   getStaffPinHash,
   setStaffPinHash,
   getStaffAccountStats,
+  listStaffRoster,
+  getStaffMember,
+  createStaffMember,
+  deactivateStaffMember,
   RECEPTION_NOTE_CATEGORIES,
 } from './db.js';
 import {
@@ -79,9 +84,9 @@ import {
   pullCheckinsBackup,
   pushCheckinsBackup,
 } from './backup.js';
-import { buildCsv, buildTableBookingEmail } from './report.js';
+import { buildCsv, buildTableBookingEmail, buildReportEmail, formatRomeDate } from './report.js';
 import { buildGuestServicesPayload } from './guest-services.js';
-import { hashStaffPin, verifyStaffPin } from './staff-auth.js';
+import { hashStaffPin, isStaffPinHash, verifyStaffPin } from './staff-auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -331,6 +336,44 @@ app.get('/sw.js', (_req, res) => {
   res.sendFile(path.join(rootDir, 'public', 'sw.js'));
 });
 
+/** Preview locale email report giornaliero (stesso HTML inviato). */
+app.get('/preview/report-email', (req, res) => {
+  if (IS_PROD && !isAuthorizedCron(req)) {
+    return res.status(404).end();
+  }
+  const { html } = buildReportEmail({
+    hotelName: HOTEL_NAME,
+    count: 3,
+    dateLabel: formatRomeDate(),
+    rows: [
+      {
+        guest_name: 'Mario Rossi',
+        room_number: '12',
+        phone: '+39 333 111 2222',
+        email: 'mario.rossi@example.com',
+        receptionist: 'TOMMASO',
+        coupon_token: 'abc',
+        coupon_sent_at: new Date().toISOString(),
+      },
+      {
+        guest_name: 'Anna Bianchi',
+        room_number: '104',
+        phone: '+39 340 000 1111',
+        email: 'annabianchi.lunghissima@hotelcanal.com',
+        receptionist: 'PAYEL',
+      },
+      {
+        guest_name: 'John Smith',
+        room_number: '5',
+        phone: '',
+        email: '',
+        receptionist: 'MIZAN',
+      },
+    ],
+  });
+  res.type('html').send(html);
+});
+
 /** Preview locale email richiesta tavolo (stesso HTML inviato). */
 app.get('/preview/table-booking-email', (req, res) => {
   if (IS_PROD && !isAuthorizedCron(req)) {
@@ -391,20 +434,25 @@ app.use((req, res, next) => {
   return next();
 });
 
-/** Lab viewport: noindex, solo per QA layout su più dispositivi. */
-app.get(['/lab/devices', '/lab-devices.html'], (_req, res) => {
-  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-  res.setHeader('Cache-Control', 'no-store');
-  res.type('html');
-  return res.sendFile(path.join(rootDir, 'public', 'lab-devices.html'));
-});
-
 /** Dashboard reception: noindex, mai in homepage ospite. */
 app.get(['/staff.html', '/staff', '/staff/'], (_req, res) => {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   res.setHeader('Cache-Control', 'no-store');
   res.type('html');
   return res.sendFile(path.join(rootDir, 'public', 'staff.html'));
+});
+
+const STAFF_ONLY_HTML = {
+  '/lab/devices': path.join('private', 'lab-devices.html'),
+  '/lab-devices.html': path.join('private', 'lab-devices.html'),
+  '/email-photo-catalog.html': path.join('private', 'email-photo-catalog.html'),
+};
+
+app.use((req, res, next) => {
+  const key = String(req.path || '').replace(/\/+$/, '') || '/';
+  const rel = STAFF_ONLY_HTML[key.toLowerCase()];
+  if (!rel) return next();
+  return sendStaffOnlyHtml(req, res, rel);
 });
 
 /** Poster HTML: URL a piè di pagina sempre allineato a PUBLIC_URL. */
@@ -558,65 +606,28 @@ function toUpperOrNull(value) {
 }
 
 function testerEmailSet() {
-  const defaults = [
-    'tommasostoppani17@gmail.com',
-    'payel@hotelcanal.com',
-    'mizan@hotelcanal.com',
-  ];
-  const fromEnv = String(process.env.TESTER_EMAILS || '')
-    .split(/[,;\s]+/)
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const report = String(process.env.REPORT_EMAIL || '')
-    .trim()
-    .toLowerCase();
   return new Set(
-    [...defaults, ...fromEnv, report].filter((e) => e && e.includes('@')),
+    String(process.env.TESTER_EMAILS || '')
+      .split(/[,;\s]+/)
+      .map((s) => s.trim().toLowerCase())
+      .filter((e) => e.includes('@')),
   );
 }
 
 function testerPhoneSet() {
-  const fromEnv = String(process.env.TESTER_PHONES || '')
-    .split(/[,;\s]+/)
-    .map((s) => cleanPhone(s))
-    .filter(Boolean);
-  const payel = cleanPhone(process.env.WHATSAPP_PAYEL || '');
-  return new Set([...fromEnv, payel].filter(Boolean));
+  return new Set(
+    String(process.env.TESTER_PHONES || '')
+      .split(/[,;\s]+/)
+      .map((s) => cleanPhone(s))
+      .filter(Boolean),
+  );
 }
 
-function testerNameSet() {
-  const defaults = ['TOMMASO', 'PAYEL', 'MIZAN', 'STOPPANI'];
-  const fromEnv = String(process.env.TESTER_NAMES || '')
-    .split(/[,;]+/)
-    .map((s) => s.trim().toUpperCase())
-    .filter(Boolean);
-  return new Set([...defaults, ...fromEnv]);
-}
-
-function isTesterAccount({ email, phone, firstName, lastName, guestName } = {}) {
+function isTesterAccount({ email, phone } = {}) {
   const mail = normalizeEmail(email);
   if (mail && testerEmailSet().has(mail)) return true;
-
   const tel = cleanPhone(phone);
   if (tel && testerPhoneSet().has(tel)) return true;
-  // Match anche senza + / con 00
-  if (tel) {
-    const digits = tel.replace(/\D/g, '');
-    for (const allowed of testerPhoneSet()) {
-      const a = String(allowed).replace(/\D/g, '');
-      if (a && (a === digits || a.endsWith(digits) || digits.endsWith(a))) {
-        return true;
-      }
-    }
-  }
-
-  const names = testerNameSet();
-  const tokens = `${firstName || ''} ${lastName || ''} ${guestName || ''}`
-    .toUpperCase()
-    .split(/[^A-ZÀ-Ü]+/)
-    .filter(Boolean);
-  if (tokens.some((t) => names.has(t))) return true;
-
   return false;
 }
 
@@ -694,24 +705,21 @@ function staffReportResponse(result) {
 const STAFF_COOKIE = 'hc_staff';
 const STAFF_SESSION_TTL_SEC = 60 * 60 * 12;
 
-const STAFF_ROSTER = [
-  { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso' },
-  { id: 'john', name: 'JOHN', label: 'John' },
-  { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro' },
-  { id: 'maria', name: 'MARIA', label: 'Maria' },
-  { id: 'mizan', name: 'MIZAN', label: 'Mizan' },
-  { id: 'payel', name: 'PAYEL', label: 'Payel' },
-  { id: 'sayeed', name: 'SAYEED', label: 'Sayeed' },
-];
-
 function staffMemberById(staffId) {
-  const id = String(staffId || '').trim().toLowerCase();
-  return STAFF_ROSTER.find((member) => member.id === id) || null;
+  return getStaffMember(staffId);
 }
 
 function isStaffManager(staffId) {
   const id = String(staffId || '').trim().toLowerCase();
   return id === 'mizan' || id === 'payel';
+}
+
+function isStaffDev(staffId) {
+  return String(staffId || '').trim().toLowerCase() === 'tommaso';
+}
+
+function canSeeStaffInfo(staffId) {
+  return isStaffManager(staffId) || isStaffDev(staffId);
 }
 
 function staffClientJson(staff) {
@@ -722,28 +730,58 @@ function staffClientJson(staff) {
     name: staff.name || staff.staffName,
     label: staff.label || staff.staffLabel,
     manager: isStaffManager(id),
+    dev: isStaffDev(id),
+    info: canSeeStaffInfo(id),
   };
 }
 
 function staffRoadmapPayload(staffId) {
   const manager = isStaffManager(staffId);
+  const dev = isStaffDev(staffId);
   return {
     ok: true,
     manager,
+    dev,
     managerBlock: manager
       ? {
           intro:
-            'Fatturazione, API e hosting restano visibili solo a Mizan e Payel. I numeri arrivano dai progetti Emily AI e Sestriere Care: qui è il quadro, non uno strumento di turno.',
+            'Fatturazione, canoni e integrazioni restano visibili solo a Mizan e Payel.',
           items: [
             {
-              title: 'WhatsApp Business (API Meta)',
-              body: 'L’ospite scrive per primo dal QR in camera. Coupon e riepilogo stanza partono solo dopo quella chat. Non si inviano messaggi di marketing outbound da Hotel Canal: costano e chiudono il margine.',
-              cost: 'Fino a ~1.000 conversazioni service/mese: 0 € (soglia Meta). Oltre: ~0,03 € a conversazione. Dentro le 24 ore i messaggi sono a 0 €. Gemini stimato 1–3 €/mese su un hotel medio.',
+              status: 'In roadmap',
+              tone: 'queue',
+              title: 'WhatsApp Business API (inbound QR)',
+              body: 'L’ospite scrive per primo dal QR in camera. Da quella chat si sbloccano coupon, riepilogo stanza, orari cena e Concierge Pro (5,00 €). Niente marketing in uscita da Hotel Canal.',
+              cost: 'Meta copre ~1.000 chat service/mese. Oltre: ~0,03 € a conversazione. Zero sprechi di margine.',
             },
             {
+              status: 'Add-on',
+              tone: 'queue',
               title: 'Hub Emily AI + Sestriere Care',
-              body: 'Emily è già in cloud: canone di riferimento 29 €/mese, costo vivo ~8 € (hosting ~5 € + IA ~2 €, margine ~21 €). Sestriere Care oggi gira in locale sul Mac con tunnel. Un solo stack cloud toglie hosting e manutenzione duplicati.',
-              cost: 'Target: un canone unico al posto di due piattaforme. Architettura “zero-cost” Emily: ~12 €/mese vivi (SIM ~7 € + hosting ~5 €) se si evita la Cloud API Meta.',
+              body: 'Un solo cervello cloud. Sestriere lascia il Mac in reception e entra con Emily: pulizie, note e colazioni in tempo reale tra Canal, Walter, Airone e Ca’ dei Polo.',
+              cost: 'Canone unico 39 €/mese. Check-in, Emily AI e gestione operativa sotto lo stesso sistema.',
+            },
+            {
+              status: 'Congelato',
+              tone: 'frozen',
+              title: 'Modulo laundry',
+              body: 'Tracciamento lavanderia a 12,00 € a carico. Resta spento finché l’hub cloud non è in piedi.',
+              cost: '',
+            },
+          ],
+        }
+      : null,
+    devBlock: dev
+      ? {
+          intro:
+            'Solo Tommaso. Reception e titolari non vedono questo blocco.',
+          items: [
+            {
+              status: 'In coda',
+              tone: 'queue',
+              title: 'Consolidamento dei tre stack',
+              body: 'Oggi tre mondi senza API condivisa. Prima si uniscono, poi si sbloccano le OTA.',
+              cost: 'Sestriere: JSON + sessioni in RAM sul Mac via tunnel. Emily: Postgres, Redis, Stripe, Gemini, Meta su VPS. Check-in Canal: SQLite su Render. Allineare i prezzi nei file di config.',
             },
           ],
         }
@@ -757,15 +795,27 @@ function staffPinFor(staffId) {
   const fromDb = getStaffPinHash(member.id);
   if (fromDb) return fromDb;
   const envKey = `STAFF_PIN_${member.id.toUpperCase()}`;
-  const fromEnv = String(process.env[envKey] || '').trim();
-  if (fromEnv) return fromEnv;
-  // Fallback operativo: mantiene accessibile la dashboard anche senza env vars.
-  // Da sostituire appena possibile con STAFF_PIN_* dedicati su Render.
-  return `canal${member.id}`;
+  return String(process.env[envKey] || '').trim();
+}
+
+function staffPinUsable(stored) {
+  const ref = String(stored || '').trim();
+  if (!ref) return false;
+  if (isStaffPinHash(ref)) return true;
+  return !IS_PROD;
 }
 
 function staffAuthConfigured() {
-  return STAFF_ROSTER.some((member) => Boolean(staffPinFor(member.id)));
+  return listStaffRoster({ activeOnly: true }).some((member) =>
+    staffPinUsable(staffPinFor(member.id)),
+  );
+}
+
+function requireManager(req, res, next) {
+  if (!isStaffManager(req.staffUser?.staffId)) {
+    return res.status(403).json({ error: 'Solo direzione', code: 'forbidden' });
+  }
+  return next();
 }
 
 function staffSessionSecret() {
@@ -860,6 +910,23 @@ function requireStaff(req, res, next) {
   }
   req.staffUser = session;
   return next();
+}
+
+function sendStaffOnlyHtml(req, res, relativePath) {
+  const session = parseStaffSession(readCookie(req, STAFF_COOKIE));
+  if (!session) {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(404).end();
+  }
+  const file = path.join(rootDir, relativePath);
+  if (!fs.existsSync(file)) {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(404).end();
+  }
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(file);
 }
 
 app.get('/health', (_req, res) => {
@@ -1316,13 +1383,7 @@ async function handleCheckin(req, res) {
 
     const includeCoupon = Boolean(wantCoupon && roomNumber);
 
-    const tester = isTesterAccount({
-      email,
-      phone,
-      firstName,
-      lastName,
-      guestName,
-    });
+    const tester = isTesterAccount({ email, phone });
 
     if (roomNumber && isRoomTaken(roomNumber, null, stayDate)) {
       if (tester) {
@@ -1572,13 +1633,38 @@ app.post(
 
 const staffLoginLimit = rateLimit({ windowMs: 15 * 60_000, max: 8 });
 
+function publicReceptionistList() {
+  try {
+    return listStaffRoster({ activeOnly: true }).map((member) => ({
+      id: member.id,
+      name: member.name,
+      label: member.label,
+      initial: String(member.label || member.name || '?')
+        .trim()
+        .charAt(0)
+        .toUpperCase(),
+    }));
+  } catch (_) {
+    return [];
+  }
+}
+
 app.get('/api/staff/login-info', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   return res.json({
     configured: staffAuthConfigured(),
-    staff: STAFF_ROSTER.map((member) => ({ id: member.id, label: member.label })),
+    staff: publicReceptionistList(),
   });
 });
+
+app.get(
+  '/api/receptionists',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  (_req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({ staff: publicReceptionistList() });
+  },
+);
 
 app.post('/api/staff/login', staffLoginLimit, (req, res) => {
   if (!staffAuthConfigured()) {
@@ -1588,7 +1674,12 @@ app.post('/api/staff/login', staffLoginLimit, (req, res) => {
   const pin = String(req.body?.pin || '').trim();
   const member = staffMemberById(staffId);
   const expected = member ? staffPinFor(member.id) : '';
-  if (!member || !expected || !pin || !verifyStaffPin(pin, expected)) {
+  if (
+    !member ||
+    !staffPinUsable(expected) ||
+    !pin ||
+    !verifyStaffPin(pin, expected)
+  ) {
     return res.status(401).json({ error: 'Nome o password non validi', code: 'bad_pin' });
   }
   setStaffCookie(res, issueStaffSession(member.id));
@@ -1617,6 +1708,9 @@ app.get(
   rateLimit({ windowMs: 60_000, max: 40 }),
   requireStaff,
   (req, res) => {
+    if (!canSeeStaffInfo(req.staffUser?.staffId)) {
+      return res.status(403).json({ error: 'Solo direzione', code: 'forbidden' });
+    }
     res.setHeader('Cache-Control', 'no-store');
     return res.json(staffRoadmapPayload(req.staffUser?.staffId));
   },
@@ -1637,6 +1731,106 @@ app.get(
   },
 );
 
+app.get(
+  '/api/staff/team',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({
+      ok: true,
+      manager: isStaffManager(req.staffUser?.staffId),
+      staff: listStaffRoster({ activeOnly: true }).map((member) => ({
+        id: member.id,
+        name: member.name,
+        label: member.label,
+        protected: member.protected,
+        canRemove:
+          isStaffManager(req.staffUser?.staffId)
+          && !member.protected
+          && member.id !== req.staffUser?.staffId,
+      })),
+    });
+  },
+);
+
+app.post(
+  '/api/staff/team',
+  rateLimit({ windowMs: 15 * 60_000, max: 12 }),
+  requireStaff,
+  requireManager,
+  (req, res) => {
+    const confirm = req.body?.confirm === true || req.body?.confirm === 'true';
+    if (!confirm) {
+      return res.status(400).json({ error: 'Conferma richiesta', code: 'confirm_required' });
+    }
+    const label = String(req.body?.label || req.body?.name || '').trim();
+    const pin = String(req.body?.pin || req.body?.password || '').trim();
+    const pinConfirm = String(req.body?.confirmPin || req.body?.pinConfirm || '').trim();
+    if (!/^\d{4,8}$/.test(pin)) {
+      return res.status(400).json({
+        error: 'La password deve essere di 4–8 cifre',
+        code: 'pin_format',
+      });
+    }
+    if (pin !== pinConfirm) {
+      return res.status(400).json({
+        error: 'Le password non coincidono',
+        code: 'pin_mismatch',
+      });
+    }
+    const created = createStaffMember({
+      label,
+      createdBy: req.staffUser?.staffName,
+    });
+    if (!created.ok) {
+      const map = {
+        name_invalid: ['Nome non valido', 'name_invalid'],
+        name_taken: ['Questo nome è già in organico', 'name_taken'],
+      };
+      const [error, code] = map[created.error] || ['Impossibile aggiungere', 'invalid'];
+      return res.status(400).json({ error, code });
+    }
+    setStaffPinHash(created.member.id, hashStaffPin(pin));
+    return res.json({
+      ok: true,
+      member: {
+        id: created.member.id,
+        name: created.member.name,
+        label: created.member.label,
+      },
+    });
+  },
+);
+
+app.post(
+  '/api/staff/team/remove',
+  rateLimit({ windowMs: 15 * 60_000, max: 12 }),
+  requireStaff,
+  requireManager,
+  (req, res) => {
+    const confirm = req.body?.confirm === true || req.body?.confirm === 'true';
+    if (!confirm) {
+      return res.status(400).json({ error: 'Conferma richiesta', code: 'confirm_required' });
+    }
+    const staffId = String(req.body?.staffId || req.body?.id || '').trim().toLowerCase();
+    const result = deactivateStaffMember(staffId, { actorId: req.staffUser?.staffId });
+    if (!result.ok) {
+      const status = result.error === 'not_found' ? 404 : 400;
+      const map = {
+        not_found: 'Persona non trovata',
+        protected: 'Mizan e Payel non si possono rimuovere',
+        self: 'Non puoi rimuovere il tuo accesso',
+      };
+      return res.status(status).json({
+        error: map[result.error] || 'Impossibile rimuovere',
+        code: result.error,
+      });
+    }
+    return res.json({ ok: true, id: result.id, label: result.label });
+  },
+);
+
 app.post(
   '/api/staff/password',
   rateLimit({ windowMs: 15 * 60_000, max: 8 }),
@@ -1646,7 +1840,7 @@ app.post(
     const next = String(req.body?.newPin || req.body?.next || '').trim();
     const confirm = String(req.body?.confirmPin || req.body?.confirm || '').trim();
     const stored = staffPinFor(req.staffUser.staffId);
-    if (!stored || !current || !verifyStaffPin(current, stored)) {
+    if (!staffPinUsable(stored) || !current || !verifyStaffPin(current, stored)) {
       return res.status(400).json({
         error: 'Password attuale non corretta',
         code: 'current_wrong',
@@ -1686,6 +1880,18 @@ app.get(
       return res.status(400).json({ error: 'Data non valida' });
     }
     const payload = listStaffCheckins({ date, q });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(payload);
+  },
+);
+
+app.get(
+  '/api/staff/in-house',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const q = String(req.query.q || '').trim().slice(0, 80);
+    const payload = listInHouseStaffCheckins({ q });
     res.setHeader('Cache-Control', 'no-store');
     return res.json(payload);
   },
@@ -2231,6 +2437,11 @@ cron.schedule(
       } else {
         console.log(`[cron] Nessun nuovo contatto — report non inviato`);
       }
+      if (result.purged > 0) {
+        console.log(
+          `[cron] GDPR: anonimizzati ${result.purged} check-in oltre checkout + 7 giorni`,
+        );
+      }
     } catch (err) {
       console.error('[cron] Fallito:', err.message || err);
     }
@@ -2265,13 +2476,18 @@ app.listen(PORT, async () => {
   );
   console.log(`Cron staff: 00:05 il 1° del mese (${CRON_TZ}) → mese precedente`);
   console.log(
-    `[staff] Dashboard /staff ${staffAuthConfigured() ? 'attiva' : 'NON configurata — imposta STAFF_PIN_* su Render'}`,
+    `[staff] Dashboard /staff ${staffAuthConfigured() ? 'attiva' : 'NON configurata — imposta STAFF_PIN_* hash su Render'}`,
   );
+  if (IS_PROD && !String(process.env.WIFI_PASSWORD || '').trim()) {
+    console.warn('[boot] WIFI_PASSWORD mancante: lo step ospite non potra mostrare la rete');
+  }
   await restoreCheckinsBackupIfNeeded();
   try {
-    const purged = purgeCheckinsOlderThan24Hours();
+    const purged = applyGdprRetention();
     if (purged > 0) {
-      console.log(`[GDPR] Boot purge: wipe PII 24h, rimossi ${purged} unstarred >7g`);
+      console.log(
+        `[GDPR] Boot: anonimizzati ${purged} check-in oltre checkout + 7 giorni`,
+      );
       void syncCheckinsBackup('gdpr-purge');
     }
   } catch (err) {

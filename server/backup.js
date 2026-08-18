@@ -1,7 +1,7 @@
 /**
  * Backup durable dei check-in + rollup staff mensile su GitHub Gist.
  * Su Render free il filesystem è effimero: al boot ripristiniamo se il DB è vuoto.
- * staff_month_stats deve essere nel backup: i check-in spariscono dopo 24h (GDPR)
+ * staff_month_stats deve essere nel backup: i PII spariscono dopo checkout + 7 giorni (GDPR)
  * ma il report mensile legge solo il rollup.
  */
 

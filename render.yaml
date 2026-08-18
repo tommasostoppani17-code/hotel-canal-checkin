@@ -88,5 +88,9 @@ services:
         sync: false
       - key: STAFF_PIN_SAYEED
         sync: false
+      - key: TESTER_EMAILS
+        sync: false
+      - key: TESTER_PHONES
+        sync: false
 
   # Report notturno: .github/workflows/cron-reports.yml

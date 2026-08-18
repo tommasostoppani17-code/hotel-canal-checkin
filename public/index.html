@@ -41,6 +41,7 @@
        */
       --radius-outer: 28px;
       --radius-ios: 14px;
+      --radius-ui: 14px;
       --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
       /* WAAPI engine: durata sotto soglia percettiva Apple + molla magnetica */
@@ -62,11 +63,14 @@
       --ios-8: 32px;
       --ios-gap: 8px;
       --ios-gap-lg: 16px;
+      --ios-pad-click: 12px 16px;
       /* Blocchi tra sezioni (titolo↔copy, copy↔separator, separator↔form) */
       --step-stack: 24px;
       --step-stack-lg: 24px;
       /* Aria intorno ai hairline separator (mai < 16px) */
       --rule-gap: 24px;
+      --letter-brand: 0.5px;
+      --border: rgba(18, 68, 83, 0.12);
       /* 48px: tap target + allineamento glyph/placeholder */
       --ios-touch: 48px;
       --ios-cta: 52px;
@@ -90,6 +94,7 @@
       --card-h-3: 500px;
       --card-h-3-booking: 520px;
       --card-h-3-open: 580px;
+      --card-h-4: 560px;
       --card-h: var(--card-h-1);
       --card-max-w: 420px;
       --card-max: calc(
@@ -264,6 +269,7 @@
         --card-h-3: 480px;
         --card-h-3-booking: 520px;
         --card-h-3-open: 600px;
+        --card-h-4: 560px;
         --card-max: calc(
           var(--app-vh) - env(safe-area-inset-top, 0px) -
             env(safe-area-inset-bottom, 0px) - 20px
@@ -287,8 +293,8 @@
         margin-right: auto;
         height: auto;
         max-height: var(--card-max);
-        padding: 14px 0 14px;
-        border-radius: 24px;
+        padding: var(--ios-card-pad-top) 0 var(--ios-card-pad-bottom);
+        border-radius: var(--radius-outer);
       }
 
       .slide-step {
@@ -329,8 +335,8 @@
     /* V4: schermi corti (SE / Mini / landscape corto) — compressione intelligente */
     html.vp-h-670 {
       .apple-card {
-        padding: 14px 0 12px;
-        border-radius: 24px;
+        padding: var(--ios-card-pad-top) 0 var(--ios-card-pad-bottom);
+        border-radius: var(--radius-outer);
       }
 
       .header {
@@ -857,8 +863,8 @@
       font-size: 14px;
       font-weight: 700;
       color: var(--canal-petroleum);
-      margin: 0 0 2px;
-      letter-spacing: 0.02em;
+      margin: 0 0 4px;
+      letter-spacing: var(--letter-brand);
     }
 
     .carousel-caption p {
@@ -1151,7 +1157,7 @@
     .dining-mosaic figure {
       margin: 0;
       aspect-ratio: 1 / 1;
-      border-radius: 12px;
+      border-radius: var(--radius-ios);
       overflow: hidden;
       background: #124453;
     }
@@ -1333,8 +1339,8 @@
       margin: 0;
       font-family: 'Cinzel', Georgia, serif;
       font-size: var(--type-title);
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
       line-height: 1.2;
     }
@@ -1869,8 +1875,8 @@
       font-size: 14px;
       font-weight: 700;
       color: var(--canal-petroleum);
-      margin: 0 0 2px;
-      letter-spacing: 0.02em;
+      margin: 0 0 4px;
+      letter-spacing: var(--letter-brand);
     }
 
     .carousel-caption p {
@@ -2201,7 +2207,7 @@
       height: 100%;
       object-fit: cover;
       object-position: center;
-      border-radius: 12px;
+      border-radius: var(--radius-ios);
       display: block;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
       background: #124453;
@@ -2221,10 +2227,10 @@
     .concierge-header-title {
       font-family: 'Cinzel', Georgia, serif;
       font-size: 18px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--canal-petroleum);
       text-transform: none;
-      letter-spacing: -0.01em;
+      letter-spacing: var(--letter-brand);
       text-align: center;
       margin: 0;
       border-bottom: none;
@@ -2236,9 +2242,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: var(--ios-2);
       margin: 0;
-      padding: 4px 8px 0;
+      padding: var(--ios-1) var(--ios-2) 0;
       flex: 0 0 auto;
       text-align: center;
     }
@@ -2346,8 +2352,7 @@
       z-index: 1;
       width: 100%;
       box-sizing: border-box;
-      background: rgba(255, 255, 255, 0.55);
-      border: 1px solid rgba(18, 68, 83, 0.08);
+      border: 1px solid var(--input-border);
       border-radius: var(--radius-ios);
     }
 
@@ -2493,7 +2498,7 @@
     }
 
     .guest-action.is-book .guest-action-panel {
-      border-top-color: rgba(18, 68, 83, 0.08);
+      border-top-color: var(--input-border);
     }
 
     .guest-action.is-book .book-field label {
@@ -2688,13 +2693,14 @@
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
-      min-height: 0;
+      min-height: 100%;
       width: 100%;
-      height: 100%;
-      justify-content: space-between;
+      height: auto;
+      justify-content: flex-start;
       padding-left: var(--ios-inset);
       padding-right: var(--ios-inset);
-      padding-bottom: 4px;
+      padding-top: 4px;
+      padding-bottom: 8px;
       box-sizing: border-box;
       transition:
         transform var(--slide-ms) var(--slide-ease),
@@ -3064,8 +3070,8 @@
       text-transform: uppercase;
       letter-spacing: 0.03em;
       background: #F2F2F7;
-      padding: 8px 18px;
-      border-radius: 10px;
+      padding: 10px 16px;
+      border-radius: var(--radius-ios);
       cursor: pointer;
       user-select: none;
       text-decoration: none;
@@ -3287,8 +3293,8 @@
       font-size: var(--type-title) !important;
       line-height: 1.25 !important;
       margin: 0 !important;
-      letter-spacing: -0.02em !important;
-      font-weight: 600 !important;
+      letter-spacing: var(--letter-brand) !important;
+      font-weight: 700 !important;
       color: var(--canal-petroleum) !important;
       text-transform: none !important;
     }
@@ -3305,7 +3311,7 @@
     }
 
     #step4 .receipt-badge {
-      padding: 12px 14px;
+      padding: 12px 16px;
       margin: 0 0 var(--ios-gap-lg);
       width: 100%;
       border-radius: var(--radius-ios);
@@ -3652,41 +3658,419 @@
       contain: layout paint size;
     }
 
-    /* Picker fluttuante: copre i campi sotto, non spinge in alto il resto della card */
-    .apple-inline-list {
-      display: none;
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
-      width: 100%;
-      height: 176px;
-      margin-top: 0;
-      overflow: hidden;
-      background: #fff;
-      border: 1px solid rgba(18, 68, 83, 0.18);
-      border-radius: var(--radius-ios);
-      box-shadow:
-        0 8px 24px rgba(18, 68, 83, 0.14),
-        0 2px 6px rgba(18, 68, 83, 0.06);
-      z-index: 50;
+    /* Dropdown step 3 — popover iOS (fixed sul body come il calendario) */
+    .checkin-dropdown {
+      position: relative;
     }
 
-    .apple-inline-list[hidden] {
+    .checkin-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: 80;
+      padding: 6px;
+      max-height: min(280px, 44dvh);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      border-radius: 14px;
+      box-shadow:
+        0 0 0 0.5px rgba(18, 68, 83, 0.08),
+        0 8px 24px rgba(18, 68, 83, 0.14),
+        0 24px 48px rgba(8, 48, 72, 0.12);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px) saturate(180%);
+      mask-image: linear-gradient(#000 0%, #000 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(#000 0%, #000 92%, transparent 100%);
+    }
+
+    .checkin-dropdown-menu.is-fixed {
+      position: fixed;
+      left: auto;
+      right: auto;
+      top: auto;
+      bottom: auto;
+      z-index: 95;
+      padding: 4px;
+      transform-origin: top center;
+    }
+
+    .checkin-dropdown-menu.is-fixed.is-flip-up {
+      transform-origin: bottom center;
+    }
+
+    .checkin-dropdown-menu.is-fixed.is-opening:not(.prefers-reduced) {
+      animation: checkinPopoverIn 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+    }
+
+    .checkin-dropdown-menu.is-fixed.is-flip-up.is-opening:not(.prefers-reduced) {
+      animation-name: checkinPopoverInUp;
+    }
+
+    @keyframes checkinPopoverIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translate3d(0, -6px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes checkinPopoverInUp {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translate3d(0, 6px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translate3d(0, 0, 0);
+      }
+    }
+
+    .checkin-dropdown-menu.hidden,
+    .checkin-dropdown-menu[hidden] {
       display: none !important;
     }
 
+    .checkin-dropdown-menu.is-flip-up:not(.is-fixed) {
+      top: auto;
+      bottom: calc(100% + 8px);
+    }
+
+    .checkin-dropdown.is-open .apple-picker-trigger {
+      border-color: rgba(18, 68, 83, 0.28);
+      box-shadow:
+        0 0 0 3px rgba(18, 68, 83, 0.1),
+        0 1px 2px rgba(18, 68, 83, 0.04);
+    }
+
+    .checkin-dropdown.is-open .apple-picker-chevron {
+      transform: rotate(180deg);
+      color: var(--canal-petroleum);
+    }
+
+    .checkin-dropdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color 0.15s var(--ios-ease),
+        transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .checkin-dropdown-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .checkin-dropdown-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .checkin-dropdown-text {
+      font-size: 17px;
+      font-weight: 400;
+      letter-spacing: -0.022em;
+      color: #1d1d1f;
+      line-height: 1.2;
+    }
+
+    .checkin-dropdown-check {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: var(--canal-petroleum);
+      opacity: 0;
+    }
+
+    .checkin-dropdown-check svg {
+      display: block;
+      width: 18px;
+      height: 18px;
+    }
+
+    .checkin-dropdown-item.is-selected .checkin-dropdown-text {
+      color: var(--canal-petroleum);
+      font-weight: 600;
+    }
+
+    .checkin-dropdown-item.is-selected .checkin-dropdown-check {
+      opacity: 1;
+    }
+
+    .checkin-dropdown-item.is-selected .checkin-dropdown-avatar {
+      background: rgba(18, 68, 83, 0.14);
+    }
+
+    .checkin-dropdown-item:active {
+      background: #E5E5EA;
+      transform: scale(0.985);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .checkin-dropdown-item:hover {
+        background: rgba(18, 68, 83, 0.04);
+      }
+    }
+
+    .checkin-dropdown-item--numeric .checkin-dropdown-text {
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+
+    /* Receptionist: la barra si apre in sede, iniziali al centro */
+    .staff-picker {
+      position: relative;
+    }
+
+    .staff-selected-chip {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      z-index: 3;
+      width: 26px;
+      height: 26px;
+      margin: 0;
+      border-radius: 50%;
+      background: var(--canal-petroleum);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .staff-picker.has-selection:not(.is-open) .staff-selected-chip {
+      display: inline-flex;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      font-size: 13px;
+    }
+
+    .staff-picker.has-selection:not(.is-open) .field-glyph,
+    .staff-picker.has-selection:not(.is-open) .apple-picker-value,
+    .staff-picker.has-selection:not(.is-open) .apple-picker-chevron {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .staff-picker.has-selection:not(.is-open) .apple-picker-trigger {
+      padding-left: 14px;
+    }
+
+    .staff-initials-rail {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 0 8px;
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .staff-initials-rail.hidden,
+    .staff-initials-rail[hidden] {
+      display: none !important;
+    }
+
+    .staff-picker.is-open .staff-initials-rail {
+      display: flex;
+    }
+
+    .staff-picker.is-open .field-glyph,
+    .staff-picker.is-open .staff-selected-chip,
+    .staff-picker.is-open .apple-picker-value,
+    .staff-picker.is-open .apple-picker-chevron {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .staff-picker.is-open .apple-picker-trigger {
+      pointer-events: none;
+      border-color: rgba(18, 68, 83, 0.22);
+      box-shadow:
+        0 0 0 3px rgba(18, 68, 83, 0.08),
+        inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.96) !important;
+    }
+
+    .staff-initial {
+      flex: 0 1 32px;
+      width: 32px;
+      height: 32px;
+      min-width: 26px;
+      max-width: 34px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transform: scale(0.72);
+      opacity: 0;
+    }
+
+    .staff-picker.is-open .staff-initial {
+      animation: staffInitialIn 340ms cubic-bezier(0.32, 0.72, 0, 1) both;
+      animation-delay: calc(var(--i, 0) * 28ms);
+    }
+
+    .staff-initial.is-selected {
+      background: var(--canal-petroleum);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.22);
+    }
+
+    .staff-initial:active {
+      transform: scale(0.92);
+    }
+
+    @keyframes staffInitialIn {
+      from {
+        opacity: 0;
+        transform: scale(0.55);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Ospiti: stepper iOS, niente tendina e niente scrollbar */
+    .guests-stepper {
+      position: relative;
+    }
+
+    .guests-stepper-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px 0 34px !important;
+      height: var(--ios-touch);
+      box-sizing: border-box;
+    }
+
+    .guests-step-btn {
+      width: 36px;
+      height: 36px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      font-family: inherit;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .guests-step-btn:active {
+      background: rgba(18, 68, 83, 0.16);
+      transform: scale(0.94);
+    }
+
+    .guests-step-btn:disabled {
+      opacity: 0.28;
+      cursor: default;
+      transform: none;
+    }
+
+    .guests-step-value {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      color: var(--canal-petroleum);
+    }
+
+    .apple-card,
+    .apple-card *,
+    .checkin-dropdown-menu,
+    .staff-initials-rail,
+    .guests-stepper-bar {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    .apple-card *::-webkit-scrollbar,
+    .checkin-dropdown-menu::-webkit-scrollbar,
+    .staff-initials-rail::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .checkin-dropdown-menu.is-fixed.is-opening {
+        animation: none !important;
+      }
+
+      .staff-picker.is-open .staff-initial {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .form-group:has(.checkin-dropdown.is-open),
     .form-group.is-picker-open {
       z-index: 30;
-    }
-
-    .form-group.is-picker-open .apple-inline-list {
-      display: block !important;
-    }
-
-    /* Receptionist in fondo: la lista sale e copre le date, non finisce sotto il CTA */
-    #step3 .form-group.span-2.is-picker-open .apple-inline-list {
-      top: auto;
-      bottom: calc(100% + 4px);
     }
 
     /* Sblocca i clip della card solo mentre la tendina è aperta */
@@ -3856,7 +4240,7 @@
       width: 32px;
       height: 32px;
       border: 0;
-      border-radius: 10px;
+      border-radius: var(--radius-ios);
       background: rgba(18, 68, 83, 0.08);
       color: var(--canal-petroleum);
       display: inline-flex;
@@ -3902,7 +4286,7 @@
       aspect-ratio: 1;
       min-height: 34px;
       border: 0;
-      border-radius: 10px;
+      border-radius: var(--radius-ios);
       background: transparent;
       font-family: inherit;
       font-size: 13px;
@@ -4079,7 +4463,7 @@
       font-family: "Cinzel", Georgia, serif;
       font-size: 22px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
       margin: 0 0 var(--ios-2);
       display: block;
@@ -4089,9 +4473,9 @@
     .header .hotel-subtitle {
       font-family: "Cinzel", Georgia, serif;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: var(--letter-brand);
       color: #5C7A82;
       margin: 0 0 var(--ios-4);
       display: block;
@@ -4101,9 +4485,9 @@
     .header h1 {
       font-family: "Cinzel", Georgia, serif;
       font-size: var(--type-title);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: none;
-      letter-spacing: -0.02em;
+      letter-spacing: var(--letter-brand);
       margin: 0;
       color: var(--canal-petroleum);
       line-height: 1.25;
@@ -4119,7 +4503,7 @@
     }
 
     .form-group {
-      margin-bottom: var(--ios-2);
+      margin-bottom: var(--ios-gap-lg);
       position: relative;
       /* Evita che bordo arrotondato + overflow della card mangino i box */
       z-index: 0;
@@ -4158,9 +4542,9 @@
       background: #FFFFFF !important;
       background-color: #FFFFFF !important;
       background-image: none !important;
-      border: 1.5px solid transparent;
+      border: 1.5px solid var(--input-border);
       border-radius: var(--radius-ios);
-      padding: 0 var(--ios-3);
+      padding: 0 16px;
       font-size: var(--type-body);
       letter-spacing: -0.02em;
       color: var(--text-main);
@@ -4348,8 +4732,8 @@
       width: min(420px, 100%);
       max-height: min(78vh, 640px);
       margin: 0;
-      padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
-      border-radius: 22px 22px 0 0;
+      padding: 24px 24px calc(24px + env(safe-area-inset-bottom));
+      border-radius: 28px 28px 0 0;
       background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(228,238,244,0.96));
       border: 1px solid rgba(255,255,255,0.7);
       box-shadow: 0 -12px 40px rgba(18, 68, 83, 0.18);
@@ -4369,7 +4753,8 @@
       margin: 0;
       font-family: "Cinzel", Georgia, serif;
       font-size: 15px;
-      letter-spacing: 0.06em;
+      font-weight: 700;
+      letter-spacing: var(--letter-brand);
       text-transform: uppercase;
       color: var(--canal-petroleum);
     }
@@ -4378,7 +4763,7 @@
       width: 36px;
       height: 36px;
       border: 0;
-      border-radius: 12px;
+      border-radius: var(--radius-ios);
       background: rgba(18, 68, 83, 0.08);
       color: var(--canal-petroleum);
       font-size: 22px;
@@ -4548,10 +4933,10 @@
 
     .welcome-gift {
       background: rgba(18, 68, 83, 0.04);
-      border: 1px solid rgba(18, 68, 83, 0.08);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin: 0 0 14px;
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-ios);
+      padding: 12px 16px;
+      margin: 0 0 16px;
       text-align: center;
       animation: none;
     }
@@ -4561,7 +4946,7 @@
       font-size: 13.5px;
       font-weight: 700;
       color: var(--canal-petroleum);
-      letter-spacing: 0.03em;
+      letter-spacing: var(--letter-brand);
       margin: 0 0 4px;
     }
 
@@ -4601,7 +4986,7 @@
       z-index: 30;
       margin: 0;
       padding: 10px 14px;
-      border-radius: 10px;
+      border-radius: var(--radius-ios);
       background: rgba(198, 40, 40, 0.06);
       color: #C62828;
       font-size: 12px;
@@ -5060,7 +5445,7 @@
     #step4 .step3-home {
       justify-content: flex-start !important;
       align-items: stretch !important;
-      height: 100%;
+      height: auto;
       min-height: 100%;
       padding-left: var(--ios-inset) !important;
       padding-right: var(--ios-inset) !important;
@@ -5079,6 +5464,7 @@
       gap: 0;
       width: 100%;
       flex: 0 0 auto;
+      flex-shrink: 0;
     }
 
     #step4 .success-check {
@@ -5118,6 +5504,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.01);
       text-align: center;
       flex: 0 0 auto;
+      flex-shrink: 0;
     }
 
     #step4 .receipt-badge .eyebrow {
@@ -5173,6 +5560,7 @@
       margin: 0 0 auto !important;
       padding: 0 !important;
       flex: 0 0 auto;
+      flex-shrink: 0;
       box-sizing: border-box;
     }
 
@@ -5667,6 +6055,7 @@
       margin-left: 8px;
       color: #8E8E93;
       pointer-events: none;
+      transition: transform 0.2s var(--ios-ease), color 0.2s var(--ios-ease);
     }
 
     .input-with-icon .apple-picker-trigger {
@@ -5713,7 +6102,7 @@
       flex-direction: column;
       margin: 0;
       padding: 0 0 calc(10px + env(safe-area-inset-bottom, 0px));
-      border-radius: 16px 16px 0 0;
+      border-radius: var(--radius-outer) var(--radius-outer) 0 0;
       background: #fff;
       border: 1px solid rgba(255, 255, 255, 0.7);
       box-shadow: 0 -12px 40px rgba(18, 68, 83, 0.18);
@@ -6027,22 +6416,17 @@
               </div>
             </div>
             <div class="form-group">
-              <label id="lbl-guests" for="guestsTrigger">Ospiti</label>
-              <div class="input-with-icon">
+              <label id="lbl-guests" for="guestsValue">Ospiti</label>
+              <div class="input-with-icon guests-stepper" id="guestsPickerDropdown">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M14.5 19c.4-2.2 2-3.6 4.5-3.6 1.2 0 2.2.3 3 .9"/></svg>
                 </span>
                 <input type="hidden" id="guests" name="guests" value="">
-                <button type="button" class="apple-input apple-picker-trigger" id="guestsTrigger" data-error-for="guests" aria-haspopup="listbox" aria-expanded="false" aria-controls="guestsPickerMenu">
-                  <span class="apple-picker-value is-placeholder" id="guestsValue">2</span>
-                  <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
-                </button>
-              </div>
-              <div class="apple-inline-list" id="guestsPickerList" hidden>
-                <div class="apple-inline-window" aria-hidden="true"></div>
-                <div class="apple-inline-fade apple-inline-fade--top" aria-hidden="true"></div>
-                <div class="apple-inline-scroll" id="guestsPickerMenu" role="listbox"></div>
-                <div class="apple-inline-fade apple-inline-fade--bottom" aria-hidden="true"></div>
+                <div class="apple-input guests-stepper-bar" id="guestsTrigger" data-error-for="guests">
+                  <button type="button" class="guests-step-btn" id="guestsMinus" aria-label="Meno ospiti">−</button>
+                  <span class="guests-step-value" id="guestsValue">2</span>
+                  <button type="button" class="guests-step-btn" id="guestsPlus" aria-label="Più ospiti">+</button>
+                </div>
               </div>
             </div>
             <div class="form-group">
@@ -6073,21 +6457,17 @@
             </div>
             <div class="form-group span-2">
               <label id="lbl-staff" for="receptionistTrigger">Receptionist *</label>
-              <div class="input-with-icon">
+              <div class="input-with-icon checkin-dropdown staff-picker" id="staffPickerDropdown">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 0.7 4 2.2"/></svg>
                 </span>
+                <span class="staff-selected-chip" id="staffSelectedChip" hidden aria-hidden="true"></span>
                 <input type="hidden" id="receptionist" name="receptionist" value="">
                 <button type="button" class="apple-input apple-picker-trigger" id="receptionistTrigger" data-error-for="receptionist" aria-haspopup="listbox" aria-expanded="false" aria-controls="staffPickerMenu">
                   <span class="apple-picker-value is-placeholder" id="receptionistValue">Chi fa il check-in</span>
                   <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
                 </button>
-              </div>
-              <div class="apple-inline-list" id="staffPickerList" hidden>
-                <div class="apple-inline-window" aria-hidden="true"></div>
-                <div class="apple-inline-fade apple-inline-fade--top" aria-hidden="true"></div>
-                <div class="apple-inline-scroll" id="staffPickerMenu" role="listbox"></div>
-                <div class="apple-inline-fade apple-inline-fade--bottom" aria-hidden="true"></div>
+                <div class="staff-initials-rail hidden" id="staffPickerMenu" role="listbox" hidden></div>
               </div>
             </div>
           </div>
@@ -7381,21 +7761,8 @@
       }
     }
 
-    /** Email staff note per non bloccare il device (allineate al server). */
-    function isTesterEmailClient(email) {
-      const mail = String(email || '').trim().toLowerCase();
-      if (!mail) return false;
-      const known = new Set([
-        'tommasostoppani17@gmail.com',
-        'payel@hotelcanal.com',
-        'mizan@hotelcanal.com',
-      ]);
-      return known.has(mail);
-    }
-
-    function shouldLockDevice(email) {
+    function shouldLockDevice() {
       if (isTestMode()) return false;
-      if (isTesterEmailClient(email)) return false;
       return true;
     }
 
@@ -7430,20 +7797,65 @@
     const checkinValueEl = document.getElementById('checkinValue');
     const checkoutValueEl = document.getElementById('checkoutValue');
     const tableConfirmDateTrigger = document.getElementById('tableConfirmDateTrigger');
-    const guestsPickerList = document.getElementById('guestsPickerList');
+    const guestsPickerDropdown = document.getElementById('guestsPickerDropdown');
     const guestsPickerMenu = document.getElementById('guestsPickerMenu');
-    const staffPickerList = document.getElementById('staffPickerList');
+    const staffPickerDropdown = document.getElementById('staffPickerDropdown');
     const staffPickerMenu = document.getElementById('staffPickerMenu');
-    const GUEST_ROSTER = [
-      { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso' },
-      { id: 'john', name: 'JOHN', label: 'John' },
-      { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro' },
-      { id: 'maria', name: 'MARIA', label: 'Maria' },
-      { id: 'mizan', name: 'MIZAN', label: 'Mizan' },
-      { id: 'payel', name: 'PAYEL', label: 'Payel' },
-      { id: 'sayeed', name: 'SAYEED', label: 'Sayeed' },
+    /** Lista ospite: fallback locale se l'API non risponde. */
+    const FALLBACK_GUEST_ROSTER = [
+      { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso', initial: 'T' },
+      { id: 'john', name: 'JOHN', label: 'John', initial: 'J' },
+      { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro', initial: 'A' },
+      { id: 'maria', name: 'MARIA', label: 'Maria', initial: 'M' },
+      { id: 'mizan', name: 'MIZAN', label: 'Mizan', initial: 'M' },
+      { id: 'payel', name: 'PAYEL', label: 'Payel', initial: 'P' },
+      { id: 'sayeed', name: 'SAYEED', label: 'Sayeed', initial: 'S' },
     ];
-    let wheelKind = null;
+    let GUEST_ROSTER = FALLBACK_GUEST_ROSTER.slice();
+
+    function rosterText(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function guestStaffInitial(nameOrMember) {
+      if (nameOrMember && typeof nameOrMember === 'object') {
+        const from = nameOrMember.initial || nameOrMember.label || nameOrMember.name;
+        return String(from || '—').trim().charAt(0).toUpperCase() || '—';
+      }
+      const key = String(nameOrMember || '').trim().toUpperCase();
+      const member = GUEST_ROSTER.find((m) => m.name === key);
+      return member ? guestStaffInitial(member) : (key ? key.charAt(0) : '—');
+    }
+
+    async function loadGuestRoster() {
+      try {
+        const res = await fetch('/api/receptionists', { cache: 'no-store' });
+        const body = await res.json().catch(() => ({}));
+        const list = Array.isArray(body.staff) ? body.staff : [];
+        const next = list
+          .map((m) => {
+            const name = String(m.name || '').trim().toUpperCase();
+            const label = String(m.label || name || '').trim();
+            if (!name) return null;
+            return {
+              id: m.id,
+              name,
+              label,
+              initial: String(m.initial || label || name).trim().charAt(0).toUpperCase() || '—',
+            };
+          })
+          .filter(Boolean);
+        if (next.length) GUEST_ROSTER = next;
+      } catch (_) {
+        /* resta il fallback */
+      }
+      if (!GUEST_ROSTER.length) GUEST_ROSTER = FALLBACK_GUEST_ROSTER.slice();
+      renderStaffPickerMenu();
+    }
+    let openCheckinPicker = null;
     let calKind = null;
     const privacyEl = document.getElementById('privacy');
     const privacyBox = document.getElementById('privacyBox');
@@ -7534,6 +7946,7 @@
 
     function setGuestsPicker(count, { placeholder = false } = {}) {
       const n = Number.parseInt(String(count || ''), 10);
+      const max = 8;
       if (!guestsEl) return;
       if (!Number.isFinite(n) || n < 1) {
         guestsEl.value = '';
@@ -7543,11 +7956,41 @@
         }
         return;
       }
-      guestsEl.value = String(Math.min(20, n));
+      guestsEl.value = String(Math.min(max, n));
       if (guestsValueEl) {
         guestsValueEl.textContent = guestsEl.value;
         guestsValueEl.classList.toggle('is-placeholder', Boolean(placeholder));
       }
+      const minus = document.getElementById('guestsMinus');
+      const plus = document.getElementById('guestsPlus');
+      const current = Number.parseInt(guestsEl.value, 10);
+      if (minus) minus.disabled = current <= 1;
+      if (plus) plus.disabled = current >= max;
+    }
+
+    function stepGuests(delta) {
+      const current = Number.parseInt(String(guestsEl?.value || '2'), 10);
+      const next = (Number.isFinite(current) ? current : 2) + delta;
+      setGuestsPicker(next);
+      guestsTrigger?.classList.remove('is-invalid');
+      document.getElementById('lbl-guests')?.classList.remove('label-error-state');
+    }
+
+    function staffDisplayInitial(member, roster = GUEST_ROSTER) {
+      const label = String(member?.label || member?.name || '').trim();
+      const one = String(member?.initial || label).trim().charAt(0).toUpperCase() || '—';
+      const collisions = roster.filter((m) => {
+        const ch = String(m.initial || m.label || m.name).trim().charAt(0).toUpperCase();
+        return ch === one;
+      }).length;
+      if (collisions > 1) {
+        const compact = label.replace(/\s+/g, '');
+        const two = compact.slice(0, 2);
+        return two
+          ? two.charAt(0).toUpperCase() + two.slice(1).toLowerCase()
+          : one;
+      }
+      return one;
     }
 
     function setStaffPicker(name) {
@@ -7557,9 +8000,21 @@
       if (staffValueEl) {
         const dict = t();
         staffValueEl.textContent = member
-          ? member.label
+          ? staffDisplayInitial(member)
           : (dict.staffPlaceholder || dict.staffNone || 'Chi fa il check-in');
         staffValueEl.classList.toggle('is-placeholder', !member);
+      }
+      staffTrigger?.setAttribute(
+        'aria-label',
+        member
+          ? `${t().staffShort || t().staff || 'Receptionist'}`
+          : (t().staffPlaceholder || t().staffNone || 'Chi fa il check-in'),
+      );
+      staffPickerDropdown?.classList.toggle('has-selection', Boolean(member));
+      const chip = document.getElementById('staffSelectedChip');
+      if (chip) {
+        chip.hidden = !member;
+        chip.textContent = member ? staffDisplayInitial(member) : '';
       }
     }
 
@@ -7720,7 +8175,7 @@
         closeBrandCalendar();
         return;
       }
-      closeFormPicker();
+      closeCheckinPickers();
       calKind = kind;
       const parsed = parseYmdParts(input.value) || parseYmdParts(input.getAttribute('min')) || parseYmdParts(romeYmd());
       if (parsed) calCursor = { y: parsed.y, m: parsed.m };
@@ -7753,91 +8208,128 @@
       closeBrandCalendar();
     }
 
-    function closeFormPicker() {
-      guestsPickerList?.setAttribute('hidden', '');
-      staffPickerList?.setAttribute('hidden', '');
-      guestsTrigger?.closest('.form-group')?.classList.remove('is-picker-open');
+    const CHECKIN_CHECKMARK =
+      '<span class="checkin-dropdown-check" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none"><path d="M4.5 9.2 7.4 12l6.1-6.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+
+    function resetCheckinMenuPosition(menuEl) {
+      if (!menuEl) return;
+      menuEl.classList.remove('is-fixed', 'is-flip-up');
+      menuEl.style.position = '';
+      menuEl.style.top = '';
+      menuEl.style.left = '';
+      menuEl.style.right = '';
+      menuEl.style.bottom = '';
+      menuEl.style.width = '';
+      menuEl.style.maxHeight = '';
+      menuEl.style.zIndex = '';
+      menuEl.classList.remove('is-opening');
+    }
+
+    function positionCheckinDropdown(dropdownEl, menuEl, { preferFlipUp = false } = {}) {
+      if (!dropdownEl || !menuEl) return;
+      const trigger = dropdownEl.querySelector('.apple-picker-trigger');
+      const triggerRect = trigger?.getBoundingClientRect();
+      if (!triggerRect) return;
+      const gap = 6;
+      const viewportPad = 12;
+      const preferredMax = 240;
+      const vw = window.innerWidth || 360;
+      const vh = window.innerHeight || 640;
+      const footer = document.getElementById('step3Footer');
+      const footerTop = footer?.getBoundingClientRect().top;
+      const spaceToFooter = Number.isFinite(footerTop)
+        ? footerTop - triggerRect.bottom - 8
+        : Infinity;
+      const spaceBelow = vh - triggerRect.bottom - viewportPad;
+      const spaceAbove = triggerRect.top - viewportPad;
+      const flipUp = Boolean(
+        preferFlipUp
+          || (spaceToFooter < 140 && spaceAbove > spaceToFooter)
+          || (spaceBelow < 140 && spaceAbove > spaceBelow),
+      );
+      const available = flipUp ? spaceAbove : Math.min(spaceBelow, spaceToFooter);
+      const maxH = Math.max(120, Math.min(preferredMax, available - gap));
+
+      if (menuEl.parentElement !== document.body) {
+        document.body.appendChild(menuEl);
+      }
+      menuEl.classList.toggle('is-flip-up', flipUp);
+      menuEl.classList.add('is-fixed');
+      menuEl.style.position = 'fixed';
+      menuEl.style.zIndex = '95';
+      menuEl.style.right = 'auto';
+      menuEl.style.width = `${Math.round(triggerRect.width)}px`;
+      let left = triggerRect.left;
+      if (left + triggerRect.width > vw - 12) left = Math.max(12, vw - triggerRect.width - 12);
+      if (left < 12) left = 12;
+      menuEl.style.left = `${Math.round(left)}px`;
+      menuEl.style.maxHeight = `${maxH}px`;
+      if (flipUp) {
+        menuEl.style.top = 'auto';
+        menuEl.style.bottom = `${Math.round(vh - triggerRect.top + gap)}px`;
+      } else {
+        menuEl.style.bottom = 'auto';
+        menuEl.style.top = `${Math.round(triggerRect.bottom + gap)}px`;
+      }
+    }
+
+    function closeCheckinPickers() {
+      staffPickerDropdown?.classList.remove('is-open');
+      if (staffPickerMenu) {
+        staffPickerMenu.hidden = true;
+        staffPickerMenu.classList.add('hidden');
+      }
       staffTrigger?.closest('.form-group')?.classList.remove('is-picker-open');
-      guestsTrigger?.setAttribute('aria-expanded', 'false');
       staffTrigger?.setAttribute('aria-expanded', 'false');
       document.getElementById('card')?.classList.remove('is-picker-open');
-      wheelKind = null;
+      openCheckinPicker = null;
     }
 
-    function pickerParts(kind) {
-      return kind === 'staff'
-        ? { list: staffPickerList, menu: staffPickerMenu, trigger: staffTrigger }
-        : { list: guestsPickerList, menu: guestsPickerMenu, trigger: guestsTrigger };
+    function renderStaffPickerMenu() {
+      if (!staffPickerMenu) return;
+      if (!GUEST_ROSTER.length) GUEST_ROSTER = FALLBACK_GUEST_ROSTER.slice();
+      const current = String(staffEl?.value || '').trim().toUpperCase();
+      const mid = (GUEST_ROSTER.length - 1) / 2;
+      staffPickerMenu.innerHTML = GUEST_ROSTER.map((m, i) => {
+        const selected = m.name === current;
+        const initial = rosterText(staffDisplayInitial(m));
+        const delay = Math.abs(i - mid);
+        return `<button type="button" class="staff-initial${selected ? ' is-selected' : ''}" role="option" aria-selected="${selected ? 'true' : 'false'}" data-value="${rosterText(m.name)}" aria-label="${initial}" style="--i:${delay}">${initial}</button>`;
+      }).join('');
     }
 
-    function centerWheelItem(menu, item) {
-      if (!menu || !item) return;
-      const rowH = item.offsetHeight || 44;
-      menu.scrollTop = Math.max(
-        0,
-        item.offsetTop - (menu.clientHeight / 2 - rowH / 2),
-      );
-    }
-
-    function openFormPicker(kind) {
-      const { list, menu, trigger } = pickerParts(kind);
-      if (!list || !menu || !trigger) return;
-      if (wheelKind === kind && !list.hidden) {
-        closeFormPicker();
+    function openCheckinPickerKind(kind) {
+      if (kind !== 'staff') return;
+      const dropdown = staffPickerDropdown;
+      const menu = staffPickerMenu;
+      const trigger = staffTrigger;
+      if (!dropdown || !menu || !trigger) return;
+      if (openCheckinPicker === 'staff' && dropdown.classList.contains('is-open')) {
+        closeCheckinPickers();
         return;
       }
       closeBrandCalendar();
-      closeFormPicker();
-      wheelKind = kind;
-      const viewport = document.getElementById('sliderViewport');
-      if (viewport) {
-        const h = Math.round(
-          parseFloat(viewport.style.height) || viewport.offsetHeight || 0,
-        );
-        if (h >= 280) viewport.style.height = `${h}px`;
-      }
-      const current = kind === 'staff'
-        ? String(staffEl?.value || '').trim().toUpperCase()
-        : String(guestsEl?.value || '2').trim();
-      const options = kind === 'staff'
-        ? GUEST_ROSTER.map((m) => ({ value: m.name, label: m.label }))
-        : Array.from({ length: 20 }, (_, i) => ({
-            value: String(i + 1),
-            label: String(i + 1),
-          }));
-      menu.innerHTML = [
-        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
-        ...options.map((opt) => {
-          const selected = opt.value === current;
-          return `<button type="button" class="apple-inline-item${selected ? ' is-selected' : ''}" role="option" aria-selected="${selected ? 'true' : 'false'}" data-value="${opt.value}">${opt.label}</button>`;
-        }),
-        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
-      ].join('');
-      list.hidden = false;
-      list.removeAttribute('hidden');
+      closeCheckinPickers();
+      openCheckinPicker = 'staff';
+      renderStaffPickerMenu();
+      dropdown.classList.add('is-open');
+      menu.hidden = false;
+      menu.classList.remove('hidden');
+      trigger.setAttribute('aria-expanded', 'true');
       trigger.closest('.form-group')?.classList.add('is-picker-open');
-      document.getElementById('card')?.classList.add('is-picker-open');
-      guestsTrigger?.setAttribute('aria-expanded', kind === 'guests' ? 'true' : 'false');
-      staffTrigger?.setAttribute('aria-expanded', kind === 'staff' ? 'true' : 'false');
-      window.requestAnimationFrame(() => {
-        centerWheelItem(
-          menu,
-          menu.querySelector('.is-selected') || menu.querySelector('.apple-inline-item'),
-        );
-      });
     }
 
-    function pickWheelValue(value) {
-      if (wheelKind === 'staff') {
+    function pickCheckinValue(value) {
+      if (openCheckinPicker === 'staff') {
         setStaffPicker(value);
         staffTrigger?.classList.remove('is-invalid');
         document.getElementById('lbl-staff')?.classList.remove('label-error-state');
-      } else {
+      } else if (openCheckinPicker === 'guests') {
         setGuestsPicker(value);
         guestsTrigger?.classList.remove('is-invalid');
         document.getElementById('lbl-guests')?.classList.remove('label-error-state');
       }
-      closeFormPicker();
+      closeCheckinPickers();
     }
 
     function submitButtonLabel(dict = t()) {
@@ -8092,6 +8584,7 @@
       1: 'var(--card-h-1)',
       2: 'var(--card-h-2)',
       3: 'var(--card-h-3)',
+      4: 'var(--card-h-4)',
     };
 
     let lastCheckinId = null;
@@ -8135,7 +8628,7 @@
     syncStableViewportFlags();
 
     function captureRestLayout() {
-      if (keyboardLock || iosPickerOpen || wheelKind || calKind) return restLayoutH;
+      if (keyboardLock || iosPickerOpen || openCheckinPicker || calKind) return restLayoutH;
       const inner = Math.round(
         window.innerHeight || document.documentElement.clientHeight || 0,
       );
@@ -8275,6 +8768,10 @@
       const card = document.getElementById('card');
       if (!stepEl || !card) return null;
 
+      const actions = step === 4 ? document.getElementById('guestActions') : null;
+      const actionsWereHidden = Boolean(actions?.hidden);
+      if (actions && actionsWereHidden) actions.hidden = false;
+
       const prev = {
         height: stepEl.style.height,
         minHeight: stepEl.style.minHeight,
@@ -8306,7 +8803,9 @@
       void stepEl.offsetHeight;
 
       let inner = 0;
-      const kids = [...stepEl.children];
+      const kids = [...stepEl.children].filter(
+        (kid) => !kid.classList.contains('guest-sheet'),
+      );
       if (kids.length) {
         kids.forEach((kid) => {
           const kh = Math.ceil(
@@ -8325,6 +8824,7 @@
       Object.keys(prev).forEach((k) => {
         stepEl.style[k] = prev[k];
       });
+      if (actions && actionsWereHidden) actions.hidden = true;
 
       return Math.ceil(inner + 8);
     }
@@ -8373,7 +8873,7 @@
     }
 
     function layoutFrozen() {
-      return Boolean(keyboardLock || iosPickerOpen || wheelKind || calKind);
+      return Boolean(keyboardLock || iosPickerOpen || openCheckinPicker || calKind);
     }
 
     function applyViewportHeightPx(h, { allowShrink = false } = {}) {
@@ -8400,7 +8900,7 @@
     }
 
     /** Matrice live (375×667): seed antifallo + misura a freddo. */
-    const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 640, 4: 292 };
+    const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 640, 4: 560 };
     const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0 };
 
     function isCompactPhoneViewport() {
@@ -8412,14 +8912,30 @@
     function mappedStepHeight(step) {
       const maxH = availableViewportMax();
       const mapped = Number(geometryMap[step]) || 0;
-      if (mapped >= 200) return Math.min(Math.max(mapped, 280), maxH);
-      const seed = Number(GEOMETRY_SEED[step]) || 0;
-      if (seed >= 200) return Math.min(Math.max(seed, 280), maxH);
-      const cached = Number(stepHeightCache[step]) || 0;
-      if (cached >= 200) return Math.min(Math.max(cached, 280), maxH);
-      let natural = measureStepContentHeight(step);
-      if (!Number.isFinite(natural) || natural < 200) natural = 420;
-      return Math.min(Math.max(Math.round(natural), 280), maxH);
+      let h = 0;
+      if (mapped >= 200) h = mapped;
+      else {
+        const seed = Number(GEOMETRY_SEED[step]) || 0;
+        if (seed >= 200) h = seed;
+        else {
+          const cached = Number(stepHeightCache[step]) || 0;
+          if (cached >= 200) h = cached;
+          else {
+            let natural = measureStepContentHeight(step);
+            if (!Number.isFinite(natural) || natural < 200) natural = 420;
+            h = Math.round(natural);
+          }
+        }
+      }
+      if (step === 4) {
+        const floor = Math.max(
+          Number(GEOMETRY_SEED[4]) || 560,
+          Math.round((Number(geometryMap[3]) || Number(stepHeightCache[3]) || 0) * 0.92),
+          480,
+        );
+        h = Math.max(h, floor);
+      }
+      return Math.min(Math.max(h, 280), maxH);
     }
 
     /**
@@ -8435,9 +8951,17 @@
           natural = stepHeightCache[i] >= 200 ? stepHeightCache[i] : 0;
         }
         const seed = Number(GEOMETRY_SEED[i]) || 0;
-        const base = compact
+        let base = compact
           ? Math.max(seed, natural || 0)
           : natural || seed || 420;
+        if (i === 4) {
+          base = Math.max(
+            base,
+            seed,
+            Math.round((Number(geometryMap[3]) || 0) * 0.92),
+            480,
+          );
+        }
         const h = Math.min(Math.max(Math.round(base), 280), maxH);
         geometryMap[i] = h;
         stepHeightCache[i] = h;
@@ -8459,6 +8983,14 @@
       const maxH = availableViewportMax();
       let natural = measureStepContentHeight(step);
       if (!Number.isFinite(natural) || natural < 200) return;
+      if (step === 4) {
+        natural = Math.max(
+          natural,
+          Number(GEOMETRY_SEED[4]) || 560,
+          Math.round((Number(geometryMap[3]) || Number(stepHeightCache[3]) || 0) * 0.92),
+          480,
+        );
+      }
       const h = Math.min(Math.max(Math.round(natural), 280), maxH);
       const prev = Number(geometryMap[step]) || 0;
       const stable = prev >= 200 ? Math.max(prev, h) : h;
@@ -8989,7 +9521,7 @@
       if (stepBusy && !instant && step !== TOTAL_STEPS && step !== currentStep) {
         return;
       }
-      if (step !== 3 && typeof closeFormPicker === 'function') closeFormPicker();
+      if (step !== 3 && typeof closeCheckinPickers === 'function') closeCheckinPickers();
       if (step !== 3 && typeof closeBrandCalendar === 'function') closeBrandCalendar();
       const prev = currentStep;
       currentStep = step;
@@ -9028,10 +9560,16 @@
         if (track) {
           track.style.transition = hardCut || reduceMotion ? 'none' : '';
         }
-        syncViewportHeight(step, { animate: false });
+        syncViewportHeight(step, {
+          animate: false,
+          allowShrink: step !== TOTAL_STEPS,
+        });
         applyParallax(toParallax, toScale);
         applyTrack(toSlide);
-        requestAnimationFrame(() => ensurePrimaryCtaVisible());
+        requestAnimationFrame(() => {
+          ensurePrimaryCtaVisible();
+          if (step === TOTAL_STEPS) invalidateGeometry(TOTAL_STEPS);
+        });
         markStepClasses(step, { slidingFrom: null });
       } else {
         flipTransitionToStep(prev, step, { toSlide, toParallax, toScale });
@@ -10400,7 +10938,7 @@
         : normalizeReceptionist(staffRaw);
       let guestsCount = Number.parseInt(String(guestsEl?.value || '2').trim(), 10);
       if (!Number.isFinite(guestsCount) || guestsCount < 1) guestsCount = 2;
-      if (guestsCount > 20) guestsCount = 20;
+      if (guestsCount > 8) guestsCount = 8;
       const cleaned = cleanPhone(phoneRaw);
       const emailNormalized = emailRaw.toLowerCase();
       const magic = isReportTrigger(phoneRaw, firstName, lastName);
@@ -10643,6 +11181,7 @@
 
     setLanguage(currentLang);
     setupStayDateFields();
+    void loadGuestRoster();
     setGuestsPicker(guestsEl?.value || 2);
     initKeyboardLayoutLock();
     checkinEl?.addEventListener('change', syncCheckoutBounds);
@@ -10714,8 +11253,21 @@
       freezeInnerScroll();
     }, { capture: true, passive: true });
     window.addEventListener('scroll', freezeInnerScroll, { passive: true });
-    guestsTrigger?.addEventListener('click', () => openFormPicker('guests'));
-    staffTrigger?.addEventListener('click', () => openFormPicker('staff'));
+    document.getElementById('guestsMinus')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      stepGuests(-1);
+    });
+    document.getElementById('guestsPlus')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      stepGuests(1);
+    });
+    staffTrigger?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openCheckinPickerKind('staff');
+    });
     checkinTrigger?.addEventListener('click', () => openBrandCalendar('checkin'));
     checkoutTrigger?.addEventListener('click', () => openBrandCalendar('checkout'));
     tableConfirmDateTrigger?.addEventListener('click', () => openBrandCalendar('table'));
@@ -10745,14 +11297,16 @@
     const onPickerPick = (e) => {
       const opt = e.target.closest('[data-value]');
       if (!opt) return;
-      pickWheelValue(opt.getAttribute('data-value') || '');
+      pickCheckinValue(opt.getAttribute('data-value') || '');
     };
-    guestsPickerMenu?.addEventListener('click', onPickerPick);
-    staffPickerMenu?.addEventListener('click', onPickerPick);
+    staffPickerMenu?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onPickerPick(e);
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if (calKind) closeBrandCalendar();
-      if (wheelKind) closeFormPicker();
+      if (openCheckinPicker) closeCheckinPickers();
     });
     document.addEventListener('click', (e) => {
       if (calKind) {
@@ -10760,9 +11314,9 @@
           closeBrandCalendar();
         }
       }
-      if (!wheelKind) return;
-      if (e.target.closest('#guestsPickerList, #staffPickerList, #guestsTrigger, #receptionistTrigger')) return;
-      closeFormPicker();
+      if (!openCheckinPicker) return;
+      if (e.target.closest('#staffPickerDropdown, #staffPickerMenu, #lbl-staff')) return;
+      closeCheckinPickers();
     });
     initSelectStability();
 

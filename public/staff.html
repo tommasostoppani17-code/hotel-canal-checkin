@@ -24,12 +24,13 @@
       --sky-100: #E8F3F9;
       --sky-150: #D4E8F2;
       --sky-200: #B8D4E4;
-      --sky-border: rgba(18, 68, 83, 0.11);
-      --sky-border-soft: rgba(18, 68, 83, 0.06);
+      --sky-border: rgba(18, 68, 83, 0.12);
+      --sky-border-soft: rgba(18, 68, 83, 0.12);
       --text-main: #1D1D1F;
       --text-secondary: #636366;
       --text-muted: #8E8E93;
       --border: rgba(18, 68, 83, 0.12);
+      --bordo-sottile: rgba(18, 68, 83, 0.12);
       --row-hover: rgba(212, 232, 242, 0.5);
       --danger: #C62828;
       --star: #E6A817;
@@ -37,35 +38,45 @@
       --table-time-bg: rgba(230, 168, 23, 0.12);
       --table-time-border: rgba(230, 168, 23, 0.28);
       --input-border: rgba(18, 68, 83, 0.12);
+      --type-brand: 20px;
       --type-brand-sub: 11px;
       --type-title: 18px;
       --type-label: 11px;
       --type-body: 16px;
       --type-cta: 16px;
       --placeholder: #AEB3B8;
+      --letter-brand: 0.5px;
       --ios-1: 4px;
       --ios-2: 8px;
       --ios-3: 12px;
       --ios-4: 16px;
+      --ios-5: 20px;
+      --ios-6: 24px;
+      --ios-7: 28px;
+      --ios-8: 32px;
+      --ios-gap: 8px;
+      --ios-gap-lg: 16px;
+      --ios-pad-click: 12px 16px;
       --ios-touch: 48px;
       --ios-cta: 52px;
       --ios-card-pad-top: 32px;
       --ios-card-pad-bottom: 24px;
       --step-stack: 24px;
+      --step-stack-lg: 24px;
       --ios-inset: 24px;
       --control-h: 36px;
       --radius-ios: 14px;
       --radius-ui: 14px;
-      --radius-sheet-top: 16px;
+      --radius-sheet-top: 14px;
       --radius-s: 8px;
-      --radius-m: 12px;
+      --radius-m: 14px;
       --radius-outer: 28px;
-      --table-border: #e5e5ea;
-      --table-row-divider: #f2f2f7;
+      --table-border: rgba(18, 68, 83, 0.12);
+      --table-row-divider: rgba(18, 68, 83, 0.12);
       --table-head-bg: #fafafa;
       --space-xs: 4px;
       --space-s: 8px;
-      --space-m: 12px;
+      --space-m: 16px;
       --space-l: 16px;
       --space-xl: 24px;
       --cell-x: 16px;
@@ -413,7 +424,7 @@
       font-family: "Cinzel", Georgia, serif;
       font-size: 22px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
       margin: 0 0 var(--ios-2);
       display: block;
@@ -423,9 +434,9 @@
     .gate-header .hotel-subtitle {
       font-family: "Cinzel", Georgia, serif;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: var(--letter-brand);
       color: #5C7A82;
       margin: 0 0 var(--ios-4);
       display: block;
@@ -435,8 +446,8 @@
     .gate-header h1 {
       font-family: "Cinzel", Georgia, serif;
       font-size: var(--type-title);
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      letter-spacing: var(--letter-brand);
       margin: 0;
       color: var(--canal-petroleum);
       line-height: 1.25;
@@ -544,6 +555,59 @@
       scroll-padding: 0;
     }
 
+    .gate-form .ui-dropdown {
+      position: relative;
+      width: 100%;
+    }
+
+    .gate-form .ui-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 60;
+      min-width: 100%;
+      max-height: min(240px, 44dvh);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .gate-form .ui-dropdown-menu.is-flip-up {
+      top: auto;
+      bottom: calc(100% + 6px);
+    }
+
+    .gate-form .ui-menu-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: calc(var(--radius-ui) - 4px);
+      background: transparent;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-main);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .gate-form .ui-menu-item:hover,
+    .gate-form .ui-menu-item:focus-visible {
+      background: rgba(18, 68, 83, 0.06);
+      color: var(--canal-petroleum);
+      outline: none;
+    }
+
+    .gate-form .ui-menu-item.is-selected {
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      background: rgba(18, 68, 83, 0.04);
+    }
+
     .gate-form .ui-dropdown-trigger {
       display: flex;
       align-items: center;
@@ -577,6 +641,7 @@
       margin-left: 8px;
       color: #8E8E93;
       pointer-events: none;
+      transition: transform 0.2s var(--ios-ease), color 0.2s var(--ios-ease);
     }
 
     .gate-form .ui-dropdown.is-open .apple-picker-chevron {
@@ -669,12 +734,12 @@
       text-transform: uppercase;
       color: var(--primary);
       text-align: left;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     label.label-error-state { color: var(--danger) !important; }
 
-    .form-group { margin-top: var(--space-xl); text-align: left; }
+    .form-group { margin-top: var(--ios-gap-lg); text-align: left; }
 
     .field {
       width: 100%;
@@ -996,10 +1061,10 @@
     .ui-menu-item {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
-      min-height: 42px;
-      padding: 9px 10px;
+      min-height: 44px;
+      padding: 10px 14px;
       border: 0;
       border-radius: var(--radius-ui);
       background: transparent;
@@ -1249,7 +1314,7 @@
       font-family: "Cinzel", Georgia, serif;
       font-size: 15px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: var(--letter-brand);
       color: #fff;
       white-space: nowrap;
       overflow: hidden;
@@ -1301,6 +1366,7 @@
       letter-spacing: -0.01em;
       cursor: pointer;
       text-align: left;
+      white-space: nowrap;
       transition:
         background 0.28s var(--slide-ease),
         color 0.28s var(--slide-ease),
@@ -1406,7 +1472,7 @@
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      padding: 22px clamp(20px, 2.5vw, 36px) 18px;
+      padding: 24px clamp(24px, 2.5vw, 36px) 24px;
       background: linear-gradient(180deg, #fff 0%, var(--card-cream-top) 100%);
       border-bottom: 1px solid var(--input-border);
     }
@@ -1426,8 +1492,8 @@
     .dash-topbar h1 {
       font-family: "Cinzel", Georgia, serif;
       font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
+      font-weight: 700;
+      letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
       min-width: 0;
       overflow: hidden;
@@ -1436,7 +1502,7 @@
     }
 
     .page-subtitle {
-      margin-top: 3px;
+      margin-top: 4px;
       font-size: 12px;
       font-weight: 500;
       color: #6b8494;
@@ -1560,9 +1626,9 @@
       align-items: flex-start;
       gap: 2px;
       width: 100%;
-      padding: 10px 10px;
+      padding: 10px 14px;
       border: 0;
-      border-radius: 10px;
+      border-radius: var(--radius-ui);
       background: transparent;
       text-align: left;
       cursor: pointer;
@@ -1616,7 +1682,7 @@
       width: 38px;
       height: 38px;
       border: 1px solid var(--sky-border-soft);
-      border-radius: 10px;
+      border-radius: var(--radius-ui);
       background: #fff;
       cursor: pointer;
       transition: background var(--hover-ease), border-color var(--hover-ease);
@@ -1632,7 +1698,7 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      padding: 20px clamp(20px, 2.5vw, 36px) 24px;
+      padding: 24px clamp(24px, 2.5vw, 36px) 24px;
       overflow: hidden;
     }
 
@@ -1791,7 +1857,8 @@
 
     .date-segment.is-switching .date-pill:not(.is-on) { opacity: 0.55; }
 
-    .toolbar-label {
+    .toolbar-label,
+    .visually-hidden {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -1836,7 +1903,7 @@
     }
 
     .search-input:hover {
-      border-color: #C8D4DC;
+      border-color: rgba(18, 68, 83, 0.22);
       background: #fff;
     }
 
@@ -1850,8 +1917,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 38px;
-      padding: 0 18px;
+      height: 40px;
+      padding: 10px 16px;
       border: 0;
       border-radius: var(--radius-ui);
       background: var(--canal-petroleum);
@@ -1879,14 +1946,14 @@
     .btn-action-ghost {
       background: #fff;
       color: var(--canal-petroleum);
-      border: 1px solid #DFE5EA;
+      border: 1px solid var(--input-border);
       box-shadow: none;
       filter: none;
     }
 
     .btn-action-ghost:hover {
       background: #F7F9FA;
-      border-color: #C8D4DC;
+      border-color: rgba(18, 68, 83, 0.22);
     }
 
     .btn-action-ghost:disabled {
@@ -1943,12 +2010,12 @@
     .staff-alert {
       pointer-events: auto;
       display: flex;
-      gap: 12px;
+      gap: 8px;
       align-items: flex-start;
-      padding: 14px 14px 14px 16px;
-      border-radius: 10px;
+      padding: 12px 16px;
+      border-radius: var(--radius-ui);
       background: #fff;
-      border: 1px solid #DFE5EA;
+      border: 1px solid var(--input-border);
       border-left: 3px solid #C62828;
       box-shadow: 0 8px 24px rgba(10, 45, 55, 0.12);
       animation: alertIn 280ms var(--ios-magnetic) both;
@@ -2086,9 +2153,16 @@
 
     .table-head-wrap {
       flex-shrink: 0;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-gutter: stable;
       background: var(--table-head-bg);
       border-bottom: 1px solid var(--table-border);
+    }
+
+    .table-head-wrap::-webkit-scrollbar {
+      height: 0;
+      display: none;
     }
 
     .table-scroll {
@@ -2097,6 +2171,7 @@
       overflow: auto;
       overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
+      scrollbar-gutter: stable;
       background: #fff;
     }
 
@@ -2108,11 +2183,17 @@
       table-layout: fixed;
     }
 
-    .matrix-table--clients col.col-guest { width: 28%; }
-    .matrix-table--clients col.col-room { width: 72px; }
-    .matrix-table--clients col.col-phone { width: 130px; }
-    .matrix-table--clients col.col-email { width: 22%; }
-    .matrix-table--clients col.col-receptionist { width: 176px; }
+    .matrix-table--clients col.col-guest { width: 22%; }
+    .matrix-table--clients col.col-room { width: 10%; }
+    .matrix-table--clients col.col-phone { width: 18%; }
+    .matrix-table--clients col.col-email { width: 28%; }
+    .matrix-table--clients col.col-receptionist { width: 14%; }
+    .matrix-table--clients col.col-actions { width: 8%; }
+
+    .matrix-table--inhouse col.col-guest { width: 32%; }
+    .matrix-table--inhouse col.col-room { width: 88px; }
+    .matrix-table--inhouse col.col-phone { width: 28%; }
+    .matrix-table--inhouse col.col-email { width: 40%; }
 
     .matrix-table--requests col.col-guest { width: 26%; }
     .matrix-table--requests col.col-room { width: 72px; }
@@ -2121,7 +2202,7 @@
     .matrix-table--requests col.col-receptionist { width: 140px; }
     .matrix-table--requests col.col-received { width: 26%; }
 
-    @media (max-width: 720px) {
+    @media (max-width: 900px) {
       .matrix-table--requests { min-width: 0; }
     }
 
@@ -2169,8 +2250,12 @@
     }
 
     .matrix-table th.col-phone,
-    .matrix-table td.col-phone {
-      text-align: right;
+    .matrix-table td.col-phone,
+    .matrix-table th.col-email,
+    .matrix-table td.col-email,
+    .matrix-table th.col-guest,
+    .matrix-table td.col-guest {
+      text-align: left;
     }
 
     .matrix-table tbody td {
@@ -2182,8 +2267,8 @@
     .matrix-table th.col-time,
     .matrix-table td.col-time {
       text-align: center;
-      padding-left: 6px;
-      padding-right: 6px;
+      padding-left: 8px;
+      padding-right: 8px;
     }
 
     .matrix-table th.col-num,
@@ -2205,8 +2290,16 @@
 
     .matrix-table th.col-receptionist,
     .matrix-table td.col-receptionist {
-      padding-left: 12px;
-      padding-right: var(--cell-x);
+      text-align: center;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .matrix-table th.col-actions,
+    .matrix-table td.col-actions {
+      text-align: right;
+      padding-left: 4px;
+      padding-right: 24px;
     }
 
     .matrix-table th.col-received,
@@ -2221,7 +2314,8 @@
     }
 
     .matrix-table td.col-guest,
-    .matrix-table td.col-receptionist {
+    .matrix-table td.col-receptionist,
+    .matrix-table td.col-actions {
       overflow: visible;
     }
 
@@ -2240,22 +2334,6 @@
       background-color: #fcfcfd;
     }
 
-    .matrix-table tbody tr:hover {
-      background-color: #f2f2f7;
-    }
-
-    .matrix-table tbody tr:hover td {
-      background-color: #f2f2f7;
-    }
-
-    .matrix-table tbody tr:active:not(:has(:focus-within)) {
-      background-color: #ebebf0;
-    }
-
-    .matrix-table tbody tr:active:not(:has(:focus-within)) td {
-      background-color: #ebebf0;
-    }
-
     .matrix-table tbody tr:has(.btn-row-menu.is-open) {
       background-color: #f2f2f7;
     }
@@ -2264,26 +2342,10 @@
       background-color: #f2f2f7;
     }
 
-    .matrix-table tbody tr:has(:focus-within):not(:has(.btn-row-menu.is-open)) {
-      background-color: #f2f2f7;
-    }
-
-    .matrix-table tbody tr:has(:focus-within):not(:has(.btn-row-menu.is-open)) td {
-      background-color: #f2f2f7;
-    }
-
     .matrix-table tbody tr.is-blacklisted { background: rgba(198, 40, 40, 0.028); }
 
     .matrix-table tbody tr.is-blacklisted td {
       background: rgba(198, 40, 40, 0.028);
-    }
-
-    .matrix-table tbody tr.is-blacklisted:hover {
-      background: rgba(198, 40, 40, 0.045);
-    }
-
-    .matrix-table tbody tr.is-blacklisted:hover td {
-      background: rgba(198, 40, 40, 0.045);
     }
 
     .matrix-table tbody tr.is-blacklisted:has(.btn-row-menu.is-open) {
@@ -2304,18 +2366,23 @@
       white-space: nowrap;
       word-break: keep-all;
       overflow-wrap: normal;
+      background: transparent;
     }
 
     .cell-room {
       display: block;
+      width: 100%;
       min-width: 0;
       min-height: var(--cell-control-h);
       line-height: var(--cell-control-h);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
       font-size: 14px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0.04em;
+      font-feature-settings: "tnum" 1;
+      letter-spacing: 0.02em;
       color: var(--canal-petroleum);
+      text-align: center;
     }
 
     .cell-room.is-empty {
@@ -2357,10 +2424,57 @@
     .cell-receptionist-wrap {
       display: flex;
       align-items: center;
-      gap: 6px;
-      width: 100%;
+      justify-content: center;
+      gap: 0;
       min-width: 0;
-      min-height: var(--cell-control-h);
+      width: 100%;
+    }
+
+    .badge-container {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .initial-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #E5E5EA;
+      color: #1C1C1E;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+      position: relative;
+      line-height: 1;
+    }
+
+    .initial-badge--manager {
+      background: var(--canal-petroleum);
+      color: #fff;
+    }
+
+    .initial-badge--manager::after {
+      content: '👑';
+      font-size: 10px;
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .initial-badge--empty {
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .cell-receptionist-wrap .cell-receptionist {
@@ -2369,38 +2483,33 @@
     }
 
     .cell-receptionist-wrap .btn-row-menu {
-      margin-left: auto;
+      margin-left: 0;
     }
 
     .btn-row-menu {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: auto;
-      height: auto;
-      min-width: 28px;
-      min-height: 28px;
-      margin-left: auto;
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      margin: 0;
       border: 0;
-      border-radius: 0;
+      border-radius: 6px;
       background: transparent;
-      color: #7a919e;
-      padding: 2px;
+      color: #8E8E93;
+      padding: 8px;
       flex-shrink: 0;
       cursor: pointer;
       opacity: 1;
-      transition: color 90ms ease;
+      transition: color 90ms ease, background 90ms ease;
     }
 
-    .matrix-table tbody tr:hover .btn-row-menu {
-      color: #5f7582;
-    }
-
-    .btn-row-menu:hover,
     .btn-row-menu.is-open,
     .btn-row-menu:focus-visible {
-      color: var(--canal-petroleum);
-      background: transparent;
+      color: #1C1C1E;
+      background: rgba(0, 0, 0, 0.04);
       box-shadow: none;
       outline: none;
     }
@@ -2666,7 +2775,7 @@
       display: none;
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 900px) {
       .row-menu-backdrop.is-visible {
         background: rgba(0, 0, 0, 0.45);
         -webkit-tap-highlight-color: transparent;
@@ -2710,6 +2819,11 @@
         margin: 8px auto 6px;
         border-radius: 999px;
         background: #dbdbdb;
+      }
+
+      .row-menu.is-bottom-sheet .row-menu-item {
+        min-height: 48px;
+        font-size: 15px;
       }
     }
 
@@ -2834,13 +2948,14 @@
     }
 
     .matrix-table td.col-room {
-      padding-left: 6px;
-      padding-right: 6px;
+      padding-left: 8px;
+      padding-right: 8px;
     }
 
     .matrix-table td.col-room .cell-room-wrap {
       margin: 0 auto;
-      width: fit-content;
+      width: 100%;
+      justify-content: center;
     }
 
     .cell-room-static {
@@ -2849,8 +2964,8 @@
       justify-content: center;
       min-width: 44px;
       height: var(--cell-control-h);
-      padding: 0 10px;
-      border-radius: 6px;
+      padding: 0 12px;
+      border-radius: 999px;
       background: #F7F9FA;
       border: 1px solid #EEF1F4;
       font-size: 13px;
@@ -2903,7 +3018,7 @@
       width: 56px;
       height: var(--cell-control-h);
       border: 1px solid #EEF1F4;
-      border-radius: 6px;
+      border-radius: 999px;
       padding: 0;
       text-align: center;
       font-size: 13px;
@@ -2923,11 +3038,6 @@
     .room-input::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
-    }
-
-    .room-input:hover {
-      border-color: var(--sky-200);
-      background-color: #fff;
     }
 
     .room-input:focus {
@@ -3046,10 +3156,11 @@
     }
 
     .sys-settings-header h2 {
-      margin: 0 0 4px;
+      margin: 0 0 8px;
+      font-family: "Cinzel", Georgia, serif;
       font-size: clamp(22px, 2.4vw, 28px);
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
     }
 
@@ -3065,10 +3176,10 @@
       align-items: center;
       gap: 14px;
       padding: 16px 18px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       background: #fff;
       border: 1px solid var(--table-border);
-      border-radius: var(--radius-sheet-top);
+      border-radius: var(--radius-ui);
       box-shadow: 0 4px 12px rgba(18, 68, 83, 0.03);
     }
 
@@ -3168,6 +3279,61 @@
       border-bottom: 1px solid var(--table-border);
     }
 
+    .sys-settings-group-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-right: 10px;
+      background: var(--table-head-bg);
+      border-bottom: 1px solid var(--table-border);
+    }
+
+    .sys-settings-group-head .sys-settings-group-title {
+      flex: 1;
+      border-bottom: 0;
+      padding-right: 0;
+    }
+
+    .sys-settings-add-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 8px;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    body.manager .sys-settings-add-btn {
+      display: inline-flex;
+    }
+
+    .sys-settings-rank-hint {
+      margin: 0 18px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #86868b;
+    }
+
+    .sys-settings-add-btn:active {
+      transform: scale(0.98);
+    }
+
+    .sys-settings-rank .feed-icon-btn {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
     .sys-settings-row {
       display: flex;
       align-items: center;
@@ -3195,7 +3361,8 @@
     }
 
     .sys-settings-row--disabled {
-      opacity: 0.72;
+      opacity: 0.55;
+      pointer-events: none;
     }
 
     .sys-settings-row-info {
@@ -3227,6 +3394,16 @@
       font-size: 12px;
       font-weight: 600;
       color: var(--canal-petroleum);
+    }
+
+    .sys-settings-row-badge--soon {
+      background: #e5e5ea;
+      color: #6e6e73;
+    }
+
+    .sys-settings-row-badge--addon {
+      background: #fff6d6;
+      color: #8a6d00;
     }
 
     .sys-switch {
@@ -3283,7 +3460,7 @@
       height: 36px;
       min-width: 112px;
       padding: 0 12px;
-      border: 1px solid #d1d1d6;
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       font-size: 14px;
       color: var(--text-main);
@@ -3365,11 +3542,54 @@
       padding-bottom: 8px;
     }
 
+    .sys-settings-legal {
+      margin-top: 28px;
+      padding: 16px 4px 8px;
+      border-top: 1px solid var(--bordo-sottile);
+    }
+
+    .sys-settings-legal h3 {
+      margin: 0 0 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8a9ba8;
+    }
+
+    .sys-settings-legal p {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #8a9ba8;
+    }
+
+    .sys-settings-legal p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sys-settings-legal strong {
+      font-weight: 700;
+      color: #6b8494;
+    }
+
+    .sys-settings-legal a {
+      color: var(--canal-petroleum);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .sys-settings-legal a:hover,
+    .sys-settings-legal a:focus-visible {
+      text-decoration: underline;
+    }
+
     .btn-settings-secondary {
       height: 44px;
-      padding: 0 20px;
-      border: 1px solid #d1d1d6;
-      border-radius: 10px;
+      padding: 10px 16px;
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-ui);
       background: transparent;
       font-size: 14px;
       font-weight: 500;
@@ -3383,9 +3603,9 @@
 
     .btn-settings-primary {
       height: 44px;
-      padding: 0 24px;
+      padding: 10px 16px;
       border: 0;
-      border-radius: 10px;
+      border-radius: var(--radius-ui);
       background: var(--canal-petroleum);
       color: #fff;
       font-size: 14px;
@@ -3407,248 +3627,265 @@
       line-height: 1.45;
     }
 
+    #infoPanel.table-panel,
     .info-panel {
-      background: #f5f5f7;
+      --primary-color: var(--canal-petroleum);
+      --info-bg: #F2F5F8;
+      background: var(--info-bg);
+      border-color: transparent;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
     }
 
     .info-panel .footer-summary {
-      background: #fafafa;
-      border-top: 1px solid var(--table-row-divider);
-    }
-
-    .info-scroll {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: clamp(16px, 2.5vw, 28px) clamp(14px, 2.2vw, 24px) calc(20px + env(safe-area-inset-bottom, 0px));
-      background: #f5f5f7;
-    }
-
-    .info-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 100%;
-      max-width: 750px;
-      margin: 0 auto;
-    }
-
-    .info-header {
-      margin: 0;
-    }
-
-    .info-header h2 {
-      margin: 0 0 6px;
-      font-size: clamp(22px, 2.4vw, 26px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--canal-petroleum);
-    }
-
-    .info-header p {
-      margin: 0 0 10px;
-      font-size: 14px;
-      line-height: 1.45;
-      color: #86868b;
-    }
-
-    .info-version {
-      display: inline-flex;
-      align-items: center;
-      height: 22px;
-      padding: 0 8px;
-      border-radius: 6px;
-      background: #e5e5ea;
-      color: #1d1d1f;
+      background: transparent;
+      border-top: 0;
+      color: #8E8E93;
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
-    .info-card {
-      background: #fff;
-      border: 1px solid var(--table-border);
-      border-radius: var(--radius-sheet-top);
-      padding: 20px 18px;
-      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.02);
+    .info-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0px));
+      background: var(--info-bg, #F2F5F8);
     }
 
-    .info-card-title {
-      margin: 0 0 12px;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--canal-petroleum);
-      letter-spacing: -0.01em;
-    }
-
-    .info-list {
+    .info-stack,
+    #infoManagerWrap {
       display: flex;
       flex-direction: column;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+      gap: 20px;
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
     }
 
-    .info-item {
-      display: flex;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--table-row-divider);
-      cursor: default;
+    .info-strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      align-items: stretch;
+      width: 100%;
+      perspective: 1100px;
     }
 
-    .info-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .info-item:first-child {
-      padding-top: 0;
-    }
-
-    .info-item-icon {
-      flex-shrink: 0;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(18, 68, 83, 0.07);
-      color: var(--canal-petroleum);
-    }
-
-    .info-item-icon svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .info-item-title {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 2px;
-    }
-
-    .info-item-body {
-      margin: 0;
-      font-size: 13px;
-      font-weight: 500;
-      color: #86868b;
-      line-height: 1.45;
-    }
-
-    .info-manager {
+    .info-strategy-card {
+      --tilt-x: 0deg;
+      --tilt-y: 0deg;
+      --lift: 0px;
+      --zoom: 1;
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding: 20px 18px;
-      border: 1px solid #bce1ec;
-      border-radius: var(--radius-sheet-top);
-      background: linear-gradient(135deg, #ffffff 0%, #f4f9f9 100%);
-      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.03);
-      overflow: hidden;
+      justify-content: space-between;
+      min-height: 0;
+      padding: 24px;
+      isolation: isolate;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 24px;
+      corner-shape: superellipse(1.6);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 4px 12px rgba(26, 68, 79, 0.02),
+        0 16px 32px rgba(26, 68, 79, 0.04);
+      transform:
+        translate3d(0, var(--lift), 0)
+        scale(var(--zoom))
+        rotateX(var(--tilt-x))
+        rotateY(var(--tilt-y));
+      transform-style: preserve-3d;
+      will-change: transform, box-shadow, background-color;
+      transition:
+        transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 0.2s ease,
+        border-color 0.2s ease;
     }
 
-    .info-manager-head {
+    .info-strategy-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .info-strategy-card:hover {
+        --lift: -4px;
+        --zoom: 1.01;
+        background-color: #fff;
+        border-color: rgba(18, 68, 83, 0.12);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 1),
+          0 12px 24px rgba(26, 68, 79, 0.04),
+          0 32px 64px rgba(26, 68, 79, 0.08);
+      }
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      .info-strategy-card:active {
+        --lift: 0px;
+        --zoom: 0.96;
+        --tilt-x: 0deg;
+        --tilt-y: 0deg;
+        background-color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        transition:
+          transform 100ms cubic-bezier(0.25, 1, 0.5, 1),
+          box-shadow 100ms cubic-bezier(0.25, 1, 0.5, 1),
+          background-color 100ms ease;
+      }
+    }
+
+    .info-strategy-head {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding-right: 118px;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
-    .info-manager-badge {
-      position: absolute;
-      top: 16px;
-      right: 16px;
+    .info-strategy-kicker {
       margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.55px;
+      color: var(--canal-petroleum);
+      line-height: 1.15;
+    }
+
+    .info-badge {
+      flex-shrink: 0;
       display: inline-flex;
       align-items: center;
-      height: 22px;
-      padding: 0 10px;
-      border-radius: 999px;
+      margin-top: 2px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal-petroleum);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .info-badge--live {
+      background: rgba(52, 199, 89, 0.14);
+      color: #1f7a38;
+    }
+
+    .info-badge--soon {
+      background: #e5e5ea;
+      color: #6e6e73;
+    }
+
+    .info-badge--addon {
+      background: #fff6d6;
+      color: #8a6d00;
+    }
+
+    .info-badge--value {
       background: var(--canal-petroleum);
       color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
     }
 
-    .info-manager-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--canal-petroleum);
-      letter-spacing: -0.01em;
-    }
-
-    .info-manager-intro {
-      margin: 0;
-      font-size: 13px;
-      font-weight: 500;
-      color: #48484a;
-      line-height: 1.45;
-      max-width: 52ch;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .info-project {
+    .info-body-block {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      padding: 16px;
-      border: 1px solid #d1d1d6;
-      border-radius: 12px;
-      background: #fff;
+      gap: 10px;
+      flex-grow: 1;
     }
 
-    .info-project h3 {
+    .info-strategy-lead {
       margin: 0;
       font-size: 14px;
-      font-weight: 600;
-      color: var(--canal-petroleum);
-      letter-spacing: -0.01em;
-    }
-
-    .info-project p {
-      margin: 0;
-      font-size: 13px;
       font-weight: 500;
-      color: #6e6e73;
-      line-height: 1.45;
+      color: #3A3A3C;
+      line-height: 1.5;
     }
 
-    .info-cost {
-      margin-top: 6px;
+    .info-strategy-lead strong {
+      font-weight: 700;
+      color: var(--canal-petroleum);
+    }
+
+    .info-footer-wrapper {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .info-closing {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
       font-size: 13px;
-      font-weight: 600;
-      color: var(--ios-green);
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      line-height: 1.35;
+    }
+
+    .info-legal-note {
+      margin: 6px 0 0;
+      font-size: 11px;
+      font-weight: 500;
+      font-style: normal;
+      color: #8E8E93;
       line-height: 1.4;
+      letter-spacing: 0.01em;
     }
 
-    @media (max-width: 720px) {
-      .info-grid {
+    @media (min-width: 901px) {
+      .info-scroll {
+        padding: 28px 24px calc(32px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .info-strategy-card--wide .info-strategy-kicker {
+        font-size: 28px;
+      }
+
+      .info-strategy-card--wide .info-strategy-lead {
+        max-width: 42em;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .info-strategy-grid {
         grid-template-columns: 1fr;
+        gap: 14px;
+        perspective: none;
       }
 
-      .info-manager-head {
-        padding-right: 0;
-        padding-top: 28px;
+      .info-strategy-card--wide {
+        grid-column: auto;
+      }
+
+      .info-strategy-kicker {
+        font-size: 20px;
+      }
+
+      .info-strategy-head {
+        flex-wrap: wrap;
       }
     }
 
-    .workspace.is-settings .workspace-toolbar {
-      display: none;
+    body:not(.can-info) #tabInfo,
+    body:not(.can-info) #infoPanel,
+    body:not(.can-info) .sys-settings-sales {
+      display: none !important;
     }
 
     .workspace.is-feed .toolbar-field:first-child {
@@ -3663,6 +3900,13 @@
     .workspace.is-settings .workspace-body .table-panel {
       border-radius: var(--radius-sheet-top);
       border-top: 1px solid var(--table-border);
+    }
+
+    .workspace.is-settings .workspace-body #infoPanel.table-panel {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: #F2F5F8;
     }
 
     .blacklist-scroll,
@@ -4185,7 +4429,7 @@
 
     .note-card-body {
       padding: 12px 14px;
-      border-radius: 10px;
+      border-radius: var(--radius-ui);
       background: #F7F9FA;
       border: 1px solid #EEF1F4;
       font-size: 13px;
@@ -4215,7 +4459,7 @@
     .note-card-btn {
       height: 32px;
       padding: 0 14px;
-      border: 1px solid #DFE5EA;
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       background: #fff;
       font-size: 12px;
@@ -4247,7 +4491,7 @@
 
     .sheet-head--minimal {
       align-items: center;
-      padding: 16px 18px;
+      padding: 16px 24px;
       border-bottom: 1px solid var(--input-border);
       background: transparent;
     }
@@ -4255,18 +4499,18 @@
     .sheet-head--minimal h2 {
       font-family: "Cinzel", Georgia, serif;
       font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-weight: 700;
+      letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
       margin: 0;
     }
 
     .sheet-form--flat {
-      padding: 16px 18px 18px;
+      padding: 16px 24px 24px;
     }
 
     .sheet-form--flat .sheet-field {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .sheet-form--flat .sheet-field:last-of-type {
@@ -4301,7 +4545,7 @@
       width: 100%;
       margin-top: 0;
       height: 44px;
-      border-radius: 10px;
+      border-radius: var(--radius-ios);
     }
 
     .sheet-guest-line {
@@ -4381,8 +4625,8 @@
       margin: 0;
       font-family: "Cinzel", Georgia, serif;
       font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-weight: 700;
+      letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
       text-align: center;
       overflow: hidden;
@@ -4571,7 +4815,7 @@
       opacity: 0.65;
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 900px) {
       .sheet.sheet--ig .sheet-panel--ig-report {
         border-radius: var(--radius-sheet-top) var(--radius-sheet-top) 0 0;
         max-height: min(94dvh, calc(100dvh - env(safe-area-inset-top, 0px)));
@@ -4709,7 +4953,7 @@
       justify-content: center;
       width: 30px;
       height: 30px;
-      border: 1px solid #DFE5EA;
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       background: #fff;
       font-size: 18px;
@@ -4845,7 +5089,7 @@
       width: 22px;
       height: 22px;
       margin: -11px 0 0 -11px;
-      border: 2px solid #DFE5EA;
+      border: 2px solid var(--input-border);
       border-top-color: var(--canal-petroleum);
       border-radius: 50%;
       animation: panelSpin 0.65s linear infinite;
@@ -4930,11 +5174,36 @@
       font-size: 14px;
     }
 
+    .btn-primary--danger {
+      background: #C62828;
+      color: #fff;
+    }
+
+    .btn-primary--danger:hover {
+      filter: brightness(1.05);
+    }
+
+    .team-confirm-copy {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    .team-confirm-note {
+      margin: 0 0 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
     .sheet-foot .btn-exit {
       height: 40px;
       padding: 0 14px;
       border-radius: 8px;
-      border-color: #DFE5EA;
+      border-color: var(--input-border);
       font-size: 13px;
       color: #3a525c;
     }
@@ -5011,9 +5280,9 @@
       .gate-card {
         max-width: var(--card-max-w);
         width: 100%;
-        border-radius: 24px;
-        padding-top: 28px;
-        padding-bottom: 22px;
+        border-radius: var(--radius-outer);
+        padding-top: var(--ios-card-pad-top);
+        padding-bottom: var(--ios-card-pad-bottom);
       }
 
       .gate-card.is-menu-open {
@@ -5021,13 +5290,13 @@
       }
 
       .gate-header {
-        padding-left: 20px;
-        padding-right: 20px;
+        padding-left: var(--ios-inset);
+        padding-right: var(--ios-inset);
       }
 
       .gate-form {
-        padding-left: 20px;
-        padding-right: 20px;
+        padding-left: var(--ios-inset);
+        padding-right: var(--ios-inset);
       }
 
       .gate-form .ui-dropdown-menu {
@@ -5075,7 +5344,8 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
-      flex: 1 1 auto;
+      flex: 0 1 auto;
+      max-width: calc(100% - var(--cell-control-h) - 6px);
     }
 
     .contact-ios-label {
@@ -5084,12 +5354,12 @@
 
     .secure-cell-wrapper,
     .phone-wrapper {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 6px;
       width: 100%;
-      max-width: 160px;
+      max-width: none;
       min-width: 0;
       height: var(--cell-control-h);
       font-family: SFMono-Regular, ui-monospace, Menlo, monospace;
@@ -5098,11 +5368,21 @@
       vertical-align: middle;
     }
 
+    .secure-cell-wrapper.is-empty {
+      gap: 0;
+    }
+
+    .secure-cell-wrapper.is-empty .contact-stack {
+      max-width: 100%;
+    }
+
     .secure-cell-wrapper .phone-text,
     .secure-cell-wrapper .email-text,
     .phone-wrapper .phone-text,
     .phone-wrapper .email-text {
-      flex: 1 1 auto;
+      flex: 0 1 auto;
+      width: auto;
+      max-width: 100%;
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -5111,12 +5391,13 @@
       overflow-wrap: normal;
       line-height: 1.2;
       display: block;
-      padding-right: 2px;
+      padding-right: 0;
       font-variant-numeric: tabular-nums;
+      text-align: left;
     }
 
     .matrix-table td.col-phone .secure-cell-wrapper .phone-text {
-      text-align: right;
+      text-align: left;
     }
 
     .phone-text,
@@ -5172,19 +5453,20 @@
     .matrix-table td.col-phone .secure-cell-wrapper,
     .matrix-table td.col-email .secure-cell-wrapper {
       max-width: 100%;
-    }
-
-    .matrix-table td.col-phone .secure-cell-wrapper {
-      justify-content: flex-end;
+      width: 100%;
+      justify-content: flex-start;
     }
 
     .matrix-table td.col-phone .secure-cell-wrapper.is-empty {
-      justify-content: flex-end;
+      justify-content: flex-start;
     }
 
-    .matrix-table td.col-phone .contact-stack {
-      align-items: flex-end;
-      text-align: right;
+    .matrix-table td.col-phone .contact-stack,
+    .matrix-table td.col-email .contact-stack {
+      align-items: flex-start;
+      text-align: left;
+      min-width: 0;
+      flex: 0 1 auto;
     }
 
     .email-text.is-revealed {
@@ -5211,30 +5493,147 @@
       cursor: pointer;
       padding: 0;
       flex-shrink: 0;
-      opacity: 0;
-      pointer-events: none;
+      margin-left: 0;
+      opacity: 0.4;
+      pointer-events: auto;
       transition: opacity var(--hover-ease), background var(--hover-ease), color var(--hover-ease);
     }
 
-    .matrix-table tbody tr:hover .btn-reveal,
-    .matrix-table tbody tr:focus-within .btn-reveal,
     .matrix-table .btn-reveal.is-locked,
     .matrix-table .btn-reveal:focus-visible {
-      opacity: 0.45;
+      opacity: 0.7;
       pointer-events: auto;
     }
 
-    @media (hover: none) {
-      .matrix-table .btn-reveal {
-        opacity: 0.4;
+    @media (hover: hover) and (pointer: fine) {
+      .matrix-table tbody tr:hover {
+        background-color: #f7f7f8;
+      }
+
+      .matrix-table tbody tr:hover td {
+        background-color: #f7f7f8;
+      }
+
+      .matrix-table tbody tr.is-blacklisted:hover,
+      .matrix-table tbody tr.is-blacklisted:hover td {
+        background: rgba(198, 40, 40, 0.045);
+      }
+
+      .matrix-table tbody tr:hover .btn-row-menu {
+        color: #5f7582;
+      }
+
+      .btn-row-menu:hover {
+        color: #1C1C1E;
+        background: rgba(0, 0, 0, 0.04);
+        box-shadow: none;
+        outline: none;
+      }
+
+      .room-input:hover {
+        border-color: var(--sky-200);
+        background-color: #fff;
+      }
+
+      .matrix-table tbody tr:hover .btn-reveal {
+        opacity: 0.7;
         pointer-events: auto;
+      }
+
+      .btn-reveal:hover {
+        opacity: 0.9;
+        background: rgba(212, 232, 242, 0.45);
+        color: var(--canal-petroleum);
+      }
+
+      .btn-reveal.is-locked:hover {
+        background: rgba(212, 232, 242, 0.45);
       }
     }
 
-    .btn-reveal:hover {
-      opacity: 0.9;
-      background: rgba(212, 232, 242, 0.45);
-      color: var(--canal-petroleum);
+    @media (hover: none), (pointer: coarse) {
+      .matrix-table tbody,
+      .matrix-table tbody tr,
+      .matrix-table tbody td {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+
+      .cell-name,
+      .cell-guest,
+      .phone-text,
+      .email-text {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        background: transparent;
+      }
+
+      .matrix-table tbody tr:hover,
+      .matrix-table tbody tr:hover td {
+        background-color: #fff;
+      }
+
+      .matrix-table tbody tr:nth-child(even):hover,
+      .matrix-table tbody tr:nth-child(even):hover td {
+        background-color: #fcfcfd;
+      }
+
+      .row-menu-item:hover,
+      .ui-menu-item:hover,
+      .feed-row:hover,
+      .note-shift-row:hover,
+      .blacklist-row:hover {
+        background: #fff;
+        color: inherit;
+      }
+
+      .btn-row-menu:hover,
+      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:hover,
+      #checkinsPanel .col-actions .btn-row-menu:hover {
+        background: transparent;
+        color: #7a919e;
+      }
+
+      .btn-reveal:hover {
+        opacity: 0.4;
+        background: transparent;
+        color: inherit;
+      }
+
+      .date-pill:not(.is-on):hover {
+        color: #6b8494;
+        background: transparent;
+        border-color: transparent;
+      }
+
+      .btn-notify:hover,
+      .btn-notify:focus-visible {
+        background: transparent;
+      }
+
+      .btn-action:hover {
+        filter: none;
+      }
+
+      .notes-filter-pill:hover {
+        color: #8a9ba8;
+      }
+
+      button,
+      .btn,
+      .btn-action,
+      .btn-row-menu,
+      .btn-reveal,
+      .date-pill,
+      .ui-menu-item,
+      .row-menu-item,
+      .feed-row,
+      .dash-nav-item,
+      .info-strategy-card {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
     }
 
     .btn-reveal:active {
@@ -5247,10 +5646,6 @@
     .btn-reveal.is-locked {
       opacity: 1;
       color: var(--canal-petroleum);
-    }
-
-    .btn-reveal.is-locked:hover {
-      background: rgba(212, 232, 242, 0.45);
     }
 
     .row-actions { display: flex; gap: var(--space-s); flex-wrap: wrap; }
@@ -5354,7 +5749,8 @@
       .btn-action,
       .guest-status-icon,
       .field,
-      .btn-primary {
+      .btn-primary,
+      .info-strategy-card {
         transition: none !important;
         transform: none !important;
         will-change: auto;
@@ -5373,6 +5769,7 @@
         position: fixed;
         left: 0;
         top: 0;
+        bottom: 0;
         transform: translateX(-100%);
         transition: transform 0.32s var(--ios-magnetic);
         box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
@@ -5394,16 +5791,110 @@
 
       .dash-scrim.hidden { display: none !important; }
 
-      .dash-topbar { padding-left: 16px; padding-right: 16px; }
-      .dash-content { padding-left: 16px; padding-right: 16px; }
-    }
+      .dash-topbar {
+        height: 60px;
+        min-height: 60px;
+        flex-wrap: nowrap;
+        gap: 8px;
+        padding: 0 16px;
+      }
 
-    @media (max-width: 720px) {
+      .page-subtitle { display: none; }
+
+      .dash-topbar h1 { font-size: 16px; }
+
+      .dash-topbar-actions {
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+        width: auto;
+        max-width: none;
+      }
+
       .btn-label-full { display: none; }
       .btn-label-compact { display: inline; }
-      .dash-topbar-actions { width: 100%; }
-      .dash-topbar-actions .btn-action { flex: 1 1 auto; justify-content: center; }
-      .dash-topbar-actions .notify-wrap { flex: 0 0 auto; }
+
+      .dash-topbar-actions .btn-action {
+        height: 34px;
+        padding: 0 10px;
+        font-size: 12px;
+        flex: 0 0 auto;
+      }
+
+      .btn-notify {
+        width: 36px;
+        height: 36px;
+      }
+
+      .dash-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 0;
+      }
+
+      .toolbar-field:first-child,
+      .toolbar-field:last-child {
+        flex: none;
+        width: 100%;
+        max-width: none;
+      }
+
+      .toolbar-field .search-wrapper,
+      .toolbar-field .search-input {
+        height: 44px;
+      }
+
+      .notes-list,
+      .blacklist-list {
+        gap: 12px;
+      }
+
+      .feed-row,
+      .note-shift-row,
+      .blacklist-row {
+        padding: 16px;
+      }
+
+      .notes-filter-pill {
+        min-height: 44px;
+      }
+
+      .sheet-foot {
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 12px;
+      }
+
+      .sheet-foot .btn-primary,
+      .sheet-foot .btn-exit {
+        width: 100%;
+        height: 46px;
+      }
+
+      .notify-menu {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        max-width: none;
+      }
+
+      .dash-content { padding-left: 16px; padding-right: 16px; }
+
+      #checkinsPanel .matrix-table tbody tr:active:not(:has(:focus-within)):not(:has(.btn-row-menu.is-open)),
+      #inHousePanel .matrix-table tbody tr:active,
+      .feed-row:active,
+      .blacklist-row:active {
+        background: rgba(18, 68, 83, 0.04);
+        transition: background 80ms ease, transform 80ms ease;
+      }
+
+      .date-pill:active {
+        transform: scale(0.95);
+        transition: transform 80ms ease, background 80ms ease;
+      }
+    }
+
+    @media (max-width: 900px) {
       .footer-summary-meta { display: none; }
       .blacklist-list,
       .notes-list { grid-template-columns: 1fr; }
@@ -5490,7 +5981,7 @@
         height: auto;
         min-height: 0;
         margin: 0 0 10px;
-        padding: 14px 44px 12px 14px;
+        padding: 14px 52px 12px 14px;
         border: 0;
         border-bottom: 0;
         border-radius: 16px;
@@ -5503,11 +5994,11 @@
         margin-bottom: 0;
       }
 
+      #checkinsPanel .matrix-table tbody tr:nth-child(even),
       #checkinsPanel .matrix-table tbody tr:hover,
-      #checkinsPanel .matrix-table tbody tr:active:not(:has(:focus-within)),
       #checkinsPanel .matrix-table tbody tr:has(.btn-row-menu.is-open),
-      #checkinsPanel .matrix-table tbody tr:has(:focus-within):not(:has(.btn-row-menu.is-open)) {
-        background-color: #fff;
+      #checkinsPanel .matrix-table tbody tr:has(:focus-within) {
+        background: #fff;
       }
 
       #checkinsPanel .matrix-table tbody tr.is-blacklisted,
@@ -5517,7 +6008,8 @@
         box-shadow: 0 0 0 1px rgba(198, 40, 40, 0.22), 0 1px 2px rgba(0, 0, 0, 0.04);
       }
 
-      #checkinsPanel .matrix-table tbody td {
+      #checkinsPanel .matrix-table tbody td,
+      #checkinsPanel .matrix-table tbody tr:nth-child(even) td {
         display: flex;
         align-items: center;
         width: auto;
@@ -5528,6 +6020,7 @@
         border: 0;
         white-space: normal;
         overflow: visible;
+        background: transparent;
       }
 
       #checkinsPanel .matrix-table td.col-guest {
@@ -5545,6 +6038,15 @@
       #checkinsPanel .matrix-table td.col-phone { grid-area: phone; }
       #checkinsPanel .matrix-table td.col-email { grid-area: email; }
       #checkinsPanel .matrix-table td.col-receptionist { grid-area: staff; }
+      #checkinsPanel .matrix-table td.col-actions {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        width: auto;
+        padding: 0;
+        display: flex;
+        justify-content: flex-end;
+      }
 
       #checkinsPanel .cell-guest,
       #checkinsPanel .cell-guest > .cell-name {
@@ -5588,15 +6090,16 @@
         color: #8E8E93;
       }
 
-      #checkinsPanel .cell-receptionist-wrap .btn-row-menu {
-        position: absolute;
-        top: 8px;
-        right: 6px;
+      #checkinsPanel .cell-receptionist-wrap .btn-row-menu,
+      #checkinsPanel .col-actions .btn-row-menu {
+        position: static;
+        top: auto;
+        right: auto;
         margin: 0;
-        width: 36px;
-        height: 36px;
-        min-width: 36px;
-        min-height: 36px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
         border-radius: 50%;
       }
 
@@ -5624,10 +6127,16 @@
         flex: 1;
         height: auto;
         min-height: 0;
+        align-items: flex-end;
+        justify-content: flex-start;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
         font-size: 16px;
         color: #1D1D1F;
-        gap: 8px;
+        gap: 4px;
+      }
+
+      #checkinsPanel .secure-cell-wrapper.is-empty::after {
+        display: none;
       }
 
       #checkinsPanel .contact-ios-label {
@@ -5664,17 +6173,21 @@
       }
 
       #checkinsPanel .btn-reveal {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         opacity: 0.45;
         pointer-events: auto;
-        align-self: center;
+        align-self: flex-end;
+        margin: 0 0 -4px;
       }
 
       #checkinsPanel .cell-receptionist-wrap .btn-row-menu:hover,
       #checkinsPanel .cell-receptionist-wrap .btn-row-menu.is-open,
-      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:focus-visible {
+      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:focus-visible,
+      #checkinsPanel .col-actions .btn-row-menu:hover,
+      #checkinsPanel .col-actions .btn-row-menu.is-open,
+      #checkinsPanel .col-actions .btn-row-menu:focus-visible {
         background: rgba(18, 68, 83, 0.08);
         color: var(--canal-petroleum);
       }
@@ -5697,6 +6210,107 @@
         display: block;
         width: 100%;
       }
+
+      #inHousePanel.table-panel {
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+        background: #F2F2F7;
+      }
+
+      #inHousePanel .table-head-wrap { display: none; }
+
+      #inHousePanel .matrix-table,
+      #inHousePanel .matrix-table colgroup,
+      #inHousePanel .matrix-table tbody {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
+      #inHousePanel .matrix-table tbody {
+        padding: 10px 12px calc(18px + env(safe-area-inset-bottom, 0px));
+      }
+
+      #inHousePanel .matrix-table col { display: none; }
+
+      #inHousePanel .matrix-table tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "guest room"
+          "phone phone"
+          "email email";
+        align-items: center;
+        column-gap: 8px;
+        row-gap: 0;
+        height: auto;
+        margin: 0 0 10px;
+        padding: 14px 14px 12px;
+        border: 0;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+
+      #inHousePanel .matrix-table tbody tr:last-child { margin-bottom: 0; }
+
+      #inHousePanel .matrix-table tbody tr:nth-child(even),
+      #inHousePanel .matrix-table tbody tr:hover {
+        background: #fff;
+      }
+
+      #inHousePanel .matrix-table tbody td,
+      #inHousePanel .matrix-table tbody tr:nth-child(even) td,
+      #inHousePanel .matrix-table tbody tr:hover td {
+        display: flex;
+        height: auto;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+      }
+
+      #inHousePanel .matrix-table td.col-guest { grid-area: guest; }
+      #inHousePanel .matrix-table td.col-room { grid-area: room; }
+      #inHousePanel .matrix-table td.col-phone { grid-area: phone; }
+      #inHousePanel .matrix-table td.col-email { grid-area: email; }
+
+      #inHousePanel .cell-guest,
+      #inHousePanel .cell-guest > .cell-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      #inHousePanel .cell-room {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--canal-petroleum);
+      }
+
+      #inHousePanel .matrix-table td.col-phone,
+      #inHousePanel .matrix-table td.col-email {
+        margin-top: 8px;
+      }
+
+      #inHousePanel .secure-cell-wrapper {
+        max-width: none;
+        width: 100%;
+      }
+
+      #inHousePanel .footer-summary {
+        background: #F2F2F7;
+        border-top: 0;
+      }
+
+      #inHousePanel .matrix-table tbody tr:has(.empty) {
+        display: block;
+        padding: 36px 16px;
+        background: transparent;
+        box-shadow: none;
+      }
     }
 
     @media (max-width: 480px) {
@@ -5707,7 +6321,7 @@
       .matrix-table:not(.matrix-table--clients) th,
       .matrix-table:not(.matrix-table--clients) td { padding-left: 10px; padding-right: 10px; }
       #checkinsPanel .matrix-table tbody { padding-left: 10px; padding-right: 10px; }
-      #checkinsPanel .matrix-table tbody tr { padding-left: 12px; padding-right: 42px; }
+      #checkinsPanel .matrix-table tbody tr { padding-left: 12px; padding-right: 50px; }
     }
 
     @media (min-width: 901px) {
@@ -5741,12 +6355,7 @@
               <span class="apple-picker-value ui-dropdown-value is-placeholder" id="staffMemberLabel">Seleziona…</span>
               <svg class="apple-picker-chevron" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1.4 1.4L6 6l4.6-4.6L12 2.8 6 8.8 0 2.8z"/></svg>
             </button>
-            <div class="apple-inline-list" id="staffMemberList" hidden>
-              <div class="apple-inline-window" aria-hidden="true"></div>
-              <div class="apple-inline-fade apple-inline-fade--top" aria-hidden="true"></div>
-              <div class="apple-inline-scroll" id="staffMemberMenu" role="listbox" aria-labelledby="lbl-staff"></div>
-              <div class="apple-inline-fade apple-inline-fade--bottom" aria-hidden="true"></div>
-            </div>
+            <div class="ui-dropdown-menu ui-menu hidden" id="staffMemberMenu" role="listbox" aria-labelledby="lbl-staff" hidden></div>
             <input type="hidden" id="staffMember" value="" autocomplete="username">
           </div>
         </div>
@@ -5780,6 +6389,15 @@
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm-8 0a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-2.7 0-8 1.34-8 4v3h9v-3c0-.96.4-1.86 1.06-2.6A13.4 13.4 0 0 0 8 13Zm8 0c-.34 0-.72 0-1.12.05A5 5 0 0 1 17 17v3h7v-3c0-2.66-5.3-4-8-4Z"/></svg>
             </span>
             Clienti
+          </button>
+          <button type="button" class="dash-nav-item" id="tabInHouse" aria-label="Ospiti ancora in camera">
+            <span class="dash-nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            In camera
+            <span class="dash-nav-badge hidden" id="inHouseCount">0</span>
           </button>
         </nav>
       </div>
@@ -5920,6 +6538,7 @@
                   <col class="col-phone">
                   <col class="col-email">
                   <col class="col-receptionist">
+                  <col class="col-actions">
                 </colgroup>
                 <thead>
                   <tr>
@@ -5928,6 +6547,7 @@
                     <th class="col-phone">Telefono</th>
                     <th class="col-email">Email</th>
                     <th class="col-receptionist">Check-in da</th>
+                    <th class="col-actions"><span class="visually-hidden">Azioni</span></th>
                   </tr>
                 </thead>
               </table>
@@ -5940,13 +6560,50 @@
                   <col class="col-phone">
                   <col class="col-email">
                   <col class="col-receptionist">
+                  <col class="col-actions">
                 </colgroup>
                 <tbody id="list"></tbody>
               </table>
             </div>
             <div class="footer-summary">
               <span id="rowCount">0 check-in</span>
-              <span class="footer-summary-meta">Ultimi 7 giorni</span>
+              <span class="footer-summary-meta">Fino a checkout + 7 giorni</span>
+            </div>
+          </div>
+
+          <div class="table-panel hidden clients-card-panel" id="inHousePanel">
+            <div class="table-head-wrap" id="inHouseHead">
+              <table class="matrix-table matrix-table--clients matrix-table--inhouse">
+                <colgroup>
+                  <col class="col-guest">
+                  <col class="col-room">
+                  <col class="col-phone">
+                  <col class="col-email">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="col-guest">Ospite</th>
+                    <th class="col-room">Stanza</th>
+                    <th class="col-phone">Telefono</th>
+                    <th class="col-email">Email</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="table-scroll" id="inHouseScroll">
+              <table class="matrix-table matrix-table--clients matrix-table--inhouse">
+                <colgroup>
+                  <col class="col-guest">
+                  <col class="col-room">
+                  <col class="col-phone">
+                  <col class="col-email">
+                </colgroup>
+                <tbody id="inHouseList"></tbody>
+              </table>
+            </div>
+            <div class="footer-summary">
+              <span id="inHouseRowCount">0 in camera</span>
+              <span class="footer-summary-meta">Soggiorno in corso</span>
             </div>
           </div>
 
@@ -6009,15 +6666,12 @@
                       </label>
                     </div>
 
-                    <div class="sys-settings-row">
+                    <div class="sys-settings-row sys-settings-row--disabled">
                       <div class="sys-settings-row-info">
                         <span class="sys-settings-row-title">Check-in rapido (Fast Registration)</span>
-                        <span class="sys-settings-row-desc">Preferenza locale per velocizzare i passaggi quando i dati sono già noti.</span>
+                        <span class="sys-settings-row-desc">Preferenza per velocizzare i passaggi quando i dati sono già noti. Non attivo in questa versione.</span>
                       </div>
-                      <label class="sys-switch">
-                        <input type="checkbox" id="prefFastRegistration">
-                        <span class="sys-switch-slider"></span>
-                      </label>
+                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">Pre-release</span>
                     </div>
 
                     <div class="sys-settings-row">
@@ -6054,18 +6708,23 @@
                     </div>
                   </div>
 
-                  <div class="sys-settings-group">
+                  <div class="sys-settings-group sys-settings-sales" hidden>
                     <div class="sys-settings-group-title">Integrazioni esterne (Sincronizzazione)</div>
 
                     <div class="sys-settings-row sys-settings-row--disabled">
                       <div class="sys-settings-row-info">
                         <span class="sys-settings-row-title">Sincronizzazione in tempo reale OTA</span>
-                        <span class="sys-settings-row-desc">Booking.com, Expedia e Airbnb — disponibile in una prossima versione.</span>
+                        <span class="sys-settings-row-desc">Booking.com, Expedia e Airbnb. Integrazione canali in un modulo successivo.</span>
                       </div>
-                      <label class="sys-switch">
-                        <input type="checkbox" id="prefOtaSync" disabled>
-                        <span class="sys-switch-slider"></span>
-                      </label>
+                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">Pre-release</span>
+                    </div>
+
+                    <div class="sys-settings-row sys-settings-row--disabled">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Emily AI / Hub upsell</span>
+                        <span class="sys-settings-row-desc">QR in camera per servizi interni ed escursioni. Modulo a parte, non incluso nel check-in.</span>
+                      </div>
+                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Add-on 39 EUR/mese</span>
                     </div>
                   </div>
 
@@ -6076,7 +6735,11 @@
                 </form>
 
                 <div class="sys-settings-group">
-                  <div class="sys-settings-group-title">Classifica reception</div>
+                  <div class="sys-settings-group-head">
+                    <div class="sys-settings-group-title">Classifica reception</div>
+                    <button type="button" class="sys-settings-add-btn" id="btnAddStaff">Aggiungi</button>
+                  </div>
+                  <p class="sys-settings-rank-hint" id="settingsRankHint">Solo la direzione può aggiungere o togliere personale.</p>
                   <div class="sys-settings-rank" id="settingsRank"></div>
                 </div>
 
@@ -6100,6 +6763,20 @@
                     </form>
                   </div>
                 </div>
+
+                <footer class="sys-settings-legal" id="settingsLegal">
+                  <h3>Informativa privacy — uso interno reception</h3>
+                  <p><strong>Titolare del trattamento:</strong> CANAL S.r.l. — Hotel Canal, Santa Croce 553, 30135 Venezia (VE). P.IVA / C.F. 04711930273. Contatti: reception in struttura · <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>
+                  <p><strong>Chi può vedere questi dati:</strong> solo il personale autorizzato (front desk e direzione). Lo staff è incaricato del trattamento. Telefono ed email restano mascherati finché non vengono svelati; lo svelamento è tracciato.</p>
+                  <p><strong>Dati trattati:</strong> nome, cognome, email, telefono, stanza, receptionist, numero ospiti, preferenza orario tavolo, lingua, timestamp del consenso privacy, note di servizio e segnalazioni interne.</p>
+                  <p><strong>Finalità:</strong> check-in digitale, servizi di portineria (Wi‑Fi, accessi, istruzioni), coupon partner, prenotazione tavolo, report operativi al personale autorizzato.</p>
+                  <p><strong>Base giuridica:</strong> art. 6.1.b GDPR (contratto / misure precontrattuali) e art. 6.1.a (consenso esplicito raccolto in app). Report interni: art. 6.1.f (interesse legittimo organizzativo, limitato).</p>
+                  <p><strong>Conservazione:</strong> i dati identificativi restano fino al checkout dichiarato in registrazione, più 7 giorni. Ogni notte alle 00:00 (Europa/Roma), dopo l’invio del report giornaliero, nome, telefono ed email vengono anonimizzati in modo irreversibile. Restano solo dati non identificativi (stanza, date, receptionist) per le statistiche interne.</p>
+                  <p><strong>Destinatari:</strong> personale autorizzato dell’hotel. Nessuna vendita o cessione a piattaforme di remarketing. Fornitori tecnici (hosting, email transazionale, WhatsApp Business) trattano i dati solo per erogare il servizio, ove nominati responsabili.</p>
+                  <p><strong>Sicurezza:</strong> trasporto HTTPS; nome, telefono ed email cifrati a riposo (AES-256-GCM); accesso staff con sessione protetta; consenso ospite obbligatorio e non pre-selezionato.</p>
+                  <p><strong>Diritti dell’interessato:</strong> accesso, rettifica, cancellazione, limitazione, opposizione, reclamo al Garante Privacy. Per esercitarli: reception Hotel Canal o <a href="mailto:info@hotelcanal.com">info@hotelcanal.com</a>.</p>
+                  <p>Testo completo per gli ospiti: <a href="/privacy.html" target="_blank" rel="noopener">Informativa privacy</a>. Questo riquadro non sostituisce una consulenza legale esterna.</p>
+                </footer>
               </div>
             </div>
             <div class="footer-summary">
@@ -6110,50 +6787,83 @@
           <div class="table-panel hidden info-panel" id="infoPanel">
             <div class="info-scroll">
               <div class="info-stack">
-                <header class="info-header">
-                  <h2>Informazioni &amp; Roadmap</h2>
-                  <p>Cosa arriverà in reception e, per i manager, il quadro dei costi.</p>
-                  <span class="info-version">Beta v1.4</span>
-                </header>
-
-                <section class="info-card">
-                  <h3 class="info-card-title">Prossimi aggiornamenti · Front Desk</h3>
-                  <ul class="info-list">
-                    <li class="info-item">
-                      <span class="info-item-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M11 10h9v3M17 10v6M20 10v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                      </span>
-                      <div>
-                        <strong class="info-item-title">Codice porta al check-in</strong>
-                        <p class="info-item-body">Alla conferma del check-in, il codice del tastierino della stanza verrà generato in automatico per l’ospite.</p>
+                <div id="infoManagerWrap">
+                  <div class="info-strategy-grid">
+                    <article class="info-strategy-card">
+                      <div class="info-strategy-head">
+                        <h2 class="info-strategy-kicker">Prenotazioni</h2>
+                        <span class="info-badge info-badge--soon">Pre-release</span>
                       </div>
-                    </li>
-                    <li class="info-item">
-                      <span class="info-item-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                      </span>
-                      <div>
-                        <strong class="info-item-title">Archivio storico</strong>
-                        <p class="info-item-body">Trovare più in fretta gli ospiti passati, filtrando per nazionalità e periodo dell’anno.</p>
+                      <div class="info-body-block">
+                        <p class="info-strategy-lead">Booking, Expedia e le altre OTA entrano da sole. Niente digitazione in reception: disponibilità allineate, <strong>overbooking sotto controllo</strong>.</p>
                       </div>
-                    </li>
-                  </ul>
-                </section>
+                      <div class="info-footer-wrapper">
+                        <div class="info-closing">Sync live · zero copia</div>
+                        <div class="info-legal-note">Attivazione su richiesta. Si applicano condizioni di canale.</div>
+                      </div>
+                    </article>
 
-                <section class="hidden" id="infoManagerWrap" hidden>
-                  <div class="info-manager" id="infoManagerSection">
-                    <p class="info-manager-badge">Area manager</p>
-                    <div class="info-manager-head">
-                      <h3 class="info-manager-title">Pannello strategico · Mizan / Payel</h3>
-                      <p class="info-manager-intro" id="infoManagerIntro"></p>
-                    </div>
-                    <div class="info-grid" id="infoManagerGrid"></div>
+                    <article class="info-strategy-card">
+                      <div class="info-strategy-head">
+                        <h2 class="info-strategy-kicker">Housekeeping</h2>
+                        <span class="info-badge info-badge--soon">In arrivo</span>
+                      </div>
+                      <div class="info-body-block">
+                        <p class="info-strategy-lead">Un tap: camera <strong>pulita e pronta</strong> al check-in. Reception, piano e colazione sulla stessa timeline. Basta telefonate tra reparti.</p>
+                      </div>
+                      <div class="info-footer-wrapper">
+                        <div class="info-closing">Un piano, un gesto</div>
+                        <div class="info-legal-note">Coordinamento interno staff.</div>
+                      </div>
+                    </article>
+
+                    <article class="info-strategy-card">
+                      <div class="info-strategy-head">
+                        <h2 class="info-strategy-kicker">Network</h2>
+                        <span class="info-badge info-badge--addon">Add-on</span>
+                      </div>
+                      <div class="info-body-block">
+                        <p class="info-strategy-lead">Ristorante, spa, guida. Emily le propone all’ospite senza pressione. Un canale di ricavo per la struttura, un soggiorno più pieno per chi alloggia.</p>
+                      </div>
+                      <div class="info-footer-wrapper">
+                        <div class="info-closing">Partner locali · no spam</div>
+                        <div class="info-legal-note">Si applicano condizioni ai programmi di referral.</div>
+                      </div>
+                    </article>
+
+                    <article class="info-strategy-card">
+                      <div class="info-strategy-head">
+                        <h2 class="info-strategy-kicker">Guest file</h2>
+                        <span class="info-badge">7 giorni</span>
+                      </div>
+                      <div class="info-body-block">
+                        <p class="info-strategy-lead">Documento, minibar, pagamento. Il file ospite resta a portata per tutto il soggiorno, con <strong>report al check-in</strong>.</p>
+                      </div>
+                      <div class="info-footer-wrapper">
+                        <div class="info-closing">Sempre a portata</div>
+                        <div class="info-legal-note">Conservazione secondo le policy della struttura.</div>
+                      </div>
+                    </article>
+
+                    <article class="info-strategy-card info-strategy-card--wide">
+                      <div class="info-strategy-head">
+                        <h2 class="info-strategy-kicker">Emily AI</h2>
+                        <span class="info-badge info-badge--addon">Add-on 5 EUR</span>
+                      </div>
+                      <div class="info-body-block">
+                        <p class="info-strategy-lead">QR in camera. <strong>Wi‑Fi, colazione, taxi, città:</strong> l’ospite chiede a Emily, non al banco. Per 5 € a soggiorno, una guida da local.</p>
+                      </div>
+                      <div class="info-footer-wrapper">
+                        <div class="info-closing">Reception libera</div>
+                        <div class="info-legal-note">Si applicano condizioni sul servizio in camera.</div>
+                      </div>
+                    </article>
                   </div>
-                </section>
+                </div>
               </div>
             </div>
             <div class="footer-summary">
-              <span>Prossimi aggiornamenti</span>
+              <span id="infoFooterLabel">Informazioni</span>
             </div>
           </div>
           </div>
@@ -6298,6 +7008,46 @@
     </div>
   </div>
 
+  <div class="sheet sheet--ig" id="teamSheet" hidden aria-hidden="true">
+    <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="teamSheetCloseBg" aria-label="Chiudi"></button>
+    <div class="sheet-panel sheet-panel--ig-report" role="dialog" aria-modal="true" aria-labelledby="teamSheetTitle">
+      <div class="ig-sheet-handle" aria-hidden="true"></div>
+      <header class="ig-sheet-bar">
+        <span class="ig-sheet-bar-side" aria-hidden="true"></span>
+        <h2 class="ig-sheet-bar-title" id="teamSheetTitle">Aggiungi personale</h2>
+        <button type="button" class="ig-sheet-bar-close" id="teamSheetClose" aria-label="Chiudi">×</button>
+      </header>
+      <div class="ig-sheet-body">
+        <form id="teamSheetForm" class="sheet-form sheet-form--flat">
+          <div class="sheet-field">
+            <label class="sheet-label" id="lbl-team-name" for="teamSheetName">Nome</label>
+            <input class="field" id="teamSheetName" maxlength="40" placeholder="Es. Anna" autocomplete="off">
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-label" id="lbl-team-pin" for="teamSheetPin">Password di accesso</label>
+            <input class="field" id="teamSheetPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="4–8 cifre">
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-label" id="lbl-team-pin-confirm" for="teamSheetPinConfirm">Conferma password</label>
+            <input class="field" id="teamSheetPinConfirm" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="Ripeti la password">
+          </div>
+          <div class="sheet-foot sheet-foot--minimal">
+            <button type="button" class="btn-exit" id="teamSheetCancel">Annulla</button>
+            <button type="submit" class="btn-primary" id="teamSheetContinue">Continua</button>
+          </div>
+        </form>
+        <div id="teamSheetConfirm" class="sheet-form sheet-form--flat hidden" hidden>
+          <p class="team-confirm-copy" id="teamConfirmCopy"></p>
+          <p class="team-confirm-note" id="teamConfirmNote"></p>
+          <div class="sheet-foot sheet-foot--minimal">
+            <button type="button" class="btn-exit" id="teamConfirmBack">Indietro</button>
+            <button type="button" class="btn-primary" id="teamConfirmYes">Conferma</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row-menu-backdrop hidden" id="rowMenuBackdrop" aria-hidden="true"></div>
   <div class="row-menu ui-menu hidden" id="rowMenu" role="menu" aria-label="Azioni ospite"></div>
 
@@ -6310,7 +7060,6 @@
     const staffDropdown = document.getElementById('staffDropdown');
     const staffMemberTrigger = document.getElementById('staffMemberTrigger');
     const staffMemberMenu = document.getElementById('staffMemberMenu');
-    const staffMemberList = document.getElementById('staffMemberList');
     const staffMemberLabel = document.getElementById('staffMemberLabel');
     const lblPin = document.getElementById('lbl-pin');
     const lblStaff = document.getElementById('lbl-staff');
@@ -6323,6 +7072,17 @@
       checkinsScroll.addEventListener('scroll', () => {
         checkinsHead.scrollLeft = checkinsScroll.scrollLeft;
         syncRowMenuToAnchor();
+      }, { passive: true });
+    }
+    const inHousePanel = document.getElementById('inHousePanel');
+    const inHouseListEl = document.getElementById('inHouseList');
+    const inHouseHead = document.getElementById('inHouseHead');
+    const inHouseScroll = document.getElementById('inHouseScroll');
+    const inHouseRowCountEl = document.getElementById('inHouseRowCount');
+    const inHouseCountEl = document.getElementById('inHouseCount');
+    if (inHouseHead && inHouseScroll) {
+      inHouseScroll.addEventListener('scroll', () => {
+        inHouseHead.scrollLeft = inHouseScroll.scrollLeft;
       }, { passive: true });
     }
     const notesListEl = document.getElementById('notesList');
@@ -6341,12 +7101,11 @@
     const blacklistPanel = document.getElementById('blacklistPanel');
     const settingsPanel = document.getElementById('settingsPanel');
     const infoPanel = document.getElementById('infoPanel');
-    const infoManagerWrap = document.getElementById('infoManagerWrap');
-    const infoManagerIntro = document.getElementById('infoManagerIntro');
-    const infoManagerGrid = document.getElementById('infoManagerGrid');
+    const infoFooterLabel = document.getElementById('infoFooterLabel');
     const workspaceEl = document.getElementById('workspace');
     const tabRequests = document.getElementById('tabRequests');
     const tabCheckins = document.getElementById('tabCheckins');
+    const tabInHouse = document.getElementById('tabInHouse');
     const tabBlacklist = document.getElementById('tabBlacklist');
     const tabInfo = document.getElementById('tabInfo');
     const tabSettings = document.getElementById('tabSettings');
@@ -6383,6 +7142,13 @@
     const staffSheetForm = document.getElementById('staffSheetForm');
     const staffSheetGuestEl = document.getElementById('staffSheetGuest');
     const staffSheetNameEl = document.getElementById('staffSheetName');
+    const teamSheet = document.getElementById('teamSheet');
+    const teamSheetForm = document.getElementById('teamSheetForm');
+    const teamSheetConfirm = document.getElementById('teamSheetConfirm');
+    const teamSheetNameEl = document.getElementById('teamSheetName');
+    const teamSheetPinEl = document.getElementById('teamSheetPin');
+    const teamSheetPinConfirmEl = document.getElementById('teamSheetPinConfirm');
+    const teamConfirmYes = document.getElementById('teamConfirmYes');
     const reportSheet = document.getElementById('reportSheet');
     const reportSheetCloseBg = document.getElementById('reportSheetCloseBg');
     const reportSheetClose = document.getElementById('reportSheetClose');
@@ -6400,6 +7166,7 @@
     let searchTimer = 0;
     let activeView = 'checkins';
     let lastCheckins = [];
+    let lastInHouse = [];
     let lastNotes = [];
     let lastInboxNotes = [];
     let lastToday = '';
@@ -6456,6 +7223,35 @@
       if (!parts.length) return '?';
       if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    /** Iniziale sola in colonna check-in (privacy se l’ospite vede lo schermo). */
+    const CHECKIN_MANAGER_STAFF = new Set(['MIZAN', 'PAYEL']);
+
+    function checkinStaffInitial(raw) {
+      const key = String(raw || '').trim().toUpperCase();
+      const map = {
+        TOMMASO: 'T',
+        JOHN: 'J',
+        MARIA: 'M',
+        SAYEED: 'S',
+        ALEJANDRO: 'A',
+        MIZAN: 'M',
+        PAYEL: 'M',
+      };
+      return map[key] || (key ? key.charAt(0) : '—');
+    }
+
+    function checkinStaffBadgeHtml(raw) {
+      const key = String(raw || '').trim().toUpperCase();
+      if (!key) {
+        return '<span class="badge-container"><span class="initial-badge initial-badge--empty" aria-hidden="true">—</span></span>';
+      }
+      const initial = checkinStaffInitial(key);
+      const isManager = CHECKIN_MANAGER_STAFF.has(key);
+      const cls = isManager ? 'initial-badge initial-badge--manager' : 'initial-badge';
+      const title = isManager ? 'Direzione' : 'Staff operativo';
+      return `<span class="badge-container" title="${escapeAttr(title)}"><span class="${cls}">${escapeHtml(initial)}</span></span>`;
     }
 
     function staffAvatarColor(id) {
@@ -6683,6 +7479,7 @@
       if (activeView === 'blacklist') return blacklistPanel;
       if (activeView === 'settings') return settingsPanel;
       if (activeView === 'info') return infoPanel;
+      if (activeView === 'inhouse') return inHousePanel;
       return checkinsPanel;
     }
 
@@ -6790,43 +7587,25 @@
     function closeStaffMenu() {
       if (!staffDropdown || !staffMemberMenu || !staffMemberTrigger) return;
       staffDropdown.classList.remove('is-open');
-      if (staffMemberList) {
-        staffMemberList.hidden = true;
-        staffMemberList.setAttribute('hidden', '');
-      }
-      staffMemberMenu.querySelectorAll('.apple-inline-item.is-focused').forEach((el) => el.classList.remove('is-focused'));
+      staffMemberMenu.hidden = true;
+      staffMemberMenu.classList.add('hidden');
+      staffMemberMenu.querySelectorAll('.ui-menu-item.is-focused').forEach((el) => el.classList.remove('is-focused'));
       staffMemberTrigger.setAttribute('aria-expanded', 'false');
       gateCard?.classList.remove('is-menu-open');
     }
 
-    function centerStaffWheelItem(item) {
-      if (!staffMemberMenu || !item) return;
-      const rowH = item.offsetHeight || 44;
-      staffMemberMenu.scrollTop = Math.max(
-        0,
-        item.offsetTop - (staffMemberMenu.clientHeight / 2 - rowH / 2),
-      );
-    }
-
     function openStaffMenu() {
       if (!staffDropdown || !staffMemberMenu || !staffMemberTrigger) return;
+      closeNotifyMenu();
       staffDropdown.classList.add('is-open');
-      if (staffMemberList) {
-        staffMemberList.hidden = false;
-        staffMemberList.removeAttribute('hidden');
-      }
+      staffMemberMenu.hidden = false;
+      staffMemberMenu.classList.remove('hidden');
       staffMemberTrigger.setAttribute('aria-expanded', 'true');
       gateCard?.classList.add('is-menu-open');
-      if (gateCard && !document.body.classList.contains('is-dashboard')) {
-        const h = Math.round(gateCard.getBoundingClientRect().height);
-        if (h >= 200) gateCard.style.minHeight = `${h}px`;
-      }
-      const items = dropdownMenuItems(staffMemberMenu, '.apple-inline-item[role="option"]');
+      positionDropdownMenu(staffDropdown, staffMemberMenu);
+      const items = dropdownMenuItems(staffMemberMenu, '.ui-menu-item[role="option"]');
       const selected = items.findIndex((el) => el.classList.contains('is-selected'));
       items.forEach((el, i) => el.classList.toggle('is-focused', i === (selected >= 0 ? selected : 0)));
-      window.requestAnimationFrame(() => {
-        centerStaffWheelItem(items[selected >= 0 ? selected : 0]);
-      });
     }
 
     function toggleStaffMenu() {
@@ -6855,13 +7634,9 @@
         staffMemberMenu.innerHTML = '<span class="ui-menu-empty">Nessun receptionist configurato</span>';
         return;
       }
-      staffMemberMenu.innerHTML = [
-        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
-        ...staff.map((member) => (
-          `<button type="button" class="apple-inline-item" role="option" data-staff-id="${escapeAttr(member.id)}" aria-selected="false">${escapeHtml(member.label)}</button>`
-        )),
-        '<div class="apple-inline-spacer" aria-hidden="true"></div>',
-      ].join('');
+      staffMemberMenu.innerHTML = staff.map((member) => (
+        `<button type="button" class="ui-menu-item" role="option" data-staff-id="${escapeAttr(member.id)}" aria-selected="false">${escapeHtml(member.label)}</button>`
+      )).join('');
       setStaffSelection(staffMemberEl?.value || '');
     }
 
@@ -6977,6 +7752,7 @@
     const VIEW_TITLES = {
       requests: 'Richieste speciali',
       checkins: 'Clienti',
+      inhouse: 'In camera',
       blacklist: 'Segnalazioni',
       settings: 'Impostazioni',
       info: 'Informazioni',
@@ -6985,18 +7761,17 @@
     const VIEW_SUBTITLES = {
       requests: 'Turno · ordinate per scadenza',
       checkins: 'Oggi',
+      inhouse: 'Soggiorno in corso',
       blacklist: 'Lista reception',
       settings: 'Reception · account e automazioni',
-      info: 'Prossimi aggiornamenti',
+      info: '',
     };
 
     const STAFF_SETTINGS_KEY = 'hotelCanalStaffSettings';
     const STAFF_SETTINGS_DEFAULTS = {
       gdprMask: true,
-      fastRegistration: true,
       sessionTimeoutMin: '30',
       reportTime: '00:00',
-      otaSync: false,
     };
 
     let staffIdleTimer = null;
@@ -7017,24 +7792,18 @@
 
     function paintStaffSettingsForm(prefs = readStaffSettings()) {
       const gdprEl = document.getElementById('prefGdprMask');
-      const fastEl = document.getElementById('prefFastRegistration');
       const timeoutEl = document.getElementById('prefSessionTimeout');
       const reportTimeEl = document.getElementById('prefReportTime');
-      const otaEl = document.getElementById('prefOtaSync');
       if (gdprEl) gdprEl.checked = prefs.gdprMask !== false;
-      if (fastEl) fastEl.checked = prefs.fastRegistration !== false;
       if (timeoutEl) timeoutEl.value = String(prefs.sessionTimeoutMin ?? '30');
       if (reportTimeEl) reportTimeEl.value = prefs.reportTime || '00:00';
-      if (otaEl) otaEl.checked = Boolean(prefs.otaSync);
     }
 
     function collectStaffSettingsFromForm() {
       return {
         gdprMask: true,
-        fastRegistration: document.getElementById('prefFastRegistration')?.checked !== false,
         sessionTimeoutMin: document.getElementById('prefSessionTimeout')?.value || '30',
         reportTime: document.getElementById('prefReportTime')?.value || '00:00',
-        otaSync: false,
       };
     }
 
@@ -7091,12 +7860,28 @@
       renderNoteCategoryMenu(selected);
     }
 
+    function canSeeStaffInfo() {
+      return Boolean(currentStaff?.info || currentStaff?.manager || currentStaff?.dev);
+    }
+
+    function applyInfoAccess() {
+      const allowed = canSeeStaffInfo();
+      document.body.classList.toggle('can-info', allowed);
+      tabInfo?.classList.toggle('hidden', !allowed);
+      document.querySelectorAll('.sys-settings-sales').forEach((el) => {
+        el.hidden = !allowed;
+      });
+      if (!allowed && activeView === 'info') setActiveView('checkins');
+    }
+
     function setActiveView(view) {
       closeRowMenu();
       closeNotifyMenu();
-      activeView = ['requests', 'checkins', 'blacklist', 'settings', 'info'].includes(view) ? view : 'checkins';
+      if (view === 'info' && !canSeeStaffInfo()) view = 'checkins';
+      activeView = ['requests', 'checkins', 'inhouse', 'blacklist', 'settings', 'info'].includes(view) ? view : 'checkins';
       tabRequests.classList.toggle('is-on', activeView === 'requests');
       tabCheckins.classList.toggle('is-on', activeView === 'checkins');
+      tabInHouse?.classList.toggle('is-on', activeView === 'inhouse');
       tabBlacklist.classList.toggle('is-on', activeView === 'blacklist');
       tabSettings?.classList.toggle('is-on', activeView === 'settings');
       tabInfo?.classList.toggle('is-on', activeView === 'info');
@@ -7112,6 +7897,7 @@
       }
       requestsPanel.classList.toggle('hidden', activeView !== 'requests');
       checkinsPanel.classList.toggle('hidden', activeView !== 'checkins');
+      inHousePanel?.classList.toggle('hidden', activeView !== 'inhouse');
       blacklistPanel.classList.toggle('hidden', activeView !== 'blacklist');
       infoPanel?.classList.toggle('hidden', activeView !== 'info');
       settingsPanel?.classList.toggle('hidden', activeView !== 'settings');
@@ -7127,7 +7913,9 @@
         ? 'Cerca nome o note…'
         : activeView === 'requests'
           ? 'Cerca ospite, stanza o nota…'
-          : 'Cerca nome o stanza…';
+          : activeView === 'inhouse'
+            ? 'Cerca ospite o stanza…'
+            : 'Cerca nome o stanza…';
       clearServerToast();
       closeDashNav();
       replayMotion(activePanelEl(), 'motion-panel-in', 480);
@@ -7135,36 +7923,13 @@
       else if (activeView === 'requests') loadReceptionNotes();
       else if (activeView === 'settings') loadSettings();
       else if (activeView === 'info') loadRoadmap();
+      else if (activeView === 'inhouse') loadInHouse();
       else if (lastCheckins.length) renderList(lastCheckins);
       else loadList();
     }
 
     function resetRoadmap() {
-      if (infoManagerWrap) {
-        infoManagerWrap.hidden = true;
-        infoManagerWrap.classList.add('hidden');
-      }
-      if (infoManagerIntro) infoManagerIntro.textContent = '';
-      if (infoManagerGrid) infoManagerGrid.innerHTML = '';
-    }
-
-    function paintManagerRoadmap(block) {
-      if (!infoManagerWrap || !infoManagerGrid) return;
-      if (!block) {
-        resetRoadmap();
-        return;
-      }
-      if (infoManagerIntro) infoManagerIntro.textContent = block.intro || '';
-      const items = Array.isArray(block.items) ? block.items : [];
-      infoManagerGrid.innerHTML = items.map((item) => `
-        <article class="info-project">
-          <h3>${escapeHtml(item.title || '')}</h3>
-          <p>${escapeHtml(item.body || '')}</p>
-          ${item.cost ? `<span class="info-cost">${escapeHtml(item.cost)}</span>` : ''}
-        </article>
-      `).join('');
-      infoManagerWrap.hidden = false;
-      infoManagerWrap.classList.remove('hidden');
+      if (infoFooterLabel) infoFooterLabel.textContent = 'Informazioni';
     }
 
     async function loadRoadmap() {
@@ -7173,10 +7938,7 @@
         if (res.status === 401) {
           resetRoadmap();
           showLogin();
-          return;
         }
-        const body = await res.json().catch(() => ({}));
-        paintManagerRoadmap(body.manager && body.managerBlock ? body.managerBlock : null);
       } catch (_) {
         resetRoadmap();
       }
@@ -7501,7 +8263,7 @@
     }
 
     function isMobileRowMenu() {
-      return window.matchMedia('(max-width: 720px)').matches;
+      return window.matchMedia('(max-width: 900px)').matches;
     }
 
     function positionRowMenu(anchor) {
@@ -7913,7 +8675,7 @@
       });
     }
 
-    const STAFF_ASSIGN_ROSTER = [
+    let liveStaffRoster = [
       { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso' },
       { id: 'john', name: 'JOHN', label: 'John' },
       { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro' },
@@ -7922,12 +8684,14 @@
       { id: 'payel', name: 'PAYEL', label: 'Payel' },
       { id: 'sayeed', name: 'SAYEED', label: 'Sayeed' },
     ];
+    let teamSheetDraft = null;
 
     function openStaffSheet(row) {
       closeStaffMenu();
       closeNoteCategoryMenu();
       closeNoteSheet();
       closeRoomSheet();
+      closeTeamSheet();
       staffSheetContext = { checkinId: row?.id || null };
       if (staffSheetGuestEl) staffSheetGuestEl.textContent = row?.guestName || '—';
       const current = String(row?.receptionist || '').trim().toUpperCase();
@@ -7936,7 +8700,7 @@
       if (staffSheetNameEl) {
         staffSheetNameEl.innerHTML = [
           '<option value="">Seleziona…</option>',
-          ...STAFF_ASSIGN_ROSTER.map((member) => (
+          ...liveStaffRoster.map((member) => (
             `<option value="${escapeAttr(member.name)}"${member.name === selected ? ' selected' : ''}>${escapeHtml(member.label)}</option>`
           )),
         ].join('');
@@ -7954,6 +8718,83 @@
     function closeStaffSheet() {
       animateSheetClose(staffSheet, () => {
         staffSheetContext = { checkinId: null };
+        unlockSheetScroll();
+      });
+    }
+
+    function clearTeamSheetErrors() {
+      ['teamSheetName', 'teamSheetPin', 'teamSheetPinConfirm'].forEach((id) => {
+        document.getElementById(id)?.classList.remove('is-invalid');
+      });
+      ['lbl-team-name', 'lbl-team-pin', 'lbl-team-pin-confirm'].forEach((id) => {
+        document.getElementById(id)?.classList.remove('label-error-state');
+      });
+    }
+
+    function showTeamSheetError(inputId, labelId) {
+      document.getElementById(inputId)?.classList.add('is-invalid');
+      document.getElementById(labelId)?.classList.add('label-error-state');
+      shake(teamSheet?.querySelector('.sheet-panel'));
+    }
+
+    function showTeamSheetStep(step) {
+      const isConfirm = step === 'confirm';
+      if (teamSheetForm) {
+        teamSheetForm.classList.toggle('hidden', isConfirm);
+        teamSheetForm.hidden = isConfirm;
+      }
+      if (teamSheetConfirm) {
+        teamSheetConfirm.classList.toggle('hidden', !isConfirm);
+        teamSheetConfirm.hidden = !isConfirm;
+      }
+      if (teamConfirmYes) {
+        teamConfirmYes.classList.toggle('btn-primary--danger', teamSheetDraft?.mode === 'remove');
+        teamConfirmYes.textContent = 'Conferma';
+      }
+    }
+
+    function openTeamSheet(mode, row) {
+      if (!currentStaff?.manager) return;
+      closeStaffMenu();
+      closeNoteSheet();
+      closeRoomSheet();
+      closeStaffSheet();
+      closeBlacklistSheet();
+      clearTeamSheetErrors();
+      teamSheetDraft = mode === 'remove'
+        ? { mode: 'remove', id: row?.id, label: row?.label || formatStaffDisplayName(row?.receptionist) }
+        : { mode: 'add', label: '', pin: '', confirmPin: '' };
+      const titleEl = document.getElementById('teamSheetTitle');
+      const copyEl = document.getElementById('teamConfirmCopy');
+      const noteEl = document.getElementById('teamConfirmNote');
+      const backBtn = document.getElementById('teamConfirmBack');
+      if (titleEl) titleEl.textContent = mode === 'remove' ? 'Rimuovi personale' : 'Aggiungi personale';
+      if (teamSheetNameEl) teamSheetNameEl.value = '';
+      if (teamSheetPinEl) teamSheetPinEl.value = '';
+      if (teamSheetPinConfirmEl) teamSheetPinConfirmEl.value = '';
+      if (mode === 'remove') {
+        if (copyEl) copyEl.textContent = `Rimuovere ${teamSheetDraft.label} dal personale?`;
+        if (noteEl) noteEl.textContent = 'Non potrà più accedere alla dashboard. Lo storico dei check-in resta.';
+        if (backBtn) backBtn.textContent = 'Annulla';
+        showTeamSheetStep('confirm');
+      } else {
+        if (copyEl) copyEl.textContent = '';
+        if (noteEl) noteEl.textContent = '';
+        if (backBtn) backBtn.textContent = 'Indietro';
+        showTeamSheetStep('form');
+      }
+      if (!teamSheet) return;
+      teamSheet.hidden = false;
+      teamSheet.setAttribute('aria-hidden', 'false');
+      lockSheetScroll();
+      animateSheetOpen(teamSheet);
+      if (mode === 'add') teamSheetNameEl?.focus();
+    }
+
+    function closeTeamSheet() {
+      animateSheetClose(teamSheet, () => {
+        teamSheetDraft = null;
+        showTeamSheetStep('form');
         unlockSheetScroll();
       });
     }
@@ -7985,7 +8826,7 @@
       }
 
       if (!n) {
-        listEl.innerHTML = `<tr><td colspan="5"><p class="empty">${escapeHtml(emptyCheckinsViewText())}</p></td></tr>`;
+        listEl.innerHTML = `<tr><td colspan="6"><p class="empty">${escapeHtml(emptyCheckinsViewText())}</p></td></tr>`;
         return;
       }
 
@@ -8008,13 +8849,85 @@
           <td class="col-email">${emailCell}</td>
           <td class="col-receptionist">
             <div class="cell-receptionist-wrap">
-              <span class="cell-receptionist" title="${escapeAttr(row.receptionist || '')}">${escapeHtml(row.receptionist || '—')}</span>
-              ${guestRowMenuBtn(row)}
+              ${checkinStaffBadgeHtml(row.receptionist)}
             </div>
+          </td>
+          <td class="col-actions">
+            ${guestRowMenuBtn(row)}
           </td>
         </tr>`;
       }).join('');
       animateStaggerContainer(listEl, 'tr');
+    }
+
+    function updateInHouseBadge(count) {
+      const n = Number(count) || 0;
+      if (!inHouseCountEl) return;
+      inHouseCountEl.textContent = String(n);
+      inHouseCountEl.classList.toggle('hidden', n < 1);
+    }
+
+    function renderInHouse(rows) {
+      if (!inHouseListEl) return;
+      const n = rows.length;
+      if (inHouseRowCountEl) {
+        inHouseRowCountEl.innerHTML = n === 1
+          ? '<strong>1</strong> in camera'
+          : `<strong>${n}</strong> in camera`;
+      }
+      if (!n) {
+        inHouseListEl.innerHTML = `<tr><td colspan="4"><p class="empty">Nessun ospite in camera in questo momento.</p></td></tr>`;
+        return;
+      }
+      inHouseListEl.innerHTML = rows.map((row) => {
+        const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
+        const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
+        const guestLabel = formatGuestDisplayName(row.guestName);
+        const guestTitle = String(row.guestName || '').trim() || '—';
+        return `
+        <tr data-id="${row.id}">
+          <td class="col-guest">
+            <div class="cell-guest">
+              <div class="cell-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
+            </div>
+          </td>
+          <td class="col-room">
+            <span class="cell-room${row.roomNumber ? '' : ' is-empty'}">${escapeHtml(row.roomNumber || '—')}</span>
+          </td>
+          <td class="col-phone">${phoneCell}</td>
+          <td class="col-email">${emailCell}</td>
+        </tr>`;
+      }).join('');
+      animateStaggerContainer(inHouseListEl, 'tr');
+    }
+
+    async function loadInHouse() {
+      setPanelBusy(true);
+      try {
+        const params = new URLSearchParams();
+        const q = searchEl.value.trim();
+        if (q) params.set('q', q);
+        const qs = params.toString();
+        const res = await fetch(`/api/staff/in-house${qs ? `?${qs}` : ''}`, { credentials: 'same-origin' });
+        if (res.status === 401) { showLogin(); return; }
+        const body = await res.json().catch(() => ({}));
+        lastInHouse = body.checkins || [];
+        updateInHouseBadge(body.total ?? lastInHouse.length);
+        renderInHouse(lastInHouse);
+      } catch (_) {
+        showServerToast('Errore di rete. Riprova.', true);
+      } finally {
+        setPanelBusy(false);
+      }
+    }
+
+    async function refreshInHouseCount() {
+      try {
+        const res = await fetch('/api/staff/in-house', { credentials: 'same-origin' });
+        if (!res.ok) return;
+        const body = await res.json().catch(() => ({}));
+        updateInHouseBadge(body.total ?? (body.checkins || []).length);
+      } catch (_) { /* ignore */ }
     }
 
     function crossFadeContactText(span, nextText) {
@@ -8040,9 +8953,14 @@
       }
     }
 
+    function contactListRoot() {
+      return activeView === 'inhouse' ? inHouseListEl : listEl;
+    }
+
     async function revealContactValue(checkinId, kind) {
-      const textSpan = listEl.querySelector(`[data-${kind}-text="${checkinId}"]`);
-      const btn = listEl.querySelector(`[data-reveal-${kind}="${checkinId}"]`);
+      const root = contactListRoot();
+      const textSpan = root?.querySelector(`[data-${kind}-text="${checkinId}"]`);
+      const btn = root?.querySelector(`[data-reveal-${kind}="${checkinId}"]`);
       if (!textSpan) return null;
 
       if (textSpan.dataset.revealed === 'true') {
@@ -8264,6 +9182,14 @@
     function positionNotifyMenu() {
       if (!notifyMenu || !btnNotify) return;
       const rect = btnNotify.getBoundingClientRect();
+      if (window.matchMedia('(max-width: 900px)').matches) {
+        notifyMenu.style.left = '16px';
+        notifyMenu.style.right = '16px';
+        notifyMenu.style.width = 'auto';
+        notifyMenu.style.top = `${rect.bottom + 8}px`;
+        notifyMenu.style.bottom = 'auto';
+        return;
+      }
       const width = Math.min(340, window.innerWidth - 24);
       let left = rect.right - width;
       left = Math.max(12, Math.min(left, window.innerWidth - width - 12));
@@ -8519,6 +9445,7 @@
         renderList(lastCheckins);
         void refreshNotesBadge();
         void refreshBlacklistCount();
+        void refreshInHouseCount();
       } finally {
         setPanelBusy(false);
       }
@@ -8613,22 +9540,43 @@
       if (todayEl) todayEl.textContent = String(body.todayTotal || 0);
       if (monthEl) monthEl.textContent = String(me.todayCheckins || 0);
       if (couponsEl) couponsEl.textContent = String(body.todayCoupons || 0);
+      const ranking = Array.isArray(body.ranking) ? body.ranking : [];
+      if (ranking.length) {
+        liveStaffRoster = ranking.map((row) => ({
+          id: row.id,
+          name: row.receptionist,
+          label: row.label || formatStaffDisplayName(row.receptionist),
+        }));
+      }
       const footerEl = document.getElementById('settingsRowCount');
       if (footerEl) {
-        if (me.rank) footerEl.textContent = `${me.rank}° su ${me.teamSize || me.rank} in reception`;
-        else footerEl.textContent = 'Ancora nessun check-in questo mese';
+        const teamSize = ranking.length || me.teamSize || 0;
+        if (me.rank && teamSize) footerEl.textContent = `${me.rank}° su ${teamSize} in reception`;
+        else if (teamSize) footerEl.textContent = `${teamSize} in reception`;
+        else footerEl.textContent = 'Il tuo account';
       }
       const rankEl = document.getElementById('settingsRank');
+      const hintEl = document.getElementById('settingsRankHint');
+      const canManage = Boolean(currentStaff?.manager);
+      if (hintEl) {
+        hintEl.textContent = canManage
+          ? 'Aggiungi o togli receptionist. Mizan e Payel restano in organico.'
+          : 'Solo la direzione può aggiungere o togliere personale.';
+      }
       if (!rankEl) return;
-      const ranking = Array.isArray(body.ranking) ? body.ranking : [];
       if (!ranking.length) {
-        rankEl.innerHTML = '<p class="sys-settings-empty">Ancora nessun check-in questo mese.</p>';
+        rankEl.innerHTML = '<p class="sys-settings-empty">Nessun account in organico.</p>';
         return;
       }
       rankEl.innerHTML = ranking.map((row) => {
-        const name = formatStaffDisplayName(row.receptionist);
+        const name = row.label || formatStaffDisplayName(row.receptionist);
         const n = Number(row.checkins) || 0;
-        const color = staffAvatarColor(String(row.receptionist || '').toLowerCase());
+        const color = staffAvatarColor(String(row.id || row.receptionist || '').toLowerCase());
+        const removeBtn = canManage && row.canRemove
+          ? `<button type="button" class="feed-icon-btn feed-icon-btn--danger" data-remove-staff="${escapeAttr(row.id)}" aria-label="Rimuovi ${escapeAttr(name)}">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2M9 7l.7 12h4.6L15 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>`
+          : '';
         return `<article class="feed-row${row.isMe ? ' is-me' : ''}">
           <span class="feed-row-avatar feed-row-avatar--note" style="background:${color}">${escapeHtml(staffInitials(name))}</span>
           <div class="feed-row-body">
@@ -8638,6 +9586,7 @@
             </div>
             <div class="feed-row-meta">${n} check-in</div>
           </div>
+          <div class="feed-row-side">${removeBtn}</div>
         </article>`;
       }).join('');
     }
@@ -8650,6 +9599,8 @@
         const res = await fetch('/api/staff/stats', { credentials: 'same-origin' });
         if (res.status === 401) { showLogin(); return; }
         const body = await res.json().catch(() => ({}));
+        if (body.staff) currentStaff = { ...currentStaff, ...body.staff };
+        document.body.classList.toggle('manager', Boolean(currentStaff?.manager));
         renderSettingsStats(body);
       } finally {
         setPanelBusy(false);
@@ -8721,6 +9672,7 @@
 
     tabRequests.addEventListener('click', () => setActiveView('requests'));
     tabCheckins.addEventListener('click', () => setActiveView('checkins'));
+    tabInHouse?.addEventListener('click', () => setActiveView('inhouse'));
     tabBlacklist.addEventListener('click', () => setActiveView('blacklist'));
     tabInfo?.addEventListener('click', () => setActiveView('info'));
     tabSettings?.addEventListener('click', () => setActiveView('settings'));
@@ -8796,6 +9748,119 @@
     document.getElementById('roomSheetClose')?.addEventListener('click', closeRoomSheet);
     document.getElementById('staffSheetCloseBg')?.addEventListener('click', closeStaffSheet);
     document.getElementById('staffSheetClose')?.addEventListener('click', closeStaffSheet);
+    document.getElementById('teamSheetCloseBg')?.addEventListener('click', closeTeamSheet);
+    document.getElementById('teamSheetClose')?.addEventListener('click', closeTeamSheet);
+    document.getElementById('teamSheetCancel')?.addEventListener('click', closeTeamSheet);
+    document.getElementById('btnAddStaff')?.addEventListener('click', () => openTeamSheet('add'));
+
+    document.getElementById('settingsRank')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-remove-staff]');
+      if (!btn) return;
+      const id = btn.getAttribute('data-remove-staff');
+      const row = liveStaffRoster.find((member) => member.id === id);
+      openTeamSheet('remove', row || { id, label: id });
+    });
+
+    teamSheetForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!currentStaff?.manager) return;
+      clearTeamSheetErrors();
+      const label = String(teamSheetNameEl?.value || '').trim();
+      const pin = String(teamSheetPinEl?.value || '').trim();
+      const confirmPin = String(teamSheetPinConfirmEl?.value || '').trim();
+      if (label.length < 2) {
+        showTeamSheetError('teamSheetName', 'lbl-team-name');
+        return;
+      }
+      if (!/^\d{4,8}$/.test(pin)) {
+        showTeamSheetError('teamSheetPin', 'lbl-team-pin');
+        return;
+      }
+      if (pin !== confirmPin) {
+        showTeamSheetError('teamSheetPinConfirm', 'lbl-team-pin-confirm');
+        return;
+      }
+      teamSheetDraft = { mode: 'add', label, pin, confirmPin };
+      const copyEl = document.getElementById('teamConfirmCopy');
+      const noteEl = document.getElementById('teamConfirmNote');
+      if (copyEl) copyEl.textContent = `Aggiungere ${label} al personale?`;
+      if (noteEl) noteEl.textContent = 'Potrà accedere alla dashboard con la password che hai impostato.';
+      const titleEl = document.getElementById('teamSheetTitle');
+      if (titleEl) titleEl.textContent = 'Conferma';
+      showTeamSheetStep('confirm');
+    });
+
+    document.getElementById('teamConfirmBack')?.addEventListener('click', () => {
+      if (teamSheetDraft?.mode === 'remove') {
+        closeTeamSheet();
+        return;
+      }
+      const titleEl = document.getElementById('teamSheetTitle');
+      if (titleEl) titleEl.textContent = 'Aggiungi personale';
+      showTeamSheetStep('form');
+      teamSheetNameEl?.focus();
+    });
+
+    teamConfirmYes?.addEventListener('click', async () => {
+      if (!teamSheetDraft || !currentStaff?.manager) return;
+      teamConfirmYes.disabled = true;
+      try {
+        if (teamSheetDraft.mode === 'remove') {
+          const res = await fetch('/api/staff/team/remove', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ staffId: teamSheetDraft.id, confirm: true }),
+          });
+          const body = await res.json().catch(() => ({}));
+          if (res.status === 401) { showLogin(); return; }
+          if (!res.ok) {
+            showServerToast(body.error || 'Impossibile rimuovere', true);
+            shake(teamSheet?.querySelector('.sheet-panel'));
+            return;
+          }
+          closeTeamSheet();
+          showServerToast(`${body.label || 'Persona'} rimossa`);
+          void loadSettings();
+          return;
+        }
+        const res = await fetch('/api/staff/team', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            label: teamSheetDraft.label,
+            pin: teamSheetDraft.pin,
+            confirmPin: teamSheetDraft.confirmPin,
+            confirm: true,
+          }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 401) { showLogin(); return; }
+        if (!res.ok) {
+          showTeamSheetStep('form');
+          const titleEl = document.getElementById('teamSheetTitle');
+          if (titleEl) titleEl.textContent = 'Aggiungi personale';
+          if (body.code === 'name_taken' || body.code === 'name_invalid') {
+            showTeamSheetError('teamSheetName', 'lbl-team-name');
+          } else if (body.code === 'pin_format') {
+            showTeamSheetError('teamSheetPin', 'lbl-team-pin');
+          } else if (body.code === 'pin_mismatch') {
+            showTeamSheetError('teamSheetPinConfirm', 'lbl-team-pin-confirm');
+          } else {
+            shake(teamSheet?.querySelector('.sheet-panel'));
+          }
+          return;
+        }
+        closeTeamSheet();
+        showServerToast(`${body.member?.label || 'Persona'} aggiunta`);
+        void loadSettings();
+      } catch (_) {
+        showServerToast('Errore di rete', true);
+      } finally {
+        teamConfirmYes.disabled = false;
+      }
+    });
 
     roomSheetForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -9078,6 +10143,8 @@
     });
 
     function setStaffUserLabel(staff) {
+      document.body.classList.toggle('manager', Boolean(staff?.manager));
+      applyInfoAccess();
       if (!staffUserLabel) return;
       if (staff?.label) {
         staffUserLabel.textContent = staff.label;
@@ -9150,9 +10217,9 @@
       if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         if (!staffDropdown?.classList.contains('is-open')) openStaffMenu();
-        const items = dropdownMenuItems(staffMemberMenu, '.apple-inline-item[role="option"]');
+        const items = dropdownMenuItems(staffMemberMenu, '.ui-menu-item[role="option"]');
         const selected = items.findIndex((el) => el.classList.contains('is-selected'));
-        focusDropdownItem(staffMemberMenu, '.apple-inline-item[role="option"]', selected >= 0 ? selected : 0);
+        focusDropdownItem(staffMemberMenu, '.ui-menu-item[role="option"]', selected >= 0 ? selected : 0);
       }
     });
 
@@ -9166,11 +10233,11 @@
     });
 
     staffMemberMenu?.addEventListener('keydown', (e) => {
-      if (staffMemberList?.hidden) return;
+      if (staffMemberMenu.hidden) return;
       handleDropdownListKeys(e, {
         menuEl: staffMemberMenu,
         triggerEl: staffMemberTrigger,
-        itemSelector: '[data-staff-id]',
+        itemSelector: '.ui-menu-item[role="option"]',
         onPick: (item) => {
           setStaffSelection(item.getAttribute('data-staff-id'));
           clearPinError();
@@ -9183,8 +10250,7 @@
     document.addEventListener('click', (e) => {
       if (
         staffDropdown?.classList.contains('is-open') &&
-        !staffDropdown.contains(e.target) &&
-        !staffMemberList?.contains(e.target)
+        !staffDropdown.contains(e.target)
       ) {
         closeStaffMenu();
       }
@@ -9227,6 +10293,7 @@
       searchTimer = setTimeout(() => {
         if (activeView === 'blacklist') loadBlacklist();
         else if (activeView === 'requests') loadReceptionNotes();
+        else if (activeView === 'inhouse') loadInHouse();
         else loadList();
       }, 180);
     });
@@ -9315,6 +10382,10 @@
           closeStaffSheet();
           return;
         }
+        if (teamSheet && !teamSheet.hidden) {
+          closeTeamSheet();
+          return;
+        }
         if (blacklistSheet && !blacklistSheet.hidden) {
           closeBlacklistSheet();
           return;
@@ -9336,38 +10407,41 @@
     window.addEventListener('resize', closeRowMenu);
     document.querySelector('.workspace-body')?.addEventListener('scroll', closeRowMenu, true);
 
-    listEl.addEventListener('click', async (e) => {
-      const revealPhone = e.target.closest('[data-reveal-phone]');
-      if (revealPhone) {
-        await toggleRevealContact(revealPhone.getAttribute('data-reveal-phone'), revealPhone, 'phone');
-        return;
-      }
-
-      const revealEmail = e.target.closest('[data-reveal-email]');
-      if (revealEmail) {
-        await toggleRevealContact(revealEmail.getAttribute('data-reveal-email'), revealEmail, 'email');
-      }
-    });
-
-    listEl.addEventListener('dblclick', (e) => {
-      const span = e.target.closest('.contact-copy-target');
-      if (!span) return;
-      e.preventDefault();
-      void copyContactFromSpan(span);
-    });
-
-    listEl.addEventListener('touchend', (e) => {
-      const span = e.target.closest('.contact-copy-target');
-      if (!span) return;
-      const now = Date.now();
-      if (contactTapState?.el === span && now - contactTapState.at < 400) {
+    function bindContactRevealList(root) {
+      if (!root) return;
+      root.addEventListener('click', async (e) => {
+        const revealPhone = e.target.closest('[data-reveal-phone]');
+        if (revealPhone) {
+          await toggleRevealContact(revealPhone.getAttribute('data-reveal-phone'), revealPhone, 'phone');
+          return;
+        }
+        const revealEmail = e.target.closest('[data-reveal-email]');
+        if (revealEmail) {
+          await toggleRevealContact(revealEmail.getAttribute('data-reveal-email'), revealEmail, 'email');
+        }
+      });
+      root.addEventListener('dblclick', (e) => {
+        const span = e.target.closest('.contact-copy-target');
+        if (!span) return;
         e.preventDefault();
-        contactTapState = null;
         void copyContactFromSpan(span);
-        return;
-      }
-      contactTapState = { el: span, at: now };
-    }, { passive: false });
+      });
+      root.addEventListener('touchend', (e) => {
+        const span = e.target.closest('.contact-copy-target');
+        if (!span) return;
+        const now = Date.now();
+        if (contactTapState?.el === span && now - contactTapState.at < 400) {
+          e.preventDefault();
+          contactTapState = null;
+          void copyContactFromSpan(span);
+          return;
+        }
+        contactTapState = { el: span, at: now };
+      }, { passive: false });
+    }
+
+    bindContactRevealList(listEl);
+    bindContactRevealList(inHouseListEl);
 
     listEl.addEventListener('keydown', (e) => {
       const span = e.target.closest('.contact-copy-target');
@@ -9619,6 +10693,31 @@
           const gate = document.getElementById('gateCard');
           if (gate) gate.style.minHeight = '';
         }, 180);
+      });
+    })();
+
+    (function bindInfoCardTilt() {
+      const fineHover = () => {
+        try {
+          return window.matchMedia('(hover: hover) and (pointer: fine)').matches
+            && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        } catch (_) {
+          return false;
+        }
+      };
+      document.querySelectorAll('.info-strategy-card').forEach((card) => {
+        card.addEventListener('pointermove', (e) => {
+          if (!fineHover()) return;
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / Math.max(r.width, 1) - 0.5;
+          const py = (e.clientY - r.top) / Math.max(r.height, 1) - 0.5;
+          card.style.setProperty('--tilt-y', `${(px * 7).toFixed(2)}deg`);
+          card.style.setProperty('--tilt-x', `${(-py * 6).toFixed(2)}deg`);
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--tilt-x', '0deg');
+          card.style.setProperty('--tilt-y', '0deg');
+        });
       });
     })();
 

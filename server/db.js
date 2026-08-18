@@ -8,6 +8,14 @@ import {
   decryptCheckinRow,
   isEncryptedField,
 } from './crypto-fields.js';
+import {
+  GDPR_RETENTION_DAYS,
+  RETENTION_ANCHOR_SQL,
+  addDaysYmd,
+  runAnonymization,
+} from './gdpr-retention.js';
+
+export { GDPR_RETENTION_DAYS };
 
 let db;
 
@@ -28,6 +36,7 @@ function ensureColumn(name) {
     stay_date: 'stay_date TEXT',
     checkout_date: 'checkout_date TEXT',
     starred_at: 'starred_at TEXT',
+    anonymized_at: 'anonymized_at TEXT',
   };
   const ddl = ALLOWED[name];
   if (!ddl) {
@@ -73,6 +82,7 @@ export function initDb(databasePath) {
   ensureColumn('stay_date');
   ensureColumn('checkout_date');
   ensureColumn('starred_at');
+  ensureColumn('anonymized_at');
 
   db.exec(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_coupon_token
@@ -93,7 +103,7 @@ export function initDb(databasePath) {
   backfillStayDates();
   migrateRoomUniqueToStayDate();
 
-  // Contatori mensili senza PII (sopravvivono al purge GDPR 24h)
+  // Contatori mensili senza PII (sopravvivono all’anonimizzazione GDPR)
   db.exec(`
     CREATE TABLE IF NOT EXISTS staff_month_stats (
       year_month TEXT NOT NULL,
@@ -183,6 +193,21 @@ export function initDb(databasePath) {
     );
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS staff_roster (
+      staff_id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      label TEXT NOT NULL,
+      protected INTEGER NOT NULL DEFAULT 0,
+      seeded INTEGER NOT NULL DEFAULT 0,
+      active INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      created_by TEXT
+    );
+  `);
+
+  seedStaffRoster();
+
   return db;
 }
 
@@ -209,12 +234,9 @@ export function romeCalendarDate(from = new Date()) {
   }).format(d);
 }
 
-function addDaysYmd(ymd, days) {
-  const [y, m, d] = String(ymd).split('-').map(Number);
-  if (!y || !m || !d) return '';
-  return new Date(Date.UTC(y, m - 1, d + days, 12, 0, 0))
-    .toISOString()
-    .slice(0, 10);
+function liveCheckinSql(alias = '') {
+  const col = alias ? `${alias}.anonymized_at` : 'anonymized_at';
+  return `(${col} IS NULL)`;
 }
 
 /** YYYY-MM-DD check-in: null se vuoto, false se non valido, stringa se ok. */
@@ -413,6 +435,141 @@ function normalizeReceptionist(value) {
   return name || 'RECEPTION';
 }
 
+/** Solo i receptionist con account staff — niente refusi, test o placeholder. */
+const STAFF_ROSTER_SEED = [
+  { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso', protected: 0 },
+  { id: 'john', name: 'JOHN', label: 'John', protected: 0 },
+  { id: 'alejandro', name: 'ALEJANDRO', label: 'Alejandro', protected: 0 },
+  { id: 'maria', name: 'MARIA', label: 'Maria', protected: 0 },
+  { id: 'mizan', name: 'MIZAN', label: 'Mizan', protected: 1 },
+  { id: 'payel', name: 'PAYEL', label: 'Payel', protected: 1 },
+  { id: 'sayeed', name: 'SAYEED', label: 'Sayeed', protected: 0 },
+];
+
+function seedStaffRoster() {
+  const insert = db.prepare(`
+    INSERT OR IGNORE INTO staff_roster
+      (staff_id, name, label, protected, seeded, active, created_by)
+    VALUES (?, ?, ?, ?, 1, 1, 'system')
+  `);
+  const tx = db.transaction(() => {
+    for (const member of STAFF_ROSTER_SEED) {
+      insert.run(member.id, member.name, member.label, member.protected);
+    }
+  });
+  tx();
+  db.prepare(`
+    UPDATE staff_roster
+    SET protected = CASE
+      WHEN staff_id IN ('mizan', 'payel') THEN 1
+      ELSE 0
+    END
+  `).run();
+}
+
+function mapStaffRosterRow(row) {
+  if (!row) return null;
+  return {
+    id: row.staff_id,
+    name: row.name,
+    label: row.label,
+    protected: Number(row.protected) === 1,
+    seeded: Number(row.seeded) === 1,
+    active: Number(row.active) === 1,
+    createdBy: row.created_by || '',
+  };
+}
+
+export function listStaffRoster({ activeOnly = true } = {}) {
+  const sql = activeOnly
+    ? `SELECT * FROM staff_roster WHERE active = 1 ORDER BY label COLLATE NOCASE ASC`
+    : `SELECT * FROM staff_roster ORDER BY label COLLATE NOCASE ASC`;
+  return db.prepare(sql).all().map(mapStaffRosterRow);
+}
+
+export function getStaffMember(staffId, { includeInactive = false } = {}) {
+  const id = String(staffId || '').trim().toLowerCase();
+  if (!id) return null;
+  const row = includeInactive
+    ? db.prepare(`SELECT * FROM staff_roster WHERE staff_id = ?`).get(id)
+    : db.prepare(`SELECT * FROM staff_roster WHERE staff_id = ? AND active = 1`).get(id);
+  return mapStaffRosterRow(row);
+}
+
+function slugStaffId(label) {
+  return String(label || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '')
+    .slice(0, 24);
+}
+
+function titleStaffLabel(raw) {
+  return String(raw || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
+}
+
+export function createStaffMember({ label, createdBy } = {}) {
+  const display = titleStaffLabel(label);
+  if (display.length < 2 || display.length > 40) {
+    return { ok: false, error: 'name_invalid' };
+  }
+  if (!/^[A-Za-zÀ-ÖØ-öø-ÿ'’.\- ]+$/.test(display)) {
+    return { ok: false, error: 'name_invalid' };
+  }
+  const id = slugStaffId(display);
+  if (id.length < 2) return { ok: false, error: 'name_invalid' };
+  const name = display.toUpperCase();
+  const existing = getStaffMember(id, { includeInactive: true });
+  if (existing?.active) return { ok: false, error: 'name_taken' };
+  if (existing && !existing.active) {
+    db.prepare(`
+      UPDATE staff_roster
+      SET name = ?, label = ?, active = 1, created_by = ?, created_at = datetime('now')
+      WHERE staff_id = ?
+    `).run(name, display, String(createdBy || '').trim(), id);
+    return { ok: true, member: getStaffMember(id), reactivated: true };
+  }
+  db.prepare(`
+    INSERT INTO staff_roster (staff_id, name, label, protected, seeded, active, created_by)
+    VALUES (?, ?, ?, 0, 0, 1, ?)
+  `).run(id, name, display, String(createdBy || '').trim());
+  return { ok: true, member: getStaffMember(id), reactivated: false };
+}
+
+export function deactivateStaffMember(staffId, { actorId } = {}) {
+  const member = getStaffMember(staffId, { includeInactive: true });
+  if (!member) return { ok: false, error: 'not_found' };
+  if (!member.active) return { ok: false, error: 'not_found' };
+  if (member.protected) return { ok: false, error: 'protected' };
+  if (member.id === String(actorId || '').trim().toLowerCase()) {
+    return { ok: false, error: 'self' };
+  }
+  db.prepare(`UPDATE staff_roster SET active = 0 WHERE staff_id = ?`).run(member.id);
+  db.prepare(`DELETE FROM staff_credentials WHERE staff_id = ?`).run(member.id);
+  return { ok: true, id: member.id, label: member.label };
+}
+
+function officialStaffNames() {
+  return new Set(listStaffRoster({ activeOnly: true }).map((member) => member.name));
+}
+
+function isOfficialReceptionist(value) {
+  const name = String(value || '').trim().replace(/\s+/g, ' ').toUpperCase();
+  return officialStaffNames().has(name);
+}
+
+function rankingForOfficialStaff(rows) {
+  return (Array.isArray(rows) ? rows : [])
+    .filter((row) => isOfficialReceptionist(row?.receptionist))
+    .filter((row) => (Number(row.totale_registrati) || Number(row.checkins) || 0) > 0);
+}
+
 function decrementStaffMonthStats({
   receptionist,
   withCoupon = false,
@@ -560,7 +717,8 @@ export function isRoomTaken(roomNumber, excludeId = null, stayDate = null) {
     .prepare(
       `
       SELECT id FROM checkins
-      WHERE room_number IS NOT NULL
+      WHERE ${liveCheckinSql()}
+        AND room_number IS NOT NULL
         AND TRIM(room_number) != ''
         AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
         AND stay_date = @day
@@ -586,7 +744,8 @@ export function getActiveCheckinByRoom(roomNumber, stayDate = null) {
         coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
         stay_date, starred_at
       FROM checkins
-      WHERE room_number IS NOT NULL
+      WHERE ${liveCheckinSql()}
+        AND room_number IS NOT NULL
         AND TRIM(room_number) != ''
         AND UPPER(TRIM(room_number)) = UPPER(TRIM(@room))
         AND stay_date = @day
@@ -821,7 +980,8 @@ export function getUnreportedCheckins() {
         stay_date,
         starred_at
       FROM checkins
-      WHERE reported_at IS NULL
+      WHERE ${liveCheckinSql()}
+        AND reported_at IS NULL
       ORDER BY
         CASE WHEN room_number IS NULL OR TRIM(room_number) = '' THEN 1 ELSE 0 END,
         CAST(room_number AS INTEGER) ASC,
@@ -853,7 +1013,8 @@ export function listCheckinsForCsv(date = '') {
         stay_date,
         starred_at
       FROM checkins
-      WHERE stay_date = ?
+      WHERE ${liveCheckinSql()}
+        AND stay_date = ?
       ORDER BY
         CASE WHEN room_number IS NULL OR TRIM(room_number) = '' THEN 1 ELSE 0 END,
         CAST(room_number AS INTEGER) ASC,
@@ -910,7 +1071,12 @@ export function getMonthlyStaffStats(yearMonth = null) {
       },
       { totale_mese: 0, totale_coupon: 0 },
     );
-    return { totals, ranking: rollupRanking, yearMonth: ym, source: 'rollup' };
+    return {
+      totals,
+      ranking: rankingForOfficialStaff(rollupRanking),
+      yearMonth: ym,
+      source: 'rollup',
+    };
   }
 
   // Fallback: check-in ancora in DB (utile in locale / primi giorni)
@@ -951,7 +1117,12 @@ export function getMonthlyStaffStats(yearMonth = null) {
     )
     .all(ym);
 
-  return { totals, ranking, yearMonth: ym, source: 'checkins' };
+  return {
+    totals,
+    ranking: rankingForOfficialStaff(ranking),
+    yearMonth: ym,
+    source: 'checkins',
+  };
 }
 
 export function countCheckins() {
@@ -988,69 +1159,39 @@ export function exportAllCheckins() {
 }
 
 /**
- * Dopo il report: toglie telefono/email dal DB. Nome e stanza restano per la dashboard.
+ * Dopo checkout + 7 giorni: sovrascrive nome, telefono, email, coupon.
+ * Restano stanza, date e receptionist. La dashboard non mostra queste righe.
+ * Le stelline non trattengono i dati identificativi.
  */
-export function wipeContactPii(ids) {
-  if (!Array.isArray(ids) || !ids.length) return 0;
-  const safeIds = ids
-    .map((id) => Number(id))
-    .filter((id) => Number.isInteger(id) && id > 0)
-    .slice(0, 5000);
-  if (!safeIds.length) return 0;
-  const placeholders = safeIds.map(() => '?').join(',');
-  return db
-    .prepare(
-      `UPDATE checkins SET phone = '', email = NULL WHERE id IN (${placeholders})`,
-    )
-    .run(...safeIds).changes;
+export function applyGdprRetention(today = romeCalendarDate()) {
+  const result = runAnonymization(db, today || romeCalendarDate(), {
+    calendarDateFromCreatedAt: romeCalendarDate,
+  });
+  return Number(result?.changes || 0) + Number(result?.repaired || 0);
 }
 
-/** PII contatto più vecchia di 24h: azzera anche se il report non è ancora partito. */
-export function wipeContactPiiOlderThanHours(hours = 24) {
-  const h = Math.max(1, Math.min(168, Number(hours) || 24));
-  return db
-    .prepare(
-      `
-      UPDATE checkins
-      SET phone = '', email = NULL
-      WHERE created_at < datetime('now', ?)
-        AND (
-          (phone IS NOT NULL AND TRIM(phone) != '')
-          OR (email IS NOT NULL AND TRIM(email) != '')
-        )
-    `,
-    )
-    .run(`-${h} hours`).changes;
+/** @deprecated alias — la retention è checkout + 7 giorni, non 24h. */
+export function wipeContactPii() {
+  return 0;
 }
 
-/**
- * Dashboard: elimina unstarred più vecchi di 7 giorni. Le stelline restano.
- */
-export function purgeUnstarredOlderThanDays(days = 7) {
-  const d = Math.max(1, Math.min(90, Number(days) || 7));
-  return db
-    .prepare(
-      `
-      DELETE FROM checkins
-      WHERE starred_at IS NULL
-        AND created_at < datetime('now', ?)
-    `,
-    )
-    .run(`-${d} days`).changes;
+/** @deprecated alias — non azzerare PII prima del checkout + 7 giorni. */
+export function wipeContactPiiOlderThanHours() {
+  return applyGdprRetention();
 }
 
-/**
- * GDPR / post-report: wipe PII 24h + purge dashboard 7 giorni (unstarred).
- * Nome della funzione storica tenuta per i caller esistenti.
- */
-export function purgeCheckinsOlderThanHours(hours = 24) {
-  wipeContactPiiOlderThanHours(hours);
-  return purgeUnstarredOlderThanDays(7);
+/** @deprecated alias. */
+export function purgeUnstarredOlderThanDays() {
+  return applyGdprRetention();
+}
+
+/** GDPR post-report / boot: anonimizza oltre checkout + 7 giorni. */
+export function purgeCheckinsOlderThanHours() {
+  return applyGdprRetention();
 }
 
 export function purgeCheckinsOlderThan24Hours() {
-  wipeContactPiiOlderThanHours(24);
-  return purgeUnstarredOlderThanDays(7);
+  return applyGdprRetention();
 }
 
 /**
@@ -1150,13 +1291,12 @@ function maskEmailForStaff(email) {
 }
 
 function isCheckinVisibleToStaff(row) {
-  if (!row) return false;
-  if (row.starred_at) return true;
-  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const cutoffIso = cutoff.toISOString().slice(0, 19).replace('T', ' ');
-  if (String(row.created_at || '') >= cutoffIso) return true;
-  const stay = row.stay_date || romeCalendarDate(row.created_at);
-  return stay >= romeCalendarDate(cutoff);
+  if (!row || row.anonymized_at) return false;
+  const today = romeCalendarDate();
+  const keepFrom = addDaysYmd(today, -GDPR_RETENTION_DAYS);
+  const anchor = String(row.checkout_date || row.stay_date || '').trim()
+    || romeCalendarDate(row.created_at);
+  return Boolean(keepFrom) && anchor >= keepFrom;
 }
 
 function toStaffSafeRow(row, blacklistMap = null) {
@@ -1241,26 +1381,24 @@ function matchesStaffQuery(safe, q) {
   return name.includes(needle) || room.includes(needle) || code.includes(needle);
 }
 
-/** Lista staff: mai telefono/email. Ultimi 7 giorni + stellati. */
+/** Lista staff: ospiti in retention (fino a checkout + 7 giorni). Mai telefono/email in chiaro. */
 export function listStaffCheckins({ date = '', q = '' } = {}) {
   const today = romeCalendarDate();
-  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const cutoffIso = cutoff.toISOString().slice(0, 19).replace('T', ' ');
+  const keepFrom = addDaysYmd(today, -GDPR_RETENTION_DAYS);
   const rows = db
     .prepare(
       `
       SELECT
         id, phone, email, guest_name, room_number, receptionist, guests_count,
         coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
-        stay_date, checkout_date, starred_at
+        stay_date, checkout_date, starred_at, anonymized_at
       FROM checkins
-      WHERE starred_at IS NOT NULL
-         OR created_at >= ?
-         OR stay_date >= ?
+      WHERE ${liveCheckinSql()}
+        AND date(${RETENTION_ANCHOR_SQL}) >= date(?)
       ORDER BY stay_date DESC, id DESC
     `,
     )
-    .all(cutoffIso, romeCalendarDate(cutoff));
+    .all(keepFrom);
 
   const blacklistMap = loadBlacklistMap();
   const safe = rows.map((row) => toStaffSafeRow(row, blacklistMap));
@@ -1273,6 +1411,40 @@ export function listStaffCheckins({ date = '', q = '' } = {}) {
   return {
     today,
     date: day || today,
+    checkins: list,
+  };
+}
+
+/** Ospiti con soggiorno in corso: stay_date ≤ oggi ≤ checkout. */
+export function listInHouseStaffCheckins({ q = '' } = {}) {
+  const today = romeCalendarDate();
+  const rows = db
+    .prepare(
+      `
+      SELECT
+        id, phone, email, guest_name, room_number, receptionist, guests_count,
+        coupon_token, coupon_sent_at, table_booking, created_at, reported_at,
+        stay_date, checkout_date, starred_at, anonymized_at
+      FROM checkins
+      WHERE ${liveCheckinSql()}
+        AND date(COALESCE(NULLIF(TRIM(stay_date), ''), date(created_at))) <= date(@today)
+        AND date(COALESCE(NULLIF(TRIM(checkout_date), ''), stay_date, date(created_at))) >= date(@today)
+      ORDER BY
+        CASE WHEN room_number IS NULL OR TRIM(room_number) = '' THEN 1 ELSE 0 END,
+        CAST(room_number AS INTEGER) ASC,
+        room_number ASC,
+        id DESC
+    `,
+    )
+    .all({ today });
+
+  const blacklistMap = loadBlacklistMap();
+  const safe = rows.map((row) => toStaffSafeRow(row, blacklistMap));
+  const query = String(q || '').trim();
+  const list = query ? safe.filter((row) => matchesStaffQuery(row, query)) : safe;
+  return {
+    today,
+    total: safe.length,
     checkins: list,
   };
 }
@@ -2027,21 +2199,38 @@ export function getStaffAccountStats(staffName) {
   const today = romeCalendarDate();
   const yearMonth = romeYearMonthNow();
   const monthly = getMonthlyStaffStats(yearMonth);
-  const ranking = (monthly.ranking || []).map((row, index) => {
+  const counts = new Map();
+  for (const row of monthly.ranking || []) {
     const receptionist = normalizeReceptionist(row.receptionist);
-    return {
-      receptionist,
-      checkins: Number(row.totale_registrati) || 0,
-      coupons: Number(row.coupon_emessi) || 0,
+    counts.set(receptionist, {
+      checkins: Number(row.totale_registrati) || Number(row.checkins) || 0,
+      coupons: Number(row.coupon_emessi) || Number(row.coupons) || 0,
+    });
+  }
+  const ranking = listStaffRoster({ activeOnly: true })
+    .map((member) => {
+      const stats = counts.get(member.name) || { checkins: 0, coupons: 0 };
+      return {
+        id: member.id,
+        receptionist: member.name,
+        label: member.label,
+        checkins: stats.checkins,
+        coupons: stats.coupons,
+        protected: member.protected,
+      };
+    })
+    .sort((a, b) => b.checkins - a.checkins || a.label.localeCompare(b.label, 'it'))
+    .map((row, index) => ({
+      ...row,
       rank: index + 1,
-      isMe: receptionist === name,
-    };
-  });
+      isMe: row.receptionist === name,
+      canRemove: !row.protected && row.receptionist !== name,
+    }));
   const mine = ranking.find((row) => row.isMe) || {
     receptionist: name,
     checkins: 0,
     coupons: 0,
-    rank: null,
+    rank: ranking.length ? ranking.length : null,
     isMe: true,
   };
   const todayRow = db

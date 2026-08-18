@@ -41,7 +41,7 @@ La sessione dura **12 ore**. Poi rifare login.
 | HTTPS | Tutto il traffico cifrato in produzione |
 | Mascheramento | In lista staff: `+39 ••• ••• ••42`, `m•••@domain.com` |
 | Reveal contatti | Solo su click esplicito; azione registrata |
-| Retention | Dopo **24 h** telefono/email cancellati; record non stellati eliminati dopo **7 giorni** |
+| Retention | Dati identificativi fino a **checkout + 7 giorni**; ogni notte dopo il report delle 00:00 vengono anonimizzati. Restano stanza/date per le statistiche |
 | Consenso | Check-in bloccato senza accettazione privacy |
 | Report notturno | CSV a email/WhatsApp Payel (canale operativo) |
 
@@ -55,7 +55,8 @@ Variabili già previste su Render (`render.yaml`). **Obbligatorie in produzione:
 
 - `FIELD_ENCRYPTION_KEY` (≥32 char)
 - `GUEST_ACCESS_SECRET`, `CRON_SECRET`, `COUPON_SECRET` (≥24 char, tutti diversi)
-- `STAFF_PIN_*` per ogni receptionist (hash scrypt — vedi sotto)
+- `STAFF_PIN_*` per ogni receptionist (hash scrypt — **nessun PIN di fallback**)
+- `TESTER_EMAILS` / `TESTER_PHONES` solo se servono account di prova (mai nomi)
 - `RESEND_API_KEY` + `SMTP_FROM` verificato
 - `REPORT_EMAIL` (destinazione report)
 - `PUBLIC_URL=https://checkin-hotelcanal.it`

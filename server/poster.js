@@ -287,7 +287,7 @@ export async function buildPosterPdfBuffer({
       .fontSize(7.5)
       .fillColor(BRASS)
       .text(
-        'Private & secure · GDPR · data deleted after 24 hours',
+        'Private & secure · GDPR · data kept until checkout + 7 days',
         side,
         footY + 10,
         { width: contentW, align: 'center' },

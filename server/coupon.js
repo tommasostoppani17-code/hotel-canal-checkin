@@ -269,7 +269,7 @@ export function buildWelcomeHtml({
                 <tr>
                   <td align="center" style="padding:20px 18px;">
                     <div style="${labelStyle};margin:0 0 6px;">${lp.networkLabel}</div>
-                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 14px;">${escapeHtml(wifiSsid || 'hotel canal')}</div>
+                    <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.04em;line-height:1.2;margin:0 0 14px;">${escapeHtml(wifiSsid || '—')}</div>
                     <div style="height:1px;line-height:1px;font-size:1px;background-color:#E8E4DC;margin:0 auto 14px;max-width:200px;">&nbsp;</div>
                     <div style="${labelStyle};margin:0 0 6px;">${lp.passwordLabel}</div>
                     <div class="brand-title" style="font-family:${SERIF};font-size:20px;font-weight:700;color:${C} !important;letter-spacing:0.1em;line-height:1.2;">${escapeHtml(wifiPassword || '—')}</div>
@@ -1230,7 +1230,7 @@ export async function sendWelcomeEmail({
     stickers[def.key] = publicAssetUrl('email', 'stickers', def.file);
   }
 
-  const wifiSsid = env('WIFI_SSID', 'hotel canal').trim() || 'hotel canal';
+  const wifiSsid = env('WIFI_SSID', '').trim();
   const wifiPassword = env('WIFI_PASSWORD', '').trim();
   // Walter: cancelletto (#) obbligatorio — in .env usare virgolette: DOOR_CODE_WALTER="…#"
   let doorWalter = env('DOOR_CODE_WALTER', '').trim();

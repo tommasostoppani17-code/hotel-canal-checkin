@@ -11,8 +11,7 @@ import {
   getUnreportedCheckins,
   markReported,
   getMonthlyStaffStats,
-  purgeCheckinsOlderThan24Hours,
-  wipeContactPii,
+  applyGdprRetention,
   exportAllCheckins,
   exportStaffMonthStats,
 } from './db.js';
@@ -250,10 +249,10 @@ export async function runDailyReport({ force = false } = {}) {
   if (!rows.length) {
     let purged = 0;
     try {
-      purged = purgeCheckinsOlderThan24Hours();
+      purged = applyGdprRetention();
       if (purged > 0) {
         console.log(
-          `[GDPR] Eliminati ${purged} check-in più vecchi di 24 ore (retention)`,
+          `[GDPR] Anonimizzati ${purged} check-in oltre checkout + 7 giorni`,
         );
         const { pushCheckinsBackup } = await import('./backup.js');
         if (
@@ -348,19 +347,14 @@ export async function runDailyReport({ force = false } = {}) {
 
   const ids = rows.map((row) => row.id);
   markReported(ids);
-  try {
-    wipeContactPii(ids);
-  } catch (err) {
-    console.error('[GDPR] wipe contact PII failed:', err.message || err);
-  }
 
-  // Privacy by design: un attimo dopo l'invio riuscito del CSV → epurazione 24h.
+  // Report inviato: solo ora si possono anonimizzare gli ospiti oltre checkout + 7 giorni.
   let purged = 0;
   try {
-    purged = purgeCheckinsOlderThan24Hours();
+    purged = applyGdprRetention();
     if (purged > 0) {
       console.log(
-        `[GDPR] Post-report: eliminati ${purged} check-in >24h (retention)`,
+        `[GDPR] Post-report: anonimizzati ${purged} check-in oltre checkout + 7 giorni`,
       );
     }
     const { pushCheckinsBackup } = await import('./backup.js');
