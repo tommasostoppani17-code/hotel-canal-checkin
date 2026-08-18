@@ -45,8 +45,8 @@
       --ios-snap: cubic-bezier(0.22, 1, 0.36, 1);
       /* WAAPI engine: durata sotto soglia percettiva Apple + molla magnetica */
       --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --slide-ms: 340ms;
-      --height-ms: 340ms;
+      --slide-ms: 420ms;
+      --height-ms: 420ms;
       --height-ease: cubic-bezier(0.16, 1, 0.3, 1);
       /* Rimbalzo elastico SOLO su transform:scale (GPU, zero reflow) */
       --bounce-ease: cubic-bezier(0.25, 1, 0.5, 1.2);
@@ -85,9 +85,8 @@
       --app-vh: var(--vvh, 100dvh);
       /* Soft CSS fallbacks — JS misura e scrive --card-h in px */
       --card-h-1: 480px;
-      --card-h-2: 500px;
-      --card-h-3: 560px;
-      --card-h-4: 420px;
+      --card-h-2: 560px;
+      --card-h-3: 500px;
       --card-h-3-booking: 520px;
       --card-h-3-open: 580px;
       --card-h: var(--card-h-1);
@@ -190,8 +189,7 @@
 
     body[data-step="1"] .bg-inertia,
     body[data-step="2"] .bg-inertia,
-    body[data-step="3"] .bg-inertia,
-    body[data-step="4"] .bg-inertia {
+    body[data-step="3"] .bg-inertia {
       filter: blur(5px) brightness(1.02) saturate(1.15) contrast(1.04)
         hue-rotate(-8deg);
     }
@@ -251,9 +249,8 @@
     @media (max-width: 480px) {
       :root {
         --card-h-1: 460px;
-        --card-h-2: 480px;
-        --card-h-3: 540px;
-        --card-h-4: 400px;
+        --card-h-2: 540px;
+        --card-h-3: 480px;
         --card-h-3-booking: 520px;
         --card-h-3-open: 600px;
         --card-max: calc(
@@ -283,13 +280,13 @@
         padding-right: var(--ios-inset);
       }
 
-      #step5.slide-step {
+      #step4.slide-step {
         padding-left: 0;
         padding-right: 0;
       }
 
-      #step5 .step3-home,
-      #step5 .guest-sheet {
+      #step4 .step3-home,
+      #step4 .guest-sheet {
         padding-left: var(--ios-inset);
         padding-right: var(--ios-inset);
       }
@@ -358,13 +355,13 @@
         gap: 8px;
       }
 
-      .stay-step .form-grid-container {
+      #step3 .form-grid-container {
         padding: 0;
         gap: 12px;
       }
 
       .apple-input,
-      .stay-step .apple-input {
+      #step3 .apple-input {
         height: var(--ios-touch);
         font-size: var(--type-body);
       }
@@ -385,12 +382,12 @@
         font-size: 10px;
       }
 
-      #step5 .guest-action-btn {
+      #step4 .guest-action-btn {
         min-height: 56px;
         padding: 12px 16px !important;
       }
 
-      #step5 .receipt-badge {
+      #step4 .receipt-badge {
         padding: 16px !important;
         margin-bottom: 16px !important;
         width: 100% !important;
@@ -410,7 +407,6 @@
 
       #btnNext,
       #btnDiningNext,
-      #btnPhotosNext,
       #btnSubmit {
         flex-shrink: 0;
       }
@@ -539,7 +535,7 @@
       display: flex;
       flex-wrap: nowrap;
       align-items: flex-start;
-      width: 500%;
+      width: 400%;
       height: auto;
       min-height: 0;
       transform: translate3d(0, 0, 0);
@@ -559,10 +555,10 @@
      * dello step uscente dal reflow dello step entrante.
      */
     .slide-step {
-      flex: 0 0 20%;
-      width: 20%;
-      max-width: 20%;
-      min-width: 20%;
+      flex: 0 0 25%;
+      width: 25%;
+      max-width: 25%;
+      min-width: 25%;
       height: auto;
       min-height: 0;
       max-height: none;
@@ -1181,31 +1177,30 @@
       animation: stepSettle 560ms var(--slide-ease) both;
     }
 
-    .dining-step.is-active:not(.is-sliding) .dining-hero {
+    #step2.is-active:not(.is-sliding) .dining-hero {
       animation: mediaIn 680ms var(--slide-ease) 30ms both;
     }
-    .dining-step.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(1) {
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(1) {
       animation: mediaIn 640ms var(--slide-ease) 80ms both;
     }
-    .dining-step.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(2) {
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(2) {
       animation: mediaIn 640ms var(--slide-ease) 130ms both;
     }
-    .dining-step.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(3) {
+    #step2.is-active:not(.is-sliding) .dining-mosaic figure:nth-child(3) {
       animation: mediaIn 640ms var(--slide-ease) 180ms both;
     }
-    .dining-step.is-active:not(.is-sliding) .dining-copy {
+    #step2.is-active:not(.is-sliding) .dining-copy {
       animation: fadeRise 560ms var(--slide-ease) 200ms both;
     }
-    .stay-step.is-active:not(.is-sliding) .dining-book-head,
-    .stay-step.is-active:not(.is-sliding) .booking-reserve-block,
-    .stay-step.is-active:not(.is-sliding) .form-grid-container,
-    .coupon-step.is-active:not(.is-sliding) .dining-book-head {
+    #step3.is-active:not(.is-sliding) .dining-book-head,
+    #step3.is-active:not(.is-sliding) .booking-reserve-block,
+    #step3.is-active:not(.is-sliding) .form-grid-container {
       animation: fadeRise 540ms var(--slide-ease) both;
     }
-    .stay-step.is-active:not(.is-sliding) .form-grid-container {
+    #step3.is-active:not(.is-sliding) .form-grid-container {
       animation-delay: 40ms;
     }
-    .stay-step.is-active:not(.is-sliding) .booking-reserve-block {
+    #step3.is-active:not(.is-sliding) .booking-reserve-block {
       animation-delay: 110ms;
     }
 
@@ -1266,20 +1261,20 @@
       .slide-step.is-active:not(.is-sliding) > .header,
       .slide-step.is-active:not(.is-sliding) > .step-body,
       .slide-step.is-active:not(.is-sliding) > .step-footer-fixed,
-      .dining-step.is-active:not(.is-sliding) .dining-hero,
-      .dining-step.is-active:not(.is-sliding) .dining-mosaic figure,
-      .dining-step.is-active:not(.is-sliding) .dining-copy,
-      .dining-step.is-active:not(.is-sliding) .concierge-header-title,
-      .dining-step.is-active:not(.is-sliding) .concierge-sub-text,
-      .stay-step.is-active:not(.is-sliding) .dining-book-head,
-      .stay-step.is-active:not(.is-sliding) .booking-reserve-block,
-      .stay-step.is-active:not(.is-sliding) .form-grid-container {
+      #step2.is-active:not(.is-sliding) .dining-hero,
+      #step2.is-active:not(.is-sliding) .dining-mosaic figure,
+      #step2.is-active:not(.is-sliding) .dining-copy,
+      #step2.is-active:not(.is-sliding) .concierge-header-title,
+      #step2.is-active:not(.is-sliding) .concierge-sub-text,
+      #step3.is-active:not(.is-sliding) .dining-book-head,
+      #step3.is-active:not(.is-sliding) .booking-reserve-block,
+      #step3.is-active:not(.is-sliding) .form-grid-container {
         animation: none !important;
       }
     }
 
     /* Step 3 — stesso ritmo verticale dello step 1/2 */
-    .stay-step .step-body.dining-book {
+    #step3 .step-body.dining-book {
       display: flex;
       flex-direction: column;
       gap: var(--step-stack);
@@ -1322,20 +1317,6 @@
     .dining-book-sub strong {
       color: var(--canal-petroleum);
       font-weight: 700;
-    }
-    .coupon-step .step-body.dining-book {
-      justify-content: center;
-      gap: var(--step-stack-lg);
-      padding: 8px 0 4px;
-    }
-    .coupon-step .dining-book-title {
-      font-size: 20px;
-    }
-    .coupon-step .dining-book-sub {
-      max-width: 32ch;
-      font-size: 15px;
-      line-height: 1.55;
-      color: #2C3640;
     }
     .dining-book .booking-reserve-block {
       margin: 0;
@@ -1382,35 +1363,35 @@
     .dining-book .form-grid-container .span-2 {
       grid-column: 1 / -1;
     }
-    .stay-step .form-group {
+    #step3 .form-group {
       margin-bottom: 0;
     }
-    .stay-step .input-with-icon .field-glyph {
+    #step3 .input-with-icon .field-glyph {
       left: 14px;
       width: 16px;
       height: 16px;
     }
-    .stay-step .input-with-icon .field-glyph svg {
+    #step3 .input-with-icon .field-glyph svg {
       width: 16px;
       height: 16px;
     }
-    .stay-step .input-with-icon .apple-input {
+    #step3 .input-with-icon .apple-input {
       height: var(--ios-touch);
       padding-left: 42px;
       padding-right: 14px;
       font-size: var(--type-body);
       border-radius: var(--radius-ios);
     }
-    .stay-step input[type="number"].apple-input {
+    #step3 input[type="number"].apple-input {
       -moz-appearance: textfield;
       appearance: textfield;
     }
-    .stay-step input[type="number"].apple-input::-webkit-outer-spin-button,
-    .stay-step input[type="number"].apple-input::-webkit-inner-spin-button {
+    #step3 input[type="number"].apple-input::-webkit-outer-spin-button,
+    #step3 input[type="number"].apple-input::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
-    .stay-step input[type="date"].apple-input {
+    #step3 input[type="date"].apple-input {
       font-size: 16px;
       color-scheme: light;
       min-width: 0;
@@ -1446,11 +1427,11 @@
       .dining-hero { aspect-ratio: 2 / 1; margin-bottom: var(--ios-gap); }
       .dining-mosaic { gap: 8px; }
       .dining-book-sub { max-width: 32ch; font-size: 12.5px; }
-      .dining-step .dining-story { gap: var(--ios-gap-lg); }
-      .dining-step .dining-copy { gap: 10px; }
+      #step2 .dining-story { gap: var(--ios-gap-lg); }
+      #step2 .dining-copy { gap: 10px; }
       .dining-book .dining-section-rule { margin: var(--rule-gap) 0; }
       #step2 .step-body,
-      .stay-step .step-body.dining-book {
+      #step3 .step-body.dining-book {
         gap: var(--step-stack);
       }
     }
@@ -1556,7 +1537,7 @@
       display: flex;
       flex-wrap: nowrap;
       align-items: flex-start;
-      width: 500%;
+      width: 400%;
       height: auto;
       min-height: 0;
       transform: translate3d(0, 0, 0);
@@ -1576,10 +1557,10 @@
      * dello step uscente dal reflow dello step entrante.
      */
     .slide-step {
-      flex: 0 0 20%;
-      width: 20%;
-      max-width: 20%;
-      min-width: 20%;
+      flex: 0 0 25%;
+      width: 25%;
+      max-width: 25%;
+      min-width: 25%;
       height: auto;
       min-height: 0;
       max-height: none;
@@ -2089,9 +2070,7 @@
     }
 
 
-    #step2 .step-footer-fixed,
-    #step3 .step-footer-fixed,
-    #step4 .step-footer-fixed {
+    #step2 .step-footer-fixed {
       margin: 0;
       padding: var(--step-stack-lg) 0 var(--ios-2);
       display: flex;
@@ -2108,9 +2087,7 @@
       );
     }
 
-    #step2 .step-footer-fixed .btn-canal,
-    #step3 .step-footer-fixed .btn-canal,
-    #step4 .step-footer-fixed .btn-canal {
+    #step2 .step-footer-fixed .btn-canal {
       margin: 0;
       width: 100%;
       height: var(--ios-touch);
@@ -2118,16 +2095,12 @@
       font-size: var(--type-cta);
     }
 
-    #step2 .step-footer-fixed .btn-canal,
-    #step3 .step-footer-fixed .btn-canal,
-    #step4 .step-footer-fixed .btn-canal {
+    #step2 .step-footer-fixed .btn-canal {
       margin: 0;
       width: 100%;
     }
 
-    #step2.slide-step,
-    #step3.dining-step,
-    #step4.coupon-step {
+    #step2.slide-step {
       justify-content: flex-start;
       overflow: hidden;
       gap: 0;
@@ -2142,8 +2115,7 @@
       isolation: isolate;
     }
 
-    #step2 .step-body,
-    .dining-step .step-body {
+    #step2 .step-body {
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
@@ -2161,8 +2133,7 @@
       scrollbar-width: none;
     }
 
-    #step2 .step-body::-webkit-scrollbar,
-    .dining-step .step-body::-webkit-scrollbar {
+    #step2 .step-body::-webkit-scrollbar {
       display: none;
     }
 
@@ -2195,7 +2166,7 @@
     }
 
     /* Vetrina + copy come un solo blocco (niente titolo “fluttuante”) */
-    .dining-step .dining-story {
+    #step2 .dining-story {
       display: flex;
       flex-direction: column;
       gap: var(--step-stack);
@@ -2219,7 +2190,7 @@
       line-height: 1.25;
     }
 
-    .dining-step .dining-copy {
+    #step2 .dining-copy {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2343,7 +2314,7 @@
       min-width: 0;
     }
 
-    .stay-step .form-group.span-2 {
+    #step3 .form-group.span-2 {
       grid-column: span 2;
       margin: 0;
     }
@@ -2380,9 +2351,7 @@
       background-color: #FFFFFF !important;
     }
 
-    #step2 .step-footer-fixed,
-    #step3 .step-footer-fixed,
-    #step4 .step-footer-fixed {
+    #step2 .step-footer-fixed {
       margin: 0;
       padding: var(--step-stack-lg) 0 var(--ios-2);
       border-top: 1px solid rgba(18, 68, 83, 0.1);
@@ -2401,9 +2370,7 @@
       );
     }
 
-    #step2 .step-footer-fixed .btn-canal,
-    #step3 .step-footer-fixed .btn-canal,
-    #step4 .step-footer-fixed .btn-canal {
+    #step2 .step-footer-fixed .btn-canal {
       margin: 0;
       height: var(--ios-touch);
       border-radius: var(--radius-ios);
@@ -2604,50 +2571,50 @@
       padding: 6px 12px 10px;
     }
 
-    #step5 .book-fields {
+    #step4 .book-fields {
       margin: 0;
       gap: 10px;
     }
 
-    #step5 .book-submit {
+    #step4 .book-submit {
       height: 44px;
       font-size: 15px;
       margin: 0;
     }
 
-    #step5 .book-done {
+    #step4 .book-done {
       margin: 0;
     }
 
-    #step5 .book-hint {
+    #step4 .book-hint {
       display: none;
     }
 
-    #step5 .book-field input,
-    #step5 .book-field .book-select {
+    #step4 .book-field input,
+    #step4 .book-field .book-select {
       height: var(--ios-touch);
       font-size: var(--type-body);
       border-radius: var(--radius-ios);
     }
 
-    #step5 .receipt-badge .time {
+    #step4 .receipt-badge .time {
       font-size: 9.5px;
     }
 
-    #step5 .guest-actions {
+    #step4 .guest-actions {
       margin-top: var(--ios-3);
       gap: var(--ios-2);
       width: 100%;
     }
 
-    #step5 .reception-note {
+    #step4 .reception-note {
       margin-top: var(--ios-3);
       font-size: 13px;
       line-height: 1.38;
       letter-spacing: -0.01em;
     }
 
-    #step5.slide-step {
+    #step4.slide-step {
       justify-content: stretch;
       overflow-x: hidden;
       overflow-y: auto;
@@ -2662,11 +2629,11 @@
       scrollbar-width: none;
     }
 
-    #step5.slide-step::-webkit-scrollbar {
+    #step4.slide-step::-webkit-scrollbar {
       display: none;
     }
 
-    #step5 .step3-shell {
+    #step4 .step3-shell {
       position: relative;
       display: flex;
       flex-direction: column;
@@ -2677,7 +2644,7 @@
       overflow: visible;
     }
 
-    #step5 .step3-home {
+    #step4 .step3-home {
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
@@ -2696,31 +2663,30 @@
     }
 
     /* Report inviato: messaggio centrato nella card */
-    #step5.is-report-result .step3-home {
+    #step4.is-report-result .step3-home {
       justify-content: center;
       align-items: center;
       height: 100%;
       text-align: center;
     }
 
-    #step5.is-report-result .step3-head {
+    #step4.is-report-result .step3-head {
       margin: 0;
       justify-content: center;
     }
 
-    #step5.is-report-result .step3-body,
-    #step5.is-report-result .receipt-badge,
-    #step5.is-report-result .success-email-sent {
+    #step4.is-report-result .step3-body,
+    #step4.is-report-result .receipt-badge {
       display: none !important;
     }
 
-    #step5.is-report-result .success-check {
+    #step4.is-report-result .success-check {
       width: 52px;
       height: 52px;
       margin: 0 auto 16px;
     }
 
-    #step5.is-report-result .success-check::after {
+    #step4.is-report-result .success-check::after {
       left: 19px;
       top: 14px;
       width: 9px;
@@ -2728,18 +2694,18 @@
       border-width: 0 2.5px 2.5px 0;
     }
 
-    #step5.is-report-result #lbl-succ-title {
+    #step4.is-report-result #lbl-succ-title {
       font-size: 24px !important;
     }
 
-    #step5.is-report-result #lbl-succ-sub {
+    #step4.is-report-result #lbl-succ-sub {
       margin: 10px 0 0 !important;
       max-width: 28ch;
       font-size: 13px !important;
       line-height: 1.45 !important;
     }
 
-    #step5.sheet-open .step3-home {
+    #step4.sheet-open .step3-home {
       transform: translate3d(-18%, 0, 0) scale(0.97);
       opacity: 0.42;
       pointer-events: none;
@@ -2773,7 +2739,7 @@
       box-shadow: -12px 0 40px rgba(18, 68, 83, 0.12);
     }
 
-    #step5.sheet-open .guest-sheet,
+    #step4.sheet-open .guest-sheet,
     .guest-sheet.is-open {
       transform: translate3d(0, 0, 0);
       pointer-events: auto;
@@ -3216,7 +3182,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #step5 .step3-home,
+      #step4 .step3-home,
       .guest-sheet,
       .guest-sheet-panel {
         transition: none !important;
@@ -3224,11 +3190,11 @@
       }
     }
 
-    #step5.slide-step::-webkit-scrollbar {
+    #step4.slide-step::-webkit-scrollbar {
       display: none;
     }
 
-    #step5 .step3-head {
+    #step4 .step3-head {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -3240,7 +3206,7 @@
       gap: 0;
     }
 
-    #step5 .step3-body {
+    #step4 .step3-body {
       width: 100%;
       flex: 1 1 auto;
       min-height: 0;
@@ -3249,26 +3215,26 @@
       justify-content: flex-end;
     }
 
-    #step5 .guest-actions {
+    #step4 .guest-actions {
       gap: var(--ios-gap);
       margin-top: var(--ios-gap);
       margin-bottom: 0;
     }
 
-    #step5 .header {
+    #step4 .header {
       margin-bottom: 0;
       justify-content: flex-start !important;
       padding-top: 0 !important;
     }
 
-    #step5 .success-check {
+    #step4 .success-check {
       width: 36px;
       height: 36px;
       margin: 0 auto 10px;
       box-shadow: 0 3px 10px rgba(18, 68, 83, 0.22);
     }
 
-    #step5 .success-check::after {
+    #step4 .success-check::after {
       left: 13px;
       top: 9px;
       width: 7px;
@@ -3276,7 +3242,7 @@
       border-width: 0 2.2px 2.2px 0;
     }
 
-    #step5 #lbl-succ-title {
+    #step4 #lbl-succ-title {
       font-family: "Cinzel", Georgia, serif !important;
       font-size: var(--type-title) !important;
       line-height: 1.25 !important;
@@ -3287,18 +3253,18 @@
       text-transform: none !important;
     }
 
-    #step5 #lbl-succ-sub {
+    #step4 #lbl-succ-sub {
       display: block !important;
-      font-size: 14px !important;
-      margin: 6px 0 0 !important;
-      line-height: 1.45 !important;
-      max-width: 36ch;
+      font-size: 12px !important;
+      margin: 6px 0 12px !important;
+      line-height: 1.4 !important;
+      max-width: 34ch;
       letter-spacing: -0.01em !important;
       font-weight: 500 !important;
-      color: #2C3640 !important;
+      color: var(--text-muted) !important;
     }
 
-    #step5 .receipt-badge {
+    #step4 .receipt-badge {
       padding: 12px 14px;
       margin: 0 0 var(--ios-gap-lg);
       width: 100%;
@@ -3308,7 +3274,7 @@
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
-    #step5 .receipt-badge .eyebrow {
+    #step4 .receipt-badge .eyebrow {
       font-size: var(--type-label);
       letter-spacing: 0.06em;
       color: var(--canal-petroleum);
@@ -3316,26 +3282,26 @@
       text-transform: uppercase;
     }
 
-    #step5 .receipt-badge .code {
+    #step4 .receipt-badge .code {
       font-size: 20px;
       margin: 4px 0 2px;
       color: var(--canal-petroleum);
     }
 
-    #step5 .receipt-badge .time {
+    #step4 .receipt-badge .time {
       font-size: 11px;
       color: var(--text-muted);
     }
 
-    #step5 .guest-call {
+    #step4 .guest-call {
       margin: 0 0 var(--ios-gap);
     }
 
-    #step5 .guest-action {
+    #step4 .guest-action {
       border-radius: var(--radius-ios);
     }
 
-    #step5 .guest-action-btn {
+    #step4 .guest-action-btn {
       min-height: var(--ios-touch);
       height: auto;
       padding: 10px 12px;
@@ -3345,42 +3311,42 @@
         background-color 0.2s ease;
     }
 
-    #step5 .guest-action-btn:active {
+    #step4 .guest-action-btn:active {
       transform: scale(0.97);
     }
 
-    #step5 .guest-action-btn .ga-title {
+    #step4 .guest-action-btn .ga-title {
       font-size: 13px;
       font-weight: 700;
       color: var(--canal-petroleum);
     }
 
-    #step5 .guest-action-btn .ga-sub {
+    #step4 .guest-action-btn .ga-sub {
       font-size: 10.5px;
       color: #7A8791;
     }
 
-    #step5 .guest-action-panel {
+    #step4 .guest-action-panel {
       display: none;
     }
 
-    #step5 .guest-kv {
+    #step4 .guest-kv {
       padding: 12px;
       font-size: 12px;
     }
 
-    #step5 .guest-kv .v {
+    #step4 .guest-kv .v {
       font-size: var(--type-body);
     }
 
-    #step5 .book-field label {
+    #step4 .book-field label {
       font-size: var(--type-label);
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
-    #step5 .book-submit {
+    #step4 .book-submit {
       border-radius: var(--radius-ios);
       font-weight: 600;
       letter-spacing: -0.02em;
@@ -3388,7 +3354,7 @@
       font-size: var(--type-cta);
     }
 
-    #step5 .reception-note {
+    #step4 .reception-note {
       margin-top: var(--step-stack);
       margin-bottom: var(--ios-1);
       font-size: var(--type-label);
@@ -3498,16 +3464,16 @@
       transition: opacity 0.2s var(--ios-ease);
     }
 
-    #step5 .guest-reentry {
+    #step4 .guest-reentry {
       margin: 14px 0 0;
       text-align: center;
     }
 
-    #step5 .guest-reentry[hidden] {
+    #step4 .guest-reentry[hidden] {
       display: none !important;
     }
 
-    #step5 .guest-reentry .btn-ghost {
+    #step4 .guest-reentry .btn-ghost {
       font-size: 13px;
       font-weight: 600;
       color: var(--canal-petroleum);
@@ -3625,7 +3591,7 @@
     }
 
     /* Congela scroll interno mentre il picker nativo iOS è aperto */
-    body.ios-picker-open #step5.slide-step,
+    body.ios-picker-open #step4.slide-step,
     body.ios-picker-open .step-scroll,
     body.ios-picker-open .guest-sheet-scroll,
     body.ios-picker-open #tablePanel {
@@ -4414,7 +4380,7 @@
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
     }
 
-    #step5.is-active .receipt-badge:not(.is-collapsed) {
+    #step4.is-active .receipt-badge:not(.is-collapsed) {
       animation: badgeInflate 0.45s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
@@ -4511,9 +4477,9 @@
     .guest-call,
     .form-grid-container,
     #step2 .form-grid-container,
-    .stay-step .input-with-icon .apple-input,
-    #step5 .guest-action,
-    #step5 .book-submit {
+    #step3 .input-with-icon .apple-input,
+    #step4 .guest-action,
+    #step4 .book-submit {
       border-radius: var(--radius-ios);
     }
 
@@ -4540,7 +4506,7 @@
       object-position: center;
     }
 
-    .dining-step .dining-copy {
+    #step2 .dining-copy {
       gap: var(--ios-3);
       padding: var(--ios-2) var(--ios-2) var(--ios-4);
       margin-bottom: 0;
@@ -4548,7 +4514,6 @@
 
     #step2 .step-footer-fixed,
     #step3 .step-footer-fixed,
-    #step4 .step-footer-fixed,
     .step-footer-fixed {
       padding-top: var(--ios-6);
       padding-bottom: var(--ios-4);
@@ -4557,11 +4522,7 @@
 
     #step2 .step-footer-fixed .btn-ghost:first-of-type,
     #step2 .step-footer-fixed .btn-text-link,
-    #step3 .step-footer-fixed .btn-text-link,
-    #step4 .step-footer-fixed .btn-text-link,
-    #btnDiningBack.btn-text-link,
-    #btnBack.btn-text-link,
-    #btnCouponBack.btn-text-link {
+    #btnDiningBack.btn-text-link {
       margin-top: var(--ios-2);
       min-height: 44px;
       padding: var(--ios-2) var(--ios-4);
@@ -4576,12 +4537,12 @@
 
     /* Step 3 — pill pattern uniforme (orari + No) */
     .dining-book .booking-segment-grid,
-    .stay-step .booking-segment-grid {
+    #step3 .booking-segment-grid {
       gap: var(--ios-2);
       margin: 0 0 var(--ios-6) !important;
     }
 
-    .stay-step .hour-pill-ios {
+    #step3 .hour-pill-ios {
       height: 40px;
       min-height: 40px;
       padding: 0 var(--ios-1);
@@ -4594,15 +4555,15 @@
       box-shadow: none;
     }
 
-    .stay-step .hour-pill-ios.is-skip {
+    #step3 .hour-pill-ios.is-skip {
       font-size: 14px;
       font-weight: 500;
       color: var(--text-main);
     }
 
     /* Stesso .active per qualsiasi scelta (orario o No) */
-    .stay-step .hour-pill-ios.is-selected,
-    .stay-step .hour-pill-ios.is-selected.is-skip {
+    #step3 .hour-pill-ios.is-selected,
+    #step3 .hour-pill-ios.is-selected.is-skip {
       background: var(--canal-petroleum) !important;
       border-color: var(--canal-petroleum) !important;
       color: #FFFFFF !important;
@@ -4611,14 +4572,14 @@
     }
 
     /* Input + glyph: asse verticale condiviso */
-    .stay-step .input-with-icon {
+    #step3 .input-with-icon {
       position: relative;
       display: flex;
       align-items: center;
       width: 100%;
     }
 
-    .stay-step .input-with-icon .field-glyph {
+    #step3 .input-with-icon .field-glyph {
       position: absolute;
       left: var(--ios-4);
       top: 50%;
@@ -4635,13 +4596,13 @@
       z-index: 1;
     }
 
-    .stay-step .input-with-icon .field-glyph svg {
+    #step3 .input-with-icon .field-glyph svg {
       width: 16px;
       height: 16px;
       display: block;
     }
 
-    .stay-step .input-with-icon .apple-input {
+    #step3 .input-with-icon .apple-input {
       height: 48px;
       padding-left: 40px;
       padding-right: var(--ios-4);
@@ -4650,7 +4611,7 @@
       border-radius: var(--radius-ios);
     }
 
-    .stay-step .form-group label {
+    #step3 .form-group label {
       margin-bottom: 6px;
       margin-left: 2px;
     }
@@ -4703,11 +4664,11 @@
       text-decoration: none;
     }
 
-    #step5 .header.step3-head h1 {
+    #step4 .header.step3-head h1 {
       margin-bottom: 0;
     }
 
-    #step5 .header.step3-head #lbl-succ-sub {
+    #step4 .header.step3-head #lbl-succ-sub {
       margin-bottom: 0;
     }
 
@@ -4735,7 +4696,7 @@
     /* =========================================================
        Step 4 hub — griglia unificata flush (coupon = lista)
        ========================================================= */
-    #step5 .step3-home {
+    #step4 .step3-home {
       justify-content: flex-start !important;
       align-items: stretch !important;
       height: 100%;
@@ -4748,7 +4709,7 @@
     }
 
     /* Header solo testo/check — centrato, non stringe il coupon */
-    #step5 .step3-head {
+    #step4 .step3-head {
       display: flex !important;
       flex-direction: column;
       align-items: center;
@@ -4759,13 +4720,13 @@
       flex: 0 0 auto;
     }
 
-    #step5 .success-check {
+    #step4 .success-check {
       width: 36px;
       height: 36px;
       margin: 0 auto var(--ios-3) !important;
     }
 
-    #step5 #lbl-succ-title {
+    #step4 #lbl-succ-title {
       font-size: 22px !important;
       font-weight: 700 !important;
       letter-spacing: 0.02em !important;
@@ -4773,72 +4734,16 @@
       text-align: center;
     }
 
-    #step5 #lbl-succ-sub {
-      margin: 6px 0 0 !important;
-      font-size: 14px !important;
-      line-height: 1.45 !important;
-      max-width: 36ch;
+    #step4 #lbl-succ-sub {
+      margin: 4px 0 0 !important;
+      font-size: 13px !important;
+      line-height: 1.4 !important;
+      max-width: 34ch;
       text-align: center;
-      color: #2C3640 !important;
-      font-weight: 500 !important;
-    }
-
-    .success-email-sent {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      margin: 12px 0 0;
-      padding: 10px 12px;
-      box-sizing: border-box;
-      border-radius: var(--radius-ios);
-      background: #FFFFFF;
-      border: 1px solid #E5E5EA;
-      text-align: left;
-    }
-    .success-email-sent[hidden] {
-      display: none !important;
-    }
-    .success-email-icon {
-      flex: 0 0 28px;
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: rgba(18, 68, 83, 0.08);
-      color: var(--canal-petroleum);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .success-email-icon svg {
-      width: 16px;
-      height: 16px;
-    }
-    .success-email-copy {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      min-width: 0;
-    }
-    .success-email-copy strong {
-      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--canal-petroleum);
-      letter-spacing: -0.01em;
-    }
-    #lbl-succ-email-addr {
-      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     /* Coupon: STESSA larghezza 100% dei moduli azione */
-    #step5 .receipt-badge {
+    #step4 .receipt-badge {
       display: block !important;
       width: 100% !important;
       max-width: 100% !important;
@@ -4854,7 +4759,7 @@
       flex: 0 0 auto;
     }
 
-    #step5 .receipt-badge .eyebrow {
+    #step4 .receipt-badge .eyebrow {
       display: block;
       font-size: 11px;
       font-weight: 600;
@@ -4864,7 +4769,7 @@
       margin: 0 0 var(--ios-2);
     }
 
-    #step5 .receipt-badge .code {
+    #step4 .receipt-badge .code {
       display: block;
       font-size: 24px;
       font-weight: 700;
@@ -4874,7 +4779,7 @@
       line-height: 1.15;
     }
 
-    #step5 .receipt-badge .time {
+    #step4 .receipt-badge .time {
       display: block;
       font-size: 11px;
       color: #636366;
@@ -4884,7 +4789,7 @@
     }
 
     /* Body: lista + footer, stesso asse del coupon */
-    #step5 .step3-body {
+    #step4 .step3-body {
       display: flex !important;
       flex-direction: column;
       flex: 1 1 auto;
@@ -4898,7 +4803,7 @@
       box-sizing: border-box;
     }
 
-    #step5 .guest-actions {
+    #step4 .guest-actions {
       width: 100% !important;
       max-width: 100%;
       display: flex;
@@ -4910,7 +4815,7 @@
       box-sizing: border-box;
     }
 
-    #step5 .guest-action {
+    #step4 .guest-action {
       width: 100% !important;
       box-sizing: border-box;
       border-radius: var(--radius-ios);
@@ -4922,7 +4827,7 @@
     }
 
     /* Righe native: padding simmetrico, icona sulla mediana */
-    #step5 .guest-action-btn {
+    #step4 .guest-action-btn {
       display: flex !important;
       flex-direction: row;
       align-items: center !important;
@@ -4937,7 +4842,7 @@
       text-align: left;
     }
 
-    #step5 .guest-action-btn .ga-icon {
+    #step4 .guest-action-btn .ga-icon {
       width: 36px !important;
       height: 36px !important;
       border-radius: 50%;
@@ -4953,11 +4858,11 @@
       color: var(--canal-petroleum);
     }
 
-    #step5 .guest-action.is-book .guest-action-btn .ga-icon {
+    #step4 .guest-action.is-book .guest-action-btn .ga-icon {
       background: #F2F2F7 !important;
     }
 
-    #step5 .guest-action-btn .ga-icon svg {
+    #step4 .guest-action-btn .ga-icon svg {
       width: 16px !important;
       height: 16px !important;
       display: block;
@@ -4965,7 +4870,7 @@
       transform: translateY(-0.5px);
     }
 
-    #step5 .guest-action-btn .ga-label {
+    #step4 .guest-action-btn .ga-label {
       flex: 1 1 auto;
       min-width: 0;
       display: flex;
@@ -4977,7 +4882,7 @@
       margin: 0;
     }
 
-    #step5 .guest-action-btn .ga-title {
+    #step4 .guest-action-btn .ga-title {
       font-size: 15px;
       font-weight: 600;
       letter-spacing: -0.02em;
@@ -4985,7 +4890,7 @@
       color: var(--text-main);
     }
 
-    #step5 .guest-action-btn .ga-sub {
+    #step4 .guest-action-btn .ga-sub {
       font-size: 12px;
       font-weight: 500;
       letter-spacing: -0.01em;
@@ -4994,7 +4899,7 @@
       margin: 0;
     }
 
-    #step5 .guest-action-btn .ga-chevron {
+    #step4 .guest-action-btn .ga-chevron {
       width: 8px;
       height: 8px;
       margin: 0 0 0 12px !important;
@@ -5006,7 +4911,7 @@
     }
 
     /* Footer ancorato — niente buco enorme sproporzionato */
-    #step5 .reception-note,
+    #step4 .reception-note,
     .reception-note {
       margin: var(--ios-6) 0 var(--ios-2) !important;
       padding: 0;
@@ -5021,7 +4926,7 @@
       width: 100%;
     }
 
-    #step5 .guest-reentry {
+    #step4 .guest-reentry {
       margin: 0 !important;
       padding: 0 0 var(--ios-2);
       text-align: center;
@@ -5029,7 +4934,7 @@
       width: 100%;
     }
 
-    #step5 .guest-reentry .btn-ghost {
+    #step4 .guest-reentry .btn-ghost {
       min-height: 44px;
       padding: var(--ios-2) var(--ios-4);
       display: inline-flex;
@@ -5050,18 +4955,18 @@
 
 
     /* Tile press — feedback elastico (lista hub) */
-    #step5 .guest-action-btn {
+    #step4 .guest-action-btn {
       will-change: transform;
       transition:
         transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
         background-color 0.15s ease;
     }
-    #step5 .guest-action-btn:active {
+    #step4 .guest-action-btn:active {
       background-color: #F2F2F7 !important;
       transform: scale(0.98);
     }
     @media (hover: hover) and (pointer: fine) {
-      #step5 .guest-action:hover {
+      #step4 .guest-action:hover {
         transform: translateY(-1px);
         transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
@@ -5109,7 +5014,7 @@
     /* Step 2/3 page titles: stessa gerarchia, zero linee */
     .concierge-header-title,
     .dining-book-title,
-    #step5 .header h1 {
+    #step4 .header h1 {
       font-size: var(--type-title);
       font-weight: 600;
       border-bottom: 0 !important;
@@ -5128,7 +5033,7 @@
       margin-bottom: var(--header-after);
     }
 
-    .dining-step .dining-copy {
+    #step2 .dining-copy {
       gap: var(--ios-3);
       padding: var(--ios-2) var(--ios-2) 0;
       margin-bottom: 0;
@@ -5136,7 +5041,7 @@
 
     /* Separazione sezioni = aria, non hairline decorativa */
     .dining-book .dining-section-rule,
-    .stay-step .dining-section-rule {
+    #step3 .dining-section-rule {
       height: 0 !important;
       border: 0 !important;
       border-top: 0 !important;
@@ -5144,16 +5049,14 @@
       margin: var(--ios-8) 0 !important;
     }
 
-    #step2 .step-footer-fixed,
-    #step3 .step-footer-fixed,
-    #step4 .step-footer-fixed {
+    #step2 .step-footer-fixed {
       border-top: 0 !important;
     }
 
     /* Input system: bianco puro + bordo chiaro (tutti gli step) */
     .apple-input,
-    .stay-step .apple-input,
-    .stay-step .input-with-icon .apple-input,
+    #step3 .apple-input,
+    #step3 .input-with-icon .apple-input,
     #step2 .apple-input {
       height: var(--ios-touch) !important;
       min-height: var(--ios-touch);
@@ -5164,8 +5067,8 @@
     }
 
     .apple-input:focus,
-    .stay-step .apple-input:focus,
-    .stay-step .input-with-icon .apple-input:focus {
+    #step3 .apple-input:focus,
+    #step3 .input-with-icon .apple-input:focus {
       border-color: rgba(18, 68, 83, 0.45) !important;
       background: #FFFFFF !important;
     }
@@ -5180,7 +5083,7 @@
     }
 
     .form-group label,
-    .stay-step .form-group label {
+    #step3 .form-group label {
       margin-left: 2px;
       margin-bottom: var(--ios-2);
       font-size: var(--type-label);
@@ -5196,91 +5099,76 @@
       margin-top: 0;
     }
 
-    #step2 .header p {
-      display: block;
-      max-width: 34ch;
-      margin: 10px auto 0;
-      text-align: center;
-    }
-
-    #step2 .step-body {
-      padding-top: 0;
-    }
-
-    #step2 .form-grid-container {
-      margin-top: 0;
-    }
-
     /* =========================================================
        Step 3 Reservation — layout compresso (niente buchi)
        ========================================================= */
-    .stay-step .step-body.dining-book {
+    #step3 .step-body.dining-book {
       gap: 12px !important;
     }
 
-    .stay-step .dining-book-head {
+    #step3 .dining-book-head {
       margin: 0 0 12px !important;
       padding: 0;
     }
 
-    .stay-step .dining-book-kicker {
+    #step3 .dining-book-kicker {
       margin: 0 0 4px;
     }
 
-    .stay-step .dining-book-title {
+    #step3 .dining-book-title {
       margin: 0;
       font-size: 22px;
       font-weight: 700;
       line-height: 1.15;
     }
 
-    .stay-step .dining-book-sub {
+    #step3 .dining-book-sub {
       margin: 8px auto 0 !important;
       max-width: 34ch;
       font-size: 13.5px;
       line-height: 1.4;
     }
 
-    .stay-step .booking-reserve-block {
+    #step3 .booking-reserve-block {
       margin: 0 !important;
       padding: 0 !important;
     }
 
-    .stay-step .booking-reserve-label,
-    .stay-step .dining-book .booking-reserve-label {
+    #step3 .booking-reserve-label,
+    #step3 .dining-book .booking-reserve-label {
       margin: 0 0 8px !important;
       text-align: center;
       font-size: 11px;
       font-weight: 600;
     }
 
-    .stay-step .booking-segment-grid,
-    .stay-step .dining-book .booking-segment-grid {
+    #step3 .booking-segment-grid,
+    #step3 .dining-book .booking-segment-grid {
       gap: 8px !important;
       margin: 0 0 16px !important;
     }
 
     /* Divider rimosso dall'HTML — zero spacer fantasma */
-    .stay-step .dining-section-rule {
+    #step3 .dining-section-rule {
       display: none !important;
       margin: 0 !important;
       height: 0 !important;
       border: 0 !important;
     }
 
-    .stay-step .form-grid-container,
-    .stay-step .dining-book .form-grid-container {
+    #step3 .form-grid-container,
+    #step3 .dining-book .form-grid-container {
       gap: 12px 12px !important;
       margin: 0 !important;
       padding: 0 !important;
     }
 
-    .stay-step .form-group label {
+    #step3 .form-group label {
       margin-bottom: 4px !important;
       margin-left: 2px;
     }
 
-    .stay-step .input-with-icon .apple-input {
+    #step3 .input-with-icon .apple-input {
       height: 46px !important;
       min-height: 46px;
       padding-left: 38px;
@@ -5309,23 +5197,6 @@
       padding: 4px 8px;
       font-size: 13px;
     }
-
-    /* Final polish: step 2 must stay readable on short mobile heights. */
-    #step2 .step-body {
-      padding-bottom: calc(176px + env(safe-area-inset-bottom, 0px)) !important;
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
-    }
-
-    #step2 .form-grid-container {
-      row-gap: 12px !important;
-    }
-
-    @media (max-width: 720px) {
-      #step2 .form-grid-container {
-        grid-template-columns: 1fr;
-      }
-    }
   </style>
 </head>
 <body>
@@ -5336,7 +5207,7 @@
   <div class="apple-card is-entering" id="card">
     <div class="card-sheen" aria-hidden="true"></div>
     <div class="step-dots" id="stepDots" aria-hidden="true">
-      <span class="active"></span><span></span><span></span>
+      <span class="active"></span><span></span><span></span><span></span>
     </div>
 
     <div class="error" id="error" role="alert"></div>
@@ -5384,18 +5255,52 @@
         </div>
       </section>
 
-      <!-- STEP 2: Dettagli soggiorno -->
-      <section class="slide-step stay-step" id="step2" aria-hidden="true">
-        <div class="header">
-          <span class="hotel-title">Hotel Canal</span>
-          <span class="hotel-subtitle">Venice Experience</span>
-          <h1 id="lbl-book-title">Dettagli soggiorno</h1>
-          <p id="lbl-book-sub">
-            Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.
-          </p>
+      <!-- STEP 2: regalo trattoria — hero + 3 foto HQ -->
+      <section class="slide-step" id="step2" aria-hidden="true">
+        <div class="step-body step-scroll dining-vitrine">
+          <div class="dining-story">
+            <div class="dining-showcase" aria-hidden="true">
+              <div class="dining-hero">
+                <img src="/restaurant/11-tavolo-canale.jpg" alt="" width="1024" height="768" decoding="async">
+                <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
+              </div>
+              <div class="dining-mosaic dining-mosaic-row">
+                <figure><img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="768" height="1024" decoding="async"></figure>
+                <figure><img src="/restaurant/14-pesce-grigliato.jpg" alt="" width="1024" height="1024" decoding="async"></figure>
+                <figure><img src="/restaurant/16-guazzetto-mare.jpg" alt="" width="1024" height="1024" decoding="async"></figure>
+              </div>
+            </div>
+            <div class="dining-copy">
+              <div class="concierge-header-title" id="lbl-concierge-title">Il nostro regalo per te</div>
+              <p class="concierge-sub-text" id="lbl-concierge-sub">
+                Come nostro ospite hai diritto a un certificato di sconto esclusivo del <strong>10%</strong> presso la <strong>Trattoria alla Terrazza</strong>.
+              </p>
+            </div>
+          </div>
+          <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
+          <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
+          <p id="lbl-rest-blurb" hidden></p>
+          <p id="lbl-rest-sub" hidden></p>
+          <p id="lbl-rest-desc" hidden></p>
         </div>
 
-        <div class="step-body step-scroll">
+        <div class="step-footer-fixed" id="step2Footer">
+          <button type="button" class="btn-canal" id="btnDiningNext">Continua</button>
+          <button type="button" class="btn-text-link" id="btnDiningBack">Indietro</button>
+        </div>
+      </section>
+
+      <!-- STEP 3: Dettagli soggiorno -->
+      <section class="slide-step" id="step3" aria-hidden="true">
+        <div class="step-body step-scroll dining-book">
+          <div class="dining-book-head">
+            <p class="dining-book-kicker" id="lbl-book-kicker">Hotel Canal</p>
+            <h2 class="dining-book-title" id="lbl-book-title">Dettagli soggiorno</h2>
+            <p class="dining-book-sub" id="lbl-book-sub">
+              Inserisci la <strong>stanza</strong> e il <strong>giorno di checkout</strong> per completare la registrazione.
+            </p>
+          </div>
+
           <div class="form-grid-container" id="roomFormGrid">
             <div class="form-group">
               <label id="lbl-room" for="room">Stanza *</label>
@@ -5424,93 +5329,38 @@
                 <input type="number" id="guests" name="guests" class="apple-input" inputmode="numeric" min="1" max="20" value="" placeholder="2" enterkeyhint="next">
               </div>
             </div>
-            <div class="form-group">
-              <label id="lbl-staff" for="receptionist">Receptionist</label>
+            <div class="form-group span-2">
+              <label id="lbl-staff" for="receptionist">Receptionist *</label>
               <div class="input-with-icon">
                 <span class="field-glyph" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 0.7 4 2.2"/></svg>
                 </span>
-                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Opzionale" inputmode="text" enterkeyhint="done">
+                <input type="text" id="receptionist" name="receptionist" class="apple-input" autocomplete="off" maxlength="40" placeholder="Chi fa il check-in" inputmode="text" enterkeyhint="done">
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="step-footer-fixed" id="step2Footer">
-          <button type="button" class="btn-canal" id="btnDiningNext">Continua</button>
-          <button type="button" class="btn-text-link" id="btnDiningBack">Indietro</button>
-        </div>
-      </section>
-
-      <!-- STEP 3: foto trattoria -->
-      <section class="slide-step dining-step" id="step3" aria-hidden="true">
-        <div class="step-body step-scroll dining-vitrine">
-          <div class="dining-story">
-            <div class="dining-showcase" aria-hidden="true">
-              <div class="dining-hero">
-                <img src="/restaurant/11-tavolo-canale.jpg" alt="" width="1024" height="768" decoding="async">
-                <span class="dining-discount-badge" id="lbl-dining-badge">10% OFF</span>
-              </div>
-              <div class="dining-mosaic dining-mosaic-row">
-                <figure><img src="/restaurant/12-tavolo-terrazza-pasta.jpg" alt="" width="768" height="1024" decoding="async"></figure>
-                <figure><img src="/restaurant/14-pesce-grigliato.jpg" alt="" width="1024" height="1024" decoding="async"></figure>
-                <figure><img src="/restaurant/16-guazzetto-mare.jpg" alt="" width="1024" height="1024" decoding="async"></figure>
-              </div>
-            </div>
-          </div>
-          <h4 id="lbl-rest-title">Il nostro regalo per te</h4>
-          <p id="lbl-rest-blurb"></p>
-          <p id="lbl-rest-sub"></p>
-          <p id="lbl-rest-desc"></p>
         </div>
 
         <div class="step-footer-fixed" id="step3Footer">
-          <button type="button" class="btn-canal" id="btnPhotosNext">Continua</button>
-          <button type="button" class="btn-text-link" id="btnBack">Indietro</button>
-        </div>
-      </section>
-
-      <!-- STEP 4: coupon trattoria -->
-      <section class="slide-step coupon-step stay-step" id="step4" aria-hidden="true">
-        <div class="step-body step-scroll dining-book">
-          <div class="dining-book-head">
-            <p class="dining-book-kicker" id="lbl-coupon-kicker">Hotel Canal</p>
-            <h2 class="dining-book-title" id="lbl-concierge-title">Il nostro regalo per te</h2>
-            <p class="dining-book-sub concierge-sub-text" id="lbl-concierge-sub">
-              Come nostro ospite hai diritto a un certificato di sconto esclusivo del <strong>10%</strong> presso la <strong>Trattoria alla Terrazza</strong>.
-            </p>
+          <button type="button" class="btn-canal" id="btnSubmit">Conferma e ricevi coupon</button>
+          <div class="action-links">
+            <button type="button" class="btn-text-link" id="btnSkip">Salta, solo registrazione</button>
+            <button type="button" class="btn-text-link" id="btnBack">Indietro</button>
           </div>
         </div>
-
-        <div class="step-footer-fixed" id="step4Footer">
-          <button type="button" class="btn-canal" id="btnSubmit">Conferma e ricevi coupon</button>
-          <button type="button" class="btn-text-link" id="btnCouponBack">Indietro</button>
-        </div>
       </section>
 
-      <!-- STEP 5 SUCCESS -->
-      <section class="slide-step" id="step5" aria-hidden="true">
+      <!-- STEP 4 SUCCESS -->
+      <section class="slide-step" id="step4" aria-hidden="true">
 
 
-        <div class="step3-shell" id="step5Shell">
-          <div class="step3-home" id="step5Home">
+        <div class="step3-shell" id="step4Shell">
+          <div class="step3-home" id="step4Home">
             <div class="header step3-head step3-head">
               <div class="success-check" aria-hidden="true"></div>
               <h1 id="lbl-succ-title">Registrato!</h1>
               <p id="lbl-succ-sub">
-                Ti abbiamo inviato un’email con i dettagli del soggiorno e il coupon −10%.
-              </p>
-              <p class="success-email-sent" id="successEmailSent" hidden>
-                <span class="success-email-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2"/>
-                    <path d="M3 7l9 7 9-7"/>
-                  </svg>
-                </span>
-                <span class="success-email-copy">
-                  <strong id="lbl-succ-email-title">Controlla la tua email</strong>
-                  <span id="lbl-succ-email-addr"></span>
-                </span>
+                Indicazioni via email. Azioni rapide qui sotto.
               </p>
             </div>
 
@@ -5769,9 +5619,9 @@
         roomShort: 'Stanza *',
         guestsShort: 'Ospiti',
         checkoutShort: 'Checkout *',
-        staffShort: 'Receptionist',
-        staffPlaceholder: 'Opzionale',
-        restDescShort: 'Conferma per attivare il certificato −10%.',
+        staffShort: 'Receptionist *',
+        staffPlaceholder: 'Chi fa il check-in',
+        restDescShort: 'Completa stanza e receptionist per attivare il certificato −10%.',
         restBlurb: 'In qualità di ospite hai un certificato sconto −10% presso Trattoria alla Terrazza. Completa il check-in stanza o prenota un tavolo.',
         conciergeTitle: 'Il nostro regalo per te',
         conciergeSubHtml: 'Come nostro ospite hai diritto a un certificato di sconto esclusivo del <strong>10%</strong> presso la <strong>Trattoria alla Terrazza</strong>.',
@@ -5783,8 +5633,8 @@
         nextBtn: 'Continua',
         restSub: 'Cena tipica sulla terrazza del canale, pensata per gli ospiti Hotel Canal.',
         restTitle: 'Il tuo −10% sulla Terrazza',
-        restDesc: 'Un tavolo con vista canale e il sapore di Venezia. Lo sconto arriva subito via email.',
-        staff: 'Receptionist',
+        restDesc: 'Un tavolo con vista canale e il sapore di Venezia. Conferma stanza e receptionist: lo sconto arriva subito via email.',
+        staff: 'Nome del Receptionist *',
         staffNone: 'Seleziona…',
         staffInvalid: 'Serve il nome del receptionist che ti fa il check-in.',
         roomInvalid: 'Inserisci il numero di stanza.',
@@ -5796,9 +5646,8 @@
         back: 'Indietro',
         loading: 'Elaborazione…',
         successTitle: 'Registrato!',
-        successSub: 'Ti abbiamo inviato un’email con i dettagli del soggiorno.',
-        successSubCoupon: 'Ti abbiamo inviato un’email con i dettagli del soggiorno e il coupon −10%.',
-        successEmailTitle: 'Controlla la tua email',
+        successSub: 'Indicazioni via email. Azioni rapide qui sotto.',
+        successSubCoupon: 'Coupon −10% in arrivo. Azioni sotto.',
         actTable: 'Prenota un tavolo',
         actTableSub: 'Scegli orario · ti richiamiamo',
         actTableSubNoCoupon: 'Scegli orario · ti richiamiamo',
@@ -5886,9 +5735,9 @@
         roomShort: 'Room *',
         guestsShort: 'Guests',
         checkoutShort: 'Checkout *',
-        staffShort: 'Receptionist',
-        staffPlaceholder: 'Optional',
-        restDescShort: 'Confirm to activate your −10% certificate.',
+        staffShort: 'Receptionist *',
+        staffPlaceholder: 'Who is checking you in',
+        restDescShort: 'Add room and receptionist to activate your −10% certificate.',
         restBlurb: 'As our guest, you hold a 10% exclusive discount certificate at Trattoria alla Terrazza. Complete room check-in or reserve a table.',
         conciergeTitle: 'Our gift for you',
         conciergeSubHtml: 'As our guest, you hold a <strong>10%</strong> exclusive discount certificate at <strong>Trattoria alla Terrazza</strong>.',
@@ -5900,8 +5749,8 @@
         nextBtn: 'Continue',
         restSub: 'A canal-terrace dinner made for Hotel Canal guests.',
         restTitle: 'Your −10% at the Terrazza',
-        restDesc: 'Canal views and Venetian cooking. Your discount arrives by email right away.',
-        staff: 'Receptionist',
+        restDesc: 'Canal views and Venetian cooking. Confirm room and receptionist: your discount arrives by email right away.',
+        staff: 'Receptionist Name *',
         staffNone: 'Select…',
         staffInvalid: 'Enter the receptionist who is checking you in.',
         roomInvalid: 'Please enter the room number.',
@@ -5913,9 +5762,8 @@
         back: 'Back',
         loading: 'Processing…',
         successTitle: 'Registered!',
-        successSub: 'We sent you an email with your stay details.',
-        successSubCoupon: 'We sent you an email with your stay details and the −10% coupon.',
-        successEmailTitle: 'Check your inbox',
+        successSub: 'Guide emailed. Actions below.',
+        successSubCoupon: '−10% coupon on the way. Actions below.',
         actTable: 'Book a table',
         actTableSub: 'Pick a time · we’ll call back',
         actTableSubNoCoupon: 'Pick a time · we’ll call back',
@@ -5996,7 +5844,7 @@
         roomShort: 'Chambre *',
         guestsShort: 'Pers.',
         checkoutShort: 'Départ *',
-        staffShort: 'Réceptionniste',
+        staffShort: 'Réceptionniste *',
         staffPlaceholder: 'Qui fait le check-in',
         restDescShort: 'Indiquez chambre et réceptionniste pour activer le certificat −10%.',
         restBlurb: 'En tant qu’hôte, vous disposez d’un certificat −10% à la Trattoria alla Terrazza. Finalisez le check-in ou réservez une table.',
@@ -6015,7 +5863,7 @@
         restTag: 'Un cadeau pour vous',
         restReviews: '128 avis',
         restDiscount: '−10%',
-        staff: 'Réceptionniste',
+        staff: 'Nom du réceptionniste *',
         staffNone: 'Choisir…',
         staffInvalid: 'Entrez le réceptionniste qui fait le check-in.',
         roomInvalid: 'Entrez le numéro de chambre.',
@@ -6027,9 +5875,8 @@
         back: 'Retour',
         loading: 'Traitement…',
         successTitle: 'Enregistré !',
-        successSub: 'Nous vous avons envoyé un e-mail avec les détails du séjour.',
-        successSubCoupon: 'Nous vous avons envoyé un e-mail avec les détails du séjour et le coupon −10 %.',
-        successEmailTitle: 'Vérifiez votre e-mail',
+        successSub: 'Guide envoyé par e-mail. Actions ci-dessous.',
+        successSubCoupon: 'Coupon −10% en route. Actions ci-dessous.',
         actTable: 'Réserver une table',
         actTableSub: 'Choisissez l’heure · on vous rappelle',
         actTableSubNoCoupon: 'Choisissez l’heure · on vous rappelle',
@@ -6100,7 +5947,7 @@
         roomShort: 'Zimmer *',
         guestsShort: 'Gäste',
         checkoutShort: 'Abreise *',
-        staffShort: 'Empfang',
+        staffShort: 'Empfang *',
         staffPlaceholder: 'Wer macht den Check-in',
         restDescShort: 'Zimmer und Empfang angeben, um Ihr −10%-Zertifikat zu aktivieren.',
         restBlurb: 'Als Gast erhalten Sie ein exklusives −10%-Zertifikat in der Trattoria alla Terrazza. Check-in abschließen oder Tisch reservieren.',
@@ -6131,9 +5978,8 @@
         back: 'Zurück',
         loading: 'Wird verarbeitet…',
         successTitle: 'Registriert!',
-        successSub: 'Wir haben Ihnen eine E-Mail mit den Aufenthaltsdetails geschickt.',
-        successSubCoupon: 'Wir haben Ihnen eine E-Mail mit den Aufenthaltsdetails und dem −10%-Gutschein geschickt.',
-        successEmailTitle: 'Prüfen Sie Ihr Postfach',
+        successSub: 'Guide per E-Mail. Aktionen unten.',
+        successSubCoupon: '−10%-Gutschein unterwegs. Aktionen unten.',
         actTable: 'Tisch reservieren',
         actTableSub: 'Wunschuhrzeit · wir rufen zurück',
         actTableSubNoCoupon: 'Wunschuhrzeit · wir rufen zurück',
@@ -6204,7 +6050,7 @@
         roomShort: 'Habitación *',
         guestsShort: 'Huéspedes',
         checkoutShort: 'Salida *',
-        staffShort: 'Recepcionista',
+        staffShort: 'Recepcionista *',
         staffPlaceholder: 'Quién hace el check-in',
         restDescShort: 'Indique habitación y recepcionista para activar el certificado −10%.',
         restBlurb: 'Como huésped tiene un certificado exclusivo −10% en Trattoria alla Terrazza. Complete el check-in o reserve mesa.',
@@ -6223,7 +6069,7 @@
         restTag: 'Un regalo para usted',
         restReviews: '128 reseñas',
         restDiscount: '−10%',
-        staff: 'Recepcionista',
+        staff: 'Nombre del recepcionista *',
         staffNone: 'Seleccionar…',
         staffInvalid: 'Escriba el recepcionista que hace el check-in.',
         roomInvalid: 'Introduzca el número de habitación.',
@@ -6235,9 +6081,8 @@
         back: 'Atrás',
         loading: 'Procesando…',
         successTitle: '¡Registrado!',
-        successSub: 'Te hemos enviado un email con los detalles de la estancia.',
-        successSubCoupon: 'Te hemos enviado un email con los detalles de la estancia y el cupón −10%.',
-        successEmailTitle: 'Revisa tu correo',
+        successSub: 'Guía por email. Acciones abajo.',
+        successSubCoupon: 'Cupón −10% en camino. Acciones abajo.',
         actTable: 'Reservar mesa',
         actTableSub: 'Elija la hora · le llamamos',
         actTableSubNoCoupon: 'Elija la hora · le llamamos',
@@ -6316,7 +6161,7 @@
         roomShort: '房间 *',
         guestsShort: '人数',
         checkoutShort: '退房 *',
-        staffShort: '接待员',
+        staffShort: '接待员 *',
         staffPlaceholder: '谁为您办理入住',
         restDescShort: '填写房间号与接待员以激活 −10% 凭证。',
         restBlurb:
@@ -6346,9 +6191,8 @@
         back: '返回',
         loading: '处理中…',
         successTitle: '登记成功！',
-        successSub: '入住详情已发送到您的邮箱。',
-        successSubCoupon: '入住详情和 −10% 优惠券已发送到您的邮箱。',
-        successEmailTitle: '请查看邮箱',
+        successSub: '指南已发送至邮箱。下方可快速操作。',
+        successSubCoupon: '−10% 优惠券已发送。下方可操作。',
         actTable: '预订餐桌',
         actTableSub: '选择时间 · 我们会回电',
         actTableSubNoCoupon: '选择时间 · 我们会回电',
@@ -6427,7 +6271,7 @@
         roomShort: '部屋 *',
         guestsShort: '人数',
         checkoutShort: 'チェックアウト *',
-        staffShort: '担当者',
+        staffShort: '担当者 *',
         staffPlaceholder: 'チェックイン担当者',
         restDescShort: '部屋番号と担当者を入力して −10% を有効化。',
         restBlurb:
@@ -6457,9 +6301,8 @@
         back: '戻る',
         loading: '処理中…',
         successTitle: '登録完了！',
-        successSub: '滞在の詳細をメールでお送りしました。',
-        successSubCoupon: '滞在の詳細と−10%クーポンをメールでお送りしました。',
-        successEmailTitle: 'メールをご確認ください',
+        successSub: '案内をメールで送信しました。下の操作をご利用ください。',
+        successSubCoupon: '−10% クーポン送信中。下の操作をご利用ください。',
         actTable: 'テーブル予約',
         actTableSub: '時間を選択 · 折り返しご連絡',
         actTableSubNoCoupon: '時間を選択 · 折り返しご連絡',
@@ -6540,7 +6383,7 @@
         roomShort: 'غرفة *',
         guestsShort: 'ضيوف',
         checkoutShort: 'المغادرة *',
-        staffShort: 'موظف الاستقبال',
+        staffShort: 'موظف الاستقبال *',
         staffPlaceholder: 'من يقوم بتسجيل دخولك',
         restDescShort: 'أدخل رقم الغرفة وموظف الاستقبال لتفعيل شهادة −10٪.',
         restBlurb:
@@ -6570,9 +6413,8 @@
         back: 'رجوع',
         loading: 'جاري المعالجة...',
         successTitle: 'تم التسجيل!',
-        successSub: 'أرسلنا إليك بريداً إلكترونياً بتفاصيل الإقامة.',
-        successSubCoupon: 'أرسلنا إليك بريداً إلكترونياً بتفاصيل الإقامة وقسيمة −10٪.',
-        successEmailTitle: 'تحقق من بريدك الإلكتروني',
+        successSub: 'الدليل عبر البريد. إجراءات سريعة أدناه.',
+        successSubCoupon: 'قسيمة −10٪ في الطريق. إجراءات أدناه.',
         actTable: 'احجز طاولة',
         actTableSub: 'اختر الوقت · نتصل بك',
         actTableSubNoCoupon: 'اختر الوقت · نتصل بك',
@@ -6729,7 +6571,6 @@
               checkinId: session.checkinId ?? null,
               couponSent: Boolean(session.couponSent),
               guestAccessToken: session.guestAccessToken || null,
-              email: session.email || null,
             }),
           );
         }
@@ -6806,13 +6647,12 @@
     const privacyBox = document.getElementById('privacyBox');
     const btnNext = document.getElementById('btnNext');
     const btnBack = document.getElementById('btnBack');
+    const btnSkip = document.getElementById('btnSkip');
     const btnSubmit = document.getElementById('btnSubmit');
     const btnDiningNext = document.getElementById('btnDiningNext');
     const btnDiningBack = document.getElementById('btnDiningBack');
-    const btnPhotosNext = document.getElementById('btnPhotosNext');
-    const btnCouponBack = document.getElementById('btnCouponBack');
 
-    const TOTAL_STEPS = 5;
+    const TOTAL_STEPS = 4;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let currentLang = 'en';
@@ -6841,7 +6681,7 @@
     const SLIDE_MS = cssMs('--slide-ms', 640);
     const HEIGHT_MS = cssMs('--height-ms', 780);
 
-    /** Checkout: scelto nello Step 2 (obbligatorio). */
+    /** Checkout: scelto nello Step 3 (obbligatorio con coupon). */
     function setupCheckoutField() {
       if (!checkoutEl) return;
       const today = romeYmd();
@@ -7125,16 +6965,14 @@
       1: 'var(--card-h-1)',
       2: 'var(--card-h-2)',
       3: 'var(--card-h-3)',
-      4: 'var(--card-h-4)',
     };
 
     let lastCheckinId = null;
     let lastCouponSent = false;
-    let lastAlreadyRegistered = false;
     let guestAccessToken = null;
     let measuredStep1Height = 0;
     /** Altezze “buone” per step (misurate a riposo) — evita misura gonfiata durante lo slide */
-    const stepHeightCache = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const stepHeightCache = { 1: 0, 2: 0, 3: 0, 4: 0 };
 
     function isPhoneViewport() {
       return window.matchMedia('(max-width: 480px)').matches;
@@ -7231,15 +7069,13 @@
     function ensurePrimaryCtaVisible() {
       const viewport = document.getElementById('sliderViewport');
       const btn =
-        currentStep === 4
+        currentStep === 3
           ? document.getElementById('btnSubmit')
-          : currentStep === 3
-            ? document.getElementById('btnPhotosNext')
-            : currentStep === 2
-              ? document.getElementById('btnDiningNext')
-              : currentStep === 1
-                ? document.getElementById('btnNext')
-                : null;
+          : currentStep === 2
+            ? document.getElementById('btnDiningNext')
+            : currentStep === 1
+              ? document.getElementById('btnNext')
+              : null;
       if (!viewport || !btn) return;
 
       viewport.style.clipPath = '';
@@ -7288,8 +7124,8 @@
     }
 
     /** Matrice live (375×667): seed antifallo + misura a freddo. */
-    const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 568, 4: 420, 5: 292 };
-    const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const GEOMETRY_SEED = { 1: 538, 2: 532, 3: 568, 4: 292 };
+    const geometryMap = { 1: 0, 2: 0, 3: 0, 4: 0 };
     let iosPickerOpen = false;
 
     function isCompactPhoneViewport() {
@@ -7364,7 +7200,7 @@
     let activeFlipAnims = [];
     let flipGeneration = 0;
     const WAAPI_EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
-    const WAAPI_MS = 340;
+    const WAAPI_MS = 420;
 
     function cancelActiveFlipAnims() {
       activeFlipAnims.forEach((anim) => {
@@ -7669,7 +7505,6 @@
       stepHeightCache[2] = 0;
       stepHeightCache[3] = 0;
       stepHeightCache[4] = 0;
-      stepHeightCache[5] = 0;
       preCalculateGeometry({ applyCurrent: true });
       requestAnimationFrame(() => ensurePrimaryCtaVisible());
     }
@@ -8101,7 +7936,7 @@
           msg,
         )
       ) {
-        setStep(2);
+        setStep(3);
         showFieldError(roomEl);
         return true;
       }
@@ -8131,12 +7966,12 @@
         return true;
       }
       if (/stanz|room|chambre|zimmer|habitaci/.test(msg)) {
-        setStep(2);
+        setStep(3);
         showFieldError(roomEl);
         return true;
       }
       if (/reception|staff|impiegat/.test(msg)) {
-        setStep(2);
+        setStep(3);
         showFieldError(staffEl);
         return true;
       }
@@ -8145,7 +7980,7 @@
         errCode === 'checkout_required' ||
         /checkout|check-out|partenza|abreise|salida|d[ée]part/.test(msg)
       ) {
-        setStep(2);
+        setStep(3);
         showFieldError(checkoutEl);
         return true;
       }
@@ -8291,9 +8126,8 @@
       btnNext.textContent = dict.nextBtn;
       if (btnDiningNext) btnDiningNext.textContent = dict.nextBtn;
       if (btnDiningBack) btnDiningBack.textContent = dict.back;
-      if (btnPhotosNext) btnPhotosNext.textContent = submitButtonLabel(dict);
-      if (btnBack) btnBack.textContent = dict.back;
-      if (btnCouponBack) btnCouponBack.textContent = dict.back;
+      btnBack.textContent = dict.back;
+      if (btnSkip) btnSkip.textContent = dict.skip || 'Skip';
       if (btnSubmit && !btnSubmit.disabled) btnSubmit.textContent = submitButtonLabel(dict);
       const checkoutLbl = document.getElementById('lbl-checkout');
       if (checkoutLbl) checkoutLbl.textContent = dict.checkoutShort || dict.checkout || 'Checkout *';
@@ -8303,8 +8137,6 @@
       if (bookTitle) bookTitle.textContent = dict.bookTitle || 'Stay details';
       const bookKicker = document.getElementById('lbl-book-kicker');
       if (bookKicker) bookKicker.textContent = dict.bookKicker || 'Hotel Canal';
-      const couponKicker = document.getElementById('lbl-coupon-kicker');
-      if (couponKicker) couponKicker.textContent = dict.bookKicker || 'Hotel Canal';
       const bookSub = document.getElementById('lbl-book-sub');
       if (bookSub) {
         bookSub.innerHTML =
@@ -8342,13 +8174,10 @@
 
       if (currentStep === TOTAL_STEPS) {
         const dict = t();
-        const isReport = document.getElementById('step5')?.classList.contains('is-report-result');
-        if (!isReport) {
-          applySuccessCopy({
-            already: lastAlreadyRegistered,
-            couponSent: lastCouponSent,
-          });
-        }
+        document.getElementById('lbl-succ-title').textContent = dict.successTitle;
+        document.getElementById('lbl-succ-sub').textContent = lastCouponSent
+          ? dict.successSubCoupon
+          : dict.successSub;
         document.getElementById('lbl-badge').textContent = dict.badgeTxt;
         applyGuestActionLabels(dict, lastCouponSent);
         void loadGuestServices(dict);
@@ -8372,7 +8201,6 @@
       guestAccessToken = null;
       lastCheckinId = null;
       lastCouponSent = false;
-      lastAlreadyRegistered = false;
       guestServicesCache = null;
       closeGuestSheet();
       const reentry = document.getElementById('guestReentry');
@@ -8450,37 +8278,6 @@
       return 'HC-' + Math.floor(1000 + Math.random() * 9000);
     }
 
-    function applySuccessCopy({ already = false, couponSent = lastCouponSent } = {}) {
-      const dict = t();
-      const titleEl = document.getElementById('lbl-succ-title');
-      const subEl = document.getElementById('lbl-succ-sub');
-      const emailBox = document.getElementById('successEmailSent');
-      const emailTitle = document.getElementById('lbl-succ-email-title');
-      const emailAddr = document.getElementById('lbl-succ-email-addr');
-      const email =
-        String(emailEl?.value || '').trim().toLowerCase() ||
-        String(readGuestSession()?.email || '').trim().toLowerCase();
-
-      if (titleEl) {
-        titleEl.textContent = already ? dict.alreadyRegisteredTitle : dict.successTitle;
-      }
-      if (subEl) {
-        subEl.textContent = already
-          ? dict.alreadyRegisteredSub
-          : couponSent
-            ? dict.successSubCoupon
-            : dict.successSub;
-      }
-      if (!emailBox) return;
-      const show = Boolean(email);
-      emailBox.hidden = !show;
-      if (!show) return;
-      if (emailTitle) {
-        emailTitle.textContent = dict.successEmailTitle || 'Check your inbox';
-      }
-      if (emailAddr) emailAddr.textContent = email;
-    }
-
     function showSuccessStep({
       id,
       verifiedAt,
@@ -8498,13 +8295,19 @@
 
       lastCheckinId = id != null ? Number(id) : null;
       lastCouponSent = Boolean(couponSent);
-      lastAlreadyRegistered = Boolean(already);
       guestAccessToken = accessToken || null;
       guestServicesCache = null;
-      document.getElementById('step5')?.classList.remove('is-report-result');
+      document.getElementById('step4')?.classList.remove('is-report-result');
 
       // Solo testi (niente display:none / flex recalc). Poi slide → successo.
-      applySuccessCopy({ already, couponSent });
+      document.getElementById('lbl-succ-title').textContent = already
+        ? dict.alreadyRegisteredTitle
+        : dict.successTitle;
+      document.getElementById('lbl-succ-sub').textContent = already
+        ? dict.alreadyRegisteredSub
+        : couponSent
+          ? dict.successSubCoupon
+          : dict.successSub;
       document.getElementById('lbl-badge').textContent = dict.badgeTxt;
       document.getElementById('verificationCode').textContent = checkCode;
       document.getElementById('lbl-verified-time').textContent =
@@ -8516,9 +8319,9 @@
       const actions = document.getElementById('guestActions');
       const note = document.getElementById('lbl-reception-note');
       if (note) note.textContent = dict.receptionNote || '';
-      // Schermata finale pulita: nessuna griglia extra qui.
+      // Menu a tendina sempre disponibili (anche se già registrato)
       if (actions) {
-        actions.hidden = true;
+        actions.hidden = false;
       }
       const reentry = document.getElementById('guestReentry');
       const reentryBtn = document.getElementById('btnNewCheckin');
@@ -8746,7 +8549,7 @@
     });
 
     function openGuestSheet(panelId, triggerBtn) {
-      const step3 = document.getElementById('step5');
+      const step3 = document.getElementById('step4');
       const sheet = document.getElementById('guestSheet');
       const titleEl = document.getElementById('guestSheetTitle');
       if (!step3 || !sheet || !panelId) return;
@@ -8783,7 +8586,7 @@
     }
 
     function closeGuestSheet() {
-      const step3 = document.getElementById('step5');
+      const step3 = document.getElementById('step4');
       const sheet = document.getElementById('guestSheet');
       if (!step3 || !sheet) return;
 
@@ -8931,16 +8734,21 @@
       return true;
     }
 
-    /** Stanza + checkout obbligatori. Receptionist facoltativo (si può aggiungere in dashboard). */
-    function validateStayFields() {
+    /** Coupon: stanza + nome receptionist del check-in obbligatori */
+    function validateCouponFields() {
       clearError();
       const roomRaw = roomEl.value.trim();
+      const staffRaw = staffEl.value.trim();
       if (!roomRaw) {
         showFieldError(roomEl);
         return false;
       }
       if (!isValidCheckoutDate(checkoutEl?.value)) {
         showFieldError(checkoutEl);
+        return false;
+      }
+      if (!normalizeReceptionist(staffRaw)) {
+        showFieldError(staffEl);
         return false;
       }
       return true;
@@ -8955,7 +8763,7 @@
       document.getElementById('receiptBadge').classList.add('is-collapsed');
       const actions = document.getElementById('guestActions');
       if (actions) actions.hidden = true;
-      document.getElementById('step5')?.classList.add('is-report-result');
+      document.getElementById('step4')?.classList.add('is-report-result');
       playSuccessKinetics(() => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => setStep(TOTAL_STEPS));
@@ -8973,9 +8781,8 @@
       submitting = true;
       btnNext.disabled = true;
       btnSubmit.disabled = true;
-      if (btnPhotosNext) btnPhotosNext.disabled = true;
+      if (btnSkip) btnSkip.disabled = true;
       if (btnBack) btnBack.disabled = true;
-      if (btnCouponBack) btnCouponBack.disabled = true;
       const nextLabel = t().nextBtn;
       setCanalButtonLoading(btnNext);
 
@@ -8998,9 +8805,8 @@
           submitting = false;
           resetCanalButton(btnNext, nextLabel);
           btnSubmit.disabled = false;
-          if (btnPhotosNext) btnPhotosNext.disabled = false;
+          if (btnSkip) btnSkip.disabled = false;
           if (btnBack) btnBack.disabled = false;
-          if (btnCouponBack) btnCouponBack.disabled = false;
           if (response.status >= 500) {
             showNetworkErrorScreen();
             return;
@@ -9019,17 +8825,15 @@
         submitting = false;
         resetCanalButton(btnNext, nextLabel);
         btnSubmit.disabled = false;
-        if (btnPhotosNext) btnPhotosNext.disabled = false;
+        if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
-        if (btnCouponBack) btnCouponBack.disabled = false;
         showServerToast(dict.submitError);
       } catch (err) {
         submitting = false;
         resetCanalButton(btnNext, nextLabel);
         btnSubmit.disabled = false;
-        if (btnPhotosNext) btnPhotosNext.disabled = false;
+        if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
-        if (btnCouponBack) btnCouponBack.disabled = false;
         if (
           err instanceof TypeError ||
           /failed to fetch|network|load failed/i.test(String(err.message || ''))
@@ -9119,10 +8923,10 @@
         };
       }
 
-      if (currentStep === 2) {
+      if (currentStep === 3) {
         return {
-          chain: [roomEl, checkoutEl, guestsEl, staffEl].filter(Boolean),
-          cta: btnDiningNext,
+          chain: [roomEl, guestsEl, staffEl].filter(Boolean),
+          cta: btnSubmit,
         };
       }
 
@@ -9156,7 +8960,7 @@
 
     document.addEventListener('keydown', handleEnterFieldNav, true);
 
-    [firstNameEl, lastNameEl, phoneEl, emailEl, staffEl, roomEl, guestsEl, checkoutEl]
+    [firstNameEl, lastNameEl, phoneEl, emailEl, staffEl, roomEl, guestsEl]
       .filter(Boolean)
       .forEach((input) => {
         input.addEventListener('input', () => {
@@ -9212,7 +9016,6 @@
       if (submitting) return;
       try { document.activeElement?.blur?.(); } catch (_) {}
       pinCardInView();
-      if (!validateStayFields()) return;
       clearError();
       playConfirmChime({ soft: true });
       setStep(3);
@@ -9225,17 +9028,6 @@
       setStep(1);
     });
 
-    btnPhotosNext?.addEventListener('click', () => {
-      if (submitting) return;
-      try { document.activeElement?.blur?.(); } catch (_) {}
-      pinCardInView();
-      if (!validateStayFields()) {
-        setStep(2);
-        return;
-      }
-      submitFinal();
-    });
-
     btnBack.addEventListener('click', () => {
       if (submitting) return;
       clearError();
@@ -9243,33 +9035,27 @@
       setStep(2);
     });
 
-    btnCouponBack?.addEventListener('click', () => {
-      if (submitting) return;
-      clearError();
-      playConfirmChime({ soft: true });
-      setStep(3);
-    });
-
     btnSubmit.addEventListener('click', () => {
       if (submitting) return;
-      if (!validateStayFields()) {
-        setStep(2);
-        return;
-      }
-      submitFinal();
+      if (!validateCouponFields()) return;
+      submitFinal({ clearStaff: false, requireCoupon: true });
+    });
+    btnSkip?.addEventListener('click', () => {
+      if (submitting) return;
+      staffEl.value = '';
+      roomEl.value = '';
+      if (checkoutEl) checkoutEl.value = '';
+      submitFinal({ clearStaff: true, requireCoupon: false });
     });
 
-    async function submitFinal() {
+    async function submitFinal({ clearStaff = false, requireCoupon = false } = {}) {
       if (submitting) return;
       if (currentStep !== 3) setStep(3);
       if (!validateStep1()) {
         setStep(1);
         return;
       }
-      if (!validateStayFields()) {
-        setStep(2);
-        return;
-      }
+      if (requireCoupon && !validateCouponFields()) return;
 
       const dict = t();
       const phoneRaw = phoneEl.value.trim();
@@ -9277,10 +9063,12 @@
       const firstName = firstNameEl.value.trim();
       const lastName = lastNameEl.value.trim();
       const guestNameRaw = `${firstName} ${lastName}`.trim();
-      const roomRaw = roomEl.value.trim();
-      const staffRaw = staffEl.value.trim();
-      const checkoutRaw = String(checkoutEl?.value || '').trim();
-      const receptionistNormalized = normalizeReceptionist(staffRaw) || null;
+      const roomRaw = clearStaff ? '' : roomEl.value.trim();
+      const staffRaw = clearStaff ? '' : staffEl.value.trim();
+      const checkoutRaw = clearStaff ? '' : String(checkoutEl?.value || '').trim();
+      const receptionistNormalized = clearStaff
+        ? null
+        : normalizeReceptionist(staffRaw);
       let guestsCount = Number.parseInt(String(guestsEl?.value || '2').trim(), 10);
       if (!Number.isFinite(guestsCount) || guestsCount < 1) guestsCount = 2;
       if (guestsCount > 20) guestsCount = 20;
@@ -9293,9 +9081,8 @@
       btnNext.disabled = true;
       if (btnDiningNext) btnDiningNext.disabled = true;
       if (btnDiningBack) btnDiningBack.disabled = true;
-      if (btnPhotosNext) btnPhotosNext.disabled = true;
+      if (btnSkip) btnSkip.disabled = true;
       if (btnBack) btnBack.disabled = true;
-      if (btnCouponBack) btnCouponBack.disabled = true;
 
       const payload = {
         phone: magic ? phoneRaw.trim() : cleaned,
@@ -9307,13 +9094,13 @@
         receptionist: receptionistNormalized,
         guestsCount,
         checkoutDate: checkoutRaw || null,
-        wantCoupon: true,
+        wantCoupon: Boolean(requireCoupon),
         privacy: true,
         language: currentLang,
       };
 
       try {
-        // Resta sulla schermata foto+regalo mentre aspetta; successo solo dopo OK server
+        // Resta su Step 2 mentre aspetta; Step 3 solo dopo OK server/Resend
         const response = await fetch('/api/checkins', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -9327,9 +9114,8 @@
           btnNext.disabled = false;
           if (btnDiningNext) btnDiningNext.disabled = false;
           if (btnDiningBack) btnDiningBack.disabled = false;
-          if (btnPhotosNext) btnPhotosNext.disabled = false;
+          if (btnSkip) btnSkip.disabled = false;
           if (btnBack) btnBack.disabled = false;
-          if (btnCouponBack) btnCouponBack.disabled = false;
           if (response.status >= 500) {
             showNetworkErrorScreen();
             return;
@@ -9353,7 +9139,6 @@
             checkinId: body.id,
             couponSent: Boolean(body.couponSent),
             guestAccessToken: body.guestAccessToken || null,
-            email: emailNormalized || null,
           });
         }
         submitting = false;
@@ -9385,9 +9170,8 @@
         btnNext.disabled = false;
         if (btnDiningNext) btnDiningNext.disabled = false;
         if (btnDiningBack) btnDiningBack.disabled = false;
-        if (btnPhotosNext) btnPhotosNext.disabled = false;
+        if (btnSkip) btnSkip.disabled = false;
         if (btnBack) btnBack.disabled = false;
-        if (btnCouponBack) btnCouponBack.disabled = false;
         if (
           err instanceof TypeError ||
           /failed to fetch|network|load failed/i.test(String(err.message || ''))
@@ -9572,7 +9356,7 @@
     initSelectStability();
 
     // Foto dining: se caricano dopo la misura, riallinea senza scatto
-    document.querySelectorAll('.dining-step .dining-showcase img').forEach((img) => {
+    document.querySelectorAll('#step2 .dining-showcase img').forEach((img) => {
       const softSync = () => {
         invalidateGeometry(2);
       };
