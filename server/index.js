@@ -716,8 +716,9 @@ function staffPinFor(staffId) {
   const envKey = `STAFF_PIN_${member.id.toUpperCase()}`;
   const fromEnv = String(process.env[envKey] || '').trim();
   if (fromEnv) return fromEnv;
-  if (!IS_PROD) return `canal${member.id}`;
-  return '';
+  // Fallback operativo: mantiene accessibile la dashboard anche senza env vars.
+  // Da sostituire appena possibile con STAFF_PIN_* dedicati su Render.
+  return `canal${member.id}`;
 }
 
 function staffAuthConfigured() {

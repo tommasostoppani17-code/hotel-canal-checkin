@@ -5294,6 +5294,23 @@
       padding: 4px 8px;
       font-size: 13px;
     }
+
+    /* Final polish: step 2 must stay readable on short mobile heights. */
+    #step2 .step-body {
+      padding-bottom: calc(176px + env(safe-area-inset-bottom, 0px)) !important;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+
+    #step2 .form-grid-container {
+      row-gap: 12px !important;
+    }
+
+    @media (max-width: 720px) {
+      #step2 .form-grid-container {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -5304,7 +5321,7 @@
   <div class="apple-card is-entering" id="card">
     <div class="card-sheen" aria-hidden="true"></div>
     <div class="step-dots" id="stepDots" aria-hidden="true">
-      <span class="active"></span><span></span><span></span><span></span>
+      <span class="active"></span><span></span><span></span>
     </div>
 
     <div class="error" id="error" role="alert"></div>
@@ -5425,11 +5442,10 @@
               </div>
             </div>
           </div>
-          <h4 id="lbl-rest-title" hidden>Sconto 10% di benvenuto</h4>
-          <h1 id="lbl-title-2" hidden>Regalo di benvenuto</h1>
-          <p id="lbl-rest-blurb" hidden></p>
-          <p id="lbl-rest-sub" hidden></p>
-          <p id="lbl-rest-desc" hidden></p>
+          <h4 id="lbl-rest-title">Il nostro regalo per te</h4>
+          <p id="lbl-rest-blurb"></p>
+          <p id="lbl-rest-sub"></p>
+          <p id="lbl-rest-desc"></p>
         </div>
 
         <div class="step-footer-fixed" id="step3Footer">
@@ -7883,7 +7899,7 @@
      * Successo: micro rubber, poi salto netto allo step 3 (niente dissolve + slide sovrapposti).
      */
     function playSuccessKinetics(thenGo) {
-      const stepRoom = document.getElementById('step4');
+      const stepRoom = document.getElementById('step3');
       if (stepRoom) stepRoom.classList.remove('is-dissolving');
       playConfirmChime();
 
@@ -8259,7 +8275,7 @@
       btnNext.textContent = dict.nextBtn;
       if (btnDiningNext) btnDiningNext.textContent = dict.nextBtn;
       if (btnDiningBack) btnDiningBack.textContent = dict.back;
-      if (btnPhotosNext) btnPhotosNext.textContent = dict.nextBtn;
+      if (btnPhotosNext) btnPhotosNext.textContent = submitButtonLabel(dict);
       if (btnBack) btnBack.textContent = dict.back;
       if (btnCouponBack) btnCouponBack.textContent = dict.back;
       if (btnSubmit && !btnSubmit.disabled) btnSubmit.textContent = submitButtonLabel(dict);
@@ -9201,9 +9217,7 @@
         setStep(2);
         return;
       }
-      clearError();
-      playConfirmChime({ soft: true });
-      setStep(4);
+      submitFinal();
     });
 
     btnBack.addEventListener('click', () => {
@@ -9231,7 +9245,7 @@
 
     async function submitFinal() {
       if (submitting) return;
-      if (currentStep !== 4) setStep(4);
+      if (currentStep !== 3) setStep(3);
       if (!validateStep1()) {
         setStep(1);
         return;
@@ -9283,7 +9297,7 @@
       };
 
       try {
-        // Resta sullo step coupon mentre aspetta; successo solo dopo OK server
+        // Resta sulla schermata foto+regalo mentre aspetta; successo solo dopo OK server
         const response = await fetch('/api/checkins', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
