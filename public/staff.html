@@ -3724,26 +3724,94 @@
       margin-top: 6px;
     }
 
-    .plan-card-terms li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.55em;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: #c5d0d6;
+    .plan-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
-    @media (max-width: 900px) {
-      .plan-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
+    .plan-kpi {
+      padding: 14px 10px 12px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-m);
+      box-shadow: 0 2px 8px rgba(18, 68, 83, 0.02);
+    }
 
-      .plan-card--wide {
-        grid-column: auto;
-      }
+    .plan-kpi-value {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--canal-petroleum);
+      line-height: 1.15;
+    }
+
+    .plan-kpi-label {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.35;
+      color: #86868b;
+    }
+
+    .plan-section {
+      margin: 8px 0 12px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #86868b;
+    }
+
+    .plan-card-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .plan-card-price-row .plan-card-price {
+      margin: 0;
+    }
+
+    .plan-card-price-row .plan-card-period {
+      margin: 0;
+    }
+
+    .plan-updates {
+      margin: 16px 0 20px;
+    }
+
+    .plan-goal {
+      margin: 8px 0 0;
+      padding: 18px;
+      background: #fff;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-sheet-top);
+      box-shadow: 0 4px 12px rgba(18, 68, 83, 0.02);
+    }
+
+    .plan-goal p {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--canal-petroleum);
+      line-height: 1.45;
+    }
+
+    .plan-goal span {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #86868b;
+      letter-spacing: 0;
     }
 
     body:not(.can-info) #tabInfo,
@@ -5775,6 +5843,23 @@
         font-size: 20px;
       }
 
+      .plan-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .plan-kpi:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .plan-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .plan-card--wide {
+        grid-column: auto;
+      }
+
       .sys-settings-row {
         flex-wrap: wrap;
       }
@@ -6295,7 +6380,7 @@
               <circle cx="12" cy="7.5" r="1.1" fill="currentColor"/>
             </svg>
           </span>
-          Piani e moduli
+          Registro direzione
         </button>
         <button type="button" class="dash-nav-item" id="tabSettings">
           <span class="dash-nav-icon" aria-hidden="true">
@@ -6651,66 +6736,82 @@
             <div class="settings-scroll" id="infoScroll">
               <div class="sys-settings sys-settings--plans">
                 <header class="sys-settings-header">
-                  <h2>Piani e moduli</h2>
-                  <p>Il check-in è attivo. Qui i canoni, gli add-on e i rilasci in coda, con le condizioni di attivazione.</p>
+                  <h2>Registro direzione</h2>
+                  <p>Controllo di canoni, ricavi e impatto sul lavoro dello staff. Roadmap operativa Hotel Canal.</p>
                 </header>
 
+                <p class="plan-section">Beta v1.4</p>
+                <div class="plan-kpis" aria-label="Indicatori beta">
+                  <div class="plan-kpi">
+                    <span class="plan-kpi-value">1</span>
+                    <span class="plan-kpi-label">Canone unico. Tutti i servizi nello stesso abbonamento.</span>
+                  </div>
+                  <div class="plan-kpi">
+                    <span class="plan-kpi-value">0 doppi</span>
+                    <span class="plan-kpi-label">Check-in, gestione operativa ed Emily AI nella stessa piattaforma.</span>
+                  </div>
+                  <div class="plan-kpi">
+                    <span class="plan-kpi-value">~1.000</span>
+                    <span class="plan-kpi-label">Chat inbound al mese avviate dagli ospiti.</span>
+                  </div>
+                  <div class="plan-kpi">
+                    <span class="plan-kpi-value">0 carta</span>
+                    <span class="plan-kpi-label">Pulizie, colazioni, segnalazioni e attività solo in digitale.</span>
+                  </div>
+                  <div class="plan-kpi">
+                    <span class="plan-kpi-value">Live</span>
+                    <span class="plan-kpi-label">Camere e colazioni aggiornate dallo staff in tempo reale.</span>
+                  </div>
+                </div>
+
+                <p class="plan-section">Canone</p>
                 <div class="plan-grid" id="infoManagerWrap">
-                  <article class="plan-card">
+                  <article class="plan-card plan-card--wide">
                     <div class="plan-card-head">
-                      <h3 class="plan-card-title">Check-in digitale</h3>
-                      <span class="sys-settings-row-badge">Attivo</span>
+                      <h3 class="plan-card-title">Un solo canone</h3>
+                      <span class="sys-settings-row-badge">Listino</span>
                     </div>
-                    <p class="plan-card-price">Incluso</p>
-                    <p class="plan-card-period">nel canone della struttura</p>
-                    <p class="plan-card-summary">Registrazione ospite, Wi-Fi, coupon partner e report reception. Già in uso su Hotel Canal.</p>
+                    <div class="plan-card-price-row">
+                      <p class="plan-card-price">39 €</p>
+                      <p class="plan-card-period">al mese</p>
+                    </div>
+                    <p class="plan-card-summary">Check-in, Emily AI e gestione operativa in un unico sistema. Nessun abbonamento separato. Nessun costo nascosto da questa schermata.</p>
                     <ul class="plan-card-terms">
-                      <li>Nessun canone aggiuntivo per questo modulo.</li>
-                      <li>Dati identificativi fino a checkout + 7 giorni, poi anonimizzazione.</li>
-                      <li>Accesso riservato al personale autorizzato.</li>
+                      <li>Check-in digitale: informazioni ospite e attività di registrazione.</li>
+                      <li>Emily AI: assistenza 24/7 sulle domande frequenti degli ospiti.</li>
+                      <li>Gestione staff: camere, pulizie, colazioni e segnalazioni.</li>
+                      <li>Prenotazioni: predisposizione al collegamento con le OTA.</li>
+                      <li>Storico clienti: consultazione secondo le policy della struttura.</li>
                     </ul>
                   </article>
 
                   <article class="plan-card">
                     <div class="plan-card-head">
-                      <h3 class="plan-card-title">Sincronizzazione OTA</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">Pre-release</span>
+                      <h3 class="plan-card-title">Emily AI</h3>
+                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Add-on ospite</span>
                     </div>
-                    <p class="plan-card-price">Su richiesta</p>
-                    <p class="plan-card-period">attivazione direzione</p>
-                    <p class="plan-card-summary">Booking, Expedia e Airbnb entrano da sole. Disponibilità allineate, overbooking sotto controllo, niente copia in reception.</p>
+                    <div class="plan-card-price-row">
+                      <p class="plan-card-price">5 €</p>
+                      <p class="plan-card-period">a soggiorno</p>
+                    </div>
+                    <p class="plan-card-summary">L’ospite inquadra il QR in camera. Emily risponde 24/7 a Wi-Fi, orari e servizi, propone extra della struttura e invita i soddisfatti a lasciare una recensione.</p>
                     <ul class="plan-card-terms">
-                      <li>Non disponibile in produzione in questa fase.</li>
-                      <li>Si applicano le condizioni di ciascun canale.</li>
-                      <li>Nessun addebito da questa schermata.</li>
+                      <li>Guida della struttura e della città. Più autonomia per l’ospite, meno chiamate al banco.</li>
+                      <li>Servizi extra (cena, colazione, late check-out) proposti senza coinvolgere di continuo lo staff.</li>
+                      <li>Si applicano condizioni. Margine di guadagno per la struttura secondo accordo.</li>
                     </ul>
                   </article>
 
                   <article class="plan-card">
                     <div class="plan-card-head">
-                      <h3 class="plan-card-title">Housekeeping</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">In arrivo</span>
+                      <h3 class="plan-card-title">Network locale</h3>
+                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Referral</span>
                     </div>
-                    <p class="plan-card-price">In arrivo</p>
-                    <p class="plan-card-period">coordinamento interno</p>
-                    <p class="plan-card-summary">Un tap: camera pulita e pronta al check-in. Reception, piano e colazione sulla stessa timeline, senza telefonate tra reparti.</p>
+                    <p class="plan-card-price">Ricavi</p>
+                    <p class="plan-card-period">partner ristorante, spa, guide</p>
+                    <p class="plan-card-summary">Emily propone esperienze locali in modo amichevole e non invasivo: più flusso verso i partner, soggiorno più completo per l’ospite.</p>
                     <ul class="plan-card-terms">
-                      <li>Modulo operativo interno, non un canale ospite.</li>
-                      <li>Canone da definire in fase di attivazione.</li>
-                      <li>Nessun addebito da questa schermata.</li>
-                    </ul>
-                  </article>
-
-                  <article class="plan-card">
-                    <div class="plan-card-head">
-                      <h3 class="plan-card-title">Network partner</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Add-on</span>
-                    </div>
-                    <p class="plan-card-price">Variabile</p>
-                    <p class="plan-card-period">commissioni su referral</p>
-                    <p class="plan-card-summary">Ristorante, spa e guida. Emily le propone all’ospite senza pressione: un canale di ricavo per la struttura, un soggiorno più pieno per chi alloggia.</p>
-                    <ul class="plan-card-terms">
-                      <li>Si applicano le condizioni dei programmi di referral.</li>
+                      <li>Si applicano condizioni ai programmi di referral.</li>
                       <li>Niente marketing in uscita da Hotel Canal.</li>
                       <li>Attivazione su richiesta della direzione.</li>
                     </ul>
@@ -6718,45 +6819,90 @@
 
                   <article class="plan-card">
                     <div class="plan-card-head">
-                      <h3 class="plan-card-title">Emily AI</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Add-on</span>
+                      <h3 class="plan-card-title">Prenotazioni OTA</h3>
+                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">In coda</span>
                     </div>
-                    <p class="plan-card-price">5 €</p>
-                    <p class="plan-card-period">a soggiorno</p>
-                    <p class="plan-card-summary">QR in camera. Wi-Fi, colazione, taxi e città: l’ospite chiede a Emily, non al banco. Una guida da local, reception più libera.</p>
+                    <p class="plan-card-price">In coda</p>
+                    <p class="plan-card-period">quando il collegamento è reale</p>
+                    <p class="plan-card-summary">Collegamento a Booking.com, Expedia e alle principali agenzie per ridurre l’inserimento manuale, aggiornare le disponibilità e contenere l’overbooking.</p>
                     <ul class="plan-card-terms">
-                      <li>Non incluso nel check-in digitale.</li>
-                      <li>Si applicano le condizioni del servizio in camera.</li>
-                      <li>Fatturazione alla direzione. IVA secondo accordo.</li>
+                      <li>Si applicano le condizioni di ciascun canale.</li>
+                      <li>La funzione si attiva solo con collegamento reale disponibile.</li>
+                      <li>Nessun addebito da questa schermata.</li>
+                    </ul>
+                  </article>
+
+                  <article class="plan-card">
+                    <div class="plan-card-head">
+                      <h3 class="plan-card-title">Gestione operativa</h3>
+                      <span class="sys-settings-row-badge sys-settings-row-badge--soon">In arrivo</span>
+                    </div>
+                    <p class="plan-card-price">Digitale</p>
+                    <p class="plan-card-period">pulizie, colazioni, segnalazioni</p>
+                    <p class="plan-card-summary">Niente telefonate tra reparti né fogli sparsi. Un aggiornamento indica quando la camera è pulita e pronta al check-in. Reception e piano sulla stessa timeline.</p>
+                    <ul class="plan-card-terms">
+                      <li>Pulizie, colazioni, segnalazioni e check-in nella stessa piattaforma.</li>
+                      <li>Modulo interno, non un canale ospite.</li>
+                      <li>Incluso nel canone unico a 39 € quando attivo.</li>
                     </ul>
                   </article>
 
                   <article class="plan-card plan-card--wide">
                     <div class="plan-card-head">
-                      <h3 class="plan-card-title">Hub operativo</h3>
-                      <span class="sys-settings-row-badge sys-settings-row-badge--addon">Add-on</span>
+                      <h3 class="plan-card-title">Informazioni ospiti</h3>
+                      <span class="sys-settings-row-badge">In piattaforma</span>
                     </div>
-                    <p class="plan-card-price">39 €</p>
-                    <p class="plan-card-period">al mese, canone unico</p>
-                    <p class="plan-card-summary">Un solo sistema per check-in, pulizie, note e colazioni tra Canal, Walter, Airone e Ca’ dei Polo. Sestriere entra da browser, senza il Mac in reception.</p>
+                    <p class="plan-card-price">Sempre</p>
+                    <p class="plan-card-period">durante il soggiorno, secondo policy</p>
+                    <p class="plan-card-summary">Documento mancante, pagamento non andato a buon fine, minibar da verificare: i dati restano organizzati e recuperabili. Al check-in la struttura riceve un report riepilogativo.</p>
                     <ul class="plan-card-terms">
-                      <li>Modulo a parte, non compreso nel check-in.</li>
-                      <li>Canone unico per le strutture del gruppo, su attivazione.</li>
-                      <li>Nessun addebito automatico da questa schermata.</li>
+                      <li>Consultazione secondo le impostazioni e le policy di conservazione.</li>
+                      <li>Dati identificativi fino a checkout + 7 giorni, poi anonimizzazione.</li>
+                      <li>Accesso riservato al personale autorizzato.</li>
                     </ul>
                   </article>
                 </div>
 
+                <p class="plan-section">Aggiornamenti front desk</p>
+                <div class="sys-settings-group plan-updates">
+                  <div class="sys-settings-row">
+                    <div class="sys-settings-row-info">
+                      <span class="sys-settings-row-title">Codici porta automatici</span>
+                      <span class="sys-settings-row-desc">Al check-in il sistema può generare una chiave temporanea associata alla camera, al posto dei codici fissi.</span>
+                    </div>
+                    <span class="sys-settings-row-badge">Immediato</span>
+                  </div>
+                  <div class="sys-settings-row">
+                    <div class="sys-settings-row-info">
+                      <span class="sys-settings-row-title">Archivio storico clienti</span>
+                      <span class="sys-settings-row-desc">Ricerca degli ospiti passati e accesso alle informazioni disponibili direttamente dalla piattaforma.</span>
+                    </div>
+                    <span class="sys-settings-row-badge">Immediato</span>
+                  </div>
+                  <div class="sys-settings-row">
+                    <div class="sys-settings-row-info">
+                      <span class="sys-settings-row-title">Sincronizzazione OTA</span>
+                      <span class="sys-settings-row-desc">Collegamento con Booking.com, Expedia e altre piattaforme. Si attiva quando il collegamento reale è disponibile.</span>
+                    </div>
+                    <span class="sys-settings-row-badge sys-settings-row-badge--soon">In coda</span>
+                  </div>
+                </div>
+
+                <div class="plan-goal">
+                  <p>Meno lavoro manuale. Più controllo. Più ricavi. Un solo sistema.</p>
+                  <span>Registro direzione · Hotel Canal</span>
+                </div>
+
                 <footer class="sys-settings-legal">
                   <h3>Condizioni</h3>
-                  <p>I prezzi indicati sono di listino per Hotel Canal. Non costituiscono un ordine. L’attivazione di add-on e pre-release avviene solo su richiesta della direzione (Mizan, Payel).</p>
-                  <p>Nessun pagamento o rinnovo parte da questo pannello. IVA, fatturazione e contratti di canale restano fuori da questa schermata e si definiscono in sede.</p>
-                  <p>I moduli in pre-release o in arrivo non sono ancora disponibili in produzione. Il check-in digitale resta l’unico modulo attivo.</p>
+                  <p>I prezzi sono di listino per Hotel Canal e non costituiscono un ordine. L’attivazione di add-on, referral e pre-release avviene solo su richiesta della direzione (Mizan, Payel).</p>
+                  <p>Nessun pagamento o rinnovo parte da questo pannello. IVA, fatturazione e contratti di canale si definiscono in sede.</p>
+                  <p>I moduli in coda o in arrivo non sono ancora disponibili in produzione. Il check-in digitale è il modulo già attivo.</p>
                 </footer>
               </div>
             </div>
             <div class="footer-summary">
-              <span id="infoFooterLabel">Piani e moduli</span>
+              <span id="infoFooterLabel">Registro direzione</span>
               <span class="footer-summary-meta">Solo direzione</span>
             </div>
           </div>
@@ -7652,7 +7798,7 @@
       inhouse: 'In camera',
       blacklist: 'Segnalazioni',
       settings: 'Impostazioni',
-      info: 'Piani e moduli',
+      info: 'Registro direzione',
     };
 
     const VIEW_SUBTITLES = {
@@ -7661,7 +7807,7 @@
       inhouse: 'Soggiorno in corso',
       blacklist: 'Lista reception',
       settings: 'Reception · account e automazioni',
-      info: 'Canoni, add-on e prossimi rilasci',
+      info: 'Canoni, ricavi e impatto sullo staff',
     };
 
     const STAFF_SETTINGS_KEY = 'hotelCanalStaffSettings';
@@ -7826,7 +7972,7 @@
     }
 
     function resetRoadmap() {
-      if (infoFooterLabel) infoFooterLabel.textContent = 'Piani e moduli';
+      if (infoFooterLabel) infoFooterLabel.textContent = 'Registro direzione';
     }
 
     async function loadRoadmap() {
