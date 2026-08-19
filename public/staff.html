@@ -6575,13 +6575,9 @@
       }
 
       .clients-matrix .matrix-table tbody tr {
-        display: grid !important;
-        grid-template-columns: 36px minmax(0, 1fr) 36px;
-        grid-template-areas:
-          "room guest actions"
-          ". phone ."
-          ". email .";
-        align-items: start;
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: flex-start;
         width: 100%;
         box-sizing: border-box;
         height: auto !important;
@@ -6593,8 +6589,7 @@
         border-radius: var(--radius-ui);
         background: #fff !important;
         box-shadow: 0 1px 3px rgba(18, 68, 83, 0.05);
-        column-gap: 12px;
-        row-gap: 6px;
+        gap: 12px;
         cursor: pointer;
         transition: background-color 140ms ease;
       }
@@ -6643,13 +6638,14 @@
       }
 
       .clients-matrix .matrix-table tbody td.col-guest {
-        grid-area: guest;
+        flex: 1 1 0;
+        order: 2;
         min-height: 0;
         min-width: 0;
         padding: 0 !important;
         display: flex;
-        align-items: center;
-        overflow: hidden;
+        align-items: flex-start;
+        overflow: visible;
       }
 
       .clients-matrix .cell-guest {
@@ -6662,57 +6658,39 @@
       }
 
       .clients-matrix .matrix-table tbody td.col-room {
-        grid-area: room;
+        flex: 0 0 36px;
+        order: 1;
         width: 36px;
         margin: 0;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         padding-top: 2px;
       }
 
-      .clients-matrix .matrix-table tbody td.col-phone {
-        grid-area: phone;
-        display: flex !important;
-        align-items: center;
-        position: static !important;
-        width: auto !important;
-        height: auto !important;
-        overflow: visible !important;
-        pointer-events: auto !important;
-      }
-
-      .clients-matrix .matrix-table tbody td.col-email {
-        grid-area: email;
-        display: flex !important;
-        align-items: center;
-        position: static !important;
-        width: auto !important;
-        height: auto !important;
-        overflow: visible !important;
-        pointer-events: auto !important;
-      }
-
+      .clients-matrix .matrix-table tbody td.col-phone,
+      .clients-matrix .matrix-table tbody td.col-email,
       .clients-matrix .matrix-table tbody td.col-receptionist {
         display: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        overflow: hidden !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: 0 !important;
-        position: absolute !important;
-        pointer-events: none !important;
       }
 
       .clients-matrix .matrix-table tbody td.col-actions {
-        grid-area: actions;
+        flex: 0 0 36px;
+        order: 3;
         display: flex !important;
         align-items: flex-start;
         justify-content: center;
         width: 36px !important;
         height: 36px !important;
         padding: 0 !important;
-        margin-left: 0;
+        margin-left: auto;
+      }
+
+      .clients-matrix .cell-contacts {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+        margin-top: 8px;
       }
 
       .clients-matrix .cell-guest,
@@ -6802,6 +6780,17 @@
 
       .clients-matrix .contact-ios-label {
         display: none;
+      }
+
+      .clients-matrix .cell-contacts .contact-ios-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #8a9ba8;
+        line-height: 1.2;
+        margin-bottom: 1px;
       }
 
       .clients-matrix .secure-cell-wrapper,
@@ -6917,6 +6906,9 @@
         display: none !important;
       }
       .cell-phone-sub {
+        display: none !important;
+      }
+      .cell-contacts {
         display: none !important;
       }
       .m-date-btn {
@@ -10525,6 +10517,14 @@
       return 'No check-ins in this view.';
     }
 
+    function isMobileGuestList() {
+      try {
+        return window.matchMedia('(max-width: 900px)').matches;
+      } catch (_) {
+        return false;
+      }
+    }
+
     function guestMatrixRowHtml(row) {
       const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
       const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
@@ -10533,19 +10533,22 @@
       const sub = (activeView === 'inhouse' && row.checkoutDate)
         ? `Checkout ${formatDateShort(row.checkoutDate)}`
         : (row.stayDate ? formatDateShort(row.stayDate) : '');
+      const mobile = isMobileGuestList();
+      const contacts = `<div class="cell-contacts">${phoneCell}${emailCell}</div>`;
       return `
         <tr data-id="${row.id}" class="${row.blacklisted ? 'is-blacklisted' : ''}">
           <td class="col-guest">
             <div class="cell-guest">
               <div class="cell-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
               <div class="cell-phone-sub">${escapeHtml(sub)}</div>
+              ${mobile ? contacts : ''}
             </div>
           </td>
           <td class="col-room">
             <span class="cell-room${row.roomNumber ? '' : ' is-empty'}">${escapeHtml(row.roomNumber || '—')}</span>
           </td>
-          <td class="col-phone">${phoneCell}</td>
-          <td class="col-email">${emailCell}</td>
+          <td class="col-phone">${mobile ? '' : phoneCell}</td>
+          <td class="col-email">${mobile ? '' : emailCell}</td>
           <td class="col-receptionist">
             <div class="cell-receptionist-wrap">
               ${checkinStaffBadgeHtml(row.receptionist)}
@@ -12271,7 +12274,7 @@
         return;
       }
       if (!isMobileRowMenu()) return;
-      if (e.target.closest('.col-actions, .col-phone, .col-email, .btn-reveal, .secure-cell-wrapper, .contact-copy-target')) return;
+      if (e.target.closest('.col-actions, .col-phone, .col-email, .cell-contacts, .btn-reveal, .secure-cell-wrapper, .contact-copy-target')) return;
       const guestRowEl = e.target.closest('.clients-matrix tbody tr[data-id]');
       if (!guestRowEl || guestRowEl.querySelector('.empty')) return;
       const row = findRowForMenu(guestRowEl.getAttribute('data-id'));
@@ -12346,6 +12349,8 @@
     window.addEventListener('resize', () => {
       closeRowMenu();
       if (!isMobileRowMenu()) closeGuestSheet();
+      if (activeView === 'checkins' && lastCheckins.length) renderList(lastCheckins);
+      else if (activeView === 'inhouse' && lastInHouse.length) renderInHouse(lastInHouse);
       try {
         if (activeView === 'more' && window.matchMedia('(min-width: 901px)').matches) {
           setActiveView('checkins');

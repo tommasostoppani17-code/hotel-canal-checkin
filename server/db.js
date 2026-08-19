@@ -960,6 +960,25 @@ export function deleteStaffCheckin(id) {
   return { ok: true, id: numId };
 }
 
+const SEED_DEMO_TOKEN_PREFIX = 'seed-demo-50-';
+
+/** Rimuove i check-in inseriti da scripts/seed-checkins.mjs (mai in produzione). */
+export function purgeSeedDemoCheckins() {
+  if (!db) return 0;
+  const ids = db
+    .prepare(
+      `SELECT id FROM checkins WHERE coupon_token LIKE ?`,
+    )
+    .all(`${SEED_DEMO_TOKEN_PREFIX}%`)
+    .map((row) => Number(row.id))
+    .filter((id) => Number.isInteger(id) && id > 0);
+  if (!ids.length) return 0;
+  for (const id of ids) {
+    deleteStaffCheckin(id);
+  }
+  return ids.length;
+}
+
 /** Save dinner table preference (e.g. 20:15 or 2026-08-17 20:15) and optional party size. */
 export function setTableBooking(id, tableBooking, guestsCount = null) {
   const raw = String(tableBooking || '').trim().slice(0, 32);
@@ -1299,6 +1318,7 @@ export function importCheckinsIfEmpty(rows) {
     let n = 0;
     for (const row of list) {
       if (!row?.phone) continue;
+      if (String(row.coupon_token || '').startsWith('seed-demo-50-')) continue;
       // Backup già cifrato: non ri-cifrare. Legacy plaintext: cifra al ripristino.
       const phone = encryptField(row.phone);
       const email = row.email ? encryptField(row.email) : null;

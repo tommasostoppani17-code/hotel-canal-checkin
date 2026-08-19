@@ -47,6 +47,7 @@ import {
   listInboxNotes,
   listCheckinsForCsv,
   deleteStaffCheckin,
+  purgeSeedDemoCheckins,
   createReceptionNote,
   updateReceptionNote,
   setReceptionNoteStatus,
@@ -202,6 +203,11 @@ async function restoreCheckinsBackupIfNeeded() {
       console.log(`[backup] ripristinati ${n} checkins da Gist`);
     } else {
       console.log(`[backup] db locale ok (${countCheckins()} checkins)`);
+    }
+    const seedPurged = purgeSeedDemoCheckins();
+    if (seedPurged > 0) {
+      console.log(`[seed] rimossi ${seedPurged} check-in demo`);
+      void syncCheckinsBackup('seed-purge');
     }
     const mergedStats = mergeStaffMonthStats(staffMonthStats);
     const mergedLive = mergeStaffMonthStatsFromCheckins();
@@ -2649,6 +2655,15 @@ app.listen(PORT, async () => {
     console.warn('[boot] WIFI_PASSWORD mancante: lo step ospite non potra mostrare la rete');
   }
   await restoreCheckinsBackupIfNeeded();
+  try {
+    const seedPurged = purgeSeedDemoCheckins();
+    if (seedPurged > 0) {
+      console.log(`[seed] Boot: rimossi ${seedPurged} check-in demo`);
+      void syncCheckinsBackup('seed-purge');
+    }
+  } catch (err) {
+    console.error('[seed] Boot purge failed:', err.message || err);
+  }
   try {
     const purged = applyGdprRetention();
     if (purged > 0) {
