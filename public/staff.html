@@ -8010,62 +8010,21 @@
         <button type="button" class="ig-sheet-bar-close" id="noteSheetClose" aria-label="Chiudi">×</button>
       </header>
       <div class="ig-sheet-body">
-      <form id="noteSheetForm" class="sheet-form sheet-form--flat">
+      <form id="noteSheetForm" class="sheet-form sheet-form--flat" style="display:flex;flex-direction:column;gap:12px;padding:0;">
+        <input type="hidden" id="noteCategory" value="other">
+        <input type="hidden" id="noteDueDate" value="">
+        <input type="hidden" id="noteDueAt" value="">
+        <input type="hidden" id="noteDueTime" value="">
         <div class="sheet-field">
-          <label class="sheet-label" id="lbl-note-guest" for="noteGuestName">Ospite</label>
-          <input class="field" id="noteGuestName" maxlength="120" placeholder="Nome e cognome" autocomplete="off">
-        </div>
-        <div class="sheet-field">
-          <label class="sheet-label" id="lbl-note-room" for="noteRoom">Stanza</label>
-          <input class="field field--room" id="noteRoom" maxlength="8" placeholder="" inputmode="numeric" autocomplete="off">
-        </div>
-        <div class="sheet-field">
-          <label class="sheet-label" id="lbl-note-category" for="noteCategoryTrigger">Tipo</label>
-          <div class="ui-dropdown" id="noteCategoryDropdown">
-            <input type="hidden" id="noteCategory" value="other">
-            <button type="button" class="field ui-dropdown-trigger" id="noteCategoryTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="noteCategoryMenu">
-              <span class="ui-dropdown-leading" id="noteCategoryIcon" aria-hidden="true"></span>
-              <span class="ui-dropdown-value" id="noteCategoryValue">Altro</span>
-              <span class="ui-dropdown-chevron-wrap" aria-hidden="true">
-                <svg class="ui-dropdown-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-            </button>
-            <div class="ui-dropdown-menu ui-menu hidden" id="noteCategoryMenu" role="listbox" hidden></div>
-          </div>
-        </div>
-        <div class="sheet-grid-2 sheet-grid-2--schedule">
-          <div class="sheet-field">
-            <label class="sheet-label" id="lbl-note-date" for="noteDueDateTrigger">Data</label>
-            <input type="hidden" id="noteDueDate" value="">
-            <input type="hidden" id="noteDueAt" value="">
-            <button type="button" class="field ui-dropdown-trigger" id="noteDueDateTrigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="brandCalendar">
-              <span class="ui-dropdown-value" id="noteDueDateValue"></span>
-              <span class="ui-dropdown-chevron-wrap" aria-hidden="true">
-                <svg class="ui-dropdown-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-            </button>
-          </div>
-          <div class="sheet-field">
-            <label class="sheet-label" id="lbl-note-time" for="noteDueTimeTrigger">Ora</label>
-            <div class="ui-dropdown" id="noteDueTimeDropdown">
-              <input type="hidden" id="noteDueTime" value="">
-              <button type="button" class="field ui-dropdown-trigger" id="noteDueTimeTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="noteDueTimeMenu">
-                <span class="ui-dropdown-value" id="noteDueTimeValue">Tutto il giorno</span>
-                <span class="ui-dropdown-chevron-wrap" aria-hidden="true">
-                  <svg class="ui-dropdown-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-              </button>
-              <div class="ui-dropdown-menu ui-menu hidden" id="noteDueTimeMenu" role="listbox" hidden></div>
-            </div>
-          </div>
+          <label class="sheet-label" id="lbl-note-guest" for="noteGuestName" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:var(--canal-petroleum);margin-bottom:6px;margin-left:2px;">Ospite o Stanza *</label>
+          <input class="field" id="noteGuestName" maxlength="120" placeholder="Es. Tommaso Stoppani o 104" autocomplete="off" style="height:44px;background:#F2F2F7;border:1px solid transparent;border-radius:14px;padding:0 16px;font-size:16px;outline:none;transition:all 0.2s cubic-bezier(0.16,1,0.3,1);" onfocus="this.style.background='#fff';this.style.borderColor='var(--canal-petroleum)';this.style.boxShadow='0 0 0 3px rgba(18,68,83,0.1)'" onblur="this.style.background='#F2F2F7';this.style.borderColor='transparent';this.style.boxShadow='none'">
+          <input type="hidden" id="noteRoom" value="">
         </div>
         <div class="sheet-field">
-          <label class="sheet-label" id="lbl-note-instruction" for="noteInstruction">Nota</label>
-          <textarea class="field field--textarea" id="noteInstruction" maxlength="1200" rows="4" placeholder="Es. Taxi alle 09:00"></textarea>
+          <label class="sheet-label" id="lbl-note-instruction" for="noteInstruction" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:var(--canal-petroleum);margin-bottom:6px;margin-left:2px;">Dettaglio Nota *</label>
+          <textarea class="field field--textarea" id="noteInstruction" maxlength="1200" rows="3" placeholder="Es. Taxi ordinato alle 09:00 per domani mattina..." style="height:90px;background:#F2F2F7;border:1px solid transparent;border-radius:14px;padding:12px 16px;font-size:16px;resize:none;outline:none;transition:all 0.2s cubic-bezier(0.16,1,0.3,1);" onfocus="this.style.background='#fff';this.style.borderColor='var(--canal-petroleum)';this.style.boxShadow='0 0 0 3px rgba(18,68,83,0.1)'" onblur="this.style.background='#F2F2F7';this.style.borderColor='transparent';this.style.boxShadow='none'"></textarea>
         </div>
-        <div class="sheet-foot sheet-foot--minimal">
-          <button type="submit" class="btn-primary" id="noteSheetSave">Salva</button>
-        </div>
+        <button type="submit" class="btn-primary" id="noteSheetSave" style="width:100%;height:50px;background:var(--canal-petroleum);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;letter-spacing:-0.2px;cursor:pointer;display:flex;justify-content:center;align-items:center;margin-top:8px;transition:transform 0.1s ease,background-color 0.15s ease;" onpointerdown="this.style.transform='scale(0.985)';this.style.background='#0A2D37'" onpointerup="this.style.transform='';this.style.background=''" onpointerleave="this.style.transform='';this.style.background=''">Salva Nota</button>
       </form>
       </div>
     </div>
