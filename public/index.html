@@ -10516,13 +10516,12 @@
       const actions = document.getElementById('guestActions');
       const note = document.getElementById('lbl-reception-note');
       if (note) note.textContent = dict.receptionNote || '';
-      // Stesso hub del primo check-in: coupon + menu. “Nuovo check-in” solo per i tester.
+      // Stesso hub del primo check-in: coupon + menu.
       if (actions) {
         actions.hidden = false;
       }
       const reentry = document.getElementById('guestReentry');
       const reentryBtn = document.getElementById('btnNewCheckin');
-      if (reentry) reentry.hidden = true;
       if (reentryBtn) {
         reentryBtn.textContent = dict.newCheckin || 'Nuovo check-in';
         reentryBtn.onclick = (e) => {
@@ -10531,6 +10530,7 @@
           startFreshCheckin();
         };
       }
+      if (reentry) reentry.hidden = !already;
       closeGuestSheet();
       const bookTime = document.getElementById('bookTime');
       const bookPax = document.getElementById('bookPax');
