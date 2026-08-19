@@ -3245,13 +3245,14 @@
     }
 
     .sys-settings-header {
-      margin-bottom: 24px;
+      margin-bottom: 32px;
+      text-align: center;
     }
 
     .sys-settings-header h2 {
       margin: 0 0 8px;
       font-family: "Cinzel", Georgia, serif;
-      font-size: clamp(22px, 2.4vw, 28px);
+      font-size: clamp(24px, 3vw, 32px);
       font-weight: 700;
       letter-spacing: var(--letter-brand);
       color: var(--canal-petroleum);
@@ -3730,12 +3731,12 @@
 
     #infoPanel.table-panel,
     .info-panel {
-      background: #f5f5f7;
+      background: linear-gradient(180deg, #f8fafb 0%, #eef3f6 100%);
     }
 
     .info-panel .footer-summary {
-      background: #fafafa;
-      border-top: 1px solid var(--table-row-divider);
+      background: rgba(255,255,255,0.7);
+      border-top: 1px solid rgba(18, 68, 83, 0.08);
     }
 
     .sys-settings--plans .sys-settings-legal {
@@ -3743,15 +3744,28 @@
       padding-top: 40px;
     }
 
+    .sys-settings--plans {
+      padding: 24px 20px 32px;
+    }
+
     .plan-block {
-      padding: 36px 0 40px;
-      border-top: 1px solid rgba(18, 68, 83, 0.14);
+      padding: 28px 24px 32px;
+      border-top: 0;
+      border: 1px solid rgba(18, 68, 83, 0.1);
+      border-radius: 20px;
+      background: #fff;
       text-align: left;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(18, 68, 83, 0.04);
+      transition: box-shadow 200ms ease;
+    }
+
+    .plan-block:hover {
+      box-shadow: 0 6px 24px rgba(18, 68, 83, 0.08);
     }
 
     .plan-block:first-child {
-      border-top: 0;
-      padding-top: 20px;
+      border-top: 1px solid rgba(18, 68, 83, 0.1);
     }
 
     .plan-block--compact {
@@ -3764,9 +3778,10 @@
 
     .plan-head {
       display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      margin: 0 0 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 14px;
     }
 
     .plan-index {
@@ -3774,13 +3789,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      margin-top: 2px;
-      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      margin: 0;
+      border-radius: 8px;
       background: var(--canal-petroleum);
       color: #fff;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
       letter-spacing: -0.02em;
       font-variant-numeric: tabular-nums;
@@ -3788,12 +3803,13 @@
 
     .plan-block h3 {
       margin: 0;
-      font-size: 26px;
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 20px;
       font-weight: 700;
-      letter-spacing: -0.035em;
-      line-height: 1.18;
+      letter-spacing: 0.01em;
+      line-height: 1.25;
       text-transform: none;
-      color: #1d1d1f;
+      color: var(--canal-petroleum);
     }
 
     .plan-block--compact h3 {
@@ -3802,18 +3818,19 @@
 
     .plan-lead {
       margin: 0;
-      font-size: 17px;
-      font-weight: 500;
-      line-height: 1.55;
-      color: #1d1d1f;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: #3a3a3c;
     }
 
     .plan-muted {
-      margin: 16px 0 0;
-      font-size: 14px;
-      font-weight: 500;
+      margin: 12px 0 0;
+      font-size: 13px;
+      font-weight: 400;
       line-height: 1.5;
-      color: #5b7380;
+      color: #86868b;
+      font-style: italic;
     }
 
     .plan-head + .plan-lead,
@@ -4120,6 +4137,27 @@
       padding-top: 28px;
     }
 
+    .sys-settings--plans .sys-settings-legal {
+      margin-top: 8px;
+      padding: 20px 24px;
+      background: rgba(18, 68, 83, 0.02);
+      border-radius: 14px;
+      border: 1px solid rgba(18, 68, 83, 0.06);
+    }
+
+    .sys-settings--plans .sys-settings-legal h3 {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 14px;
+      color: var(--canal-petroleum);
+      margin-bottom: 8px;
+    }
+
+    .sys-settings--plans .sys-settings-legal p {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #86868b;
+    }
+
     .plan-collage img {
       display: block;
       width: 100%;
@@ -4151,27 +4189,31 @@
 
     .plan-badge-soon {
       display: inline-block;
-      margin-left: 10px;
-      padding: 3px 10px;
+      margin-left: 0;
+      padding: 4px 12px;
       font-family: 'Montserrat', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #7a6e2a;
-      background: #fef3cd;
+      letter-spacing: 0.08em;
+      color: #fff;
+      background: linear-gradient(135deg, #b8860b, #d4a940);
       border-radius: 20px;
       vertical-align: middle;
+      box-shadow: 0 2px 6px rgba(184, 134, 11, 0.25);
     }
 
     .plan-price-hero {
       text-align: center;
-      margin: 20px 0 6px;
+      margin: 24px 0 8px;
+      padding: 20px 0;
       font-family: 'Montserrat', sans-serif;
-      font-size: 36px;
-      font-weight: 700;
+      font-size: 44px;
+      font-weight: 800;
       color: var(--canal-petroleum);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
+      background: linear-gradient(180deg, rgba(18,68,83,0.03) 0%, transparent 100%);
+      border-radius: 16px;
     }
     .plan-price-hero small {
       display: block;
@@ -4196,8 +4238,12 @@
     .plan-optional-note {
       text-align: center;
       font-size: 13px;
-      color: #86868b;
-      margin-top: 8px;
+      color: #5b7380;
+      margin-top: 12px;
+      padding: 14px 18px;
+      background: rgba(18, 68, 83, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(18, 68, 83, 0.06);
     }
 
     .plan-lead + .plan-table-shot {
@@ -4208,9 +4254,9 @@
       margin: 0;
       overflow: hidden;
       background: #fff;
-      border: 1px solid rgba(18, 68, 83, 0.12);
-      border-radius: 18px;
-      box-shadow: 0 10px 32px rgba(18, 68, 83, 0.08);
+      border: 1px solid rgba(18, 68, 83, 0.08);
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(18, 68, 83, 0.06);
       pointer-events: none;
       user-select: none;
     }
@@ -6425,7 +6471,18 @@
       }
 
       .plan-block h3 {
-        font-size: 22px;
+        font-size: 18px;
+      }
+
+      .plan-block {
+        padding: 20px 18px 24px;
+        margin-bottom: 12px;
+        border-radius: 16px;
+      }
+
+      .plan-price-hero {
+        font-size: 36px;
+        padding: 16px 0;
       }
 
       .plan-block--compact h3 {
@@ -7754,7 +7811,7 @@
                   <h2>Beta v1.4</h2>
                 </header>
 
-                <div id="infoManagerWrap">
+                <div id="infoManagerWrap" style="max-width:640px;margin:0 auto;">
                 <section class="plan-block">
                   <header class="plan-head">
                     <span class="plan-index" aria-hidden="true">1</span>
@@ -7784,8 +7841,6 @@
                   </header>
                   <p class="plan-lead">L’integrazione con il gestionale (<strong>PMS</strong>) tramite Email Parsing consentirà di inoltrare le email di prenotazione e far inserire i dati in automatico, azzerando il data-entry. Il collegamento con Booking Expert e i Channel Manager aggiornerà l’inventario camere <strong>in tempo reale</strong>, bloccando l’<strong>overbooking</strong> sulle OTA.</p>
                 </section>
-
-
 
                 <section class="plan-block">
                   <header class="plan-head">
