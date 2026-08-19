@@ -11253,6 +11253,7 @@
       noteDueTimeTrigger?.focus();
     });
     document.getElementById('calPrev')?.addEventListener('click', (e) => {
+      if (mDateCalOpen) return;
       e.preventDefault();
       e.stopPropagation();
       noteCalCursor = noteCalCursor.m === 0
@@ -11262,6 +11263,7 @@
       positionNoteBrandCalendar();
     });
     document.getElementById('calNext')?.addEventListener('click', (e) => {
+      if (mDateCalOpen) return;
       e.preventDefault();
       e.stopPropagation();
       noteCalCursor = noteCalCursor.m === 11
@@ -11271,6 +11273,7 @@
       positionNoteBrandCalendar();
     });
     document.getElementById('calGrid')?.addEventListener('click', (e) => {
+      if (mDateCalOpen) return;
       const day = e.target.closest('[data-ymd]');
       if (!day) return;
       e.preventDefault();
@@ -11806,28 +11809,98 @@
     });
 
     const mDateBtn = document.getElementById('mDateBtn');
-    const mDateInput = document.createElement('input');
-    mDateInput.type = 'date';
-    mDateInput.style.cssText = 'position:absolute;opacity:0;width:0;height:0;pointer-events:none';
-    if (mDateBtn) {
-      mDateBtn.parentNode.appendChild(mDateInput);
-      mDateBtn.addEventListener('click', () => {
-        const dates = lastSevenDates(lastToday);
-        mDateInput.min = dates[0];
-        mDateInput.max = dates[dates.length - 1];
-        mDateInput.value = selectedDate || lastToday;
-        mDateInput.showPicker?.();
-        mDateInput.click();
-      });
-      mDateInput.addEventListener('change', () => {
-        const v = mDateInput.value;
-        if (!v || v === selectedDate) return;
-        selectedDate = v;
-        renderDays(lastToday);
-        searchEl.value = '';
-        loadList();
-      });
+    let mDateCalOpen = false;
+    let mDateCalCursor = { y: 0, m: 0 };
+
+    function renderMDateCal() {
+      const cal = document.getElementById('brandCalendar');
+      const title = document.getElementById('calTitle');
+      const dows = document.getElementById('calDows');
+      const grid = document.getElementById('calGrid');
+      if (!cal || !title || !dows || !grid) return;
+      const sel = selectedDate || lastToday;
+      const cursor = new Date(mDateCalCursor.y, mDateCalCursor.m, 1);
+      title.textContent = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(cursor);
+      if (!dows.dataset.ready) {
+        dows.dataset.ready = '1';
+        dows.innerHTML = NOTE_CAL_DOWS.map(l => `<span class="brand-calendar-dow">${l}</span>`).join('');
+      }
+      const firstDow = (cursor.getDay() + 6) % 7;
+      const daysInMonth = new Date(mDateCalCursor.y, mDateCalCursor.m + 1, 0).getDate();
+      const today = romeToday();
+      const dates = lastSevenDates(lastToday);
+      const minD = dates[0], maxD = dates[dates.length - 1];
+      const cells = [];
+      for (let i = 0; i < firstDow; i++) cells.push('<span class="brand-calendar-day is-pad"></span>');
+      for (let d = 1; d <= daysInMonth; d++) {
+        const iso = ymdFromParts(mDateCalCursor.y, mDateCalCursor.m, d);
+        const on = iso === sel;
+        const isToday = iso === today;
+        const disabled = iso < minD || iso > maxD;
+        cells.push(`<button type="button" class="brand-calendar-day${on ? ' is-on' : ''}${isToday ? ' is-today' : ''}" data-ymd="${iso}" data-mdate="1"${disabled ? ' disabled' : ''}>${d}</button>`);
+      }
+      grid.innerHTML = cells.join('');
     }
+
+    function positionMDateCal() {
+      const cal = document.getElementById('brandCalendar');
+      if (!cal || !mDateBtn) return;
+      cal.removeAttribute('hidden');
+      cal.setAttribute('aria-hidden', 'false');
+      const tr = mDateBtn.getBoundingClientRect();
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const h = cal.offsetHeight, w = cal.offsetWidth;
+      let left = tr.left + tr.width / 2 - w / 2;
+      if (left < 12) left = 12;
+      if (left + w > vw - 12) left = vw - 12 - w;
+      let top = tr.bottom + 6;
+      if (top + h > vh - 12 && tr.top - h - 6 > 12) top = tr.top - h - 6;
+      cal.style.left = `${Math.round(left)}px`;
+      cal.style.top = `${Math.round(top)}px`;
+    }
+
+    function closeMDateCal() {
+      mDateCalOpen = false;
+      const cal = document.getElementById('brandCalendar');
+      if (cal) { cal.setAttribute('hidden', ''); cal.setAttribute('aria-hidden', 'true'); }
+    }
+
+    function openMDateCal() {
+      if (noteCalOpen) closeNoteBrandCalendar();
+      if (mDateCalOpen) { closeMDateCal(); return; }
+      const parsed = parseYmdParts(selectedDate || lastToday) || { y: new Date().getFullYear(), m: new Date().getMonth() };
+      mDateCalCursor = { y: parsed.y, m: parsed.m };
+      mDateCalOpen = true;
+      renderMDateCal();
+      positionMDateCal();
+    }
+
+    if (mDateBtn) {
+      mDateBtn.addEventListener('click', (e) => { e.stopPropagation(); openMDateCal(); });
+    }
+
+    document.getElementById('calGrid')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-mdate]');
+      if (!btn || btn.disabled) return;
+      const iso = btn.dataset.ymd;
+      if (!iso) return;
+      selectedDate = iso;
+      renderDays(lastToday);
+      searchEl.value = '';
+      loadList();
+      closeMDateCal();
+    });
+
+    document.getElementById('calPrev')?.addEventListener('click', () => {
+      if (mDateCalOpen) { mDateCalCursor.m--; if (mDateCalCursor.m < 0) { mDateCalCursor.m = 11; mDateCalCursor.y--; } renderMDateCal(); }
+    });
+    document.getElementById('calNext')?.addEventListener('click', () => {
+      if (mDateCalOpen) { mDateCalCursor.m++; if (mDateCalCursor.m > 11) { mDateCalCursor.m = 0; mDateCalCursor.y++; } renderMDateCal(); }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (mDateCalOpen && !e.target.closest('#brandCalendar') && !e.target.closest('#mDateBtn')) closeMDateCal();
+    });
 
     daysEl.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-date]');
