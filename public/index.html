@@ -5541,7 +5541,11 @@
       justify-content: flex-start !important;
       align-items: stretch !important;
       height: auto;
-      min-height: 100%;
+      min-height: 0;
+      flex: 1 1 auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding-left: var(--ios-inset) !important;
       padding-right: var(--ios-inset) !important;
       padding-bottom: var(--ios-4);
@@ -5769,7 +5773,7 @@
     /* Footer ancorato — niente buco enorme sproporzionato */
     #step4 .reception-note,
     .reception-note {
-      margin: var(--ios-6) 0 var(--ios-2) !important;
+      margin: var(--ios-4) 0 var(--ios-1) !important;
       padding: 0;
       font-size: 11px;
       font-weight: 600;
@@ -5784,21 +5788,27 @@
 
     #step4 .guest-reentry {
       margin: 0 !important;
-      padding: var(--ios-2) 0 0;
+      padding: 4px 0 0;
       text-align: center;
       flex: 0 0 auto;
       width: 100%;
     }
 
+    #step4 .guest-reentry[hidden] {
+      display: none !important;
+    }
+
     #step4 .guest-reentry .btn-text-link {
-      min-height: 36px;
-      padding: 8px 10px;
+      min-height: 44px;
+      padding: 8px 12px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      color: #636366 !important;
+      color: var(--canal-petroleum) !important;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
     @media (max-width: 390px) {
@@ -10530,7 +10540,7 @@
           startFreshCheckin();
         };
       }
-      if (reentry) reentry.hidden = !already;
+      if (reentry) reentry.hidden = false;
       closeGuestSheet();
       const bookTime = document.getElementById('bookTime');
       const bookPax = document.getElementById('bookPax');
