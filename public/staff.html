@@ -7908,6 +7908,10 @@
               Impostazioni
               <span>Account</span>
             </button>
+            <button type="button" class="m-more-item" id="btnNewCheckin">
+              Nuovo check-in
+              <span>Ospite</span>
+            </button>
             <button type="button" class="m-more-item m-more-item--exit" id="btnLogoutMobile">
               Esci
             </button>
@@ -11770,6 +11774,10 @@
     });
     document.getElementById('btnLogoutMobile')?.addEventListener('click', () => {
       document.getElementById('btnLogout')?.click();
+    });
+
+    document.getElementById('btnNewCheckin')?.addEventListener('click', () => {
+      window.open('/', '_blank');
     });
 
     daysEl.addEventListener('click', (e) => {
