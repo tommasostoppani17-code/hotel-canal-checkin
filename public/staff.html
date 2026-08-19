@@ -460,6 +460,15 @@
       line-height: 1.45;
     }
 
+    .gate-local-hint {
+      margin: 14px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--canal-petroleum);
+      line-height: 1.4;
+      text-align: center;
+    }
+
     .gate-form {
       position: relative;
       z-index: 6;
@@ -2023,19 +2032,61 @@
 
     .toast {
       display: none;
-      flex-shrink: 0;
-      margin-bottom: 10px;
-      padding: 12px 16px;
-      border-radius: var(--radius-ui);
-      background: rgba(232, 243, 249, 0.85);
-      border: 0.5px solid var(--sky-border-soft);
-      color: var(--canal-petroleum);
+      position: fixed;
+      top: calc(12px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      z-index: 240;
+      margin: 0;
+      padding: 11px 18px;
+      max-width: min(340px, calc(100vw - 32px));
+      border: 0;
+      border-radius: 980px;
+      background: rgba(22, 22, 24, 0.88);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px) saturate(180%);
+      color: #fff;
       font-size: 13px;
       font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      text-align: center;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+      pointer-events: none;
+      transform: translateX(-50%);
     }
 
-    .toast.is-on { display: block; }
-    .toast.is-err { background: rgba(209, 36, 47, 0.08); border-color: rgba(209, 36, 47, 0.15); color: var(--danger); }
+    .toast.is-on {
+      display: block;
+      animation: hudIn 380ms cubic-bezier(0.32, 0.72, 0, 1) both;
+    }
+
+    .toast.is-err {
+      background: rgba(198, 40, 40, 0.94);
+      color: #fff;
+      border: 0;
+    }
+
+    @keyframes hudIn {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .toast.is-on { animation: none; }
+    }
+
+    @media (min-width: 901px) {
+      body.is-dashboard .toast {
+        top: 18px;
+        left: calc(132px + 50%);
+      }
+    }
 
     .alert-stack {
       position: fixed;
@@ -3322,23 +3373,29 @@
     }
 
     .sys-settings-group-head {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-right: 10px;
+      column-gap: 12px;
+      row-gap: 8px;
+      padding: 14px 14px 12px 18px;
       background: var(--table-head-bg);
       border-bottom: 1px solid var(--table-border);
     }
 
     .sys-settings-group-head .sys-settings-group-title {
-      flex: 1;
+      grid-column: 1;
+      grid-row: 1;
+      flex: unset;
       border-bottom: 0;
-      padding-right: 0;
+      padding: 0;
+      background: transparent;
     }
 
     .sys-settings-add-btn {
       display: none;
+      grid-column: 2;
+      grid-row: 1;
       align-items: center;
       justify-content: center;
       height: 32px;
@@ -3358,7 +3415,9 @@
     }
 
     .sys-settings-rank-hint {
-      margin: 0 18px 10px;
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin: 0;
       font-size: 12px;
       font-weight: 500;
       line-height: 1.4;
@@ -3671,52 +3730,287 @@
 
     #infoPanel.table-panel,
     .info-panel {
-      background: #fff;
+      background: #f5f5f7;
     }
 
     .info-panel .footer-summary {
-      background: #fff;
+      background: #fafafa;
       border-top: 1px solid var(--table-row-divider);
     }
 
     .sys-settings--plans {
-      max-width: 840px;
-    }
-
-    .sys-settings--plans .sys-settings-header h2 {
-      font-size: clamp(32px, 5vw, 48px);
-      letter-spacing: -0.03em;
-      line-height: 1.05;
+      max-width: 680px;
     }
 
     .sys-settings--plans .sys-settings-header {
-      margin-bottom: 32px;
+      margin: 8px 0 8px;
+      text-align: center;
     }
 
-    .plan-section {
-      margin: 28px 0 10px;
+    .sys-settings--plans .sys-settings-header h2 {
+      margin: 0;
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.05;
+      color: var(--canal-petroleum);
+    }
+
+    .plan-block {
+      padding: 40px 0 44px;
+      border-top: 1px solid rgba(18, 68, 83, 0.14);
+    }
+
+    .plan-block:first-child {
+      border-top: 0;
+      padding-top: 28px;
+    }
+
+    .plan-block h3 {
+      margin: 0 0 18px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8a9ba8;
+    }
+
+    .plan-lead {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: #1d1d1f;
+    }
+
+    .plan-lead + .plan-lead,
+    .plan-lead + .plan-canon,
+    .plan-lead + .plan-roadmap,
+    .plan-lead + .plan-flow,
+    .plan-shot + .plan-lead {
+      margin-top: 16px;
+    }
+
+    .plan-lead strong,
+    .plan-roadmap p strong,
+    .plan-includes span strong,
+    .plan-note strong {
+      font-weight: 700;
+      color: var(--canal-petroleum);
+    }
+
+    .plan-roadmap {
+      list-style: none;
+      margin: 4px 0 0;
+      padding: 0;
+    }
+
+    .plan-roadmap li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px 24px;
+      align-items: start;
+      padding: 20px 0;
+      border-top: 1px solid rgba(18, 68, 83, 0.08);
+    }
+
+    .plan-roadmap li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .plan-roadmap strong {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #1d1d1f;
+    }
+
+    .plan-roadmap p {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: #5b7380;
+    }
+
+    .plan-when {
+      margin-top: 3px;
+      font-size: 12px;
+      font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      color: var(--canal-petroleum);
+      white-space: nowrap;
+    }
+
+    .plan-when.is-queued {
+      color: #8a9ba8;
+    }
+
+    .plan-canon {
+      display: grid;
+      grid-template-columns: minmax(140px, 0.38fr) minmax(0, 1fr);
+      gap: 28px 40px;
+      align-items: start;
+    }
+
+    .plan-price {
+      margin: 0;
+      font-size: clamp(48px, 8vw, 64px);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      line-height: 0.9;
+      color: var(--canal-petroleum);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .plan-period {
+      margin: 10px 0 0;
+      font-size: 14px;
+      font-weight: 600;
       color: #86868b;
     }
 
-    .plan-section:first-of-type {
-      margin-top: 0;
-    }
-
-    .plan-prose {
+    .plan-includes {
+      list-style: none;
       margin: 0;
-      max-width: 38em;
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 1.55;
-      color: var(--text-main);
+      padding: 0;
     }
 
-    .plan-prose + .plan-prose {
-      margin-top: 10px;
+    .plan-includes li {
+      padding: 12px 0;
+      border-top: 1px solid rgba(18, 68, 83, 0.08);
+    }
+
+    .plan-includes li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .plan-includes strong {
+      display: block;
+      margin: 0 0 3px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+
+    .plan-includes span {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #5b7380;
+    }
+
+    .plan-shot {
+      margin: 0 0 22px;
+    }
+
+    .plan-shot img,
+    .plan-shots img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 18px;
+      object-fit: cover;
+    }
+
+    .plan-shots {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 22px 0 8px;
+    }
+
+    .plan-shots img {
+      aspect-ratio: 4 / 3;
+      height: 100%;
+    }
+
+    .plan-reviews {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 20px 0 0;
+    }
+
+    .plan-reviews img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(18, 68, 83, 0.08);
+    }
+
+    .plan-gain {
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 8px 24px;
+      align-items: center;
+      margin: 28px 0 0;
+      padding-top: 28px;
+      border-top: 1px solid rgba(18, 68, 83, 0.08);
+    }
+
+    .plan-gain .plan-shot {
+      margin: 0;
+      grid-row: span 3;
+    }
+
+    .plan-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      margin: 28px 0 20px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .plan-flow li {
+      position: relative;
+      padding: 0 18px 0 0;
+    }
+
+    .plan-flow li:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 36px;
+      right: 10px;
+      height: 1px;
+      background: rgba(18, 68, 83, 0.16);
+    }
+
+    .plan-flow b {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      background: var(--canal-petroleum);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .plan-flow strong {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+
+    .plan-flow span {
+      font-size: 13px;
+      font-weight: 500;
+      color: #5b7380;
     }
 
     .plan-note {
@@ -3727,156 +4021,51 @@
       line-height: 1.45;
     }
 
-    .plan-updates {
-      margin: 4px 0 8px;
-      border-top: 1px solid var(--table-row-divider);
-    }
-
-    .sys-settings--plans .plan-updates .sys-settings-row {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    .plan-card-price {
-      margin: 0;
-      font-size: clamp(36px, 5vw, 48px);
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      color: var(--canal-petroleum);
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-    }
-
-    .plan-card-period {
-      margin: 8px 0 0;
-      font-size: 13px;
-      font-weight: 600;
-      color: #86868b;
-      letter-spacing: 0.01em;
-    }
-
-    .plan-canon {
-      display: grid;
-      grid-template-columns: minmax(140px, 200px) minmax(0, 1fr);
-      gap: 28px 40px;
-      align-items: start;
-    }
-
-    .plan-canon-includes {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .plan-canon-includes li {
-      padding: 8px 0;
-      border-bottom: 1px solid var(--table-row-divider);
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.4;
-      color: var(--text-main);
-    }
-
-    .plan-canon-includes li:first-child {
-      padding-top: 0;
-    }
-
-    .plan-canon-includes li:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .plan-canon-includes span {
-      display: block;
-      margin-top: 2px;
-      font-size: 12px;
-      font-weight: 500;
-      color: #86868b;
-    }
-
-    .plan-earn .plan-card-price {
-      margin-top: 16px;
-    }
-
-    .plan-emily-photos {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .plan-emily-photos img {
-      display: block;
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      object-fit: cover;
-      border-radius: 12px;
-      background: #e8eef1;
-    }
-
-    .plan-break {
-      margin: 40px 0 8px;
-      border: 0;
-      border-top: 1px solid var(--table-row-divider);
-    }
-
-    .plan-flow {
-      display: flex;
-      align-items: flex-start;
-      gap: 0;
-      margin: 8px 0 0;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .plan-flow-step {
-      flex: 1 1 0;
-      min-width: 92px;
-    }
-
-    .plan-flow-num {
-      display: block;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      color: var(--canal-petroleum);
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-    }
-
-    .plan-flow-step strong {
-      display: block;
+    .sys-settings--plans .sys-settings-legal {
       margin-top: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
+      padding-top: 40px;
     }
 
-    .plan-flow-step span {
-      display: block;
-      margin-top: 4px;
+    .plan-lead + .plan-table-shot {
+      margin-top: 22px;
+    }
+
+    .plan-table-shot {
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 18px;
+      box-shadow: 0 10px 32px rgba(18, 68, 83, 0.08);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .plan-table-chrome {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 10px;
+      background: #fafafa;
+      border-bottom: 1px solid rgba(18, 68, 83, 0.1);
       font-size: 12px;
-      font-weight: 500;
-      line-height: 1.35;
+      font-weight: 600;
       color: #86868b;
     }
 
-    .plan-flow-arrow {
-      flex: 0 0 28px;
-      height: 22px;
-      margin-top: 6px;
-      background: linear-gradient(90deg, var(--canal-petroleum), var(--canal-petroleum)) no-repeat center / 100% 1px;
-      opacity: 0.28;
+    .plan-table-chrome strong {
+      color: #1d1d1f;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
 
     .plan-table-mini {
-      margin-top: 14px;
+      margin: 0;
       overflow: hidden;
       pointer-events: none;
       user-select: none;
-      transform: scale(0.92);
-      transform-origin: top left;
-      width: calc(100% / 0.92);
+      background: #fff;
+      border: 0;
+      border-radius: 0;
     }
 
     .plan-table-mini .matrix-table {
@@ -4589,6 +4778,28 @@
       border-radius: var(--radius-ios);
     }
 
+    .sheet-foot--split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 24px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .sheet-foot--split .btn-exit,
+    .sheet-foot--split .btn-primary {
+      width: 100%;
+      height: 48px;
+      margin: 0;
+      padding: 0 12px;
+      border-radius: var(--radius-ios);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
     .sheet-guest-line {
       margin: 0 0 12px;
       font-size: 15px;
@@ -4713,6 +4924,10 @@
       height: 44px;
       margin-top: 0;
       border-radius: var(--radius-ui);
+    }
+
+    .ig-sheet-body .sheet-foot--split {
+      margin-top: 24px;
     }
 
     .report-result {
@@ -5227,20 +5442,35 @@
       filter: brightness(1.05);
     }
 
+    .team-confirm {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+      padding-top: 8px;
+    }
+
     .team-confirm-copy {
-      margin: 0 0 8px;
-      font-size: 15px;
+      margin: 0 0 10px;
+      font-size: 17px;
       font-weight: 600;
+      letter-spacing: -0.02em;
       color: var(--text-main);
-      line-height: 1.4;
+      line-height: 1.35;
+      text-wrap: pretty;
     }
 
     .team-confirm-note {
-      margin: 0 0 16px;
-      font-size: 13px;
+      margin: 0 auto;
+      max-width: 28em;
+      font-size: 14px;
       font-weight: 500;
-      color: var(--text-secondary);
+      color: #86868b;
       line-height: 1.45;
+    }
+
+    .team-confirm .sheet-foot--split {
+      margin-top: 24px;
     }
 
     .sheet-foot .btn-exit {
@@ -5250,6 +5480,15 @@
       border-color: var(--input-border);
       font-size: 13px;
       color: #3a525c;
+    }
+
+    .sheet-foot--split .btn-exit,
+    .sheet-foot--split .btn-primary {
+      height: 48px;
+      padding: 0 12px;
+      border-radius: var(--radius-ios);
+      font-size: 15px;
+      font-weight: 600;
     }
 
     .sheet-form .ui-dropdown-menu {
@@ -6037,16 +6276,22 @@
         min-height: 44px;
       }
 
-      .sheet-foot {
+      .sheet-foot:not(.sheet-foot--split) {
         flex-direction: column;
         gap: 8px;
         padding-top: 12px;
       }
 
-      .sheet-foot .btn-primary,
-      .sheet-foot .btn-exit {
+      .sheet-foot:not(.sheet-foot--split) .btn-primary,
+      .sheet-foot:not(.sheet-foot--split) .btn-exit {
         width: 100%;
         height: 46px;
+      }
+
+      .sheet-foot--split .btn-primary,
+      .sheet-foot--split .btn-exit {
+        width: 100%;
+        height: 48px;
       }
 
       .notify-menu {
@@ -6098,17 +6343,28 @@
         font-size: 20px;
       }
 
-      .plan-canon {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .plan-emily-photos {
+      .plan-canon,
+      .plan-gain {
         grid-template-columns: 1fr;
       }
 
-      .plan-flow-step {
-        min-width: 72px;
+      .plan-gain .plan-shot {
+        grid-row: auto;
+        max-width: 180px;
+      }
+
+      .plan-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px 12px;
+      }
+
+      .plan-flow li:not(:last-child)::after {
+        display: none;
+      }
+
+      .plan-shots,
+      .plan-reviews {
+        grid-template-columns: 1fr 1fr;
       }
 
       .plan-table-mini {
@@ -6577,6 +6833,7 @@
           </div>
         </div>
         <button class="btn-canal" id="btnLogin" type="submit">Entra</button>
+        <p class="gate-local-hint hidden" id="localLoginHint"></p>
       </form>
     </div>
   </section>
@@ -6706,8 +6963,6 @@
       </header>
 
       <div class="dash-content">
-        <p class="toast" id="error" role="alert"></p>
-
         <div class="workspace" id="workspace">
           <div class="workspace-toolbar" id="workspaceToolbar">
             <div class="dash-toolbar">
@@ -6910,17 +7165,17 @@
                     <div class="sys-settings-row">
                       <div class="sys-settings-row-info">
                         <span class="sys-settings-row-title">Invia report contatti automatico</span>
-                        <span class="sys-settings-row-desc">Il report notturno parte ogni giorno alle 00:00 (fuso Roma) verso l'amministrazione.</span>
+                        <span class="sys-settings-row-desc" id="prefAutoReportDesc">Il report parte ogni giorno alle 00:00 (fuso Roma) verso l'amministrazione.</span>
                       </div>
                       <span class="sys-settings-row-badge">Attivo</span>
                     </div>
 
-                    <div class="sys-settings-row sys-settings-row--disabled">
+                    <div class="sys-settings-row">
                       <div class="sys-settings-row-info">
                         <span class="sys-settings-row-title">Orario di spedizione report</span>
-                        <span class="sys-settings-row-desc">Gestito dal server. Contatta l'amministratore per modificare la pianificazione.</span>
+                        <span class="sys-settings-row-desc">Fuso Europa/Roma. Il cambio vale dal prossimo invio.</span>
                       </div>
-                      <input type="time" class="sys-settings-input" id="prefReportTime" value="00:00" disabled aria-label="Orario report automatico">
+                      <input type="time" class="sys-settings-input" id="prefReportTime" value="00:00" step="60" aria-label="Orario report automatico">
                     </div>
                   </div>
 
@@ -6954,8 +7209,8 @@
                   <div class="sys-settings-group-head">
                     <div class="sys-settings-group-title">Classifica reception</div>
                     <button type="button" class="sys-settings-add-btn" id="btnAddStaff">Aggiungi</button>
+                    <p class="sys-settings-rank-hint" id="settingsRankHint">Solo la direzione può aggiungere o togliere personale.</p>
                   </div>
-                  <p class="sys-settings-rank-hint" id="settingsRankHint">Solo la direzione può aggiungere o togliere personale.</p>
                   <div class="sys-settings-rank" id="settingsRank"></div>
                 </div>
 
@@ -7008,145 +7263,141 @@
                 </header>
 
                 <div id="infoManagerWrap">
-                <p class="plan-section">In sintesi</p>
-                <p class="plan-prose">L’ospite inquadra il QR, lascia stanza, telefono ed email e accetta la privacy. La reception vede i check-in in lista, svela i contatti solo quando servono, e a fine giornata parte il report. Niente fogli. Niente numeri da ricopiare a mano.</p>
+                <section class="plan-block">
+                  <h3>In sintesi</h3>
+                  <p class="plan-lead">Il check-in digitale è <strong>già realtà</strong>. L’ospite inquadra il QR code, seleziona la stanza, inserisce i propri dati e accetta la privacy. I nuovi arrivi compaiono <strong>all’istante</strong> nella dashboard della reception: i dati di contatto rimangono <strong>protetti</strong> e visibili solo in caso di necessità. A fine giornata, il sistema genera e invia un <strong>report automatico</strong>.</p>
+                  <div class="plan-table-shot" aria-hidden="true">
+                    <div class="plan-table-chrome"><strong>Clienti</strong><span>Oggi</span></div>
+                    <div class="plan-table-mini">
+                    <table class="matrix-table matrix-table--clients">
+                      <colgroup>
+                        <col class="col-guest">
+                        <col class="col-room">
+                        <col class="col-phone">
+                        <col class="col-email">
+                        <col class="col-receptionist">
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th class="col-guest">Ospite</th>
+                          <th class="col-room">Stanza</th>
+                          <th class="col-phone">Telefono</th>
+                          <th class="col-email">Email</th>
+                          <th class="col-receptionist">Check-in da</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="col-guest"><div class="cell-guest"><div class="cell-name">Rossi Marco</div></div></td>
+                          <td class="col-room"><span class="cell-room">12</span></td>
+                          <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+39 ••• 4412</span></div></div></td>
+                          <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">m••••@gmail.com</span></div></div></td>
+                          <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">A</span></span></td>
+                        </tr>
+                        <tr>
+                          <td class="col-guest"><div class="cell-guest"><div class="cell-name">Chen Li</div></div></td>
+                          <td class="col-room"><span class="cell-room">8</span></td>
+                          <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+86 ••• 8801</span></div></div></td>
+                          <td class="col-email"><div class="secure-cell-wrapper is-empty"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="data-empty">—</span></div></div></td>
+                          <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">J</span></span></td>
+                        </tr>
+                        <tr>
+                          <td class="col-guest"><div class="cell-guest"><div class="cell-name">Dupont Sophie</div></div></td>
+                          <td class="col-room"><span class="cell-room">21</span></td>
+                          <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+33 ••• 2290</span></div></div></td>
+                          <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">s••••@icloud.com</span></div></div></td>
+                          <td class="col-receptionist"><span class="badge-container"><span class="initial-badge initial-badge--manager">M</span></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    </div>
+                  </div>
+                </section>
 
-                <p class="plan-section">Prossimi aggiornamenti</p>
-                <div class="plan-updates">
-                  <div class="sys-settings-row">
-                    <div class="sys-settings-row-info">
-                      <span class="sys-settings-row-title">Codici porta automatici</span>
-                      <span class="sys-settings-row-desc">Al check-in il sistema può generare una chiave temporanea associata alla camera, al posto dei codici fissi.</span>
-                    </div>
-                    <span class="sys-settings-row-badge">Immediato</span>
-                  </div>
-                  <div class="sys-settings-row">
-                    <div class="sys-settings-row-info">
-                      <span class="sys-settings-row-title">Archivio storico clienti</span>
-                      <span class="sys-settings-row-desc">Ricerca degli ospiti passati e accesso alle informazioni disponibili direttamente dalla piattaforma.</span>
-                    </div>
-                    <span class="sys-settings-row-badge">Immediato</span>
-                  </div>
-                  <div class="sys-settings-row">
-                    <div class="sys-settings-row-info">
-                      <span class="sys-settings-row-title">Sincronizzazione OTA</span>
-                      <span class="sys-settings-row-desc">Collegamento con Booking.com, Expedia e altre piattaforme. Si attiva quando il collegamento reale è disponibile.</span>
-                    </div>
-                    <span class="sys-settings-row-badge sys-settings-row-badge--soon">In coda</span>
-                  </div>
-                </div>
+                <section class="plan-block">
+                  <h3>Sicurezza e fluidità dei dati</h3>
+                  <p class="plan-lead">Documenti, pagamenti e consumazioni minibar sono sempre accessibili in reception e nel <strong>report giornaliero</strong>.</p>
+                </section>
 
-                <p class="plan-section">Canone</p>
-                <div class="plan-canon">
-                  <div>
-                    <p class="plan-card-price">39 €</p>
-                    <p class="plan-card-period">al mese</p>
-                  </div>
-                  <ul class="plan-canon-includes">
-                    <li>Check-in digitale<span>Informazioni ospite, privacy, report in reception.</span></li>
-                    <li>Emily AI<span>WhatsApp 24/7 su Wi-Fi, orari, extra e recensioni.</span></li>
-                    <li>Gestione staff<span>Camere, pulizie, colazioni e segnalazioni.</span></li>
-                    <li>Prenotazioni<span>Predisposizione al collegamento con le OTA.</span></li>
-                    <li>Storico clienti<span>Consultazione secondo le policy della struttura.</span></li>
+                <section class="plan-block">
+                  <h3>Gestione automatizzata e tutela dall’overbooking</h3>
+                  <p class="plan-lead">Il modulo di check-in digitale rappresenta il primo passo verso la completa automazione dei processi di reception. La roadmap di sviluppo prevede un’estensione delle funzionalità per ottimizzare la gestione delle prenotazioni e la distribuzione online.</p>
+                  <ul class="plan-roadmap">
+                    <li>
+                      <div>
+                        <strong>Sincronizzazione PMS tramite Email Parsing</strong>
+                        <p>Il prossimo upgrade consentirà la perfetta integrazione con il gestionale di struttura. Sarà sufficiente inoltrare le email di prenotazione al software: il sistema estrarrà automaticamente i dati per popolare il gestionale, eliminando i tempi di data-entry manuale e i relativi rischi di errore.</p>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <strong>Integrazione Channel Manager (Booking Expert)</strong>
+                        <p>Successivamente al consolidamento del flusso PMS, verrà implementata l’interfaccia diretta con i sistemi di distribuzione e Channel Manager. Questo permetterà l’aggiornamento automatizzato e in tempo reale dell’inventario camere, ottimizzando l’apertura e chiusura delle disponibilità sui canali OTA.</p>
+                      </div>
+                    </li>
                   </ul>
-                </div>
+                </section>
 
-                <p class="plan-section">Guadagni</p>
-                <div class="plan-earn">
-                  <p class="plan-prose">Emily propone tutto su WhatsApp. L’ospite inquadra il QR in camera e chiede dal telefono: Wi-Fi, orari, cena, late check-out, ristorante, spa, guida. Niente chiamata al banco. I partner locali ricevono flusso, la struttura vende extra, chi è soddisfatto lascia una recensione.</p>
-                  <p class="plan-card-price">5 €</p>
-                  <p class="plan-card-period">a soggiorno · facoltativo</p>
-                  <p class="plan-note">Referral e Emily si attivano solo se la direzione lo vuole. Non sono nel canone.</p>
-                  <div class="plan-emily-photos" hidden></div>
-                </div>
-
-                <hr class="plan-break">
-
-                <p class="plan-section">Prenotazioni</p>
-                <p class="plan-prose">Collegamento a Booking.com, Expedia e alle agenzie. Meno inserimento a mano, disponibilità allineate, overbooking sotto controllo. Si attiva quando il collegamento è reale.</p>
-
-                <p class="plan-section">Digitale</p>
-                <p class="plan-prose">Un aggiornamento e la camera è pulita. Reception e piano sulla stessa riga. Zero telefonate tra i reparti.</p>
-                <div class="plan-flow" aria-label="Flusso operativo">
-                  <div class="plan-flow-step">
-                    <span class="plan-flow-num">1</span>
-                    <strong>Piano</strong>
-                    <span>Camera da fare</span>
+                <section class="plan-block">
+                  <h3>Canone di servizio e funzionalità incluse</h3>
+                  <p class="plan-lead">Il canone di servizio è fissato a <strong>39 € al mese</strong> e garantisce la piena operatività della struttura, offrendo una soluzione completa per l’ottimizzazione del front desk.</p>
+                  <div class="plan-canon">
+                    <div>
+                      <p class="plan-price">39 €</p>
+                      <p class="plan-period">al mese</p>
+                    </div>
+                    <ul class="plan-includes">
+                      <li><strong>Gestione e sicurezza del dato</strong><span>Massimi standard di protezione e riservatezza per le informazioni di tutti gli ospiti, in totale conformità con le normative privacy correnti (<strong>GDPR</strong>).</span></li>
+                      <li><strong>Controllo operativo e tracciabilità</strong><span>Tutti i check-in vengono organizzati in un’unica <strong>dashboard centralizzata</strong>. Il sistema traccia l’attività dei singoli receptionist, offrendo alla direzione uno strumento preciso per monitorare le <strong>performance</strong> dello staff.</span></li>
+                      <li><strong>Programma di referral integrato</strong><span>Funzionalità nativa per incentivare il passaparola e tracciare le segnalazioni, ottimizzando l’acquisizione di nuovi clienti.</span></li>
+                    </ul>
                   </div>
-                  <span class="plan-flow-arrow" aria-hidden="true"></span>
-                  <div class="plan-flow-step">
-                    <span class="plan-flow-num">2</span>
-                    <strong>Pulita</strong>
-                    <span>Un tap</span>
-                  </div>
-                  <span class="plan-flow-arrow" aria-hidden="true"></span>
-                  <div class="plan-flow-step">
-                    <span class="plan-flow-num">3</span>
-                    <strong>Reception</strong>
-                    <span>Check-in</span>
-                  </div>
-                  <span class="plan-flow-arrow" aria-hidden="true"></span>
-                  <div class="plan-flow-step">
-                    <span class="plan-flow-num">4</span>
-                    <strong>Colazione</strong>
-                    <span>Coperti</span>
-                  </div>
-                </div>
-                <p class="plan-note">Pulizie, colazioni, segnalazioni e check-in nello stesso sistema.</p>
+                </section>
 
-                <p class="plan-section">Informazioni ospiti</p>
-                <p class="plan-prose">Come arriva in reception. Documento, pagamento, minibar: i dati restano in lista per tutto il soggiorno.</p>
-                <div class="plan-table-mini" aria-hidden="true">
-                  <table class="matrix-table matrix-table--clients">
-                    <colgroup>
-                      <col class="col-guest">
-                      <col class="col-room">
-                      <col class="col-phone">
-                      <col class="col-email">
-                      <col class="col-receptionist">
-                    </colgroup>
-                    <thead>
-                      <tr>
-                        <th class="col-guest">Ospite</th>
-                        <th class="col-room">Stanza</th>
-                        <th class="col-phone">Telefono</th>
-                        <th class="col-email">Email</th>
-                        <th class="col-receptionist">Check-in da</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="col-guest"><div class="cell-guest"><div class="cell-name">Rossi Marco</div></div></td>
-                        <td class="col-room"><span class="cell-room">12</span></td>
-                        <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+39 ••• 4412</span></div></div></td>
-                        <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">m••••@gmail.com</span></div></div></td>
-                        <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">A</span></span></td>
-                      </tr>
-                      <tr>
-                        <td class="col-guest"><div class="cell-guest"><div class="cell-name">Chen Li</div></div></td>
-                        <td class="col-room"><span class="cell-room">8</span></td>
-                        <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+86 ••• 8801</span></div></div></td>
-                        <td class="col-email"><div class="secure-cell-wrapper is-empty"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="data-empty">—</span></div></div></td>
-                        <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">J</span></span></td>
-                      </tr>
-                      <tr>
-                        <td class="col-guest"><div class="cell-guest"><div class="cell-name">Dupont Sophie</div></div></td>
-                        <td class="col-room"><span class="cell-room">21</span></td>
-                        <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+33 ••• 2290</span></div></div></td>
-                        <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">s••••@icloud.com</span></div></div></td>
-                        <td class="col-receptionist"><span class="badge-container"><span class="initial-badge initial-badge--manager">M</span></span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                <section class="plan-block">
+                  <h3>Guadagni</h3>
+                  <figure class="plan-shot">
+                    <img src="/emily/whatsapp.png" alt="Emily AI su WhatsApp: l’ospite chiede dal telefono Wi-Fi, orari e extra.">
+                  </figure>
+                  <p class="plan-lead">Emily risponde su WhatsApp, <strong>24 ore su 24</strong>: Wi-Fi, orari, cena, late check-out, ristorante, spa, guida. L’ospite inquadra il QR in camera e chiede dal telefono, <strong>senza passare dal banco</strong>. I partner locali ricevono più flusso, la struttura può vendere extra, e chi è soddisfatto lascia una recensione.</p>
+                  <div class="plan-shots">
+                    <img src="/emily/ristorante.jpg" alt="Tavolo in ristorante partner.">
+                    <img src="/emily/venice.jpg" alt="Venezia, guida locale.">
+                  </div>
+                  <div class="plan-reviews">
+                    <img src="/emily/review-1.png" alt="Recensione Google.">
+                    <img src="/emily/review-2.png" alt="Recensione Google.">
+                  </div>
+                  <div class="plan-gain">
+                    <figure class="plan-shot">
+                      <img src="/emily/qr-checkin.png" alt="QR in camera per Emily AI.">
+                    </figure>
+                    <p class="plan-price">5 €</p>
+                    <p class="plan-period">a soggiorno · facoltativo</p>
+                    <p class="plan-note">Referral ed Emily si attivano solo se la direzione lo decide. <strong>Non sono nel canone</strong>: i <strong>5 €</strong> li paga l’ospite, se accetta.</p>
+                  </div>
+                </section>
+
+                <section class="plan-block">
+                  <h3>Digitale</h3>
+                  <p class="plan-lead">Reception e piano lavorano sulla <strong>stessa riga</strong>. Quando una camera è pronta basta un aggiornamento: non servono telefonate tra i reparti per sapere se si può fare il check-in.</p>
+                  <ol class="plan-flow">
+                    <li><b>1</b><strong>Piano</strong><span>Camera da fare</span></li>
+                    <li><b>2</b><strong>Pulita</strong><span>Confermata</span></li>
+                    <li><b>3</b><strong>Reception</strong><span>Check-in</span></li>
+                    <li><b>4</b><strong>Colazione</strong><span>Coperti</span></li>
+                  </ol>
+                  <p class="plan-lead">Pulizie, colazioni, segnalazioni e check-in restano nello <strong>stesso sistema</strong>, senza fogli sparsi tra i piani.</p>
+                </section>
 
                 <footer class="sys-settings-legal">
                   <h3>Condizioni</h3>
-                  <p>Listino per le strutture che adottano la piattaforma. Non è un ordine. L’attivazione di add-on, referral e moduli in coda avviene su richiesta della direzione di ciascuna struttura.</p>
-                  <p>Nessun pagamento o rinnovo parte da questo pannello. IVA, fatturazione e contratti si definiscono in sede.</p>
-                  <p>Il check-in digitale è il modulo già attivo. Codici porta, archivio, OTA e gestione operativa si rilasciano quando il collegamento è reale.</p>
+                  <p>Questo è il listino per le strutture che adottano la piattaforma, non un ordine. Add-on, referral e moduli in coda si attivano solo su richiesta della direzione di ciascuna struttura.</p>
+                  <p>Da questo pannello non parte nessun pagamento né rinnovo. IVA, fatturazione e contratti si definiscono in sede.</p>
+                  <p>Il check-in digitale è il modulo già attivo. PMS, Channel Manager e gestione operativa si rilasciano quando il collegamento è reale.</p>
                 </footer>
                 </div>
+
               </div>
             </div>
             <div class="footer-summary">
@@ -7162,6 +7413,8 @@
   </section>
 
   </div>
+
+  <p class="toast" id="error" role="status" aria-live="polite"></p>
 
   <div class="sheet sheet--ig" id="noteSheet" hidden aria-hidden="true">
     <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="noteSheetCloseBg" aria-label="Chiudi"></button>
@@ -7349,16 +7602,16 @@
             <label class="sheet-label" id="lbl-team-pin-confirm" for="teamSheetPinConfirm">Conferma password</label>
             <input class="field" id="teamSheetPinConfirm" type="password" inputmode="text" maxlength="64" autocomplete="new-password" placeholder="Ripeti la password">
           </div>
-          <div class="sheet-foot sheet-foot--minimal">
+          <div class="sheet-foot sheet-foot--minimal sheet-foot--split">
             <button type="button" class="btn-exit" id="teamSheetCancel">Annulla</button>
             <button type="submit" class="btn-primary" id="teamSheetContinue">Continua</button>
           </div>
         </form>
-        <div id="teamSheetConfirm" class="sheet-form sheet-form--flat hidden" hidden>
+        <div id="teamSheetConfirm" class="sheet-form sheet-form--flat team-confirm hidden" hidden>
           <p class="team-confirm-copy" id="teamConfirmCopy"></p>
           <p class="team-confirm-note" id="teamConfirmNote"></p>
-          <div class="sheet-foot sheet-foot--minimal">
-            <button type="button" class="btn-exit" id="teamConfirmBack">Indietro</button>
+          <div class="sheet-foot sheet-foot--minimal sheet-foot--split">
+            <button type="button" class="btn-exit" id="teamConfirmBack">Annulla</button>
             <button type="button" class="btn-primary" id="teamConfirmYes">Conferma</button>
           </div>
         </div>
@@ -7814,10 +8067,13 @@
 
     function showServerToast(msg, isErr = false) {
       clearTimeout(toastTimer);
+      if (!errorEl) return;
       errorEl.textContent = msg;
-      errorEl.classList.add('is-on');
       errorEl.classList.toggle('is-err', Boolean(isErr));
-      toastTimer = window.setTimeout(clearServerToast, isErr ? 5200 : 3200);
+      errorEl.classList.remove('is-on');
+      void errorEl.offsetWidth;
+      errorEl.classList.add('is-on');
+      toastTimer = window.setTimeout(clearServerToast, isErr ? 4200 : 2200);
     }
 
     function activePanelEl() {
@@ -8347,7 +8603,7 @@
       inhouse: 'Soggiorno in corso',
       blacklist: 'Lista reception',
       settings: 'Reception · account e automazioni',
-      info: 'Beta v1.4',
+      info: '',
     };
 
     const STAFF_SETTINGS_KEY = 'hotelCanalStaffSettings';
@@ -8373,20 +8629,38 @@
       localStorage.setItem(STAFF_SETTINGS_KEY, JSON.stringify(prefs));
     }
 
+    function normalizeReportTime(raw) {
+      const match = String(raw || '').trim().match(/^(\d{1,2}):([0-5]\d)(?::[0-5]\d)?$/);
+      if (!match) return '';
+      const hour = Number(match[1]);
+      if (!Number.isInteger(hour) || hour > 23) return '';
+      return `${String(hour).padStart(2, '0')}:${match[2]}`;
+    }
+
+    function paintReportTimeCopy(hhmm) {
+      const time = normalizeReportTime(hhmm) || '00:00';
+      const desc = document.getElementById('prefAutoReportDesc');
+      if (desc) {
+        desc.textContent = `Il report parte ogni giorno alle ${time} (fuso Roma) verso l'amministrazione.`;
+      }
+    }
+
     function paintStaffSettingsForm(prefs = readStaffSettings()) {
       const gdprEl = document.getElementById('prefGdprMask');
       const timeoutEl = document.getElementById('prefSessionTimeout');
       const reportTimeEl = document.getElementById('prefReportTime');
       if (gdprEl) gdprEl.checked = prefs.gdprMask !== false;
       if (timeoutEl) timeoutEl.value = String(prefs.sessionTimeoutMin ?? '30');
-      if (reportTimeEl) reportTimeEl.value = prefs.reportTime || '00:00';
+      const reportTime = normalizeReportTime(prefs.reportTime) || '00:00';
+      if (reportTimeEl) reportTimeEl.value = reportTime;
+      paintReportTimeCopy(reportTime);
     }
 
     function collectStaffSettingsFromForm() {
       return {
         gdprMask: true,
         sessionTimeoutMin: document.getElementById('prefSessionTimeout')?.value || '30',
-        reportTime: document.getElementById('prefReportTime')?.value || '00:00',
+        reportTime: normalizeReportTime(document.getElementById('prefReportTime')?.value) || '00:00',
       };
     }
 
@@ -10177,11 +10451,20 @@
       try {
         paintStaffSettingsForm();
         if (currentStaff?.label) paintSettingsIdentity(currentStaff.label, currentStaff.id);
-        const res = await fetch('/api/staff/stats', { credentials: 'same-origin' });
-        if (res.status === 401) { showLogin(); return; }
-        const body = await res.json().catch(() => ({}));
+        const [statsRes, settingsRes] = await Promise.all([
+          fetch('/api/staff/stats', { credentials: 'same-origin' }),
+          fetch('/api/staff/settings', { credentials: 'same-origin' }),
+        ]);
+        if (statsRes.status === 401 || settingsRes.status === 401) { showLogin(); return; }
+        const body = await statsRes.json().catch(() => ({}));
+        const settings = await settingsRes.json().catch(() => ({}));
         if (body.staff) currentStaff = { ...currentStaff, ...body.staff };
         document.body.classList.toggle('manager', Boolean(currentStaff?.manager));
+        if (settings.ok && settings.reportTime) {
+          const prefs = { ...readStaffSettings(), reportTime: settings.reportTime };
+          writeStaffSettings(prefs);
+          paintStaffSettingsForm(prefs);
+        }
         renderSettingsStats(body);
       } finally {
         setPanelBusy(false);
@@ -10261,11 +10544,39 @@
     tabInfo?.addEventListener('click', () => setActiveView('info'));
     tabSettings?.addEventListener('click', () => setActiveView('settings'));
 
-    document.getElementById('settingsPrefsForm')?.addEventListener('submit', (e) => {
+    document.getElementById('settingsPrefsForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const prefs = collectStaffSettingsFromForm();
-      applyStaffSettings(prefs);
-      showServerToast('Impostazioni salvate');
+      const saveBtn = document.getElementById('btnSettingsSave');
+      if (saveBtn) saveBtn.disabled = true;
+      try {
+        const res = await fetch('/api/staff/settings', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reportTime: prefs.reportTime }),
+        });
+        if (res.status === 401) { showLogin(); return; }
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          showServerToast(body.error || 'Impossibile salvare l\'orario', true);
+          return;
+        }
+        applyStaffSettings({
+          ...prefs,
+          reportTime: body.reportTime || prefs.reportTime,
+        });
+        paintStaffSettingsForm(readStaffSettings());
+        showServerToast(`Report automatico alle ${body.reportTime || prefs.reportTime}`);
+      } catch (_) {
+        showServerToast('Errore di rete. Riprova.', true);
+      } finally {
+        if (saveBtn) saveBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('prefReportTime')?.addEventListener('input', () => {
+      paintReportTimeCopy(document.getElementById('prefReportTime')?.value);
     });
 
     document.getElementById('btnSettingsCancel')?.addEventListener('click', () => {
@@ -10802,7 +11113,24 @@
       }
     }
 
+    async function applyLocalLoginHint() {
+      try {
+        const res = await fetch('/api/staff/login-info', { credentials: 'same-origin' });
+        const body = await res.json().catch(() => ({}));
+        const local = body.local;
+        const hint = document.getElementById('localLoginHint');
+        if (!local?.staff || !local?.pin || !hint) return;
+        hint.textContent = `Locale: ${local.staff} · ${local.pin}`;
+        hint.classList.remove('hidden');
+        if (staffMemberEl && !staffMemberEl.value) staffMemberEl.value = local.staff;
+        if (pinEl && !pinEl.value) pinEl.value = local.pin;
+      } catch (_) {
+        /* ignore */
+      }
+    }
+
     async function checkSession() {
+      await applyLocalLoginHint();
       const res = await fetch('/api/staff/session', { credentials: 'same-origin' });
       const body = await res.json().catch(() => ({}));
       if (body.ok) {

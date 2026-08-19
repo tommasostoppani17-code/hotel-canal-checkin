@@ -27,18 +27,18 @@ export function emailFontsHead() {
 }
 
 /** Prosa principale (saluti, paragrafi). */
-export function emailBodyStyle({ size = '16px', line = '1.55' } = {}) {
+export function emailBodyStyle({ size = '18px', line = '1.55' } = {}) {
   return `font-family:${EMAIL_BODY};font-style:italic;font-size:${size};line-height:${line};font-weight:400`;
 }
 
 /** Label uppercase (ORARIO, STANZA, …). */
-export function emailLabelStyle({ size = '11px', color = '#8A949C' } = {}) {
+export function emailLabelStyle({ size = '13px', color = '#8A949C' } = {}) {
   return `font-family:${EMAIL_SANS};font-size:${size};font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${color} !important`;
 }
 
 /** Titolo brand / display uppercase. */
 export function emailDisplayStyle({
-  size = '25px',
+  size = '27px',
   color = '#164E5B',
   tracking = '0.12em',
 } = {}) {
@@ -47,7 +47,7 @@ export function emailDisplayStyle({
 
 /** Eyebrow partner (PARTNER · HOTEL CANAL). */
 export function emailEyebrowStyle({
-  size = '10.5px',
+  size = '12.5px',
   color = '#6E868F',
   tracking = '0.24em',
 } = {}) {
@@ -55,16 +55,16 @@ export function emailEyebrowStyle({
 }
 
 /** Titolo sezione Cinzel. */
-export function emailSectionStyle({ size = '14px', color = '#164E5B' } = {}) {
+export function emailSectionStyle({ size = '16px', color = '#164E5B' } = {}) {
   return `font-family:${EMAIL_CINZEL};font-size:${size};font-weight:700;color:${color} !important;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2`;
 }
 
 /** Valore dettaglio (nome, stanza, telefono). */
-export function emailValueStyle({ size = '17px', color = '#164E5B' } = {}) {
+export function emailValueStyle({ size = '19px', color = '#164E5B' } = {}) {
   return `font-family:${EMAIL_SERIF};font-size:${size};font-weight:600;color:${color} !important;letter-spacing:0.02em;line-height:1.3`;
 }
 
 /** CTA bottone. */
-export function emailCtaStyle({ size = '13.5px' } = {}) {
+export function emailCtaStyle({ size = '15.5px' } = {}) {
   return `font-family:${EMAIL_SANS};font-weight:600;font-size:${size};text-transform:uppercase;letter-spacing:0.08em`;
 }

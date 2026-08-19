@@ -62,6 +62,8 @@ import {
   resolveReceptionistByInitials,
   createStaffMember,
   deactivateStaffMember,
+  getReportSendTime,
+  setReportSendTime,
   RECEPTION_NOTE_CATEGORIES,
 } from './db.js';
 import {
@@ -825,6 +827,10 @@ function staffPinUsable(stored) {
   return isStaffPinHash(stored);
 }
 
+function isLocalStaffRuntime() {
+  return process.env.RENDER !== 'true' && process.env.NODE_ENV !== 'production';
+}
+
 function bootstrapStaffPinHashesFromEnv() {
   const roster = listStaffRoster({ activeOnly: false });
   let copied = 0;
@@ -849,6 +855,13 @@ function bootstrapStaffPinHashesFromEnv() {
       `[staff] Convertiti ${hashedPlain} STAFF_PIN_* da chiaro a hash nel database — rimuovi i valori in chiaro da Render dopo il login`,
     );
   }
+
+  if (!isLocalStaffRuntime()) return;
+  const localPin = '1234';
+  for (const member of roster) {
+    setStaffPinHash(member.id, hashStaffPin(localPin));
+  }
+  console.log('[staff] Locale: entra con Tommaso e 1234');
 }
 
 function staffAuthConfigured() {
@@ -1734,6 +1747,9 @@ app.get(
     res.setHeader('Cache-Control', 'no-store');
     return res.json({
       configured: staffAuthConfigured(),
+      local: isLocalStaffRuntime()
+        ? { staff: 'Tommaso', pin: '1234' }
+        : null,
     });
   },
 );
@@ -1922,6 +1938,44 @@ app.post(
       });
     }
     return res.json({ ok: true, id: result.id, label: result.label });
+  },
+);
+
+app.get(
+  '/api/staff/settings',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({
+      ok: true,
+      reportTime: getReportSendTime(),
+      timezone: CRON_TZ,
+    });
+  },
+);
+
+app.post(
+  '/api/staff/settings',
+  rateLimit({ windowMs: 15 * 60_000, max: 20 }),
+  requireStaff,
+  (req, res) => {
+    const result = setReportSendTime(
+      req.body?.reportTime,
+      req.staffUser?.staffId,
+    );
+    if (!result.ok) {
+      return res.status(400).json({
+        error: 'Orario non valido. Usa HH:MM.',
+        code: result.error,
+      });
+    }
+    startDailyReportCron(result.reportTime);
+    return res.json({
+      ok: true,
+      reportTime: result.reportTime,
+      timezone: CRON_TZ,
+    });
   },
 );
 
@@ -2510,40 +2564,6 @@ app.post(
 });
 
 cron.schedule(
-  '0 0 * * *',
-  async () => {
-    console.log(`[cron] Report notturno ${HOTEL_NAME}…`);
-    try {
-      const result = await runDailyReport();
-      if (result.sent) {
-        const channels = [
-          result.email?.sent ? `email→${result.email.to}` : null,
-          result.whatsapp?.sent ? `whatsapp→${result.whatsapp.to}` : null,
-        ]
-          .filter(Boolean)
-          .join(', ');
-        console.log(
-          `[cron] Inviato report (${result.count} contatti) ${channels || result.to}`,
-        );
-        if (result.partialErrors?.length) {
-          console.warn('[cron] Canali parziali:', result.partialErrors.join('; '));
-        }
-      } else {
-        console.log(`[cron] Nessun nuovo contatto — report non inviato`);
-      }
-      if (result.purged > 0) {
-        console.log(
-          `[cron] GDPR: anonimizzati ${result.purged} check-in oltre checkout + 7 giorni`,
-        );
-      }
-    } catch (err) {
-      console.error('[cron] Fallito:', err.message || err);
-    }
-  },
-  { timezone: CRON_TZ },
-);
-
-cron.schedule(
   '5 0 1 * *',
   async () => {
     console.log(`[cron] Report mensile staff (1° del mese)…`);
@@ -2563,10 +2583,63 @@ cron.schedule(
   { timezone: CRON_TZ },
 );
 
+let dailyReportJob = null;
+
+function reportTimeToCron(hhmm) {
+  const [hour, minute] = String(hhmm || '00:00').split(':').map((part) => Number(part));
+  return `${minute} ${hour} * * *`;
+}
+
+async function runNightlyReportJob() {
+  console.log(`[cron] Report notturno ${HOTEL_NAME}…`);
+  try {
+    const result = await runDailyReport();
+    if (result.sent) {
+      const channels = [
+        result.email?.sent ? `email→${result.email.to}` : null,
+        result.whatsapp?.sent ? `whatsapp→${result.whatsapp.to}` : null,
+      ]
+        .filter(Boolean)
+        .join(', ');
+      console.log(
+        `[cron] Inviato report (${result.count} contatti) ${channels || result.to}`,
+      );
+      if (result.partialErrors?.length) {
+        console.warn('[cron] Canali parziali:', result.partialErrors.join('; '));
+      }
+    } else {
+      console.log(`[cron] Nessun nuovo contatto — report non inviato`);
+    }
+    if (result.purged > 0) {
+      console.log(
+        `[cron] GDPR: anonimizzati ${result.purged} check-in oltre checkout + 7 giorni`,
+      );
+    }
+  } catch (err) {
+    console.error('[cron] Fallito:', err.message || err);
+  }
+}
+
+function startDailyReportCron(hhmm = getReportSendTime()) {
+  const time = String(hhmm || getReportSendTime());
+  const expr = reportTimeToCron(time);
+  if (!cron.validate(expr)) {
+    console.error('[cron] Orario report non valido:', time);
+    return time;
+  }
+  if (dailyReportJob) {
+    dailyReportJob.stop();
+    dailyReportJob = null;
+  }
+  dailyReportJob = cron.schedule(expr, runNightlyReportJob, { timezone: CRON_TZ });
+  return time;
+}
+
 app.listen(PORT, async () => {
+  const reportTime = startDailyReportCron();
   console.log(`${HOTEL_NAME} check-in attivo su http://localhost:${PORT}`);
   console.log(
-    `Cron report: 00:00 ${CRON_TZ} → email ${process.env.REPORT_EMAIL || '(off)'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
+    `Cron report: ${reportTime} ${CRON_TZ} → email ${process.env.REPORT_EMAIL || '(off)'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
   );
   console.log(`Cron staff: 00:05 il 1° del mese (${CRON_TZ}) → mese precedente`);
   console.log(

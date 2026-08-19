@@ -222,6 +222,15 @@ export function initDb(databasePath) {
     );
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS hotel_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_by TEXT
+    );
+  `);
+
   seedStaffRoster();
 
   return db;
@@ -2362,4 +2371,51 @@ export function getStaffAccountStats(staffName) {
     ranking,
     totals: monthly.totals || { totale_mese: 0, totale_coupon: 0 },
   };
+}
+
+const DEFAULT_REPORT_TIME = '00:00';
+
+export function normalizeReportTime(raw) {
+  const s = String(raw || '').trim();
+  const match = s.match(/^(\d{1,2}):([0-5]\d)(?::[0-5]\d)?$/);
+  if (!match) return null;
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (!Number.isInteger(hour) || hour > 23) return null;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+export function getHotelSetting(key, fallback = '') {
+  const row = db
+    .prepare(`SELECT value FROM hotel_settings WHERE key = ?`)
+    .get(String(key || '').trim());
+  const value = String(row?.value || '').trim();
+  return value || fallback;
+}
+
+export function setHotelSetting(key, value, updatedBy = '') {
+  const k = String(key || '').trim();
+  if (!k) throw new Error('Chiave impostazione mancante');
+  db.prepare(
+    `
+    INSERT INTO hotel_settings (key, value, updated_at, updated_by)
+    VALUES (?, ?, datetime('now'), ?)
+    ON CONFLICT(key) DO UPDATE SET
+      value = excluded.value,
+      updated_at = excluded.updated_at,
+      updated_by = excluded.updated_by
+    `,
+  ).run(k, String(value ?? ''), String(updatedBy || '').trim() || null);
+}
+
+export function getReportSendTime() {
+  return normalizeReportTime(getHotelSetting('report_send_time', DEFAULT_REPORT_TIME))
+    || DEFAULT_REPORT_TIME;
+}
+
+export function setReportSendTime(raw, updatedBy = '') {
+  const next = normalizeReportTime(raw);
+  if (!next) return { ok: false, error: 'orario_non_valido' };
+  setHotelSetting('report_send_time', next, updatedBy);
+  return { ok: true, reportTime: next };
 }

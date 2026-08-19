@@ -4791,6 +4791,94 @@
       font-weight: 600;
     }
 
+    @media (min-width: 768px) {
+      .privacy-sheet {
+        align-items: center;
+        padding: 32px 24px;
+      }
+
+      .privacy-sheet-panel {
+        width: min(640px, 100%);
+        max-height: min(82vh, 760px);
+        border-radius: 28px;
+        padding: 28px 32px 32px;
+        box-shadow: 0 24px 64px rgba(18, 68, 83, 0.22);
+      }
+
+      .privacy-sheet-head h2 {
+        font-size: 18px;
+      }
+
+      .privacy-sheet-body {
+        font-size: 14px;
+        line-height: 1.55;
+      }
+    }
+
+    #tableConfirmSheet .privacy-sheet-panel {
+      padding-bottom: calc(28px + env(safe-area-inset-bottom));
+    }
+
+    #tableConfirmSheet .privacy-sheet-head {
+      margin-bottom: 6px;
+    }
+
+    #tableConfirmSheet .privacy-sheet-head h2 {
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      text-transform: none;
+      line-height: 1.2;
+    }
+
+    #tableConfirmSheet .privacy-sheet-body {
+      display: flex;
+      flex-direction: column;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    #tableConfirmSheet #tableConfirmLead {
+      margin: 0 0 28px;
+      color: #5b7380;
+    }
+
+    #tableConfirmSheet .book-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 0 0 32px;
+    }
+
+    #tableConfirmSheet .book-field {
+      gap: 8px;
+    }
+
+    #tableConfirmSheet .book-submit {
+      margin: 0;
+    }
+
+    #tableConfirmSheet #btnTableConfirmCancel {
+      display: block;
+      width: 100%;
+      margin-top: 18px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      #tableConfirmSheet .privacy-sheet-panel {
+        width: min(400px, 100%);
+        max-height: none;
+        padding: 32px 28px 28px;
+      }
+
+      #tableConfirmSheet .privacy-sheet-head h2 {
+        font-size: 22px;
+      }
+    }
+
     .privacy-box input {
       appearance: none;
       -webkit-appearance: none;
@@ -6857,7 +6945,7 @@
       </div>
       <div class="privacy-sheet-body">
         <p id="tableConfirmLead">Stai per richiedere un tavolo. Puoi ancora cambiare data e orario.</p>
-        <div class="book-fields" style="margin-top:14px">
+        <div class="book-fields">
           <div class="book-field">
             <label id="lbl-table-confirm-date" for="tableConfirmDateTrigger">Data</label>
             <input id="tableConfirmDate" type="hidden" value="">

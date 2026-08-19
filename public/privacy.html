@@ -8,8 +8,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root { color-scheme: light; --c: #124453; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: Montserrat, -apple-system, BlinkMacSystemFont, sans-serif;
       background: linear-gradient(180deg, #EEF5F9, #D7E6EF);
       color: #1D1D1F;
@@ -28,7 +30,7 @@
       color: var(--c);
       margin: 0 0 8px;
     }
-    .meta { color: #5A6570; font-size: 13px; margin-bottom: 24px; }
+    .meta { color: #5A6570; font-size: 13px; margin: 0 0 24px; }
     h2 {
       font-size: 13px;
       letter-spacing: 0.06em;
@@ -37,6 +39,9 @@
       margin: 22px 0 8px;
     }
     p, li { font-size: 14px; color: #2C3640; }
+    p { margin: 0 0 12px; }
+    ul { margin: 0; padding-left: 1.15em; }
+    li + li { margin-top: 6px; }
     a { color: var(--c); font-weight: 600; }
     .card {
       background: rgba(255,255,255,0.78);
@@ -44,8 +49,61 @@
       border-radius: 18px;
       padding: 20px 18px;
     }
+    .back {
+      display: inline-block;
+      margin-top: 28px;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .back:hover { text-decoration: underline; }
     [dir="rtl"] h1,
     [dir="rtl"] h2 { letter-spacing: 0; }
+
+    @media (min-width: 768px) {
+      body {
+        background: #e8eef2;
+      }
+      main {
+        max-width: 760px;
+        padding: 56px 32px 80px;
+      }
+      .card {
+        padding: 44px 48px 40px;
+        border-radius: 24px;
+        background: #fff;
+        border: 1px solid rgba(18,68,83,0.08);
+        box-shadow: 0 18px 48px rgba(18, 68, 83, 0.08);
+      }
+      h1 {
+        font-size: 28px;
+        letter-spacing: 0.06em;
+        line-height: 1.2;
+        margin-bottom: 10px;
+      }
+      .meta {
+        font-size: 15px;
+        margin-bottom: 32px;
+      }
+      h2 {
+        font-size: 12px;
+        margin: 32px 0 10px;
+      }
+      p, li {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .back {
+        margin-top: 40px;
+        font-size: 15px;
+      }
+    }
+
+    @media (min-width: 1100px) {
+      main {
+        max-width: 840px;
+        padding: 64px 40px 96px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -75,7 +133,7 @@
       <h2 id="rightsTitle"></h2>
       <div id="rightsBody"></div>
 
-      <p style="margin-top:28px"><a id="backLink" href="/"></a></p>
+      <p><a class="back" id="backLink" href="/"></a></p>
     </div>
   </main>
   <script>

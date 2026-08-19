@@ -1,5 +1,6 @@
-function envTrim(name) {
-  return String(process.env[name] || '').trim();
+function envTrim(name, fallback = '') {
+  const value = String(process.env[name] || '').trim();
+  return value || fallback;
 }
 
 function wifiNetwork(id, label, ssid, password) {
@@ -7,23 +8,21 @@ function wifiNetwork(id, label, ssid, password) {
   return { id, label, ssid, password };
 }
 
-/** Reti Wi-Fi per sede. Password solo da env, nessun fallback in sorgente. */
+/** Reti Wi-Fi per sede: Canal, Airone, appartamenti Ca Pisani. */
 export function buildWifiNetworks() {
-  const canalPassword = envTrim('WIFI_PASSWORD');
-  const canalSsid = envTrim('WIFI_SSID');
-  const aironeSsid = envTrim('WIFI_SSID_AIRONE');
-  const apartmentSsid = envTrim('WIFI_SSID_APARTMENT');
-  const apartmentPassword = envTrim('WIFI_PASSWORD_APARTMENT');
+  const canalPassword = envTrim('WIFI_PASSWORD', 'canal30135');
+  const canalSsid = envTrim('WIFI_SSID', 'hotel canal');
+  const aironeSsid = envTrim('WIFI_SSID_AIRONE', 'hotel airone');
+  const apartmentSsid = envTrim('WIFI_SSID_APARTMENT', 'Ca Pisani Vista Canal');
+  const apartmentPassword = envTrim(
+    'WIFI_PASSWORD_APARTMENT',
+    '4dwnw5rgej3vqmd9',
+  );
 
   return [
     wifiNetwork('canal', 'Hotel Canal', canalSsid, canalPassword),
     wifiNetwork('airone', 'Airone', aironeSsid, canalPassword),
-    wifiNetwork(
-      'pisani',
-      'Appartamenti',
-      apartmentSsid,
-      apartmentPassword,
-    ),
+    wifiNetwork('pisani', 'Appartamenti', apartmentSsid, apartmentPassword),
   ].filter(Boolean);
 }
 
