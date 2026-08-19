@@ -488,6 +488,13 @@ app.get(['/cartello-reception.html', '/qr-poster.html'], (req, res) => {
   }
 });
 
+/** Check-in ospiti: sempre HTML fresco (niente cache su “Nuovo check-in”). */
+app.get(['/', '/index.html'], (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'index.html'));
+});
+
 app.use(
   express.static(path.join(rootDir, 'public'), {
     dotfiles: 'deny',
