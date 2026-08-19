@@ -2284,11 +2284,6 @@
     .matrix-table--clients col.col-receptionist { width: 14%; }
     .matrix-table--clients col.col-actions { width: 8%; }
 
-    .matrix-table--inhouse col.col-guest { width: 32%; }
-    .matrix-table--inhouse col.col-room { width: 88px; }
-    .matrix-table--inhouse col.col-phone { width: 28%; }
-    .matrix-table--inhouse col.col-email { width: 40%; }
-
     .matrix-table--requests col.col-guest { width: 26%; }
     .matrix-table--requests col.col-room { width: 72px; }
     .matrix-table--requests col.col-time { width: 84px; }
@@ -3758,22 +3753,59 @@
     }
 
     .plan-block {
-      padding: 40px 0 44px;
+      padding: 36px 0 40px;
       border-top: 1px solid rgba(18, 68, 83, 0.14);
     }
 
     .plan-block:first-child {
       border-top: 0;
-      padding-top: 28px;
+      padding-top: 20px;
+    }
+
+    .plan-block--compact {
+      padding: 28px 0 32px;
+    }
+
+    .plan-block--close {
+      padding-top: 36px;
+    }
+
+    .plan-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin: 0 0 18px;
+    }
+
+    .plan-index {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      margin-top: 2px;
+      border-radius: 50%;
+      background: var(--canal-petroleum);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
     }
 
     .plan-block h3 {
-      margin: 0 0 18px;
-      font-size: 12px;
+      margin: 0;
+      font-size: 26px;
       font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #8a9ba8;
+      letter-spacing: -0.035em;
+      line-height: 1.18;
+      text-transform: none;
+      color: #1d1d1f;
+    }
+
+    .plan-block--compact h3 {
+      font-size: 22px;
     }
 
     .plan-lead {
@@ -3784,20 +3816,71 @@
       color: #1d1d1f;
     }
 
+    .plan-muted {
+      margin: 16px 0 0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #5b7380;
+    }
+
+    .plan-head + .plan-lead,
     .plan-lead + .plan-lead,
     .plan-lead + .plan-canon,
     .plan-lead + .plan-roadmap,
     .plan-lead + .plan-flow,
-    .plan-shot + .plan-lead {
+    .plan-lead + .plan-points,
+    .plan-shot + .plan-lead,
+    .plan-table-shot + .plan-muted,
+    .plan-table-shot + .plan-head,
+    .plan-collage + .plan-lead {
       margin-top: 16px;
     }
 
+    .plan-table-shot + .plan-head {
+      margin-top: 22px;
+    }
+
     .plan-lead strong,
+    .plan-muted strong,
     .plan-roadmap p strong,
     .plan-includes span strong,
-    .plan-note strong {
+    .plan-points p strong,
+    .plan-note strong,
+    .plan-close strong {
       font-weight: 700;
       color: var(--canal-petroleum);
+    }
+
+    .plan-points {
+      list-style: none;
+      margin: 18px 0 0;
+      padding: 0;
+    }
+
+    .plan-points li {
+      padding: 12px 0 0;
+    }
+
+    .plan-points li:first-child {
+      padding-top: 0;
+    }
+
+    .plan-points b {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #1d1d1f;
+    }
+
+    .plan-points p {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: #5b7380;
     }
 
     .plan-roadmap {
@@ -4021,6 +4104,67 @@
       line-height: 1.45;
     }
 
+    .plan-collage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 8px 0 4px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 22px;
+      box-shadow: 0 10px 32px rgba(18, 68, 83, 0.08);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .plan-collage + .plan-block {
+      border-top: 0;
+      padding-top: 28px;
+    }
+
+    .plan-collage img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .plan-close {
+      margin: 8px 0 0;
+      padding: 28px 24px 24px;
+      background: #fff;
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 22px;
+      box-shadow: 0 10px 32px rgba(18, 68, 83, 0.08);
+    }
+
+    .plan-close .plan-price {
+      margin: 18px 0 6px;
+    }
+
+    .plan-close .plan-period {
+      margin: 0 0 20px;
+    }
+
+    .plan-close p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #1d1d1f;
+    }
+
+    .plan-close p + p {
+      margin-top: 14px;
+    }
+
+    .plan-close .plan-muted {
+      margin-top: 14px;
+    }
+
     .sys-settings--plans .sys-settings-legal {
       margin-top: 8px;
       padding-top: 40px;
@@ -4031,6 +4175,7 @@
     }
 
     .plan-table-shot {
+      margin: 0;
       overflow: hidden;
       background: #fff;
       border: 1px solid rgba(18, 68, 83, 0.12);
@@ -4040,70 +4185,10 @@
       user-select: none;
     }
 
-    .plan-table-chrome {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px 10px;
-      background: #fafafa;
-      border-bottom: 1px solid rgba(18, 68, 83, 0.1);
-      font-size: 12px;
-      font-weight: 600;
-      color: #86868b;
-    }
-
-    .plan-table-chrome strong {
-      color: #1d1d1f;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .plan-table-mini {
-      margin: 0;
-      overflow: hidden;
-      pointer-events: none;
-      user-select: none;
-      background: #fff;
-      border: 0;
-      border-radius: 0;
-    }
-
-    .plan-table-mini .matrix-table {
-      min-width: 0;
-    }
-
-    .plan-table-mini .matrix-table th,
-    .plan-table-mini .matrix-table td {
-      height: 40px;
-    }
-
-    .plan-table-mini .cell-name,
-    .plan-table-mini .phone-text,
-    .plan-table-mini .email-text {
-      font-size: 12px;
-    }
-
-    .plan-table-mini .cell-room {
-      font-size: 13px;
-    }
-
-    .plan-table-mini .contact-ios-label {
-      display: none;
-    }
-
-    .plan-table-mini .secure-cell-wrapper,
-    .plan-table-mini .phone-wrapper {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .plan-table-mini .matrix-table--clients col.col-guest { width: 26%; }
-    .plan-table-mini .matrix-table--clients col.col-room { width: 12%; }
-    .plan-table-mini .matrix-table--clients col.col-phone { width: 22%; }
-    .plan-table-mini .matrix-table--clients col.col-email { width: 26%; }
-    .plan-table-mini .matrix-table--clients col.col-receptionist { width: 14%; }
-
-    .plan-table-mini .btn-reveal {
-      display: none;
+    .plan-table-shot img {
+      display: block;
+      width: 100%;
+      height: auto;
     }
 
     body:not(.can-info) #tabInfo,
@@ -6009,8 +6094,8 @@
       }
 
       .btn-row-menu:hover,
-      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:hover,
-      #checkinsPanel .col-actions .btn-row-menu:hover {
+      .clients-matrix .cell-receptionist-wrap .btn-row-menu:hover,
+      .clients-matrix .col-actions .btn-row-menu:hover {
         background: transparent;
         color: #7a919e;
       }
@@ -6194,7 +6279,7 @@
 
       .dash-sidebar.is-open { transform: translateX(0); }
 
-      .dash-menu-btn { display: inline-flex; }
+      .dash-menu-btn { display: none; }
 
       .dash-scrim {
         position: fixed;
@@ -6208,58 +6293,8 @@
 
       .dash-scrim.hidden { display: none !important; }
 
-      .dash-topbar {
-        height: 60px;
-        min-height: 60px;
-        flex-wrap: nowrap;
-        gap: 8px;
-        padding: 0 16px;
-      }
-
-      .page-subtitle { display: none; }
-
-      .dash-topbar h1 { font-size: 16px; }
-
-      .dash-topbar-actions {
-        flex: 0 0 auto;
-        flex-wrap: nowrap;
-        width: auto;
-        max-width: none;
-      }
-
       .btn-label-full { display: none; }
       .btn-label-compact { display: inline; }
-
-      .dash-topbar-actions .btn-action {
-        height: 34px;
-        padding: 0 10px;
-        font-size: 12px;
-        flex: 0 0 auto;
-      }
-
-      .btn-notify {
-        width: 36px;
-        height: 36px;
-      }
-
-      .dash-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-        padding: 12px 0;
-      }
-
-      .toolbar-field:first-child,
-      .toolbar-field:last-child {
-        flex: none;
-        width: 100%;
-        max-width: none;
-      }
-
-      .toolbar-field .search-wrapper,
-      .toolbar-field .search-input {
-        height: 44px;
-      }
 
       .notes-list,
       .blacklist-list {
@@ -6301,10 +6336,7 @@
         max-width: none;
       }
 
-      .dash-content { padding-left: 16px; padding-right: 16px; }
-
-      #checkinsPanel .matrix-table tbody tr:active:not(:has(:focus-within)):not(:has(.btn-row-menu.is-open)),
-      #inHousePanel .matrix-table tbody tr:active,
+      .clients-matrix .matrix-table tbody tr:active:not(:has(:focus-within)):not(:has(.btn-row-menu.is-open)),
       .feed-row:active,
       .blacklist-row:active {
         background: rgba(18, 68, 83, 0.04);
@@ -6362,15 +6394,18 @@
         display: none;
       }
 
-      .plan-shots,
-      .plan-reviews {
-        grid-template-columns: 1fr 1fr;
+      .plan-block h3 {
+        font-size: 22px;
       }
 
-      .plan-table-mini {
-        transform: none;
-        width: 100%;
-        overflow-x: auto;
+      .plan-block--compact h3 {
+        font-size: 20px;
+      }
+
+      .plan-shots,
+      .plan-reviews,
+      .plan-collage {
+        grid-template-columns: 1fr 1fr;
       }
 
       .sys-settings-row {
@@ -6391,7 +6426,7 @@
       }
 
       .workspace-body .table-panel,
-      #checkinsPanel.table-panel {
+      .clients-matrix.table-panel {
         border-radius: 0;
         border-left: 0;
         border-right: 0;
@@ -6399,126 +6434,161 @@
         background: #F2F2F7;
       }
 
-      #checkinsPanel .table-head-wrap {
-        display: none;
+      .clients-matrix {
+        overflow-x: hidden;
       }
 
-      #checkinsPanel .matrix-table,
-      #checkinsPanel .matrix-table colgroup,
-      #checkinsPanel .matrix-table tbody {
-        display: block;
-        width: 100%;
-        min-width: 0;
+      .clients-matrix .table-head-wrap,
+      .clients-matrix thead,
+      .clients-matrix colgroup,
+      .clients-matrix col {
+        display: none !important;
       }
 
-      #checkinsPanel .matrix-table tbody {
-        padding: 10px 12px calc(18px + env(safe-area-inset-bottom, 0px));
+      .clients-matrix .table-scroll,
+      .clients-matrix .matrix-table,
+      .clients-matrix .matrix-table tbody {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100%;
+        height: auto !important;
+        overflow: visible !important;
+        background: transparent;
+        scrollbar-gutter: auto;
       }
 
-      #checkinsPanel .matrix-table col {
-        display: none;
+      .clients-matrix .matrix-table {
+        table-layout: auto !important;
+        border-collapse: separate;
+        border-spacing: 0;
       }
 
-      #checkinsPanel .matrix-table tbody tr {
+      .clients-matrix .matrix-table tbody {
+        padding: 12px 16px 8px;
+      }
+
+      .clients-matrix .matrix-table tbody tr {
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: flex-start;
         position: relative;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-areas:
-          "guest room"
-          "staff staff"
-          "phone phone"
-          "email email";
-        align-items: center;
-        column-gap: 8px;
-        row-gap: 0;
-        height: auto;
+        width: 100%;
+        box-sizing: border-box;
+        height: auto !important;
         min-height: 0;
-        margin: 0 0 10px;
-        padding: 14px 52px 12px 14px;
+        margin: 0 0 12px;
+        padding: 16px 48px 14px 16px;
         border: 0;
-        border-bottom: 0;
         border-radius: 16px;
-        background: #fff;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        background: #fff !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
       }
 
-      #checkinsPanel .matrix-table tbody tr:last-child {
-        border-bottom: 0;
+      .clients-matrix .matrix-table tbody tr:last-child {
         margin-bottom: 0;
       }
 
-      #checkinsPanel .matrix-table tbody tr:nth-child(even),
-      #checkinsPanel .matrix-table tbody tr:hover,
-      #checkinsPanel .matrix-table tbody tr:has(.btn-row-menu.is-open),
-      #checkinsPanel .matrix-table tbody tr:has(:focus-within) {
-        background: #fff;
+      .clients-matrix .matrix-table tbody tr:nth-child(even),
+      .clients-matrix .matrix-table tbody tr:hover,
+      .clients-matrix .matrix-table tbody tr:has(.btn-row-menu.is-open),
+      .clients-matrix .matrix-table tbody tr:has(:focus-within) {
+        background: #fff !important;
       }
 
-      #checkinsPanel .matrix-table tbody tr.is-blacklisted,
-      #checkinsPanel .matrix-table tbody tr.is-blacklisted:hover,
-      #checkinsPanel .matrix-table tbody tr.is-blacklisted:has(.btn-row-menu.is-open) {
-        background: #fff;
-        box-shadow: 0 0 0 1px rgba(198, 40, 40, 0.22), 0 1px 2px rgba(0, 0, 0, 0.04);
+      .clients-matrix .matrix-table tbody tr.is-blacklisted,
+      .clients-matrix .matrix-table tbody tr.is-blacklisted:hover,
+      .clients-matrix .matrix-table tbody tr.is-blacklisted:has(.btn-row-menu.is-open) {
+        background: #fff !important;
+        box-shadow: 0 0 0 1px rgba(198, 40, 40, 0.22), 0 1px 2px rgba(0, 0, 0, 0.05);
       }
 
-      #checkinsPanel .matrix-table tbody td,
-      #checkinsPanel .matrix-table tbody tr:nth-child(even) td {
-        display: flex;
-        align-items: center;
+      .clients-matrix .matrix-table tbody td,
+      .clients-matrix .matrix-table tbody tr:nth-child(even) td,
+      .clients-matrix .matrix-table tbody tr.is-blacklisted td {
+        display: block !important;
+        box-sizing: border-box;
         width: auto;
         min-width: 0;
-        height: auto;
-        min-height: 0;
-        padding: 0;
-        border: 0;
-        white-space: normal;
-        overflow: visible;
-        background: transparent;
+        max-width: 100%;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        background: transparent !important;
+        text-align: left;
+        vertical-align: top;
       }
 
-      #checkinsPanel .matrix-table td.col-guest {
-        grid-area: guest;
+      .clients-matrix .matrix-table tbody td.col-guest {
+        flex: 1 1 calc(100% - 80px);
+        order: 1;
         min-height: 24px;
-        margin-bottom: 2px;
+        padding-right: 8px !important;
       }
 
-      #checkinsPanel .matrix-table td.col-room {
-        grid-area: room;
-        justify-content: flex-end;
-        margin-bottom: 2px;
-      }
-
-      #checkinsPanel .matrix-table td.col-phone { grid-area: phone; }
-      #checkinsPanel .matrix-table td.col-email { grid-area: email; }
-      #checkinsPanel .matrix-table td.col-receptionist { grid-area: staff; }
-      #checkinsPanel .matrix-table td.col-actions {
-        position: absolute;
-        top: 6px;
-        right: 8px;
+      .clients-matrix .matrix-table tbody td.col-room {
+        flex: 0 0 auto;
+        order: 2;
         width: auto;
-        padding: 0;
-        display: flex;
-        justify-content: flex-end;
+        margin-top: 1px;
       }
 
-      #checkinsPanel .cell-guest,
-      #checkinsPanel .cell-guest > .cell-name {
+      .clients-matrix .matrix-table tbody td.col-receptionist {
+        display: none !important;
+      }
+
+      .clients-matrix .matrix-table tbody td.col-phone,
+      .clients-matrix .matrix-table tbody td.col-email {
+        flex: 1 1 100%;
+        background: #F2F2F7 !important;
+        padding: 10px 12px !important;
+        min-height: 48px;
+      }
+
+      .clients-matrix .matrix-table tbody td.col-phone {
+        order: 4;
+        border-radius: 12px 12px 0 0;
+      }
+
+      .clients-matrix .matrix-table tbody td.col-email {
+        order: 5;
+        border-radius: 0 0 12px 12px;
+        box-shadow: inset 0 0.5px 0 rgba(60, 60, 67, 0.18);
+      }
+
+      .clients-matrix .matrix-table tbody td.col-actions {
+        position: absolute;
+        top: 8px;
+        right: 6px;
+        flex: none;
+        order: 6;
+        width: auto !important;
+        padding: 0 !important;
+      }
+
+      .clients-matrix .cell-guest,
+      .clients-matrix .cell-guest > .cell-name {
         min-width: 0;
         width: 100%;
       }
 
-      #checkinsPanel .cell-guest > .cell-name {
+      .clients-matrix .cell-guest > .cell-name {
         font-size: 17px;
         font-weight: 700;
         letter-spacing: -0.03em;
-        line-height: 1.2;
-        min-height: 0;
+        line-height: 1.25 !important;
+        min-height: 0 !important;
+        height: auto;
       }
 
-      #checkinsPanel .cell-room {
+      .clients-matrix .cell-room {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        width: auto !important;
         min-width: 36px;
         min-height: 26px;
         height: 26px;
@@ -6530,21 +6600,30 @@
         font-weight: 700;
       }
 
-      #checkinsPanel .cell-receptionist-wrap {
-        flex: 1;
-        min-width: 0;
+      .clients-matrix .cell-receptionist-wrap {
+        justify-content: flex-start;
+        width: auto;
         min-height: 0;
-        margin: 0 0 10px;
       }
 
-      #checkinsPanel .cell-receptionist {
+      .clients-matrix .cell-receptionist {
         min-height: 0;
         font-size: 13px;
         color: #8E8E93;
       }
 
-      #checkinsPanel .cell-receptionist-wrap .btn-row-menu,
-      #checkinsPanel .col-actions .btn-row-menu {
+      .clients-matrix .badge-container,
+      .clients-matrix .initial-badge {
+        width: 22px;
+        height: 22px;
+      }
+
+      .clients-matrix .initial-badge {
+        font-size: 10px;
+      }
+
+      .clients-matrix .cell-receptionist-wrap .btn-row-menu,
+      .clients-matrix .col-actions .btn-row-menu {
         position: static;
         top: auto;
         right: auto;
@@ -6556,29 +6635,14 @@
         border-radius: 50%;
       }
 
-      #checkinsPanel .matrix-table td.col-phone,
-      #checkinsPanel .matrix-table td.col-email {
-        background: #F2F2F7;
-        padding: 8px 10px;
-        min-height: 52px;
-        align-items: stretch;
-      }
-
-      #checkinsPanel .matrix-table td.col-phone {
-        border-radius: 12px 12px 0 0;
-      }
-
-      #checkinsPanel .matrix-table td.col-email {
-        border-radius: 0 0 12px 12px;
-        box-shadow: inset 0 0.5px 0 rgba(60, 60, 67, 0.18);
-      }
-
-      #checkinsPanel .secure-cell-wrapper,
-      #checkinsPanel .phone-wrapper {
+      .clients-matrix .secure-cell-wrapper,
+      .clients-matrix .phone-wrapper {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 32px;
         max-width: none;
         width: 100%;
-        height: auto;
-        min-height: 0;
+        height: auto !important;
+        min-height: 36px;
         align-items: center;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
         font-size: 16px;
@@ -6586,11 +6650,11 @@
         column-gap: 8px;
       }
 
-      #checkinsPanel .secure-cell-wrapper.is-empty::after {
+      .clients-matrix .secure-cell-wrapper.is-empty::after {
         display: none;
       }
 
-      #checkinsPanel .contact-ios-label {
+      .clients-matrix .contact-ios-label {
         display: block;
         margin: 0 0 2px;
         font-size: 11px;
@@ -6600,10 +6664,10 @@
         line-height: 1.2;
       }
 
-      #checkinsPanel .secure-cell-wrapper .phone-text,
-      #checkinsPanel .secure-cell-wrapper .email-text,
-      #checkinsPanel .phone-wrapper .phone-text,
-      #checkinsPanel .phone-wrapper .email-text {
+      .clients-matrix .secure-cell-wrapper .phone-text,
+      .clients-matrix .secure-cell-wrapper .email-text,
+      .clients-matrix .phone-wrapper .phone-text,
+      .clients-matrix .phone-wrapper .email-text {
         font-size: 16px;
         font-weight: 500;
         letter-spacing: -0.02em;
@@ -6611,19 +6675,19 @@
         color: #1D1D1F;
       }
 
-      #checkinsPanel .phone-text.is-revealed,
-      #checkinsPanel .email-text.is-revealed {
+      .clients-matrix .phone-text.is-revealed,
+      .clients-matrix .email-text.is-revealed {
         font-weight: 600;
         font-size: 15px;
       }
 
-      #checkinsPanel .data-empty {
+      .clients-matrix .data-empty {
         min-height: 0;
         line-height: 1.25;
         color: #c7c7cc;
       }
 
-      #checkinsPanel .btn-reveal {
+      .clients-matrix .btn-reveal {
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -6634,144 +6698,35 @@
         margin: 0;
       }
 
-      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:hover,
-      #checkinsPanel .cell-receptionist-wrap .btn-row-menu.is-open,
-      #checkinsPanel .cell-receptionist-wrap .btn-row-menu:focus-visible,
-      #checkinsPanel .col-actions .btn-row-menu:hover,
-      #checkinsPanel .col-actions .btn-row-menu.is-open,
-      #checkinsPanel .col-actions .btn-row-menu:focus-visible {
+      .clients-matrix .cell-receptionist-wrap .btn-row-menu:hover,
+      .clients-matrix .cell-receptionist-wrap .btn-row-menu.is-open,
+      .clients-matrix .cell-receptionist-wrap .btn-row-menu:focus-visible,
+      .clients-matrix .col-actions .btn-row-menu:hover,
+      .clients-matrix .col-actions .btn-row-menu.is-open,
+      .clients-matrix .col-actions .btn-row-menu:focus-visible {
         background: rgba(18, 68, 83, 0.08);
         color: var(--canal-petroleum);
       }
 
-      #checkinsPanel .footer-summary {
-        background: #F2F2F7;
+      .clients-matrix .footer-summary {
+        background: transparent;
         border-top: 0;
-        padding-left: 16px;
-        padding-right: 16px;
+        padding: 4px 20px 16px;
       }
 
-      #checkinsPanel .matrix-table tbody tr:has(.empty) {
-        display: block;
-        padding: 36px 16px;
-        background: transparent;
+      .clients-matrix .matrix-table tbody tr:has(.empty) {
+        display: block !important;
+        padding: 40px 16px;
+        background: transparent !important;
         box-shadow: none;
       }
 
-      #checkinsPanel .matrix-table tbody tr:has(.empty) td {
-        display: block;
+      .clients-matrix .matrix-table tbody tr:has(.empty) td {
+        display: block !important;
         width: 100%;
+        flex: none;
       }
 
-      #inHousePanel.table-panel {
-        border-radius: 0;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
-        background: #F2F2F7;
-      }
-
-      #inHousePanel .table-head-wrap { display: none; }
-
-      #inHousePanel .matrix-table,
-      #inHousePanel .matrix-table colgroup,
-      #inHousePanel .matrix-table tbody {
-        display: block;
-        width: 100%;
-        min-width: 0;
-      }
-
-      #inHousePanel .matrix-table tbody {
-        padding: 10px 12px calc(18px + env(safe-area-inset-bottom, 0px));
-      }
-
-      #inHousePanel .matrix-table col { display: none; }
-
-      #inHousePanel .matrix-table tbody tr {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-areas:
-          "guest room"
-          "phone phone"
-          "email email";
-        align-items: center;
-        column-gap: 8px;
-        row-gap: 0;
-        height: auto;
-        margin: 0 0 10px;
-        padding: 14px 14px 12px;
-        border: 0;
-        border-radius: 16px;
-        background: #fff;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-      }
-
-      #inHousePanel .matrix-table tbody tr:last-child { margin-bottom: 0; }
-
-      #inHousePanel .matrix-table tbody tr:nth-child(even),
-      #inHousePanel .matrix-table tbody tr:hover {
-        background: #fff;
-      }
-
-      #inHousePanel .matrix-table tbody td,
-      #inHousePanel .matrix-table tbody tr:nth-child(even) td,
-      #inHousePanel .matrix-table tbody tr:hover td {
-        display: flex;
-        height: auto;
-        min-height: 0;
-        padding: 0;
-        border: 0;
-        background: transparent;
-      }
-
-      #inHousePanel .matrix-table td.col-guest { grid-area: guest; }
-      #inHousePanel .matrix-table td.col-room { grid-area: room; }
-      #inHousePanel .matrix-table td.col-phone { grid-area: phone; }
-      #inHousePanel .matrix-table td.col-email { grid-area: email; }
-
-      #inHousePanel .cell-guest,
-      #inHousePanel .cell-guest > .cell-name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      #inHousePanel .cell-room {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--canal-petroleum);
-      }
-
-      #inHousePanel .matrix-table td.col-phone,
-      #inHousePanel .matrix-table td.col-email {
-        margin-top: 8px;
-      }
-
-      #inHousePanel .secure-cell-wrapper {
-        max-width: none;
-        width: 100%;
-        height: auto;
-        min-height: 0;
-        align-items: center;
-      }
-
-      #inHousePanel .btn-reveal {
-        align-self: center;
-        justify-self: end;
-        margin: 0;
-      }
-
-      #inHousePanel .footer-summary {
-        background: #F2F2F7;
-        border-top: 0;
-      }
-
-      #inHousePanel .matrix-table tbody tr:has(.empty) {
-        display: block;
-        padding: 36px 16px;
-        background: transparent;
-        box-shadow: none;
-      }
     }
 
     @media (max-width: 480px) {
@@ -6781,8 +6736,8 @@
       .date-segment { min-height: 38px; padding: 3px; gap: 5px; }
       .matrix-table:not(.matrix-table--clients) th,
       .matrix-table:not(.matrix-table--clients) td { padding-left: 10px; padding-right: 10px; }
-      #checkinsPanel .matrix-table tbody { padding-left: 10px; padding-right: 10px; }
-      #checkinsPanel .matrix-table tbody tr { padding-left: 12px; padding-right: 50px; }
+      .clients-matrix .matrix-table tbody { padding-left: 10px; padding-right: 10px; }
+      .clients-matrix .matrix-table tbody tr { padding-left: 12px; padding-right: 50px; }
     }
 
     @media (min-width: 901px) {
@@ -6794,6 +6749,314 @@
       .date-pill {
         min-width: 0;
         padding: 0 6px;
+      }
+      .m-tabbar,
+      .m-more-panel {
+        display: none !important;
+      }
+    }
+
+    /* Telefono: pagina web, non mini-app */
+    @media (max-width: 900px) {
+      html,
+      html:has(body.is-dashboard) {
+        height: auto !important;
+        max-height: none !important;
+        overflow: auto !important;
+        overscroll-behavior: auto !important;
+      }
+
+      html, body {
+        height: auto;
+        max-height: none !important;
+        overscroll-behavior: auto !important;
+      }
+
+      body:not(.is-dashboard) {
+        position: static !important;
+        inset: auto;
+        display: block;
+        height: auto !important;
+        min-height: 100dvh;
+        max-height: none !important;
+        overflow: auto !important;
+        overscroll-behavior: auto !important;
+        padding: 0;
+        background: #f2f2f7;
+      }
+
+      body:not(.is-dashboard) .background-overlay {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: calc(188px + env(safe-area-inset-top, 0px));
+      }
+
+      body:not(.is-dashboard) .staff-shell {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        overflow: visible;
+        flex: none;
+      }
+
+      body:not(.is-dashboard) .login-view {
+        display: block;
+        width: 100%;
+        background: #f2f2f7;
+      }
+
+      body:not(.is-dashboard) .gate-card {
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        animation: none;
+        background: #f2f2f7;
+        padding: 28px 20px calc(32px + env(safe-area-inset-bottom, 0px));
+      }
+
+      body:not(.is-dashboard) .gate-card .card-sheen {
+        display: none;
+      }
+
+      body:not(.is-dashboard) .gate-header {
+        text-align: left;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      body:not(.is-dashboard) .gate-form {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      body.is-dashboard {
+        position: static;
+        height: auto !important;
+        min-height: 100dvh;
+        max-height: none !important;
+        overflow: auto !important;
+        overscroll-behavior: auto;
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        background: #f2f2f7;
+      }
+
+      body.is-dashboard .staff-shell,
+      body.is-dashboard .dash-view,
+      body.is-dashboard .dash-main,
+      body.is-dashboard .dash-content,
+      body.is-dashboard .workspace,
+      body.is-dashboard .workspace-body,
+      body.is-dashboard .table-panel,
+      body.is-dashboard .table-scroll,
+      body.is-dashboard .notes-scroll,
+      body.is-dashboard .blacklist-scroll,
+      body.is-dashboard .settings-scroll,
+      body.is-dashboard .content-card {
+        height: auto;
+        max-height: none;
+        min-height: 0;
+        overflow: visible;
+        flex: none;
+      }
+
+      body.is-dashboard .dash-view,
+      body.is-dashboard .dash-main,
+      body.is-dashboard .dash-content,
+      body.is-dashboard .workspace,
+      body.is-dashboard .workspace-body {
+        display: block;
+      }
+
+      .dash-sidebar,
+      .dash-menu-btn,
+      .dash-scrim {
+        display: none !important;
+      }
+
+      .dash-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        height: auto;
+        min-height: 56px;
+        flex-wrap: wrap;
+        padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
+        background: #f2f2f7;
+        border-bottom: 1px solid rgba(18, 68, 83, 0.08);
+      }
+
+      .dash-topbar h1 {
+        font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+
+      .page-subtitle {
+        display: block;
+      }
+
+      .dash-content {
+        padding: 0 0 8px;
+      }
+
+      .workspace-toolbar {
+        position: sticky;
+        top: 56px;
+        z-index: 12;
+        background: #f2f2f7;
+        border: 0;
+        border-radius: 0;
+        padding: 0 16px 10px;
+      }
+
+      .workspace.is-more .workspace-toolbar {
+        display: none;
+      }
+
+      .workspace-toolbar .date-segment {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .workspace-toolbar .date-pill {
+        flex: 0 0 auto;
+      }
+
+      .workspace-body .table-panel,
+      .table-panel {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      .clients-matrix.table-panel {
+        background: #f2f2f7;
+      }
+
+      .clients-matrix .table-head-wrap,
+      .clients-matrix thead {
+        display: none !important;
+      }
+
+      .clients-matrix .table-scroll {
+        overflow: visible;
+        overscroll-behavior: auto;
+        background: transparent;
+        scrollbar-gutter: auto;
+      }
+
+      .clients-matrix .matrix-table {
+        min-width: 0 !important;
+        width: 100%;
+        table-layout: auto;
+      }
+
+      .alert-stack {
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .clients-matrix .matrix-table tbody,
+      .notes-scroll,
+      .blacklist-scroll,
+      .settings-scroll {
+        padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .notes-scroll,
+      .blacklist-scroll {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .m-tabbar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 40;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        height: calc(56px + env(safe-area-inset-bottom, 0px));
+        padding: 0 4px env(safe-area-inset-bottom, 0px);
+        background: rgba(255, 255, 255, 0.94);
+        border-top: 1px solid rgba(18, 68, 83, 0.1);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+      }
+
+      .m-tab {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #8a9ba8;
+        font: inherit;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        min-height: 56px;
+        cursor: pointer;
+      }
+
+      .m-tab svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .m-tab.is-on {
+        color: var(--canal-petroleum);
+      }
+
+      .m-more-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px 16px 24px;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+      }
+
+      .m-more-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        min-height: 56px;
+        padding: 14px 16px;
+        border: 0;
+        border-radius: 16px;
+        background: #fff;
+        color: #1d1d1f;
+        font: inherit;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        text-align: left;
+        cursor: pointer;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+
+      .m-more-item span {
+        font-size: 13px;
+        font-weight: 600;
+        color: #8a9ba8;
+      }
+
+      .m-more-item--exit {
+        margin-top: 8px;
+        color: #c62828;
       }
     }
   </style>
@@ -7000,7 +7263,7 @@
             </div>
           </div>
 
-          <div class="table-panel" id="checkinsPanel">
+          <div class="table-panel clients-matrix" id="checkinsPanel">
             <div class="table-head-wrap" id="checkinsHead">
               <table class="matrix-table matrix-table--clients">
                 <colgroup>
@@ -7042,14 +7305,16 @@
             </div>
           </div>
 
-          <div class="table-panel hidden clients-card-panel" id="inHousePanel">
+          <div class="table-panel hidden clients-matrix" id="inHousePanel">
             <div class="table-head-wrap" id="inHouseHead">
-              <table class="matrix-table matrix-table--clients matrix-table--inhouse">
+              <table class="matrix-table matrix-table--clients">
                 <colgroup>
                   <col class="col-guest">
                   <col class="col-room">
                   <col class="col-phone">
                   <col class="col-email">
+                  <col class="col-receptionist">
+                  <col class="col-actions">
                 </colgroup>
                 <thead>
                   <tr>
@@ -7057,17 +7322,21 @@
                     <th class="col-room">Stanza</th>
                     <th class="col-phone">Telefono</th>
                     <th class="col-email">Email</th>
+                    <th class="col-receptionist">Check-in da</th>
+                    <th class="col-actions"><span class="visually-hidden">Azioni</span></th>
                   </tr>
                 </thead>
               </table>
             </div>
             <div class="table-scroll" id="inHouseScroll">
-              <table class="matrix-table matrix-table--clients matrix-table--inhouse">
+              <table class="matrix-table matrix-table--clients">
                 <colgroup>
                   <col class="col-guest">
                   <col class="col-room">
                   <col class="col-phone">
                   <col class="col-email">
+                  <col class="col-receptionist">
+                  <col class="col-actions">
                 </colgroup>
                 <tbody id="inHouseList"></tbody>
               </table>
@@ -7264,137 +7533,72 @@
 
                 <div id="infoManagerWrap">
                 <section class="plan-block">
-                  <h3>In sintesi</h3>
+                  <header class="plan-head">
+                    <span class="plan-index" aria-hidden="true">1</span>
+                    <h3>Check-in digitale e sicurezza dei dati</h3>
+                  </header>
                   <p class="plan-lead">Il check-in digitale è <strong>già realtà</strong>. L’ospite inquadra il QR code, seleziona la stanza, inserisce i propri dati e accetta la privacy. I nuovi arrivi compaiono <strong>all’istante</strong> nella dashboard della reception: i dati di contatto rimangono <strong>protetti</strong> e visibili solo in caso di necessità. A fine giornata, il sistema genera e invia un <strong>report automatico</strong>.</p>
-                  <div class="plan-table-shot" aria-hidden="true">
-                    <div class="plan-table-chrome"><strong>Clienti</strong><span>Oggi</span></div>
-                    <div class="plan-table-mini">
-                    <table class="matrix-table matrix-table--clients">
-                      <colgroup>
-                        <col class="col-guest">
-                        <col class="col-room">
-                        <col class="col-phone">
-                        <col class="col-email">
-                        <col class="col-receptionist">
-                      </colgroup>
-                      <thead>
-                        <tr>
-                          <th class="col-guest">Ospite</th>
-                          <th class="col-room">Stanza</th>
-                          <th class="col-phone">Telefono</th>
-                          <th class="col-email">Email</th>
-                          <th class="col-receptionist">Check-in da</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td class="col-guest"><div class="cell-guest"><div class="cell-name">Rossi Marco</div></div></td>
-                          <td class="col-room"><span class="cell-room">12</span></td>
-                          <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+39 ••• 4412</span></div></div></td>
-                          <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">m••••@gmail.com</span></div></div></td>
-                          <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">A</span></span></td>
-                        </tr>
-                        <tr>
-                          <td class="col-guest"><div class="cell-guest"><div class="cell-name">Chen Li</div></div></td>
-                          <td class="col-room"><span class="cell-room">8</span></td>
-                          <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+86 ••• 8801</span></div></div></td>
-                          <td class="col-email"><div class="secure-cell-wrapper is-empty"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="data-empty">—</span></div></div></td>
-                          <td class="col-receptionist"><span class="badge-container"><span class="initial-badge">J</span></span></td>
-                        </tr>
-                        <tr>
-                          <td class="col-guest"><div class="cell-guest"><div class="cell-name">Dupont Sophie</div></div></td>
-                          <td class="col-room"><span class="cell-room">21</span></td>
-                          <td class="col-phone"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Telefono</span><span class="phone-text">+33 ••• 2290</span></div></div></td>
-                          <td class="col-email"><div class="secure-cell-wrapper"><div class="contact-stack"><span class="contact-ios-label">Email</span><span class="phone-text email-text">s••••@icloud.com</span></div></div></td>
-                          <td class="col-receptionist"><span class="badge-container"><span class="initial-badge initial-badge--manager">M</span></span></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    </div>
-                  </div>
-                </section>
-
-                <section class="plan-block">
-                  <h3>Sicurezza e fluidità dei dati</h3>
-                  <p class="plan-lead">Documenti, pagamenti e consumazioni minibar sono sempre accessibili in reception e nel <strong>report giornaliero</strong>.</p>
-                </section>
-
-                <section class="plan-block">
-                  <h3>Gestione automatizzata e tutela dall’overbooking</h3>
-                  <p class="plan-lead">Il modulo di check-in digitale rappresenta il primo passo verso la completa automazione dei processi di reception. La roadmap di sviluppo prevede un’estensione delle funzionalità per ottimizzare la gestione delle prenotazioni e la distribuzione online.</p>
-                  <ul class="plan-roadmap">
-                    <li>
-                      <div>
-                        <strong>Sincronizzazione PMS tramite Email Parsing</strong>
-                        <p>Il prossimo upgrade consentirà la perfetta integrazione con il gestionale di struttura. Sarà sufficiente inoltrare le email di prenotazione al software: il sistema estrarrà automaticamente i dati per popolare il gestionale, eliminando i tempi di data-entry manuale e i relativi rischi di errore.</p>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <strong>Integrazione Channel Manager (Booking Expert)</strong>
-                        <p>Successivamente al consolidamento del flusso PMS, verrà implementata l’interfaccia diretta con i sistemi di distribuzione e Channel Manager. Questo permetterà l’aggiornamento automatizzato e in tempo reale dell’inventario camere, ottimizzando l’apertura e chiusura delle disponibilità sui canali OTA.</p>
-                      </div>
-                    </li>
-                  </ul>
-                </section>
-
-                <section class="plan-block">
-                  <h3>Canone di servizio e funzionalità incluse</h3>
-                  <p class="plan-lead">Il canone di servizio è fissato a <strong>39 € al mese</strong> e garantisce la piena operatività della struttura, offrendo una soluzione completa per l’ottimizzazione del front desk.</p>
-                  <div class="plan-canon">
-                    <div>
-                      <p class="plan-price">39 €</p>
-                      <p class="plan-period">al mese</p>
-                    </div>
-                    <ul class="plan-includes">
-                      <li><strong>Gestione e sicurezza del dato</strong><span>Massimi standard di protezione e riservatezza per le informazioni di tutti gli ospiti, in totale conformità con le normative privacy correnti (<strong>GDPR</strong>).</span></li>
-                      <li><strong>Controllo operativo e tracciabilità</strong><span>Tutti i check-in vengono organizzati in un’unica <strong>dashboard centralizzata</strong>. Il sistema traccia l’attività dei singoli receptionist, offrendo alla direzione uno strumento preciso per monitorare le <strong>performance</strong> dello staff.</span></li>
-                      <li><strong>Programma di referral integrato</strong><span>Funzionalità nativa per incentivare il passaparola e tracciare le segnalazioni, ottimizzando l’acquisizione di nuovi clienti.</span></li>
-                    </ul>
-                  </div>
-                </section>
-
-                <section class="plan-block">
-                  <h3>Guadagni</h3>
-                  <figure class="plan-shot">
-                    <img src="/emily/whatsapp.png" alt="Emily AI su WhatsApp: l’ospite chiede dal telefono Wi-Fi, orari e extra.">
+                  <figure class="plan-table-shot">
+                    <img src="/emily/dashboard-clienti.png" alt="Dashboard Clienti: arrivi del giorno, contatti protetti e check-in in reception.">
                   </figure>
-                  <p class="plan-lead">Emily risponde su WhatsApp, <strong>24 ore su 24</strong>: Wi-Fi, orari, cena, late check-out, ristorante, spa, guida. L’ospite inquadra il QR in camera e chiede dal telefono, <strong>senza passare dal banco</strong>. I partner locali ricevono più flusso, la struttura può vendere extra, e chi è soddisfatto lascia una recensione.</p>
-                  <div class="plan-shots">
-                    <img src="/emily/ristorante.jpg" alt="Tavolo in ristorante partner.">
-                    <img src="/emily/venice.jpg" alt="Venezia, guida locale.">
-                  </div>
-                  <div class="plan-reviews">
-                    <img src="/emily/review-1.png" alt="Recensione Google.">
-                    <img src="/emily/review-2.png" alt="Recensione Google.">
-                  </div>
-                  <div class="plan-gain">
-                    <figure class="plan-shot">
-                      <img src="/emily/qr-checkin.png" alt="QR in camera per Emily AI.">
-                    </figure>
-                    <p class="plan-price">5 €</p>
-                    <p class="plan-period">a soggiorno · facoltativo</p>
-                    <p class="plan-note">Referral ed Emily si attivano solo se la direzione lo decide. <strong>Non sono nel canone</strong>: i <strong>5 €</strong> li paga l’ospite, se accetta.</p>
-                  </div>
+                  <p class="plan-muted">Documenti, pagamenti e consumazioni minibar sono sempre accessibili in reception e nel <strong>report giornaliero</strong>.</p>
                 </section>
 
                 <section class="plan-block">
-                  <h3>Digitale</h3>
-                  <p class="plan-lead">Reception e piano lavorano sulla <strong>stessa riga</strong>. Quando una camera è pronta basta un aggiornamento: non servono telefonate tra i reparti per sapere se si può fare il check-in.</p>
-                  <ol class="plan-flow">
-                    <li><b>1</b><strong>Piano</strong><span>Camera da fare</span></li>
-                    <li><b>2</b><strong>Pulita</strong><span>Confermata</span></li>
-                    <li><b>3</b><strong>Reception</strong><span>Check-in</span></li>
-                    <li><b>4</b><strong>Colazione</strong><span>Coperti</span></li>
-                  </ol>
-                  <p class="plan-lead">Pulizie, colazioni, segnalazioni e check-in restano nello <strong>stesso sistema</strong>, senza fogli sparsi tra i piani.</p>
+                  <header class="plan-head">
+                    <span class="plan-index" aria-hidden="true">2</span>
+                    <h3>Sincronizzazione reception e governante in tempo reale</h3>
+                  </header>
+                  <p class="plan-lead">La piattaforma connette Front Office e Housekeeping tramite interfacce ottimizzate, eliminando fogli sparsi e telefonate. Con un semplice “double tap” sulla schermata della camera, la governante notifica la pulizia eseguita e lo stato si aggiorna <strong>istantaneamente</strong> in reception. Lo staff dei piani opera <strong>senza interruzioni</strong> e i receptionist riducono i tempi d’attesa dell’ospite al banco. Inoltre, la reception può inserire note e richieste particolari direttamente sulla scheda della camera <strong>in tempo reale</strong>.</p>
+                </section>
+
+                <section class="plan-block">
+                  <header class="plan-head">
+                    <span class="plan-index" aria-hidden="true">3</span>
+                    <h3>Gestione automatizzata e tutela dall’overbooking</h3>
+                  </header>
+                  <p class="plan-lead">Il check-in digitale è il primo passo verso la completa automazione della reception. Il prossimo upgrade (<strong>Email Parsing</strong>) consentirà l’integrazione con il gestionale (<strong>PMS</strong>): basterà inoltrare le email di prenotazione perché il sistema inserisca i dati da solo, azzerando i tempi di data-entry e i rischi di errore. Successivamente, il collegamento diretto con Booking Expert e i Channel Manager aggiornerà l’inventario camere <strong>in tempo reale</strong>, automatizzando le disponibilità sulle OTA per bloccare l’<strong>overbooking</strong>.</p>
+                </section>
+
+                <figure class="plan-collage">
+                  <img src="/emily/whatsapp.png" alt="Emily AI su WhatsApp.">
+                  <img src="/emily/ristorante.jpg" alt="Tavolo partner.">
+                  <img src="/emily/venice.jpg" alt="Guida Venezia.">
+                  <img src="/emily/qr-checkin.png" alt="QR in camera.">
+                </figure>
+
+                <section class="plan-block">
+                  <header class="plan-head">
+                    <span class="plan-index" aria-hidden="true">4</span>
+                    <h3>Programma Upselling: la tua rete sul territorio</h3>
+                  </header>
+                  <p class="plan-lead">La piattaforma invia <strong>in automatico</strong> proposte agli ospiti prima e durante il soggiorno. Puoi indirizzarli verso attività esterne convenzionate, come ristoranti, spa o guide locali. I partner ricevono più flusso, la struttura vende i propri extra guadagnando una <strong>commissione</strong> su ogni acquisto in modo trasparente, e l’ospite soddisfatto lascia una recensione positiva.</p>
+                </section>
+
+                <section class="plan-block">
+                  <header class="plan-head">
+                    <span class="plan-index" aria-hidden="true">5</span>
+                    <h3>Assistente virtuale: Emily AI su WhatsApp</h3>
+                  </header>
+                  <p class="plan-lead">Emily risponde su WhatsApp <strong>24 ore su 24</strong> a qualsiasi domanda su Wi-Fi, orari, cene o late check-out. L’ospite inquadra il QR in camera e chiede informazioni direttamente dal proprio telefono, <strong>senza passare dal banco</strong>. Questo toglie alla reception l’<strong>80%</strong> delle solite richieste ripetitive, lasciando allo staff più tempo per l’accoglienza del cliente.</p>
+                </section>
+
+                <section class="plan-block plan-block--close">
+                  <header class="plan-head">
+                    <span class="plan-index" aria-hidden="true">6</span>
+                    <h3>In sintesi: canone e guadagno extra</h3>
+                  </header>
+                  <div class="plan-close">
+                    <p>Un unico sistema con check-in digitale, sincronizzazione piani, tutela dall’overbooking e tracciabilità dei dati. Tutto questo per <strong>39 € al mese</strong> per l’operatività della struttura.</p>
+                    <p class="plan-price">39 €</p>
+                    <p class="plan-period">al mese</p>
+                    <p>In più, la direzione può offrire l’assistente Emily AI agli ospiti. Il servizio costa <strong>5 €</strong> ed è un extra facoltativo pagato direttamente dal cliente, senza pesare sul canone dell’hotel. Su questo modulo è previsto un accordo di revenue sharing per trattenere circa la <strong>metà del guadagno netto</strong> a favore della struttura. Su volumi alti diventa una rendita automatica pulita, senza costi di gestione dell’applicazione.</p>
+                  </div>
                 </section>
 
                 <footer class="sys-settings-legal">
                   <h3>Condizioni</h3>
-                  <p>Questo è il listino per le strutture che adottano la piattaforma, non un ordine. Add-on, referral e moduli in coda si attivano solo su richiesta della direzione di ciascuna struttura.</p>
-                  <p>Da questo pannello non parte nessun pagamento né rinnovo. IVA, fatturazione e contratti si definiscono in sede.</p>
-                  <p>Il check-in digitale è il modulo già attivo. PMS, Channel Manager e gestione operativa si rilasciano quando il collegamento è reale.</p>
+                  <p>Questo è il listino della piattaforma, non un ordine. Add-on, referral e moduli in coda si attivano solo su richiesta della direzione. Nessun pagamento né rinnovo parte da questo pannello. IVA, fatturazione e contratti si definiscono in sede. Il check-in digitale è il modulo già attivo; PMS, Channel Manager e gestione avanzata si rilasciano quando il collegamento tecnico è reale.</p>
                 </footer>
                 </div>
 
@@ -7405,11 +7609,47 @@
               <span class="footer-summary-meta">Direzione</span>
             </div>
           </div>
+
+          <div class="table-panel hidden m-more-panel" id="morePanel">
+            <button type="button" class="m-more-item" data-more-view="blacklist">
+              Segnalazioni
+              <span id="moreBlacklistHint">Lista</span>
+            </button>
+            <button type="button" class="m-more-item sys-settings-sales" data-more-view="info" id="moreInfoBtn">
+              Registro direzione
+              <span>Beta</span>
+            </button>
+            <button type="button" class="m-more-item" data-more-view="settings">
+              Impostazioni
+              <span>Account</span>
+            </button>
+            <button type="button" class="m-more-item m-more-item--exit" id="btnLogoutMobile">
+              Esci
+            </button>
+          </div>
           </div>
         </div>
       </div>
     </div>
     <button type="button" class="dash-scrim hidden" id="dashScrim" aria-label="Chiudi menu"></button>
+    <nav class="m-tabbar" id="mTabbar" aria-label="Sezioni">
+      <button type="button" class="m-tab is-on" data-m-view="checkins">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm-8 0a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-2.7 0-8 1.34-8 4v3h9v-3c0-.96.4-1.86 1.06-2.6A13.4 13.4 0 0 0 8 13Zm8 0c-.34 0-.72 0-1.12.05A5 5 0 0 1 17 17v3h7v-3c0-2.66-5.3-4-8-4Z"/></svg>
+        Clienti
+      </button>
+      <button type="button" class="m-tab" data-m-view="inhouse">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        In camera
+      </button>
+      <button type="button" class="m-tab" data-m-view="requests">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7v2.1L4 13.5V16h16v-2.5l-1-2.4V9a7 7 0 0 0-7-7Zm0 2a5 5 0 0 1 5 5v2.2l.8 1.8H6.2L7 11.2V9a5 5 0 0 1 5-5Zm-1 16h2v2h-2v-2Z"/></svg>
+        Richieste
+      </button>
+      <button type="button" class="m-tab" data-m-view="more">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+        Altro
+      </button>
+    </nav>
   </section>
 
   </div>
@@ -7682,6 +7922,7 @@
     const blacklistPanel = document.getElementById('blacklistPanel');
     const settingsPanel = document.getElementById('settingsPanel');
     const infoPanel = document.getElementById('infoPanel');
+    const morePanel = document.getElementById('morePanel');
     const infoFooterLabel = document.getElementById('infoFooterLabel');
     const workspaceEl = document.getElementById('workspace');
     const tabRequests = document.getElementById('tabRequests');
@@ -8082,6 +8323,7 @@
       if (activeView === 'settings') return settingsPanel;
       if (activeView === 'info') return infoPanel;
       if (activeView === 'inhouse') return inHousePanel;
+      if (activeView === 'more') return morePanel;
       return checkinsPanel;
     }
 
@@ -8595,6 +8837,7 @@
       blacklist: 'Segnalazioni',
       settings: 'Impostazioni',
       info: 'Registro direzione',
+      more: 'Altro',
     };
 
     const VIEW_SUBTITLES = {
@@ -8604,6 +8847,7 @@
       blacklist: 'Lista reception',
       settings: 'Reception · account e automazioni',
       info: '',
+      more: 'Account e elenchi',
     };
 
     const STAFF_SETTINGS_KEY = 'hotelCanalStaffSettings';
@@ -8730,13 +8974,18 @@
       closeRowMenu();
       closeNotifyMenu();
       if (view === 'info' && !canSeeStaffInfo()) view = 'checkins';
-      activeView = ['requests', 'checkins', 'inhouse', 'blacklist', 'settings', 'info'].includes(view) ? view : 'checkins';
+      activeView = ['requests', 'checkins', 'inhouse', 'blacklist', 'settings', 'info', 'more'].includes(view) ? view : 'checkins';
       tabRequests.classList.toggle('is-on', activeView === 'requests');
       tabCheckins.classList.toggle('is-on', activeView === 'checkins');
       tabInHouse?.classList.toggle('is-on', activeView === 'inhouse');
       tabBlacklist.classList.toggle('is-on', activeView === 'blacklist');
       tabSettings?.classList.toggle('is-on', activeView === 'settings');
       tabInfo?.classList.toggle('is-on', activeView === 'info');
+      const moreOn = ['more', 'blacklist', 'settings', 'info'].includes(activeView);
+      document.querySelectorAll('#mTabbar .m-tab').forEach((btn) => {
+        const key = btn.getAttribute('data-m-view');
+        btn.classList.toggle('is-on', key === 'more' ? moreOn : activeView === key);
+      });
       if (pageTitle) pageTitle.textContent = VIEW_TITLES[activeView] || 'Reception';
       if (pageSubtitle) {
         const subtitle = VIEW_SUBTITLES[activeView] || '';
@@ -8753,8 +9002,10 @@
       blacklistPanel.classList.toggle('hidden', activeView !== 'blacklist');
       infoPanel?.classList.toggle('hidden', activeView !== 'info');
       settingsPanel?.classList.toggle('hidden', activeView !== 'settings');
+      morePanel?.classList.toggle('hidden', activeView !== 'more');
       workspaceEl?.classList.toggle('is-settings', activeView === 'settings' || activeView === 'info');
       workspaceEl?.classList.toggle('is-feed', activeView === 'requests' || activeView === 'blacklist');
+      workspaceEl?.classList.toggle('is-more', activeView === 'more');
       const showDateToolbar = activeView === 'checkins';
       daysEl.classList.toggle('hidden', !showDateToolbar);
       btnReport.classList.toggle('hidden', activeView !== 'checkins');
@@ -8776,6 +9027,7 @@
       else if (activeView === 'settings') loadSettings();
       else if (activeView === 'info') loadRoadmap();
       else if (activeView === 'inhouse') loadInHouse();
+      else if (activeView === 'more') { /* elenco Altro: niente tabella */ }
       else if (lastCheckins.length) renderList(lastCheckins);
       else loadList();
     }
@@ -8797,6 +9049,7 @@
     }
 
     function openDashNav() {
+      if (window.matchMedia('(max-width: 900px)').matches) return;
       closeNotifyMenu();
       dashSidebar?.classList.add('is-open');
       dashScrim?.classList.remove('hidden');
@@ -8848,7 +9101,10 @@
     }
 
     function updateBlacklistBadge(count) {
-      blacklistCountEl.textContent = String(Number(count) || 0);
+      const n = Number(count) || 0;
+      blacklistCountEl.textContent = String(n);
+      const hint = document.getElementById('moreBlacklistHint');
+      if (hint) hint.textContent = n ? String(n) : 'Lista';
     }
 
     const EYE_ICON = `
@@ -9229,7 +9485,15 @@
     }
 
     function findRowForMenu(id) {
-      return lastCheckins.find((r) => String(r.id) === String(id));
+      const key = String(id);
+      return lastCheckins.find((r) => String(r.id) === key)
+        || lastInHouse.find((r) => String(r.id) === key);
+    }
+
+    async function reloadActiveGuestTable() {
+      if (activeView === 'inhouse') await loadInHouse();
+      else await loadList();
+      void refreshInHouseCount();
     }
 
     async function handleRowMenuAction(action) {
@@ -9304,7 +9568,7 @@
           return;
         }
         clearServerToast();
-        await loadList();
+        await reloadActiveGuestTable();
       } catch (_) {
         showServerToast('Errore di rete. Riprova.', true);
       }
@@ -9669,28 +9933,12 @@
       return 'No check-ins in this view.';
     }
 
-    function renderList(rows) {
-      const n = rows.length;
-      const viewingToday = Boolean(lastToday && selectedDate === lastToday);
-      if (viewingToday) {
-        rowCountEl.textContent = formatTodaySummary(rows, lastUrgentNotesCount);
-      } else {
-        rowCountEl.innerHTML = n === 1
-          ? '<strong>1</strong> check-in'
-          : `<strong>${n}</strong> check-in`;
-      }
-
-      if (!n) {
-        listEl.innerHTML = `<tr><td colspan="6"><p class="empty">${escapeHtml(emptyCheckinsViewText())}</p></td></tr>`;
-        return;
-      }
-
-      listEl.innerHTML = rows.map((row) => {
-        const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
-        const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
-        const guestLabel = formatGuestDisplayName(row.guestName);
-        const guestTitle = String(row.guestName || '').trim() || '—';
-        return `
+    function guestMatrixRowHtml(row) {
+      const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
+      const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
+      const guestLabel = formatGuestDisplayName(row.guestName);
+      const guestTitle = String(row.guestName || '').trim() || '—';
+      return `
         <tr data-id="${row.id}" class="${row.blacklisted ? 'is-blacklisted' : ''}">
           <td class="col-guest">
             <div class="cell-guest">
@@ -9711,7 +9959,25 @@
             ${guestRowMenuBtn(row)}
           </td>
         </tr>`;
-      }).join('');
+    }
+
+    function renderList(rows) {
+      const n = rows.length;
+      const viewingToday = Boolean(lastToday && selectedDate === lastToday);
+      if (viewingToday) {
+        rowCountEl.textContent = formatTodaySummary(rows, lastUrgentNotesCount);
+      } else {
+        rowCountEl.innerHTML = n === 1
+          ? '<strong>1</strong> check-in'
+          : `<strong>${n}</strong> check-in`;
+      }
+
+      if (!n) {
+        listEl.innerHTML = `<tr><td colspan="6"><p class="empty">${escapeHtml(emptyCheckinsViewText())}</p></td></tr>`;
+        return;
+      }
+
+      listEl.innerHTML = rows.map(guestMatrixRowHtml).join('');
       animateStaggerContainer(listEl, 'tr');
     }
 
@@ -9731,28 +9997,10 @@
           : `<strong>${n}</strong> in camera`;
       }
       if (!n) {
-        inHouseListEl.innerHTML = `<tr><td colspan="4"><p class="empty">Nessun ospite in camera in questo momento.</p></td></tr>`;
+        inHouseListEl.innerHTML = `<tr><td colspan="6"><p class="empty">Nessun ospite in camera in questo momento.</p></td></tr>`;
         return;
       }
-      inHouseListEl.innerHTML = rows.map((row) => {
-        const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
-        const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
-        const guestLabel = formatGuestDisplayName(row.guestName);
-        const guestTitle = String(row.guestName || '').trim() || '—';
-        return `
-        <tr data-id="${row.id}">
-          <td class="col-guest">
-            <div class="cell-guest">
-              <div class="cell-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
-            </div>
-          </td>
-          <td class="col-room">
-            <span class="cell-room${row.roomNumber ? '' : ' is-empty'}">${escapeHtml(row.roomNumber || '—')}</span>
-          </td>
-          <td class="col-phone">${phoneCell}</td>
-          <td class="col-email">${emailCell}</td>
-        </tr>`;
-      }).join('');
+      inHouseListEl.innerHTML = rows.map(guestMatrixRowHtml).join('');
       animateStaggerContainer(inHouseListEl, 'tr');
     }
 
@@ -10544,6 +10792,18 @@
     tabInfo?.addEventListener('click', () => setActiveView('info'));
     tabSettings?.addEventListener('click', () => setActiveView('settings'));
 
+    document.getElementById('mTabbar')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-m-view]');
+      if (!btn) return;
+      setActiveView(btn.getAttribute('data-m-view'));
+    });
+
+    morePanel?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-more-view]');
+      if (!btn) return;
+      setActiveView(btn.getAttribute('data-more-view'));
+    });
+
     document.getElementById('settingsPrefsForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const prefs = collectStaffSettingsFromForm();
@@ -10850,7 +11110,7 @@
           return;
         }
         closeRoomSheet();
-        await loadList();
+        await reloadActiveGuestTable();
         showServerToast('Stanza aggiornata');
       } catch (_) {
         showServerToast('Errore di rete. Riprova.', true);
@@ -10890,7 +11150,7 @@
           return;
         }
         closeStaffSheet();
-        await loadList();
+        await reloadActiveGuestTable();
         showServerToast('Receptionist aggiornato');
       } catch (_) {
         showServerToast('Errore di rete. Riprova.', true);
@@ -11096,7 +11356,7 @@
 
       closeBlacklistSheet();
       if (activeView === 'blacklist') loadBlacklist();
-      else loadList();
+      else void reloadActiveGuestTable();
       showServerToast('Salvato in lista nera');
     });
 
@@ -11216,6 +11476,9 @@
       setStaffUserLabel(null);
       resetRoadmap();
       showLogin();
+    });
+    document.getElementById('btnLogoutMobile')?.addEventListener('click', () => {
+      document.getElementById('btnLogout')?.click();
     });
 
     daysEl.addEventListener('click', (e) => {
@@ -11348,7 +11611,15 @@
       if (e.key === 'Escape' && rowMenu && !rowMenu.hidden) closeRowMenu();
     });
 
-    window.addEventListener('resize', closeRowMenu);
+    window.addEventListener('resize', () => {
+      closeRowMenu();
+      try {
+        if (activeView === 'more' && window.matchMedia('(min-width: 901px)').matches) {
+          setActiveView('checkins');
+        }
+      } catch (_) { /* ignore */ }
+    });
+    window.addEventListener('scroll', closeRowMenu, { passive: true });
     document.querySelector('.workspace-body')?.addEventListener('scroll', closeRowMenu, true);
 
     function bindContactRevealList(root) {
@@ -11386,6 +11657,15 @@
 
     bindContactRevealList(listEl);
     bindContactRevealList(inHouseListEl);
+
+    inHouseListEl?.addEventListener('keydown', (e) => {
+      const span = e.target.closest('.contact-copy-target');
+      if (!span) return;
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        void copyContactFromSpan(span);
+      }
+    });
 
     listEl.addEventListener('keydown', (e) => {
       const span = e.target.closest('.contact-copy-target');
@@ -11441,7 +11721,7 @@
       });
       if (res.ok) {
         if (activeView === 'blacklist') loadBlacklist();
-        else loadList();
+        else void reloadActiveGuestTable();
       }
     });
 
@@ -11498,6 +11778,9 @@
       };
       const freezeGate = () => {
         if (document.body.classList.contains('is-dashboard')) return;
+        try {
+          if (window.matchMedia('(max-width: 900px)').matches) return;
+        } catch (_) { /* ignore */ }
         const gate = document.getElementById('gateCard');
         if (!gate) return;
         const h = Math.round(gate.getBoundingClientRect().height);
@@ -11598,6 +11881,9 @@
       }, { passive: true });
       document.addEventListener('touchmove', (e) => {
         if (document.body.classList.contains('is-dashboard')) return;
+        try {
+          if (window.matchMedia('(max-width: 900px)').matches) return;
+        } catch (_) { /* ignore */ }
         if (e.target.closest?.('.apple-inline-scroll, .ui-dropdown-menu')) return;
         if (
           document.body.classList.contains('is-keyboard-open') &&
