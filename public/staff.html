@@ -6620,21 +6620,7 @@
       }
 
       .clients-matrix .matrix-table tbody td.col-receptionist {
-        flex: 0 0 auto;
-        order: 3;
-        display: flex !important;
-        align-items: center;
-        padding: 0 !important;
-      }
-
-      .clients-matrix .matrix-table tbody td.col-receptionist .cell-receptionist-wrap {
-        min-height: 0;
-      }
-
-      .clients-matrix .matrix-table tbody td.col-receptionist .initial-badge {
-        width: 24px;
-        height: 24px;
-        font-size: 11px;
+        display: none !important;
       }
 
       .clients-matrix .matrix-table tbody td.col-guest {
@@ -6664,11 +6650,12 @@
       }
 
       .clients-matrix .matrix-table tbody td.col-actions {
-        flex: 0 0 auto;
+        flex: 0 0 44px;
         order: 4;
-        display: flex;
+        display: flex !important;
         align-items: center;
-        width: auto !important;
+        justify-content: center;
+        width: 44px !important;
         padding: 0 !important;
       }
 
@@ -6865,6 +6852,9 @@
         display: none !important;
       }
       .cell-phone-sub {
+        display: none !important;
+      }
+      .m-date-btn {
         display: none !important;
       }
     }
@@ -7065,6 +7055,14 @@
         display: none;
       }
 
+      .dash-topbar h1#pageTitle {
+        display: none;
+      }
+
+      .dash-topbar-titles {
+        display: none;
+      }
+
       .dash-topbar-actions {
         flex: 0 0 auto;
         flex-wrap: nowrap;
@@ -7134,6 +7132,7 @@
         min-height: 40px;
         background: #fff;
         border-color: var(--input-border);
+        display: none !important;
       }
 
       .workspace-toolbar .date-pill {
@@ -7142,6 +7141,29 @@
         height: 32px;
         font-size: 12px;
         font-weight: 600;
+      }
+
+      .m-date-btn {
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        height: 36px;
+        padding: 0 14px;
+        border: 1.5px solid rgba(18, 68, 83, 0.2);
+        border-radius: var(--radius-ui);
+        background: #fff;
+        font-family: "Montserrat", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--canal-petroleum);
+        cursor: pointer;
+        flex: 0 0 auto;
+      }
+
+      .m-date-btn svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.6;
       }
 
       .toolbar-field .search-wrapper,
@@ -7523,6 +7545,10 @@
             <div class="dash-toolbar">
               <div class="toolbar-field">
                 <span class="toolbar-label">Periodo</span>
+                <button type="button" class="m-date-btn" id="mDateBtn" style="display:none">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  <span id="mDateLabel">Oggi</span>
+                </button>
                 <div class="date-segment" id="days"></div>
               </div>
               <div class="toolbar-field toolbar-field--search" id="searchField">
@@ -9060,6 +9086,17 @@
       )).join('');
       scrollDatePillIntoView(selectedDate);
       updateCheckinsSubtitle();
+      updateMobileDateBtn();
+    }
+
+    function updateMobileDateBtn() {
+      const label = document.getElementById('mDateLabel');
+      if (!label) return;
+      if (selectedDate === lastToday) {
+        label.textContent = 'Oggi';
+      } else {
+        label.textContent = formatDateShort(selectedDate);
+      }
     }
 
     function lastSevenDates(todayIso) {
@@ -11779,6 +11816,30 @@
     document.getElementById('btnNewCheckin')?.addEventListener('click', () => {
       window.open('/', '_blank');
     });
+
+    const mDateBtn = document.getElementById('mDateBtn');
+    const mDateInput = document.createElement('input');
+    mDateInput.type = 'date';
+    mDateInput.style.cssText = 'position:absolute;opacity:0;width:0;height:0;pointer-events:none';
+    if (mDateBtn) {
+      mDateBtn.parentNode.appendChild(mDateInput);
+      mDateBtn.addEventListener('click', () => {
+        const dates = lastSevenDates(lastToday);
+        mDateInput.min = dates[0];
+        mDateInput.max = dates[dates.length - 1];
+        mDateInput.value = selectedDate || lastToday;
+        mDateInput.showPicker?.();
+        mDateInput.click();
+      });
+      mDateInput.addEventListener('change', () => {
+        const v = mDateInput.value;
+        if (!v || v === selectedDate) return;
+        selectedDate = v;
+        renderDays(lastToday);
+        searchEl.value = '';
+        loadList();
+      });
+    }
 
     daysEl.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-date]');
