@@ -6894,14 +6894,34 @@
                   <button type="button" class="wifi-pill" data-wifi-id="airone" role="tab" aria-selected="false">Airone</button>
                   <button type="button" class="wifi-pill" data-wifi-id="pisani" role="tab" aria-selected="false">Appartamenti</button>
                 </div>
-                <div class="ios-group" id="wifiActiveBlock">
+                <div class="ios-group wifi-cred-card is-selected" data-wifi-card="canal">
                   <div class="ios-row">
-                    <span class="row-label" id="lbl-wifi-net">Rete</span>
-                    <span class="row-value" id="wifiActiveSsid">-</span>
+                    <span class="row-label" id="lbl-wifi-net-canal">Rete</span>
+                    <span class="row-value" id="wifiCanalSsid">-</span>
                   </div>
                   <div class="ios-row">
-                    <span class="row-label" id="lbl-wifi-pass">Password</span>
-                    <span class="row-value" id="wifiActivePass">-</span>
+                    <span class="row-label" id="lbl-wifi-pass-canal">Password</span>
+                    <span class="row-value" id="wifiCanalPass">-</span>
+                  </div>
+                </div>
+                <div class="ios-group wifi-cred-card" data-wifi-card="airone" hidden>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-net-airone">Rete</span>
+                    <span class="row-value" id="wifiAironeSsid">-</span>
+                  </div>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-pass-airone">Password</span>
+                    <span class="row-value" id="wifiAironePass">-</span>
+                  </div>
+                </div>
+                <div class="ios-group wifi-cred-card" data-wifi-card="pisani" hidden>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-net-pisani">Rete</span>
+                    <span class="row-value" id="wifiPisaniSsid">-</span>
+                  </div>
+                  <div class="ios-row">
+                    <span class="row-label" id="lbl-wifi-pass-pisani">Password</span>
+                    <span class="row-value" id="wifiPisaniPass">-</span>
                   </div>
                 </div>
               </div>
@@ -10556,10 +10576,7 @@
         : guestServicesCache?.wifiSsid
           ? [{ id: 'canal', ssid: guestServicesCache.wifiSsid, password: guestServicesCache.wifiPassword }]
           : [];
-      if (!list.length) return;
-
       const byId = Object.fromEntries(list.map((net) => [net.id, net]));
-      const active = byId[selectedWifiId] || byId.canal || list[0];
 
       const pillLabels = {
         canal: dict?.wifiHotelCanal || 'Hotel Canal',
@@ -10574,10 +10591,20 @@
         btn.setAttribute('aria-selected', selected ? 'true' : 'false');
       });
 
-      const ssidEl = document.getElementById('wifiActiveSsid');
-      const passEl = document.getElementById('wifiActivePass');
-      if (ssidEl) ssidEl.textContent = active?.ssid || ask;
-      if (passEl) passEl.textContent = active?.password || ask;
+      const paint = (id, ssidEl, passEl) => {
+        const net = byId[id];
+        if (ssidEl) ssidEl.textContent = net?.ssid || ask;
+        if (passEl) passEl.textContent = net?.password || ask;
+      };
+      paint('canal', document.getElementById('wifiCanalSsid'), document.getElementById('wifiCanalPass'));
+      paint('airone', document.getElementById('wifiAironeSsid'), document.getElementById('wifiAironePass'));
+      paint('pisani', document.getElementById('wifiPisaniSsid'), document.getElementById('wifiPisaniPass'));
+
+      document.querySelectorAll('#wifiPanel [data-wifi-card]').forEach((card) => {
+        const on = card.getAttribute('data-wifi-card') === selectedWifiId;
+        card.hidden = !on;
+        card.classList.toggle('is-selected', on);
+      });
     }
 
     function applyGuestActionLabels(dict, couponSent) {
@@ -10610,8 +10637,12 @@
       setTxt('lbl-act-wifi-sub', dict.actWifiSub);
       setTxt('lbl-act-doors', dict.actDoors);
       setTxt('lbl-act-doors-sub', dict.actDoorsSub);
-      setTxt('lbl-wifi-net', dict.wifiNet);
-      setTxt('lbl-wifi-pass', dict.wifiPass);
+      setTxt('lbl-wifi-net-canal', dict.wifiNet);
+      setTxt('lbl-wifi-pass-canal', dict.wifiPass);
+      setTxt('lbl-wifi-net-airone', dict.wifiNet);
+      setTxt('lbl-wifi-pass-airone', dict.wifiPass);
+      setTxt('lbl-wifi-net-pisani', dict.wifiNet);
+      setTxt('lbl-wifi-pass-pisani', dict.wifiPass);
       setTxt('lbl-wifi-location', dict.wifiLocation);
       setTxt('lbl-act-tripadvisor', dict.actTripAdvisor);
       setTxt('lbl-act-tripadvisor-btn', dict.actTripAdvisorBtn);
