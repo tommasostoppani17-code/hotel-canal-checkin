@@ -6575,13 +6575,17 @@
       }
 
       .clients-matrix .matrix-table tbody tr {
-        display: flex !important;
-        flex-wrap: nowrap;
-        align-items: center;
+        display: grid !important;
+        grid-template-columns: 36px minmax(0, 1fr) 36px;
+        grid-template-areas:
+          "room guest actions"
+          ". phone ."
+          ". email .";
+        align-items: start;
         width: 100%;
         box-sizing: border-box;
         height: auto !important;
-        min-height: 72px;
+        min-height: 0;
         max-height: none;
         margin: 0;
         padding: 14px 10px 14px 14px;
@@ -6589,12 +6593,13 @@
         border-radius: var(--radius-ui);
         background: #fff !important;
         box-shadow: 0 1px 3px rgba(18, 68, 83, 0.05);
-        gap: 12px;
+        column-gap: 12px;
+        row-gap: 6px;
         cursor: pointer;
         transition: background-color 140ms ease;
       }
 
-      .clients-matrix .matrix-table tbody tr:active {
+      .clients-matrix .matrix-table tbody tr:active:not(:has(.empty)) {
         background: #F7FBFD !important;
         transform: none;
       }
@@ -6638,8 +6643,7 @@
       }
 
       .clients-matrix .matrix-table tbody td.col-guest {
-        flex: 1 1 0;
-        order: 2;
+        grid-area: guest;
         min-height: 0;
         min-width: 0;
         padding: 0 !important;
@@ -6658,16 +6662,36 @@
       }
 
       .clients-matrix .matrix-table tbody td.col-room {
-        flex: 0 0 36px;
-        order: 1;
+        grid-area: room;
         width: 36px;
         margin: 0;
         display: flex;
         align-items: center;
+        padding-top: 2px;
       }
 
-      .clients-matrix .matrix-table tbody td.col-phone,
-      .clients-matrix .matrix-table tbody td.col-email,
+      .clients-matrix .matrix-table tbody td.col-phone {
+        grid-area: phone;
+        display: flex !important;
+        align-items: center;
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        pointer-events: auto !important;
+      }
+
+      .clients-matrix .matrix-table tbody td.col-email {
+        grid-area: email;
+        display: flex !important;
+        align-items: center;
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        pointer-events: auto !important;
+      }
+
       .clients-matrix .matrix-table tbody td.col-receptionist {
         display: none !important;
         width: 0 !important;
@@ -6681,15 +6705,14 @@
       }
 
       .clients-matrix .matrix-table tbody td.col-actions {
-        flex: 0 0 36px;
-        order: 3;
+        grid-area: actions;
         display: flex !important;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         width: 36px !important;
         height: 36px !important;
         padding: 0 !important;
-        margin-left: auto;
+        margin-left: 0;
       }
 
       .clients-matrix .cell-guest,
@@ -6777,10 +6800,55 @@
         color: var(--canal-petroleum);
       }
 
-      .clients-matrix .secure-cell-wrapper,
-      .clients-matrix .phone-wrapper,
       .clients-matrix .contact-ios-label {
-        display: none !important;
+        display: none;
+      }
+
+      .clients-matrix .secure-cell-wrapper,
+      .clients-matrix .phone-wrapper {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 28px;
+        align-items: center;
+        column-gap: 8px;
+        width: 100%;
+        height: auto;
+        min-height: 28px;
+        font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--canal-petroleum);
+        pointer-events: auto;
+      }
+
+      .clients-matrix .secure-cell-wrapper .phone-text,
+      .clients-matrix .secure-cell-wrapper .email-text,
+      .clients-matrix .phone-wrapper .phone-text,
+      .clients-matrix .phone-wrapper .email-text,
+      .clients-matrix .data-empty {
+        min-height: 0;
+        line-height: 1.35;
+        color: var(--canal-petroleum);
+      }
+
+      .clients-matrix .data-empty {
+        color: #8a9ba8;
+        font-style: normal;
+        font-size: 13px;
+      }
+
+      .clients-matrix .btn-reveal {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+        border-radius: 50%;
+        background: rgba(18, 68, 83, 0.06);
+        color: var(--canal-petroleum);
+        opacity: 0.85;
+        pointer-events: auto;
+        align-self: center;
+        margin: 0;
+        flex-shrink: 0;
       }
 
       .clients-matrix .cell-receptionist-wrap .btn-row-menu:hover,
@@ -6831,7 +6899,7 @@
       .matrix-table:not(.matrix-table--clients) td { padding-left: 10px; padding-right: 10px; }
       .clients-matrix .table-scroll { padding: 10px 12px 8px; }
       .clients-matrix .matrix-table tbody { gap: 8px; }
-      .clients-matrix .matrix-table tbody tr { padding: 12px 8px 12px 12px; min-height: 68px; }
+      .clients-matrix .matrix-table tbody tr { padding: 12px 8px 12px 12px; }
     }
 
     @media (min-width: 901px) {
@@ -7140,6 +7208,10 @@
         display: none !important;
       }
 
+      .workspace:has(#days.hidden) .m-date-btn {
+        display: none !important;
+      }
+
       .workspace-toolbar .date-pill {
         flex: 0 0 auto;
         min-width: 44px;
@@ -7212,6 +7284,7 @@
 
       .clients-matrix.table-panel {
         background: var(--sky-100);
+        padding-bottom: var(--m-tabbar);
       }
 
       .clients-matrix .table-head-wrap,
@@ -7230,6 +7303,10 @@
         overflow-y: auto !important;
         overscroll-behavior: contain;
         background: var(--sky-100);
+      }
+
+      .clients-matrix .table-scroll {
+        padding: 12px 14px 8px;
       }
 
       .clients-matrix .matrix-table {
@@ -8408,6 +8485,9 @@
     const reportSheetClose = document.getElementById('reportSheetClose');
     const reportSheetTitle = document.getElementById('reportSheetTitle');
     const reportResultEl = document.getElementById('reportResult');
+    const guestSheet = document.getElementById('guestSheet');
+    const guestSheetBody = document.getElementById('guestSheetBody');
+    let guestSheetRow = null;
     const noteGuestNameEl = document.getElementById('noteGuestName');
     const noteRoomEl = document.getElementById('noteRoom');
     const noteCategoryEl = document.getElementById('noteCategory');
@@ -9417,6 +9497,7 @@
     function setActiveView(view) {
       closeRowMenu();
       closeNotifyMenu();
+      closeGuestSheet();
       if (view === 'info' && !canSeeStaffInfo()) view = 'checkins';
       activeView = ['requests', 'checkins', 'inhouse', 'blacklist', 'settings', 'info', 'more'].includes(view) ? view : 'checkins';
       tabRequests.classList.toggle('is-on', activeView === 'requests');
@@ -10182,6 +10263,7 @@
       closeNotifyMenu();
       closeRoomSheet();
       closeStaffSheet();
+      closeGuestSheet();
       noteSheetContext = { mode: ctx.mode || 'create', noteId: ctx.noteId || null, checkinId: ctx.checkinId || null };
       document.getElementById('noteSheetTitle').textContent = ctx.mode === 'edit' ? 'Modifica nota' : 'Nuova nota';
       noteGuestNameEl.value = ctx.guestName || '';
@@ -10215,6 +10297,7 @@
       closeStaffMenu();
       closeNoteSheet();
       closeStaffSheet();
+      closeGuestSheet();
       roomSheetContext = { checkinId: row?.id || null };
       if (roomSheetGuestEl) roomSheetGuestEl.textContent = row?.guestName || '—';
       if (roomSheetNumberEl) {
@@ -10238,6 +10321,70 @@
       });
     }
 
+    function guestSheetMetaLine(row) {
+      const bits = [];
+      if (activeView === 'inhouse' && row?.checkoutDate) {
+        bits.push(`Checkout ${formatDateShort(row.checkoutDate)}`);
+      } else if (row?.stayDate) {
+        bits.push(formatDateShort(row.stayDate));
+      }
+      const staff = formatStaffDisplayName(row?.receptionist);
+      if (staff && staff !== '—') bits.push(staff);
+      return bits.join(' · ');
+    }
+
+    function openGuestSheet(row) {
+      if (!guestSheet || !guestSheetBody || !row) return;
+      closeRowMenu();
+      closeNotifyMenu();
+      closeNoteSheet();
+      closeRoomSheet();
+      closeStaffSheet();
+      guestSheetRow = row;
+      const guestLabel = formatGuestDisplayName(row.guestName);
+      const room = String(row.roomNumber || '').trim();
+      const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
+      const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
+      const staff = formatStaffDisplayName(row.receptionist);
+      const meta = guestSheetMetaLine(row);
+      guestSheetBody.innerHTML = `
+        <div class="guest-sheet-hero">
+          <span class="guest-sheet-room${room ? '' : ' is-empty'}" aria-hidden="true">${escapeHtml(room || '—')}</span>
+          <div class="guest-sheet-id">
+            <div class="guest-sheet-name">${escapeHtml(guestLabel)}</div>
+            ${meta ? `<div class="guest-sheet-meta">${escapeHtml(meta)}</div>` : ''}
+          </div>
+        </div>
+        ${row.blacklisted ? '<p class="guest-sheet-flag">Ospite segnalato</p>' : ''}
+        <div class="guest-sheet-group">
+          <div class="guest-sheet-row">
+            <span class="guest-sheet-row-label">Telefono</span>
+            ${phoneCell}
+          </div>
+          <div class="guest-sheet-row">
+            <span class="guest-sheet-row-label">Email</span>
+            ${emailCell}
+          </div>
+          <div class="guest-sheet-row">
+            <span class="guest-sheet-row-label">Check-in da</span>
+            <span class="guest-sheet-staff">${escapeHtml(staff)}</span>
+          </div>
+        </div>`;
+      guestSheet.hidden = false;
+      guestSheet.setAttribute('aria-hidden', 'false');
+      lockSheetScroll();
+      animateSheetOpen(guestSheet);
+    }
+
+    function closeGuestSheet() {
+      if (!guestSheet || guestSheet.hidden) return;
+      animateSheetClose(guestSheet, () => {
+        guestSheetRow = null;
+        if (guestSheetBody) guestSheetBody.innerHTML = '';
+        unlockSheetScroll();
+      });
+    }
+
     let liveStaffRoster = [
       { id: 'tommaso', name: 'TOMMASO', label: 'Tommaso' },
       { id: 'john', name: 'JOHN', label: 'John' },
@@ -10255,6 +10402,7 @@
       closeNoteSheet();
       closeRoomSheet();
       closeTeamSheet();
+      closeGuestSheet();
       staffSheetContext = { checkinId: row?.id || null };
       if (staffSheetGuestEl) staffSheetGuestEl.textContent = row?.guestName || '—';
       const current = String(row?.receptionist || '').trim().toUpperCase();
@@ -10382,12 +10530,15 @@
       const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
       const guestLabel = formatGuestDisplayName(row.guestName);
       const guestTitle = String(row.guestName || '').trim() || '—';
+      const sub = (activeView === 'inhouse' && row.checkoutDate)
+        ? `Checkout ${formatDateShort(row.checkoutDate)}`
+        : (row.stayDate ? formatDateShort(row.stayDate) : '');
       return `
         <tr data-id="${row.id}" class="${row.blacklisted ? 'is-blacklisted' : ''}">
           <td class="col-guest">
             <div class="cell-guest">
               <div class="cell-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
-              <div class="cell-phone-sub">${row.stayDate ? formatDateShort(row.stayDate) : ''}</div>
+              <div class="cell-phone-sub">${escapeHtml(sub)}</div>
             </div>
           </td>
           <td class="col-room">
@@ -10505,8 +10656,13 @@
       return activeView === 'inhouse' ? inHouseListEl : listEl;
     }
 
+    function contactLookupRoot() {
+      if (guestSheet && !guestSheet.hidden) return guestSheet;
+      return contactListRoot();
+    }
+
     async function revealContactValue(checkinId, kind) {
-      const root = contactListRoot();
+      const root = contactLookupRoot();
       const textSpan = root?.querySelector(`[data-${kind}-text="${checkinId}"]`);
       const btn = root?.querySelector(`[data-reveal-${kind}="${checkinId}"]`);
       if (!textSpan) return null;
@@ -10575,7 +10731,8 @@
     }
 
     async function toggleRevealContact(checkinId, btn, kind) {
-      const textSpan = listEl.querySelector(`[data-${kind}-text="${checkinId}"]`);
+      const root = btn?.closest('#guestSheet') || contactLookupRoot();
+      const textSpan = root?.querySelector(`[data-${kind}-text="${checkinId}"]`);
       if (!textSpan || !btn) return;
 
       if (textSpan.dataset.revealed === 'true') {
@@ -11196,6 +11353,7 @@
       closeStaffMenu();
       closeNoteCategoryMenu();
       closeRoomSheet();
+      closeGuestSheet();
       sheetContext = { ...ctx };
       blacklistNotesEl.value = ctx.notes || '';
       blacklistNotesEl.classList.remove('is-invalid');
@@ -11413,6 +11571,8 @@
     document.getElementById('roomSheetClose')?.addEventListener('click', closeRoomSheet);
     document.getElementById('staffSheetCloseBg')?.addEventListener('click', closeStaffSheet);
     document.getElementById('staffSheetClose')?.addEventListener('click', closeStaffSheet);
+    document.getElementById('guestSheetCloseBg')?.addEventListener('click', closeGuestSheet);
+    document.getElementById('guestSheetClose')?.addEventListener('click', closeGuestSheet);
     document.getElementById('teamSheetCloseBg')?.addEventListener('click', closeTeamSheet);
     document.getElementById('teamSheetClose')?.addEventListener('click', closeTeamSheet);
     document.getElementById('teamSheetCancel')?.addEventListener('click', closeTeamSheet);
@@ -12097,16 +12257,25 @@
 
     dash.addEventListener('click', (e) => {
       const menuBtn = e.target.closest('[data-row-menu]');
-      if (!menuBtn) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const row = findRowForMenu(menuBtn.getAttribute('data-row-menu'));
-      if (!row) return;
-      if (rowMenuAnchor === menuBtn && rowMenu && !rowMenu.hidden && rowMenuClickMode) {
-        closeRowMenu();
+      if (menuBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const row = findRowForMenu(menuBtn.getAttribute('data-row-menu'));
+        if (!row) return;
+        if (rowMenuAnchor === menuBtn && rowMenu && !rowMenu.hidden && rowMenuClickMode) {
+          closeRowMenu();
+          return;
+        }
+        closeGuestSheet();
+        openRowMenu(menuBtn, row, { clickMode: true });
         return;
       }
-      openRowMenu(menuBtn, row, { clickMode: true });
+      if (!isMobileRowMenu()) return;
+      if (e.target.closest('.col-actions, .col-phone, .col-email, .btn-reveal, .secure-cell-wrapper, .contact-copy-target')) return;
+      const guestRowEl = e.target.closest('.clients-matrix tbody tr[data-id]');
+      if (!guestRowEl || guestRowEl.querySelector('.empty')) return;
+      const row = findRowForMenu(guestRowEl.getAttribute('data-id'));
+      if (row) openGuestSheet(row);
     });
 
     rowMenu?.addEventListener('click', (e) => {
@@ -12153,6 +12322,10 @@
           closeStaffSheet();
           return;
         }
+        if (guestSheet && !guestSheet.hidden) {
+          closeGuestSheet();
+          return;
+        }
         if (teamSheet && !teamSheet.hidden) {
           closeTeamSheet();
           return;
@@ -12172,6 +12345,7 @@
 
     window.addEventListener('resize', () => {
       closeRowMenu();
+      if (!isMobileRowMenu()) closeGuestSheet();
       try {
         if (activeView === 'more' && window.matchMedia('(min-width: 901px)').matches) {
           setActiveView('checkins');
@@ -12186,11 +12360,13 @@
       root.addEventListener('click', async (e) => {
         const revealPhone = e.target.closest('[data-reveal-phone]');
         if (revealPhone) {
+          e.stopPropagation();
           await toggleRevealContact(revealPhone.getAttribute('data-reveal-phone'), revealPhone, 'phone');
           return;
         }
         const revealEmail = e.target.closest('[data-reveal-email]');
         if (revealEmail) {
+          e.stopPropagation();
           await toggleRevealContact(revealEmail.getAttribute('data-reveal-email'), revealEmail, 'email');
         }
       });
@@ -12216,6 +12392,7 @@
 
     bindContactRevealList(listEl);
     bindContactRevealList(inHouseListEl);
+    bindContactRevealList(guestSheet);
 
     inHouseListEl?.addEventListener('keydown', (e) => {
       const span = e.target.closest('.contact-copy-target');
