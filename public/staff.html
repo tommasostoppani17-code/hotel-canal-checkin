@@ -7930,7 +7930,7 @@
             In camera
             <span class="dash-nav-badge hidden" id="inHouseCount">0</span>
           </button>
-          <button type="button" class="dash-nav-item" id="tabHolds" aria-label="Prenotazioni e link pagamento">
+          <button type="button" class="dash-nav-item hidden" id="tabHolds" aria-label="Prenotazioni e link pagamento" hidden>
             <span class="dash-nav-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L11 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -8168,7 +8168,7 @@
             </div>
           </div>
 
-          <div class="table-panel hidden holds-panel" id="holdsPanel">
+          <div class="table-panel hidden holds-panel" id="holdsPanel" hidden>
             <div class="notes-toolbar-inline">
               <p class="notes-toolbar-hint">Hold camera · link bonifico IBAN</p>
               <span class="holds-iban-hint" id="holdsIbanHint">IBAN…</span>
@@ -8263,7 +8263,7 @@
                     </div>
                   </div>
 
-                  <div class="sys-settings-group">
+                  <div class="sys-settings-group hidden" id="holdsIbanSettings" hidden>
                     <div class="sys-settings-group-title">Bonifico IBAN (link prenotazioni)</div>
                     <div class="sys-settings-row" style="flex-direction:column;align-items:stretch;gap:10px;">
                       <div class="sys-settings-row-info">
@@ -8456,7 +8456,7 @@
           </div>
 
           <div class="table-panel hidden m-more-panel" id="morePanel">
-            <button type="button" class="m-more-item" data-more-view="holds">
+            <button type="button" class="m-more-item hidden" data-more-view="holds" hidden>
               Prenotazioni
               <span>Link IBAN</span>
             </button>
@@ -9927,6 +9927,9 @@
       more: 'Altro',
     };
 
+    /** Prenotazioni / link IBAN: codice pronto, UI nascosta finché non è stabile. */
+    const HOLDS_UI_ENABLED = false;
+
     const VIEW_SUBTITLES = {
       requests: 'Turno · ordinate per scadenza',
       checkins: 'Oggi',
@@ -10063,7 +10066,9 @@
       closeNotifyMenu();
       closeGuestSheet();
       if (view === 'info' && !canSeeStaffInfo()) view = 'checkins';
+      if (!HOLDS_UI_ENABLED && view === 'holds') view = 'checkins';
       activeView = ['requests', 'checkins', 'inhouse', 'holds', 'blacklist', 'settings', 'info', 'more'].includes(view) ? view : 'checkins';
+      if (!HOLDS_UI_ENABLED && activeView === 'holds') activeView = 'checkins';
       tabRequests.classList.toggle('is-on', activeView === 'requests');
       tabCheckins.classList.toggle('is-on', activeView === 'checkins');
       tabInHouse?.classList.toggle('is-on', activeView === 'inhouse');
