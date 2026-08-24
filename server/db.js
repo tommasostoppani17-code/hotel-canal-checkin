@@ -1439,6 +1439,7 @@ export function importCheckinsIfEmpty(rows) {
   if (!Array.isArray(rows) || !rows.length) return 0;
   if (countCheckins() > 0) return 0;
 
+
   const stmt = db.prepare(`
     INSERT INTO checkins (
       id, phone, email, guest_name, room_number, receptionist, guests_count,
@@ -1485,6 +1486,146 @@ export function importCheckinsIfEmpty(rows) {
   });
 
   return tx(rows);
+}
+
+/**
+ * Ripristino manuale da report email (ops).
+ * Cifra PII con la chiave del server, evita duplicati (stay+camera o stay+email),
+ * marca già reported (non rientrano nel report notturno).
+ *
+ * @param {Array<{
+ *   stayDate: string,
+ *   roomNumber?: string,
+ *   guestName: string,
+ *   phone: string,
+ *   email?: string,
+ *   receptionist?: string,
+ *   guestsCount?: number,
+ *   voucher?: boolean,
+ * }>} rows
+ */
+export function restoreReportCheckins(rows) {
+  if (!Array.isArray(rows) || !rows.length) {
+    return { ok: false, error: 'empty', inserted: 0, skipped: 0 };
+  }
+
+  const existing = exportAllCheckins().map((r) => decryptCheckinRow(r));
+  const roomKeys = new Set();
+  const emailKeys = new Set();
+  for (const row of existing) {
+    const stay = String(row.stay_date || '').trim();
+    const room = String(row.room_number || '')
+      .trim()
+      .toUpperCase();
+    const email = String(row.email || '')
+      .trim()
+      .toLowerCase();
+    if (stay && room) roomKeys.add(`${stay}|${room}`);
+    if (stay && email) emailKeys.add(`${stay}|${email}`);
+  }
+
+  let inserted = 0;
+  let skipped = 0;
+  const errors = [];
+
+  const insertStmt = db.prepare(`
+    INSERT INTO checkins (
+      phone, email, guest_name, room_number, receptionist, guests_count,
+      coupon_token, coupon_sent_at, privacy_accepted_at, created_at,
+      reported_at, stay_date, checkout_date
+    ) VALUES (
+      @phone, @email, @guestName, @roomNumber, @receptionist, @guestsCount,
+      @couponToken, @couponSentAt, @privacyAt, @createdAt,
+      @reportedAt, @stayDate, NULL
+    )
+  `);
+
+  for (const raw of rows) {
+    try {
+      const stayDate = String(raw.stayDate || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(stayDate)) {
+        skipped += 1;
+        errors.push({ guest: raw.guestName, error: 'date_non_valida' });
+        continue;
+      }
+      const guestName = String(raw.guestName || '').trim();
+      const phone = String(raw.phone || '').trim();
+      const email = String(raw.email || '').trim().toLowerCase();
+      let roomNumber = String(raw.roomNumber || '').trim();
+      if (!roomNumber || roomNumber === '-' || roomNumber === '—') {
+        roomNumber = '';
+      }
+      const receptionist = String(raw.receptionist || '').trim() || null;
+      const guestsCount = Number(raw.guestsCount);
+      const voucher = Boolean(raw.voucher);
+      if (!guestName || !phone) {
+        skipped += 1;
+        errors.push({ guest: guestName || '?', error: 'dati_mancanti' });
+        continue;
+      }
+
+      const roomKey = roomNumber
+        ? `${stayDate}|${roomNumber.toUpperCase()}`
+        : '';
+      const emailKey = email ? `${stayDate}|${email}` : '';
+      if (
+        (roomKey && roomKeys.has(roomKey)) ||
+        (emailKey && emailKeys.has(emailKey))
+      ) {
+        skipped += 1;
+        continue;
+      }
+
+      const couponToken = voucher ? createCouponToken() : null;
+      const stamp = `${stayDate} 12:00:00`;
+      const info = insertStmt.run({
+        phone: encryptField(phone),
+        email: email ? encryptField(email) : null,
+        guestName: encryptField(guestName),
+        roomNumber: roomNumber || null,
+        receptionist,
+        guestsCount:
+          Number.isFinite(guestsCount) && guestsCount >= 1 ? guestsCount : 2,
+        couponToken,
+        couponSentAt: voucher ? stamp : null,
+        privacyAt: stamp,
+        createdAt: stamp,
+        reportedAt: stamp,
+        stayDate,
+      });
+
+      if (receptionist) {
+        try {
+          bumpStaffMonthStats({
+            receptionist,
+            withCoupon: voucher,
+            yearMonth: stayDate.slice(0, 7),
+          });
+        } catch (err) {
+          console.error('[restore] stats:', err.message || err);
+        }
+      }
+
+      if (roomKey) roomKeys.add(roomKey);
+      if (emailKey) emailKeys.add(emailKey);
+      inserted += 1;
+      void info;
+    } catch (err) {
+      skipped += 1;
+      errors.push({
+        guest: raw?.guestName,
+        error: err.message || String(err),
+      });
+    }
+  }
+
+  return {
+    ok: true,
+    inserted,
+    skipped,
+    total: countCheckins(),
+    errors: errors.length ? errors.slice(0, 20) : undefined,
+  };
 }
 
 function hasVoucherFlag(row) {

@@ -67,6 +67,7 @@ import {
   setReportSendTime,
   RECEPTION_NOTE_CATEGORIES,
   getDb,
+  restoreReportCheckins,
 } from './db.js';
 import {
   runDailyReport,
@@ -2935,6 +2936,37 @@ app.get(
         pinUpdatedAt: byId[m.id]?.updated_at || null,
       })),
     });
+  },
+);
+
+/**
+ * Ripristino contatti da report email (ops).
+ * Body: { rows: [...] } — PII cifrata sul server con FIELD_ENCRYPTION_KEY live.
+ */
+app.post(
+  '/api/cron/restore-report-checkins',
+  rateLimit({ windowMs: 60_000, max: 4 }),
+  (req, res) => {
+    if (!isAuthorizedCron(req)) {
+      return res.status(401).json({ error: 'Non autorizzato' });
+    }
+    const rows = req.body?.rows;
+    if (!Array.isArray(rows) || !rows.length) {
+      return res.status(400).json({ error: 'rows mancanti' });
+    }
+    if (rows.length > 500) {
+      return res.status(400).json({ error: 'troppo grandi' });
+    }
+    try {
+      const result = restoreReportCheckins(rows);
+      console.warn(
+        `[restore] report checkins inserted=${result.inserted} skipped=${result.skipped} total=${result.total}`,
+      );
+      return res.json(result);
+    } catch (err) {
+      console.error('[restore] failed:', err);
+      return res.status(500).json({ error: 'restore_failed' });
+    }
   },
 );
 
