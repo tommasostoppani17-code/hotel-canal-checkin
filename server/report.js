@@ -79,8 +79,8 @@ const BOX = '#E9EEF0';
 const WHITE = '#FFFFFF';
 const BRASS = '#6E868F';
 const CW = 456;
-const REPORT_GREETING = 'Gentile Payel e Mizan,';
-const REPORT_GREETING_SHORT = 'Gentile Payel e Mizan';
+const REPORT_GREETING = 'Gentili Mizan & Payel,';
+const REPORT_GREETING_SHORT = 'Gentili Mizan & Payel';
 /** Scala tipografica = mail ospiti (coupon.js) */
 const FS = {
   section: '14px',
@@ -420,15 +420,26 @@ function buildGuestListHtml(rows) {
       const staff = cleanCell(row.receptionist) || '-';
       const pax = cleanCell(row.guests_count ?? '2') || '2';
       const haVoucher = hasRestaurantCoupon(row);
-      const offer = haVoucher ? 'Voucher sì' : 'Voucher no';
-      const offerColor = haVoucher ? C : '#8A949C';
+      const offer = haVoucher ? 'VOUCHER S&Igrave;' : 'VOUCHER NO';
       const tableTime = cleanCell(row.table_booking);
-      const contactParts = [];
-      if (phone && phone !== '-') contactParts.push(escapeHtml(phone));
-      if (email) contactParts.push(escapeHtml(email));
-      const contactHtml = contactParts.join('<br>') || '&mdash;';
+      const phoneHtml =
+        phone && phone !== '-'
+          ? `<div style="${bodySmStyle};color:#5C6670 !important;margin:0;">${escapeHtml(phone)}</div>`
+          : '';
+      const emailHtml = email
+        ? `<div style="margin-top:2px;line-height:1.4;"><a href="mailto:${escapeHtml(email)}" style="font-family:${BODY};font-style:italic;font-size:${FS.bodySm};color:${C} !important;text-decoration:underline;">${escapeHtml(email)}</a></div>`
+        : '';
+      const contactHtml =
+        phoneHtml || emailHtml
+          ? `${phoneHtml}${emailHtml}`
+          : `<div style="${bodySmStyle};color:#5C6670 !important;margin:0;">&mdash;</div>`;
       const border =
         index === rows.length - 1 ? '0' : '1px solid #E8E4DC';
+      const metaLine = `${offer} &middot; ${escapeHtml(staff.toUpperCase())} &middot; ${escapeHtml(pax)} PAX${
+        tableTime
+          ? ` &middot; TAVOLO ${escapeHtml(tableTime.toUpperCase())}`
+          : ''
+      }`;
 
       return `
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0;border-bottom:${border};">
@@ -437,14 +448,10 @@ function buildGuestListHtml(rows) {
                           ${iconCell(doorIcon, 'Ospite', 26)}
                         </td>
                         <td valign="middle" style="padding:10px 0;">
-                          <div class="brand-title" style="font-family:${SERIF};font-size:${FS.itemTitle};font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.2;margin:0 0 3px;">${escapeHtml(room)} &middot; ${escapeHtml(name)}</div>
-                          <div style="${bodySmStyle};color:#5C6670 !important;">${contactHtml}</div>
-                          <div style="font-family:${SANS};font-size:${FS.label};font-weight:600;text-transform:uppercase;color:#7A8690 !important;letter-spacing:0.06em;margin-top:6px;">
-                            <span style="color:${offerColor} !important;">${offer}</span> &middot; ${escapeHtml(staff)} &middot; ${escapeHtml(pax)} pax${
-                              tableTime
-                                ? ` &middot; Tavolo ${escapeHtml(tableTime)}`
-                                : ''
-                            }
+                          <div class="brand-title" style="font-family:${SERIF};font-size:${FS.itemTitle};font-weight:700;color:${C} !important;letter-spacing:0.02em;line-height:1.2;margin:0 0 3px;text-transform:uppercase;">${escapeHtml(room)} &middot; ${escapeHtml(name)}</div>
+                          ${contactHtml}
+                          <div style="font-family:${SERIF};font-size:12px;font-weight:700;color:${C} !important;letter-spacing:0.04em;text-transform:uppercase;margin-top:8px;line-height:1.35;">
+                            ${metaLine}
                           </div>
                         </td>
                       </tr>
@@ -666,7 +673,7 @@ export function buildReportEmail({ hotelName, count, dateLabel, rows = [] }) {
 
   const bodyHtml = `
               <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
-                ${REPORT_GREETING}
+                ${escapeHtml(REPORT_GREETING)}
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
                 in allegato il report contatti di oggi
@@ -749,7 +756,7 @@ export function buildMonthlyStaffEmail({
 
   const bodyHtml = `
               <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;margin:0 0 10px;letter-spacing:0.01em;text-align:left;">
-                ${REPORT_GREETING}
+                ${escapeHtml(REPORT_GREETING)}
               </p>
               <p class="text-muted" style="${bodyStyle};color:#4A5560 !important;margin:0 0 28px;text-align:left;">
                 riepilogo di <strong style="color:${C} !important;font-weight:600;font-style:italic;">${escapeHtml(period)}</strong>:
@@ -801,7 +808,7 @@ export function buildMonthlyStaffEmail({
 }
 
 /**
- * Alert richiesta tavolo — tono “Gentile Payel e Mizan”, tipografia uniforme, foto catalogo.
+ * Alert richiesta tavolo — tono “Gentili Mizan & Payel”, tipografia uniforme, foto catalogo.
  * Hero #26 · sotto #27 quadrata. Niente CTA colorate aggressive.
  */
 export function buildTableBookingEmail({ hotelName, row }) {
@@ -943,7 +950,7 @@ export function buildTableBookingEmail({ hotelName, row }) {
               </p>
 
               <p class="brand-title text-main" style="font-family:${BODY};font-style:italic;font-size:19px;font-weight:500;color:${C} !important;margin:0 0 8px;letter-spacing:0.01em;text-align:left;line-height:1.35;">
-                ${REPORT_GREETING}
+                ${escapeHtml(REPORT_GREETING)}
               </p>
               <p class="text-muted" style="${bodyCopy};color:#4A5560 !important;margin:0 0 16px;text-align:left;">
                 ti scrivo per una richiesta di prenotazione

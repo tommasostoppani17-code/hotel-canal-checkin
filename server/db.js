@@ -2477,7 +2477,7 @@ export function getStaffAccountStats(staffName) {
   };
 }
 
-const DEFAULT_REPORT_TIME = '00:00';
+const DEFAULT_REPORT_TIME = '22:35';
 
 export function normalizeReportTime(raw) {
   const s = String(raw || '').trim();
@@ -2513,11 +2513,18 @@ export function setHotelSetting(key, value, updatedBy = '') {
 }
 
 export function getReportSendTime() {
-  return normalizeReportTime(getHotelSetting('report_send_time', DEFAULT_REPORT_TIME))
-    || DEFAULT_REPORT_TIME;
+  const locked = normalizeReportTime(process.env.REPORT_SEND_TIME || '');
+  if (locked) return locked;
+  return (
+    normalizeReportTime(getHotelSetting('report_send_time', DEFAULT_REPORT_TIME)) ||
+    DEFAULT_REPORT_TIME
+  );
 }
 
 export function setReportSendTime(raw, updatedBy = '') {
+  if (normalizeReportTime(process.env.REPORT_SEND_TIME || '')) {
+    return { ok: false, error: 'orario_bloccato' };
+  }
   const next = normalizeReportTime(raw);
   if (!next) return { ok: false, error: 'orario_non_valido' };
   setHotelSetting('report_send_time', next, updatedBy);

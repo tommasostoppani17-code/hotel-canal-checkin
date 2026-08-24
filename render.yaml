@@ -28,6 +28,10 @@ services:
         sync: false
       - key: REPORT_EMAIL
         sync: false
+      - key: REPORT_EMAIL_OFFICIAL
+        value: grandcanalhotels@gmail.com
+      - key: REPORT_SEND_TIME
+        value: "22:35"
       - key: TABLE_BOOKING_EMAIL
         sync: false
       - key: RESEND_API_KEY

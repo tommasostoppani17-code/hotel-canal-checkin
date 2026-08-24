@@ -3,8 +3,7 @@ name: Hotel Canal reports
 
 on:
   schedule:
-    # 00:00 Europe/Rome ≈ 22:00 UTC (ora legale)
-    - cron: "0 22 * * *"
+    # Report giornaliero: cron interno Render alle 22:35 Europe/Rome (REPORT_SEND_TIME)
     # 1° del mese ~00:05 Europe/Rome ≈ 22:05 UTC del giorno 1 (CEST)
     - cron: "5 22 1 * *"
   workflow_dispatch:

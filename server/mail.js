@@ -16,6 +16,11 @@ import {
   exportStaffMonthStats,
 } from './db.js';
 import {
+  resolveReportRecipients,
+  officialReportRecipient,
+  testReportRecipient,
+} from './report-recipients.js';
+import {
   isBlockedRecipient,
   assertSendableRecipient,
   sendableRecipientOrEmpty,
@@ -71,7 +76,7 @@ async function sendViaResend({ to, subject, text, html, filename, csv, from }) {
 
   const { data, error } = await resend.emails.send({
     from: fromAddress,
-    to: [to],
+    to: Array.isArray(to) ? to : [to],
     subject,
     text,
     html,
@@ -234,15 +239,16 @@ export async function sendTableBookingAlert(row) {
   return { sent: true, channel: 'email', to, time: rawTime, timeLabel, room, phone };
 }
 
-export async function runDailyReport({ force = false } = {}) {
+export async function runDailyReport({ force = false, production = false } = {}) {
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
-  const reportEmailRaw =
-    env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
-  const reportEmail = sendableRecipientOrEmpty(reportEmailRaw);
-  if (!reportEmail && isBlockedRecipient(reportEmailRaw)) {
-    console.warn(
-      `[report] REPORT_EMAIL bloccato, skip email: ${reportEmailRaw}`,
-    );
+  let reportRecipients = [];
+  try {
+    reportRecipients = resolveReportRecipients({ production });
+  } catch (err) {
+    console.warn(`[report] destinatari: ${err.message || err}`);
+  }
+  if (!reportRecipients.length && production) {
+    console.warn('[report] REPORT_EMAIL_OFFICIAL mancante o bloccato, skip email');
   }
   const rows = getUnreportedCheckins();
 
@@ -278,7 +284,8 @@ export async function runDailyReport({ force = false } = {}) {
   }
 
   const emailOn =
-    Boolean(reportEmail) && (resendConfigured() || smtpConfigured());
+    reportRecipients.length > 0 &&
+    (resendConfigured() || smtpConfigured());
   const waOn = whatsappConfigured();
 
   if (!emailOn && !waOn) {
@@ -305,15 +312,22 @@ export async function runDailyReport({ force = false } = {}) {
         rows,
       });
       const provider = resendConfigured() ? 'resend' : 'smtp';
-      await sendReportMail({
-        to: reportEmail,
-        subject,
-        text,
-        html,
-        filename,
-        csv,
-      });
-      channels.email = { sent: true, to: reportEmail, provider };
+      for (const to of reportRecipients) {
+        await sendReportMail({
+          to,
+          subject,
+          text,
+          html,
+          filename,
+          csv,
+        });
+      }
+      channels.email = {
+        sent: true,
+        to: reportRecipients.join(', '),
+        provider,
+        production,
+      };
     } catch (err) {
       const message = err.message || String(err);
       errors.push(`email: ${message}`);
@@ -371,7 +385,11 @@ export async function runDailyReport({ force = false } = {}) {
   return {
     sent: true,
     count: rows.length,
-    to: channels.email?.to || channels.whatsapp?.to || reportEmail,
+    to:
+      channels.email?.to ||
+      channels.whatsapp?.to ||
+      reportRecipients[0] ||
+      '',
     email: channels.email,
     whatsapp: channels.whatsapp,
     partialErrors: errors.length ? errors : undefined,
@@ -435,22 +453,29 @@ export function isLastDayOfMonthRome(date = new Date()) {
   return d === lastDay;
 }
 
-export async function runMonthlyStaffReport({ force = false } = {}) {
+export async function runMonthlyStaffReport({
+  force = false,
+  production = false,
+} = {}) {
   if (!force && !isFirstDayOfMonthRome()) {
     return { sent: false, reason: 'not_month_start' };
   }
 
   const hotelName = env('HOTEL_NAME', 'Hotel Canal');
-  const reportEmailRaw =
-    env('REPORT_EMAIL') || 'tommasostoppani17@gmail.com';
-  const reportEmail = sendableRecipientOrEmpty(reportEmailRaw);
+  let reportRecipients = [];
+  try {
+    reportRecipients = resolveReportRecipients({ production });
+  } catch (err) {
+    if (production) throw err;
+    console.warn(`[monthly] destinatari: ${err.message || err}`);
+  }
+  if (!reportRecipients.length) {
+    const test = testReportRecipient();
+    if (test) reportRecipients = [test];
+  }
+  const reportEmail = reportRecipients[0] || '';
   if (!reportEmail) {
-    if (isBlockedRecipient(reportEmailRaw)) {
-      throw new Error(
-        `REPORT_EMAIL bloccato (non inviare a info@ / hotelcanal): ${reportEmailRaw}`,
-      );
-    }
-    throw new Error('REPORT_EMAIL non configurata');
+    throw new Error('Destinatario report non configurato');
   }
   assertEmailReady(reportEmail);
 
@@ -510,20 +535,22 @@ export async function runMonthlyStaffReport({ force = false } = {}) {
   const filename = `performance_staff_${period.monthLabel.toLowerCase()}_${period.year}.csv`;
   const provider = resendConfigured() ? 'resend' : 'smtp';
 
-  await sendReportMail({
-    to: reportEmail,
-    subject,
-    text,
-    html,
-    filename,
-    csv,
-  });
+  for (const to of reportRecipients) {
+    await sendReportMail({
+      to,
+      subject,
+      text,
+      html,
+      filename,
+      csv,
+    });
+  }
 
   return {
     sent: true,
     count: totaleMese,
     staff: ranking.length,
-    to: reportEmail,
+    to: reportRecipients.join(', '),
     provider,
     force,
     yearMonth: period.yearMonth,

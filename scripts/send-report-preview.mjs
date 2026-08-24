@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Invia email report Payel di prova (tipografia + lista lunga). */
+/** Invia email report di prova — MAI all'inbox ufficiale. */
 import dotenv from 'dotenv';
 import { Resend } from 'resend';
 import {
@@ -8,10 +8,15 @@ import {
   demoReportPreviewRows,
   formatRomeDate,
 } from '../server/report.js';
+import { testReportRecipient } from '../server/report-recipients.js';
 
 dotenv.config();
 
-const to = String(process.env.REPORT_EMAIL || 'tommasostoppani17@gmail.com').trim();
+const to = testReportRecipient();
+if (!to) {
+  console.error('Destinatario test non configurato (REPORT_EMAIL_TEST / REPORT_EMAIL)');
+  process.exit(1);
+}
 const from = String(
   process.env.REPORT_FROM ||
     process.env.SMTP_FROM ||

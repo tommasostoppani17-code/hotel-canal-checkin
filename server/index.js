@@ -1015,7 +1015,9 @@ app.get(
     return res.status(401).json({ error: 'Non autorizzato' });
   }
   const from = String(process.env.SMTP_FROM || '');
-  const reportEmail = String(process.env.REPORT_EMAIL || '').trim();
+  const reportOfficial = String(
+    process.env.REPORT_EMAIL_OFFICIAL || 'grandcanalhotels@gmail.com',
+  ).trim();
   const resendKey = Boolean(String(process.env.RESEND_API_KEY || '').trim());
   const usingDevFrom = /onboarding@resend\.dev/i.test(from);
   const dbPath = DATABASE_PATH;
@@ -1024,16 +1026,16 @@ app.get(
   const guestEmailReady = resendKey && !usingDevFrom;
   const whatsappReady = whatsappConfigured();
   const reportReady =
-    (Boolean(reportEmail) &&
-      (guestEmailReady || /gmail\.com$/i.test(reportEmail))) ||
+    (Boolean(reportOfficial) &&
+      (guestEmailReady || /gmail\.com$/i.test(reportOfficial))) ||
     whatsappReady;
   const dataReady = onPersistentDisk || backupOk;
   const blockers = [];
   if (!guestEmailReady) {
     blockers.push('SMTP_FROM: verifica dominio Resend');
   }
-  if (!reportEmail && !whatsappReady) {
-    blockers.push('REPORT_EMAIL e/o WhatsApp non configurati');
+  if (!reportOfficial && !whatsappReady) {
+    blockers.push('REPORT_EMAIL_OFFICIAL e/o WhatsApp non configurati');
   }
   if (!dataReady) {
     blockers.push('Disco persistente o backup Gist mancante');
@@ -1043,7 +1045,7 @@ app.get(
     ok: blockers.length === 0,
     hotel: HOTEL_NAME,
     checkins: countCheckins(),
-    reportEmailConfigured: Boolean(reportEmail),
+    reportEmailConfigured: Boolean(reportOfficial),
     guestEmailReady,
     reportReady,
     whatsappReady,
@@ -2531,7 +2533,7 @@ app.post(
   }
 
   try {
-    const result = await runDailyReport({ force: true });
+    const result = await runDailyReport({ force: true, production: true });
     return res.json(publicReportSummary(result));
   } catch (err) {
     console.error('Errore report giornaliero:', err);
@@ -2551,7 +2553,7 @@ app.post(
     const force =
       String(req.query.force || '').trim() === '1' ||
       req.body?.force === true;
-    const result = await runMonthlyStaffReport({ force });
+    const result = await runMonthlyStaffReport({ force, production: true });
     return res.json(publicReportSummary(result));
   } catch (err) {
     console.error('Errore report mensile:', err);
@@ -2564,7 +2566,7 @@ cron.schedule(
   async () => {
     console.log(`[cron] Report mensile staff (1° del mese)…`);
     try {
-      const result = await runMonthlyStaffReport();
+      const result = await runMonthlyStaffReport({ production: true });
       if (result.sent) {
         console.log(
           `[cron] Report mensile inviato (${result.count} anagrafiche, ${result.staff} staff, ${result.yearMonth}) → ${result.to}`,
@@ -2589,7 +2591,7 @@ function reportTimeToCron(hhmm) {
 async function runNightlyReportJob() {
   console.log(`[cron] Report notturno ${HOTEL_NAME}…`);
   try {
-    const result = await runDailyReport();
+    const result = await runDailyReport({ production: true });
     if (result.sent) {
       const channels = [
         result.email?.sent ? `email→${result.email.to}` : null,
@@ -2635,7 +2637,7 @@ app.listen(PORT, async () => {
   const reportTime = startDailyReportCron();
   console.log(`${HOTEL_NAME} check-in attivo su http://localhost:${PORT}`);
   console.log(
-    `Cron report: ${reportTime} ${CRON_TZ} → email ${process.env.REPORT_EMAIL || '(off)'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
+    `Cron report: ${reportTime} ${CRON_TZ} → ufficiale ${process.env.REPORT_EMAIL_OFFICIAL || 'grandcanalhotels@gmail.com'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
   );
   console.log(`Cron staff: 00:05 il 1° del mese (${CRON_TZ}) → mese precedente`);
   console.log(
