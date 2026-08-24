@@ -93,7 +93,7 @@ export function buildWhatsAppDailyBody({ hotelName, dateLabel, count, rows = [] 
     );
 
   return [
-    `Gentile Payel,`,
+    `Gentile Payel e Mizan,`,
     ``,
     `report contatti di oggi (${dateLabel}): *${count}* check-in. CSV nel messaggio successivo.`,
     ``,

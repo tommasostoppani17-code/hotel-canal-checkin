@@ -217,6 +217,15 @@
       );
     }
 
+    body.is-session-boot .staff-shell {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    body.is-session-boot .gate-card {
+      animation: none;
+    }
+
     .staff-shell {
       position: relative;
       z-index: 2;
@@ -514,6 +523,10 @@
       transition: color 0.2s var(--ios-ease);
     }
 
+    .gate-form .form-group label.label-error-state {
+      color: #C62828 !important;
+    }
+
     .gate-form .form-group:focus-within label:not(.label-error-state) {
       color: var(--canal-petroleum-hover);
     }
@@ -670,6 +683,15 @@
     .gate-form .ui-dropdown.is-open .ui-dropdown-trigger {
       border-color: rgba(18, 68, 83, 0.45);
       box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+    }
+
+    .gate-form .apple-input.is-invalid,
+    .gate-form .field.is-invalid {
+      border: 1.5px solid #C62828 !important;
+      background: #FFF9F9 !important;
+      box-shadow:
+        inset 0 0 0 1px rgba(198, 40, 40, 0.18),
+        inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
     }
 
     .gate-card.is-menu-open {
@@ -2456,6 +2478,45 @@
       background: rgba(198, 40, 40, 0.05);
     }
 
+    .matrix-section-row td {
+      padding: 18px var(--cell-x) 8px;
+      background: #fff;
+      border-bottom: none;
+      white-space: normal;
+    }
+
+    .matrix-section-row + tr td {
+      border-top: none;
+    }
+
+    .matrix-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #B8860B;
+    }
+
+    .matrix-section-hint {
+      margin-top: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #8a9ba8;
+      line-height: 1.35;
+    }
+
+    .matrix-table tbody tr.is-checkout-due {
+      background: rgba(230, 168, 23, 0.045);
+    }
+
+    .matrix-table tbody tr.is-checkout-due td {
+      background: rgba(230, 168, 23, 0.045);
+    }
+
+    .matrix-table tbody tr.is-checkout-due:hover td {
+      background: rgba(230, 168, 23, 0.07);
+    }
+
     .cell-name {
       font-weight: 500;
       font-size: 14px;
@@ -2764,6 +2825,14 @@
 
     .row-menu-item--danger .row-menu-item-icon {
       color: #C62828;
+    }
+
+    .row-menu-item-icon--whatsapp {
+      color: #1a9e5c;
+    }
+
+    .row-menu-item-icon--email {
+      color: var(--canal-petroleum);
     }
 
     .row-menu-item-chevron {
@@ -5088,6 +5157,9 @@
 
     .ig-sheet-body .sheet-foot--minimal {
       margin-top: 16px;
+      border-top: 0;
+      background: transparent;
+      padding: 0;
     }
 
     .ig-sheet-body .sheet-foot--minimal .btn-primary {
@@ -5099,6 +5171,9 @@
 
     .ig-sheet-body .sheet-foot--split {
       margin-top: 24px;
+      border-top: 0;
+      background: transparent;
+      padding: 0;
     }
 
     .report-result {
@@ -5602,6 +5677,29 @@
       height: 40px;
       border-radius: 8px;
       font-size: 14px;
+    }
+
+    .sheet-foot.sheet-foot--minimal {
+      display: block;
+      padding: 0;
+      margin-top: 16px;
+      border-top: 0;
+      background: transparent;
+    }
+
+    .sheet-foot.sheet-foot--split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 24px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .sheet-foot.sheet-foot--minimal.sheet-foot--split {
+      display: grid;
+      margin-top: 24px;
     }
 
     .btn-primary--danger {
@@ -6303,14 +6401,18 @@
       font-size: 14px;
     }
 
-    @keyframes iosShake {
-      10%, 90% { transform: translate3d(-1px, 0, 0); }
-      20%, 80% { transform: translate3d(2px, 0, 0); }
-      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    @keyframes iosShakeAnim {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      20%, 80% { transform: translate3d(-4px, 0, 0); }
       40%, 60% { transform: translate3d(4px, 0, 0); }
     }
 
-    .ios-shake { animation: iosShake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+    .gate-card.ios-shake {
+      animation: iosShakeAnim 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .ios-shake { animation: iosShakeAnim 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
 
     @media (prefers-reduced-motion: reduce) {
       .gate-card,
@@ -7581,13 +7683,13 @@
     }
   </style>
 </head>
-<body>
+<body class="is-session-boot">
   <div class="background-overlay" aria-hidden="true">
     <div class="bg-inertia" aria-hidden="true"></div>
   </div>
 
   <div class="staff-shell">
-  <section class="login-view" id="loginCard">
+  <section class="login-view hidden" id="loginCard">
     <div class="gate-card" id="gateCard">
       <div class="card-sheen" aria-hidden="true"></div>
       <div class="gate-header">
@@ -8260,6 +8362,28 @@
     </div>
   </div>
 
+  <div class="sheet sheet--ig" id="deleteCheckinSheet" hidden aria-hidden="true">
+    <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="deleteCheckinSheetCloseBg" aria-label="Chiudi"></button>
+    <div class="sheet-panel sheet-panel--ig-report" role="dialog" aria-modal="true" aria-labelledby="deleteCheckinSheetTitle">
+      <div class="ig-sheet-handle" aria-hidden="true"></div>
+      <header class="ig-sheet-bar">
+        <span class="ig-sheet-bar-side" aria-hidden="true"></span>
+        <h2 class="ig-sheet-bar-title" id="deleteCheckinSheetTitle">Elimina check-in</h2>
+        <button type="button" class="ig-sheet-bar-close" id="deleteCheckinSheetClose" aria-label="Chiudi">×</button>
+      </header>
+      <div class="ig-sheet-body">
+        <div class="sheet-form sheet-form--flat">
+          <p class="sheet-guest-line" id="deleteCheckinGuest">—</p>
+          <p class="settings-lead" id="deleteCheckinNote">Il check-in verrà rimosso definitivamente dalla lista.</p>
+          <div class="sheet-foot sheet-foot--minimal sheet-foot--split">
+            <button type="button" class="btn-exit" id="deleteCheckinCancel">Annulla</button>
+            <button type="button" class="btn-primary btn-primary--danger" id="deleteCheckinConfirm">Elimina</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="sheet sheet--ig" id="blacklistSheet" hidden aria-hidden="true">
     <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="blacklistSheetCloseBg" aria-label="Chiudi"></button>
     <div class="sheet-panel sheet-panel--ig-report" role="dialog" aria-modal="true" aria-labelledby="blacklistSheetTitle">
@@ -8376,6 +8500,7 @@
 
     const loginCard = document.getElementById('loginCard');
     const gateCard = document.getElementById('gateCard');
+    const gateForm = document.getElementById('gateForm');
     const dash = document.getElementById('dash');
     const pinEl = document.getElementById('pin');
     const staffMemberEl = document.getElementById('staffMember');
@@ -8465,6 +8590,10 @@
     const staffSheetForm = document.getElementById('staffSheetForm');
     const staffSheetGuestEl = document.getElementById('staffSheetGuest');
     const staffSheetNameEl = document.getElementById('staffSheetName');
+    const deleteCheckinSheet = document.getElementById('deleteCheckinSheet');
+    const deleteCheckinGuestEl = document.getElementById('deleteCheckinGuest');
+    const deleteCheckinConfirmBtn = document.getElementById('deleteCheckinConfirm');
+    let deleteCheckinRow = null;
     const teamSheet = document.getElementById('teamSheet');
     const teamSheetForm = document.getElementById('teamSheetForm');
     const teamSheetConfirm = document.getElementById('teamSheetConfirm');
@@ -8506,6 +8635,8 @@
     let activeView = 'checkins';
     let lastCheckins = [];
     let lastInHouse = [];
+    let lastInHouseCheckoutDue = [];
+    let inHouseMeta = { checkoutTime: '10:30', graceHours: 3 };
     let lastNotes = [];
     let lastInboxNotes = [];
     let lastToday = '';
@@ -9212,11 +9343,80 @@
       window.setTimeout(() => container.classList.remove('is-staggering'), 920);
     }
 
+    function shakeGateCard() {
+      if (!gateCard) return;
+      gateCard.classList.remove('motion-intro', 'ios-shake', 'is-rubber');
+      void gateCard.offsetWidth;
+      gateCard.classList.add('ios-shake');
+      window.setTimeout(() => gateCard.classList.remove('ios-shake'), 400);
+    }
+
     function shake(el) {
       if (!el) return;
       el.classList.remove('ios-shake');
       void el.offsetWidth;
       el.classList.add('ios-shake');
+      window.setTimeout(() => el.classList.remove('ios-shake'), 400);
+    }
+
+    function markGateFieldError(fieldEl) {
+      if (!fieldEl) return;
+      fieldEl.classList.add('is-invalid');
+      const group = fieldEl.closest('.form-group');
+      const label = group?.querySelector('label')
+        || document.querySelector(`label[for="${fieldEl.id}"]`);
+      label?.classList.add('label-error-state');
+    }
+
+    function clearGateFieldError(fieldEl) {
+      if (!fieldEl) return;
+      fieldEl.classList.remove('is-invalid');
+      const group = fieldEl.closest('.form-group');
+      const label = group?.querySelector('label')
+        || document.querySelector(`label[for="${fieldEl.id}"]`);
+      label?.classList.remove('label-error-state');
+    }
+
+    function clearGateFieldErrors() {
+      gateForm?.querySelectorAll('.is-invalid').forEach((el) => el.classList.remove('is-invalid'));
+      gateForm?.querySelectorAll('.label-error-state').forEach((el) => el.classList.remove('label-error-state'));
+    }
+
+    function showGateFieldError(fieldEl) {
+      clearServerToast();
+      if (!fieldEl) {
+        shakeGateCard();
+        return;
+      }
+      markGateFieldError(fieldEl);
+      try {
+        fieldEl.focus({ preventScroll: true });
+      } catch (_) {
+        try { fieldEl.focus(); } catch (__) { /* ignore */ }
+      }
+      shakeGateCard();
+    }
+
+    function showGateFieldsError(fieldEls) {
+      clearServerToast();
+      const list = (fieldEls || []).filter(Boolean);
+      if (!list.length) {
+        shakeGateCard();
+        return;
+      }
+      list.forEach(markGateFieldError);
+      try {
+        list[0].focus({ preventScroll: true });
+      } catch (_) {
+        try { list[0].focus(); } catch (__) { /* ignore */ }
+      }
+      shakeGateCard();
+    }
+
+    function showGateAuthError() {
+      clearGateFieldErrors();
+      clearServerToast();
+      showGateFieldsError([staffMemberEl, pinEl].filter(Boolean));
     }
 
     function isUsableStaffPassword(value) {
@@ -9225,21 +9425,6 @@
     }
 
     function closeStaffMenu() {}
-
-    function showPinError() {
-      lblPin.classList.add('label-error-state');
-      lblStaff?.classList.add('label-error-state');
-      pinEl.classList.add('is-invalid');
-      staffMemberEl?.classList.add('is-invalid');
-      shake(gateCard);
-    }
-
-    function clearPinError() {
-      lblPin.classList.remove('label-error-state');
-      lblStaff?.classList.remove('label-error-state');
-      pinEl.classList.remove('is-invalid');
-      staffMemberEl?.classList.remove('is-invalid');
-    }
 
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, (c) => ({
@@ -9486,7 +9671,7 @@
       if (!allowed && activeView === 'info') setActiveView('checkins');
     }
 
-    function setActiveView(view) {
+    function setActiveView(view, { restore = false } = {}) {
       closeRowMenu();
       closeNotifyMenu();
       closeGuestSheet();
@@ -9538,7 +9723,7 @@
             : 'Cerca nome o stanza…';
       clearServerToast();
       closeDashNav();
-      replayMotion(activePanelEl(), 'motion-panel-in', 480);
+      if (!restore) replayMotion(activePanelEl(), 'motion-panel-in', 480);
       if (activeView === 'blacklist') loadBlacklist();
       else if (activeView === 'requests') loadReceptionNotes();
       else if (activeView === 'settings') loadSettings();
@@ -9740,6 +9925,12 @@
         <path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
       </svg>`;
 
+    const ICON_WHATSAPP = `
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.435 9.884-9.884 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>`;
+
+    const ICON_EMAIL = `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="m3 7 9 6 9-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
     const ICON_MENU_CHEVRON = `
       <svg class="row-menu-item-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -9753,6 +9944,37 @@
         <span class="row-menu-item-text">${escapeHtml(label)}</span>
         ${chevron ? ICON_MENU_CHEVRON : ''}
       </button>`;
+    }
+
+    function buildRowMenuHtml(row) {
+      const parts = [];
+      parts.push(rowMenuItem('edit-room', 'row-menu-item-icon--room', ICON_ROOM_MENU, 'Modifica stanza'));
+      parts.push(rowMenuItem(
+        'assign-staff',
+        'row-menu-item-icon--info',
+        ICON_STAFF_MENU,
+        row.receptionist ? 'Cambia receptionist' : 'Assegna receptionist',
+      ));
+      parts.push(rowMenuItem('add-note', 'row-menu-item-icon--table', ICON_NOTE_MENU, 'Nuova nota'));
+
+      if (row.blacklisted) {
+        parts.push(rowMenuItem('edit-flag', 'row-menu-item-icon--ban', ICON_BAN, 'Modifica segnalazione'));
+      } else {
+        parts.push(rowMenuItem('flag', 'row-menu-item-icon--ban', ICON_BAN, 'Segnala'));
+      }
+
+      parts.push(rowMenuItem('history', 'row-menu-item-icon--history', ICON_HISTORY_MENU, 'Cambi stanza', { chevron: true }));
+
+      if (row.hasPhone) {
+        parts.push(rowMenuItem('contact-whatsapp', 'row-menu-item-icon--whatsapp', ICON_WHATSAPP, 'WhatsApp'));
+      }
+      if (row.hasEmail) {
+        parts.push(rowMenuItem('contact-email', 'row-menu-item-icon--email', ICON_EMAIL, 'Email'));
+      }
+
+      parts.push(rowMenuItem('delete-checkin', 'row-menu-item-icon--ban', ICON_FEED_TRASH, 'Elimina check-in', { danger: true }));
+
+      return parts.join('');
     }
 
     function formatActivityWhen(iso) {
@@ -9797,29 +10019,6 @@
         }
       }
       parts.push('</div>');
-      return parts.join('');
-    }
-
-    function buildRowMenuHtml(row) {
-      const parts = [];
-      parts.push(rowMenuItem('edit-room', 'row-menu-item-icon--room', ICON_ROOM_MENU, 'Modifica stanza'));
-      parts.push(rowMenuItem(
-        'assign-staff',
-        'row-menu-item-icon--info',
-        ICON_STAFF_MENU,
-        row.receptionist ? 'Cambia receptionist' : 'Assegna receptionist',
-      ));
-      parts.push(rowMenuItem('add-note', 'row-menu-item-icon--table', ICON_NOTE_MENU, 'Nuova nota'));
-
-      if (row.blacklisted) {
-        parts.push(rowMenuItem('edit-flag', 'row-menu-item-icon--ban', ICON_BAN, 'Modifica segnalazione'));
-      } else {
-        parts.push(rowMenuItem('flag', 'row-menu-item-icon--ban', ICON_BAN, 'Segnala'));
-      }
-
-      parts.push(rowMenuItem('history', 'row-menu-item-icon--history', ICON_HISTORY_MENU, 'Cambi stanza', { chevron: true }));
-      parts.push(rowMenuItem('delete-checkin', 'row-menu-item-icon--ban', ICON_FEED_TRASH, 'Elimina check-in', { danger: true }));
-
       return parts.join('');
     }
 
@@ -10063,16 +10262,53 @@
         });
         return;
       }
+      if (action === 'contact-whatsapp') {
+        await contactGuestVia('phone', row);
+        return;
+      }
+      if (action === 'contact-email') {
+        await contactGuestVia('email', row);
+        return;
+      }
       if (action === 'delete-checkin') {
-        await deleteStaffCheckinRow(row);
+        openDeleteCheckinSheet(row);
       }
     }
 
-    async function deleteStaffCheckinRow(row) {
-      const name = String(row.guestName || 'questo ospite').trim() || 'questo ospite';
+    function openDeleteCheckinSheet(row) {
+      if (!deleteCheckinSheet || !row) return;
+      closeNoteSheet();
+      closeRoomSheet();
+      closeStaffSheet();
+      closeGuestSheet();
+      deleteCheckinRow = row;
+      const name = String(row.guestName || 'Ospite').trim() || 'Ospite';
       const room = String(row.roomNumber || '').trim();
-      const who = room ? `${name} (stanza ${room})` : name;
-      if (!window.confirm(`Eliminare il check-in di ${who}?`)) return;
+      if (deleteCheckinGuestEl) {
+        deleteCheckinGuestEl.textContent = room ? `${name} · stanza ${room}` : name;
+      }
+      if (deleteCheckinConfirmBtn) deleteCheckinConfirmBtn.disabled = false;
+      deleteCheckinSheet.hidden = false;
+      deleteCheckinSheet.setAttribute('aria-hidden', 'false');
+      lockSheetScroll();
+      animateSheetOpen(deleteCheckinSheet);
+    }
+
+    function closeDeleteCheckinSheet() {
+      if (!deleteCheckinSheet || deleteCheckinSheet.hidden) {
+        deleteCheckinRow = null;
+        return;
+      }
+      animateSheetClose(deleteCheckinSheet, () => {
+        deleteCheckinRow = null;
+        unlockSheetScroll();
+      });
+    }
+
+    async function confirmDeleteCheckinRow() {
+      const row = deleteCheckinRow;
+      if (!row?.id) return;
+      if (deleteCheckinConfirmBtn) deleteCheckinConfirmBtn.disabled = true;
       try {
         const res = await fetch(`/api/staff/checkins/${row.id}`, {
           method: 'DELETE',
@@ -10082,12 +10318,15 @@
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           showServerToast(body.error || 'Impossibile eliminare il check-in', true);
+          if (deleteCheckinConfirmBtn) deleteCheckinConfirmBtn.disabled = false;
           return;
         }
         clearServerToast();
+        closeDeleteCheckinSheet();
         await reloadActiveGuestTable();
       } catch (_) {
         showServerToast('Errore di rete. Riprova.', true);
+        if (deleteCheckinConfirmBtn) deleteCheckinConfirmBtn.disabled = false;
       }
     }
 
@@ -10290,6 +10529,7 @@
       closeNoteSheet();
       closeStaffSheet();
       closeGuestSheet();
+      closeDeleteCheckinSheet();
       roomSheetContext = { checkinId: row?.id || null };
       if (roomSheetGuestEl) roomSheetGuestEl.textContent = row?.guestName || '—';
       if (roomSheetNumberEl) {
@@ -10332,6 +10572,7 @@
       closeNoteSheet();
       closeRoomSheet();
       closeStaffSheet();
+      closeDeleteCheckinSheet();
       guestSheetRow = row;
       const guestLabel = formatGuestDisplayName(row.guestName);
       const room = String(row.roomNumber || '').trim();
@@ -10525,18 +10766,33 @@
       }
     }
 
-    function guestMatrixRowHtml(row) {
+    function inHouseSectionRowHtml(title, hint) {
+      return `<tr class="matrix-section-row" role="presentation">
+        <td colspan="6">
+          <div class="matrix-section-label">${escapeHtml(title)}</div>
+          ${hint ? `<div class="matrix-section-hint">${escapeHtml(hint)}</div>` : ''}
+        </td>
+      </tr>`;
+    }
+
+    function guestMatrixRowHtml(row, { checkoutDue = false } = {}) {
       const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
       const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
       const guestLabel = formatGuestDisplayName(row.guestName);
       const guestTitle = String(row.guestName || '').trim() || '—';
-      const sub = (activeView === 'inhouse' && row.checkoutDate)
-        ? `Checkout ${formatDateShort(row.checkoutDate)}`
-        : (row.stayDate ? formatDateShort(row.stayDate) : '');
+      const sub = checkoutDue
+        ? `Checkout oggi · oltre le ${inHouseMeta.checkoutTime || '10:30'}`
+        : (activeView === 'inhouse' && row.checkoutDate)
+          ? `Checkout ${formatDateShort(row.checkoutDate)}`
+          : (row.stayDate ? formatDateShort(row.stayDate) : '');
       const mobile = isMobileGuestList();
       const contacts = `<div class="cell-contacts">${phoneCell}${emailCell}</div>`;
+      const rowClass = [
+        row.blacklisted ? 'is-blacklisted' : '',
+        checkoutDue ? 'is-checkout-due' : '',
+      ].filter(Boolean).join(' ');
       return `
-        <tr data-id="${row.id}" class="${row.blacklisted ? 'is-blacklisted' : ''}">
+        <tr data-id="${row.id}"${rowClass ? ` class="${rowClass}"` : ''}>
           <td class="col-guest">
             <div class="cell-guest">
               <div class="cell-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
@@ -10587,20 +10843,42 @@
       inHouseCountEl.classList.toggle('hidden', n < 1);
     }
 
-    function renderInHouse(rows) {
+    function renderInHouse(rows, checkoutDue = []) {
       if (!inHouseListEl) return;
       const n = rows.length;
+      const dueN = checkoutDue.length;
+      const graceLabel = Number(inHouseMeta.graceHours) === 1
+        ? '1 ora'
+        : `${inHouseMeta.graceHours || 3} ore`;
+      const dueHint = `Oltre le ${inHouseMeta.checkoutTime || '10:30'} · ancora visibili per ${graceLabel}`;
+
       if (inHouseRowCountEl) {
-        inHouseRowCountEl.innerHTML = n === 1
-          ? '<strong>1</strong> in camera'
-          : `<strong>${n}</strong> in camera`;
+        if (n > 0 && dueN > 0) {
+          inHouseRowCountEl.innerHTML = `<strong>${n}</strong> in camera · <strong>${dueN}</strong> checkout da verificare`;
+        } else if (dueN > 0) {
+          inHouseRowCountEl.innerHTML = dueN === 1
+            ? '<strong>1</strong> checkout da verificare'
+            : `<strong>${dueN}</strong> checkout da verificare`;
+        } else {
+          inHouseRowCountEl.innerHTML = n === 1
+            ? '<strong>1</strong> in camera'
+            : `<strong>${n}</strong> in camera`;
+        }
       }
-      if (!n) {
+
+      if (!n && !dueN) {
         inHouseListEl.innerHTML = `<tr><td colspan="6"><p class="empty">Nessun ospite in camera in questo momento.</p></td></tr>`;
         return;
       }
-      inHouseListEl.innerHTML = rows.map(guestMatrixRowHtml).join('');
-      animateStaggerContainer(inHouseListEl, 'tr');
+
+      const parts = [];
+      if (n) parts.push(...rows.map((row) => guestMatrixRowHtml(row)));
+      if (dueN) {
+        parts.push(inHouseSectionRowHtml('Deve fare checkout oggi', dueHint));
+        parts.push(...checkoutDue.map((row) => guestMatrixRowHtml(row, { checkoutDue: true })));
+      }
+      inHouseListEl.innerHTML = parts.join('');
+      animateStaggerContainer(inHouseListEl, 'tr:not(.matrix-section-row)');
     }
 
     async function loadInHouse() {
@@ -10614,8 +10892,13 @@
         if (res.status === 401) { showLogin(); return; }
         const body = await res.json().catch(() => ({}));
         lastInHouse = body.checkins || [];
-        updateInHouseBadge(body.total ?? lastInHouse.length);
-        renderInHouse(lastInHouse);
+        lastInHouseCheckoutDue = body.checkoutDue || [];
+        inHouseMeta = {
+          checkoutTime: body.checkoutTime || '10:30',
+          graceHours: body.graceHours ?? 3,
+        };
+        updateInHouseBadge(body.visibleTotal ?? (lastInHouse.length + lastInHouseCheckoutDue.length));
+        renderInHouse(lastInHouse, lastInHouseCheckoutDue);
       } catch (_) {
         showServerToast('Errore di rete. Riprova.', true);
       } finally {
@@ -10628,7 +10911,7 @@
         const res = await fetch('/api/staff/in-house', { credentials: 'same-origin' });
         if (!res.ok) return;
         const body = await res.json().catch(() => ({}));
-        updateInHouseBadge(body.total ?? (body.checkins || []).length);
+        updateInHouseBadge(body.visibleTotal ?? ((body.checkins || []).length + (body.checkoutDue || []).length));
       } catch (_) { /* ignore */ }
     }
 
@@ -10668,9 +10951,8 @@
       const root = contactLookupRoot();
       const textSpan = root?.querySelector(`[data-${kind}-text="${checkinId}"]`);
       const btn = root?.querySelector(`[data-reveal-${kind}="${checkinId}"]`);
-      if (!textSpan) return null;
 
-      if (textSpan.dataset.revealed === 'true') {
+      if (textSpan?.dataset.revealed === 'true') {
         return textSpan.dataset.full || textSpan.textContent.trim();
       }
 
@@ -10694,7 +10976,13 @@
           showServerToast(kind === 'phone' ? 'Telefono non disponibile' : 'Email non disponibile', true);
           return null;
         }
-        await applyContactReveal(textSpan, btn, kind, value);
+        if (textSpan) {
+          await applyContactReveal(textSpan, btn, kind, value);
+        } else if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('is-locked');
+          btn.innerHTML = EYE_ICON;
+        }
         return value;
       } catch (_) {
         showServerToast('Errore di rete', true);
@@ -10702,8 +10990,47 @@
       } finally {
         if (btn) {
           btn.disabled = false;
+          if (textSpan?.dataset.revealed !== 'true') {
+            btn.classList.remove('is-locked');
+            btn.innerHTML = EYE_ICON;
+          }
         }
       }
+    }
+
+    function normalizeWhatsAppPhone(phone) {
+      let raw = String(phone || '').trim();
+      if (!raw) return '';
+      if (raw.startsWith('+')) raw = raw.slice(1);
+      if (raw.startsWith('00')) raw = raw.slice(2);
+      return raw.replace(/\D/g, '');
+    }
+
+    function buildGuestMailto(email, row) {
+      const guest = formatGuestDisplayName(row?.guestName);
+      const room = String(row?.roomNumber || '').trim();
+      const subject = room
+        ? `Hotel Canal — ${guest} (cam. ${room})`
+        : `Hotel Canal — ${guest}`;
+      return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}`;
+    }
+
+    async function contactGuestVia(kind, row) {
+      if (!row?.id) return;
+      const value = await revealContactValue(row.id, kind);
+      if (!value) return;
+
+      if (kind === 'phone') {
+        const wa = normalizeWhatsAppPhone(value);
+        if (!wa) {
+          showServerToast('Numero non valido', true);
+          return;
+        }
+        window.open(`https://wa.me/${wa}`, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      window.location.href = buildGuestMailto(value, row);
     }
 
     let contactCopyLockUntil = 0;
@@ -11325,6 +11652,7 @@
     }
 
     function showLogin() {
+      document.body.classList.remove('is-session-boot');
       const alreadyOpen = !loginCard.classList.contains('hidden');
       document.body.classList.remove('is-dashboard');
       clearStaffIdleTimer();
@@ -11341,14 +11669,15 @@
       closeDashNav();
     }
 
-    function showDash() {
+    function showDash({ restore = false } = {}) {
+      document.body.classList.remove('is-session-boot');
       document.body.classList.add('is-dashboard');
       loginCard.classList.add('hidden');
       dash.classList.remove('hidden');
-      replayMotion(dash, 'motion-rise');
+      if (!restore) replayMotion(dash, 'motion-rise');
       paintStaffSettingsForm();
       bindStaffIdleWatch();
-      setActiveView('checkins');
+      setActiveView('checkins', { restore });
       startAlertPolling();
     }
 
@@ -11572,6 +11901,12 @@
     document.getElementById('noteSheetClose')?.addEventListener('click', closeNoteSheet);
     document.getElementById('roomSheetCloseBg')?.addEventListener('click', closeRoomSheet);
     document.getElementById('roomSheetClose')?.addEventListener('click', closeRoomSheet);
+    document.getElementById('deleteCheckinSheetCloseBg')?.addEventListener('click', closeDeleteCheckinSheet);
+    document.getElementById('deleteCheckinSheetClose')?.addEventListener('click', closeDeleteCheckinSheet);
+    document.getElementById('deleteCheckinCancel')?.addEventListener('click', closeDeleteCheckinSheet);
+    document.getElementById('deleteCheckinConfirm')?.addEventListener('click', () => {
+      void confirmDeleteCheckinRow();
+    });
     document.getElementById('staffSheetCloseBg')?.addEventListener('click', closeStaffSheet);
     document.getElementById('staffSheetClose')?.addEventListener('click', closeStaffSheet);
     document.getElementById('guestSheetCloseBg')?.addEventListener('click', closeGuestSheet);
@@ -12001,28 +12336,43 @@
     }
 
     async function checkSession() {
-      await applyLocalLoginHint();
-      const res = await fetch('/api/staff/session', { credentials: 'same-origin' });
-      const body = await res.json().catch(() => ({}));
-      if (body.ok) {
-        currentStaff = body.staff || null;
-        setStaffUserLabel(currentStaff);
-        showDash();
-      } else {
-        currentStaff = null;
-        setStaffUserLabel(null);
-        showLogin();
+      try {
+        const res = await fetch('/api/staff/session', { credentials: 'same-origin' });
+        const body = await res.json().catch(() => ({}));
+        if (body.ok) {
+          currentStaff = body.staff || null;
+          setStaffUserLabel(currentStaff);
+          showDash({ restore: true });
+          return;
+        }
+      } catch (_) {
+        /* rete: mostra login sotto */
       }
+      currentStaff = null;
+      setStaffUserLabel(null);
+      void applyLocalLoginHint();
+      showLogin();
     }
 
     document.getElementById('gateForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       e.stopPropagation();
-      clearPinError();
+      clearGateFieldErrors();
       const btnLogin = document.getElementById('btnLogin');
       const staff = staffMemberEl?.value?.trim() || '';
       const pin = pinEl.value.trim();
-      if (!staff || !pin) { showPinError(); return false; }
+      if (!staff && !pin) {
+        showGateFieldsError([staffMemberEl, pinEl]);
+        return false;
+      }
+      if (!staff) {
+        showGateFieldError(staffMemberEl);
+        return false;
+      }
+      if (!pin) {
+        showGateFieldError(pinEl);
+        return false;
+      }
       btnLogin.disabled = true;
       try {
         const res = await fetch('/api/staff/login', {
@@ -12031,22 +12381,26 @@
           credentials: 'same-origin',
           body: JSON.stringify({ staff, pin }),
         });
-        if (!res.ok) { showPinError(); return false; }
+        if (!res.ok) {
+          showGateAuthError();
+          return false;
+        }
         const body = await res.json().catch(() => ({}));
         currentStaff = body.staff || null;
         setStaffUserLabel(currentStaff);
         pinEl.value = '';
         showDash();
       } catch (_) {
-        showPinError();
+        showServerToast('Errore di rete. Riprova.', true);
+        shakeGateCard();
       } finally {
         btnLogin.disabled = false;
       }
       return false;
     });
 
-    staffMemberEl?.addEventListener('input', clearPinError);
-    pinEl?.addEventListener('input', clearPinError);
+    staffMemberEl?.addEventListener('input', () => clearGateFieldError(staffMemberEl));
+    pinEl?.addEventListener('input', () => clearGateFieldError(pinEl));
 
     document.addEventListener('click', (e) => {
       if (notifyWrap?.classList.contains('is-open') && !notifyWrap.contains(e.target)) {
@@ -12350,7 +12704,9 @@
       closeRowMenu();
       if (!isMobileRowMenu()) closeGuestSheet();
       if (activeView === 'checkins' && lastCheckins.length) renderList(lastCheckins);
-      else if (activeView === 'inhouse' && lastInHouse.length) renderInHouse(lastInHouse);
+      else if (activeView === 'inhouse' && (lastInHouse.length || lastInHouseCheckoutDue.length)) {
+        renderInHouse(lastInHouse, lastInHouseCheckoutDue);
+      }
       try {
         if (activeView === 'more' && window.matchMedia('(min-width: 901px)').matches) {
           setActiveView('checkins');

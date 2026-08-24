@@ -259,6 +259,81 @@ export function romeCalendarDate(from = new Date()) {
   }).format(d);
 }
 
+/** HH:MM (24h) in Europe/Rome — confronto lessicografico sicuro con zero padding. */
+export function romeClockTime(from = new Date()) {
+  const d = from instanceof Date ? from : parseSqliteUtc(from);
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Rome',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).format(d);
+}
+
+/** Orario standard checkout hotel (Europe/Rome). Allineato a welcome email / QR. */
+export function hotelCheckoutTime() {
+  const raw = String(process.env.HOTEL_CHECKOUT_TIME || '10:30').trim();
+  return /^\d{2}:\d{2}$/.test(raw) ? raw : '10:30';
+}
+
+/** Minuti di grazia dopo checkout (Europe/Rome) prima di togliere dalla lista In camera. */
+export function hotelCheckoutGraceMinutes() {
+  const hours = Number(process.env.HOTEL_CHECKOUT_GRACE_HOURS ?? 3);
+  if (!Number.isFinite(hours) || hours <= 0) return 180;
+  return Math.round(hours * 60);
+}
+
+function clockMinutes(hhmm) {
+  const [h, m] = String(hhmm || '').split(':').map(Number);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return 0;
+  return h * 60 + m;
+}
+
+function romeClockMinutes(from = new Date()) {
+  return clockMinutes(romeClockTime(from));
+}
+
+function effectiveCheckoutYmd(row) {
+  const checkout = String(row?.checkout_date || '').trim();
+  if (checkout) return checkout;
+  const stay = String(row?.stay_date || '').trim();
+  if (stay) return stay;
+  return romeCalendarDate(row?.created_at);
+}
+
+function inHouseContext(now = new Date()) {
+  const today = romeCalendarDate(now);
+  return {
+    today,
+    now,
+    checkoutTime: hotelCheckoutTime(),
+    graceMinutes: hotelCheckoutGraceMinutes(),
+  };
+}
+
+/** Soggiorno in corso: check-in ≤ oggi e non oltre l'orario di checkout nel giorno di partenza. */
+export function isInHouseStay(row, ctx = inHouseContext()) {
+  const { today, now, checkoutTime } = ctx;
+  const stay = String(row?.stay_date || '').trim() || romeCalendarDate(row?.created_at);
+  if (stay > today) return false;
+  const checkout = effectiveCheckoutYmd(row);
+  if (checkout > today) return true;
+  if (checkout < today) return false;
+  return romeClockMinutes(now) < clockMinutes(checkoutTime);
+}
+
+/** Checkout oggi oltre orario hotel, ancora in finestra di grazia (default 3 ore). */
+export function isCheckoutDueGrace(row, ctx = inHouseContext()) {
+  const { today, now, checkoutTime, graceMinutes } = ctx;
+  const stay = String(row?.stay_date || '').trim() || romeCalendarDate(row?.created_at);
+  if (stay > today) return false;
+  const checkout = effectiveCheckoutYmd(row);
+  if (checkout !== today) return false;
+  const nowMin = romeClockMinutes(now);
+  const checkoutMin = clockMinutes(checkoutTime);
+  return nowMin >= checkoutMin && nowMin < checkoutMin + graceMinutes;
+}
+
 function liveCheckinSql(alias = '') {
   const col = alias ? `${alias}.anonymized_at` : 'anonymized_at';
   return `(${col} IS NULL)`;
@@ -1516,9 +1591,10 @@ export function listStaffCheckins({ date = '', q = '' } = {}) {
   };
 }
 
-/** Ospiti con soggiorno in corso: stay_date ≤ oggi ≤ checkout. */
-export function listInHouseStaffCheckins({ q = '' } = {}) {
-  const today = romeCalendarDate();
+/** Ospiti in camera + checkout oggi in finestra di grazia post-orario. */
+export function listInHouseStaffCheckins({ q = '', now = new Date() } = {}) {
+  const ctx = inHouseContext(now);
+  const { today, checkoutTime, graceMinutes } = ctx;
   const rows = db
     .prepare(
       `
@@ -1529,7 +1605,6 @@ export function listInHouseStaffCheckins({ q = '' } = {}) {
       FROM checkins
       WHERE ${liveCheckinSql()}
         AND date(COALESCE(NULLIF(TRIM(stay_date), ''), date(created_at))) <= date(@today)
-        AND date(COALESCE(NULLIF(TRIM(checkout_date), ''), stay_date, date(created_at))) >= date(@today)
       ORDER BY
         CASE WHEN room_number IS NULL OR TRIM(room_number) = '' THEN 1 ELSE 0 END,
         CAST(room_number AS INTEGER) ASC,
@@ -1539,14 +1614,23 @@ export function listInHouseStaffCheckins({ q = '' } = {}) {
     )
     .all({ today });
 
+  const activeRows = rows.filter((row) => isInHouseStay(row, ctx));
+  const dueRows = rows.filter((row) => isCheckoutDueGrace(row, ctx));
   const blacklistMap = loadBlacklistMap();
-  const safe = rows.map((row) => toStaffSafeRow(row, blacklistMap));
+  const safe = activeRows.map((row) => toStaffSafeRow(row, blacklistMap));
+  const dueSafe = dueRows.map((row) => toStaffSafeRow(row, blacklistMap));
   const query = String(q || '').trim();
   const list = query ? safe.filter((row) => matchesStaffQuery(row, query)) : safe;
+  const checkoutDue = query ? dueSafe.filter((row) => matchesStaffQuery(row, query)) : dueSafe;
   return {
     today,
+    checkoutTime,
+    graceHours: graceMinutes / 60,
     total: safe.length,
+    checkoutDueTotal: checkoutDue.length,
+    visibleTotal: safe.length + checkoutDue.length,
     checkins: list,
+    checkoutDue,
   };
 }
 

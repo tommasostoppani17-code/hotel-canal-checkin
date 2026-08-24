@@ -90,7 +90,13 @@ import {
   pullCheckinsBackup,
   pushCheckinsBackup,
 } from './backup.js';
-import { buildCsv, buildTableBookingEmail, buildReportEmail, formatRomeDate } from './report.js';
+import {
+  buildCsv,
+  buildTableBookingEmail,
+  buildReportEmail,
+  demoReportPreviewRows,
+  formatRomeDate,
+} from './report.js';
 import { buildGuestServicesPayload } from './guest-services.js';
 import {
   hashStaffPin,
@@ -358,35 +364,12 @@ app.get('/preview/report-email', (req, res) => {
   if (IS_PROD && !isAuthorizedCron(req)) {
     return res.status(404).end();
   }
+  const rows = demoReportPreviewRows();
   const { html } = buildReportEmail({
     hotelName: HOTEL_NAME,
-    count: 3,
+    count: rows.length,
     dateLabel: formatRomeDate(),
-    rows: [
-      {
-        guest_name: 'Mario Rossi',
-        room_number: '12',
-        phone: '+39 333 111 2222',
-        email: 'mario.rossi@example.com',
-        receptionist: 'TOMMASO',
-        coupon_token: 'abc',
-        coupon_sent_at: new Date().toISOString(),
-      },
-      {
-        guest_name: 'Anna Bianchi',
-        room_number: '104',
-        phone: '+39 340 000 1111',
-        email: 'annabianchi.lunghissima@hotelcanal.com',
-        receptionist: 'PAYEL',
-      },
-      {
-        guest_name: 'John Smith',
-        room_number: '5',
-        phone: '',
-        email: '',
-        receptionist: 'MIZAN',
-      },
-    ],
+    rows,
   });
   res.type('html').send(html);
 });
