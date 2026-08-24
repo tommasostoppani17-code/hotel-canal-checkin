@@ -9014,7 +9014,9 @@
 
     let alertPollTimer = null;
 
-    let selectedDate = '';
+    /** '' / 'all' = tutti i giorni in retention; altrimenti YYYY-MM-DD */
+    const DATE_ALL = 'all';
+    let selectedDate = DATE_ALL;
     let searchTimer = 0;
     let activeView = 'checkins';
     let lastCheckins = [];
@@ -9833,13 +9835,18 @@
       pill?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 
+    function isAllDates(value = selectedDate) {
+      return !value || value === DATE_ALL;
+    }
+
     function renderDays(today) {
       if (today) lastToday = today;
-      if (!selectedDate) selectedDate = today;
-      daysEl.innerHTML = lastSevenDates(today).map((iso) => (
+      if (!selectedDate) selectedDate = DATE_ALL;
+      const dayPills = lastSevenDates(today).map((iso) => (
         `<button type="button" class="date-pill${iso === selectedDate ? ' is-on' : ''}" data-date="${iso}">${formatDayChip(iso, today)}</button>`
       )).join('');
-      scrollDatePillIntoView(selectedDate);
+      daysEl.innerHTML = `<button type="button" class="date-pill${isAllDates() ? ' is-on' : ''}" data-date="${DATE_ALL}">Tutti</button>${dayPills}`;
+      scrollDatePillIntoView(isAllDates() ? DATE_ALL : selectedDate);
       updateCheckinsSubtitle();
       updateMobileDateBtn();
     }
@@ -9847,7 +9854,9 @@
     function updateMobileDateBtn() {
       const label = document.getElementById('mDateLabel');
       if (!label) return;
-      if (selectedDate === lastToday) {
+      if (isAllDates()) {
+        label.textContent = 'Tutti';
+      } else if (selectedDate === lastToday) {
         label.textContent = 'Oggi';
       } else {
         label.textContent = formatDateShort(selectedDate);
@@ -10076,7 +10085,9 @@
       tabBlacklist.classList.toggle('is-on', activeView === 'blacklist');
       tabSettings?.classList.toggle('is-on', activeView === 'settings');
       tabInfo?.classList.toggle('is-on', activeView === 'info');
-      const moreOn = ['more', 'blacklist', 'settings', 'info', 'holds'].includes(activeView);
+      const moreOn = HOLDS_UI_ENABLED
+        ? ['more', 'blacklist', 'settings', 'info', 'holds'].includes(activeView)
+        : ['more', 'blacklist', 'settings', 'info'].includes(activeView);
       document.querySelectorAll('#mTabbar .m-tab').forEach((btn) => {
         const key = btn.getAttribute('data-m-view');
         btn.classList.toggle('is-on', key === 'more' ? moreOn : activeView === key);
@@ -10191,7 +10202,9 @@
 
     function updateCheckinsSubtitle() {
       if (!pageSubtitle || activeView !== 'checkins') return;
-      if (selectedDate && lastToday && selectedDate === lastToday) {
+      if (isAllDates()) {
+        pageSubtitle.textContent = 'Tutti i check-in';
+      } else if (selectedDate && lastToday && selectedDate === lastToday) {
         pageSubtitle.textContent = 'Oggi';
       } else if (selectedDate) {
         pageSubtitle.textContent = formatDateShort(selectedDate);
@@ -10899,7 +10912,7 @@
       noteGuestNameEl.value = ctx.guestName || '';
       noteRoomEl.value = ctx.roomNumber || '';
       populateNoteCategories(ctx.category || 'other');
-      setNoteSchedule(ctx.dueDate || selectedDate || lastToday || '', ctx.dueTime || '');
+      setNoteSchedule(ctx.dueDate || (isAllDates() ? lastToday : selectedDate) || lastToday || '', ctx.dueTime || '');
       noteInstructionEl.value = ctx.instruction || '';
       [noteGuestNameEl, noteRoomEl, noteDueDateTrigger, noteInstructionEl]
         .forEach((el) => el?.classList.remove('is-invalid'));
@@ -11150,6 +11163,10 @@
 
     function emptyCheckinsViewText() {
       const lang = uiLang();
+      if (!isAllDates() && selectedDate === lastToday) {
+        if (lang.startsWith('it')) return 'Nessun check-in oggi. Tocca Tutti per vedere i giorni precedenti.';
+        return 'No check-ins today. Tap All to see previous days.';
+      }
       if (lang.startsWith('it')) return 'In questa schermata non ci sono check-in.';
       if (lang.startsWith('fr')) return 'Aucun check-in dans cette vue.';
       if (lang.startsWith('de')) return 'In dieser Ansicht gibt es keine Check-ins.';
@@ -11957,7 +11974,7 @@
     }
 
     async function downloadStaffCsv() {
-      const date = selectedDate || lastToday;
+      const date = isAllDates() ? lastToday : (selectedDate || lastToday);
       if (!date || !btnCsv) return;
       btnCsv.disabled = true;
       try {
@@ -12126,14 +12143,14 @@
       setPanelBusy(true);
       try {
         const params = new URLSearchParams();
-        if (selectedDate) params.set('date', selectedDate);
+        if (!isAllDates()) params.set('date', selectedDate);
         const q = searchEl.value.trim();
         if (q) params.set('q', q);
         const res = await fetch(`/api/staff/checkins?${params}`, { credentials: 'same-origin' });
         if (res.status === 401) { showLogin(); return; }
         const body = await res.json().catch(() => ({}));
         lastCheckins = body.checkins || [];
-        renderDays(body.today || selectedDate);
+        renderDays(body.today || lastToday);
         renderList(lastCheckins);
         void refreshNotesBadge();
         void refreshBlacklistCount();
@@ -12721,12 +12738,12 @@
     dashMenuBtn?.addEventListener('click', openDashNav);
     dashScrim?.addEventListener('click', closeDashNav);
     btnAddBlacklist.addEventListener('click', () => openBlacklistSheet({ mode: 'manual', guestName: '', notes: '' }));
-    btnAddNote?.addEventListener('click', () => openNoteSheet({ mode: 'create', dueDate: lastToday || selectedDate }));
+    btnAddNote?.addEventListener('click', () => openNoteSheet({ mode: 'create', dueDate: lastToday || (isAllDates() ? '' : selectedDate) }));
     document.getElementById('btnNotifyAddNote')?.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       closeNotifyMenu();
-      openNoteSheet({ mode: 'create', dueDate: lastToday || selectedDate });
+      openNoteSheet({ mode: 'create', dueDate: lastToday || (isAllDates() ? '' : selectedDate) });
     });
 
     noteCategoryTrigger?.addEventListener('click', (e) => {
@@ -13351,7 +13368,7 @@
       const dows = document.getElementById('calDows');
       const grid = document.getElementById('calGrid');
       if (!cal || !title || !dows || !grid) return;
-      const sel = selectedDate || lastToday;
+      const sel = isAllDates() ? '' : (selectedDate || lastToday);
       const cursor = new Date(mDateCalCursor.y, mDateCalCursor.m, 1);
       title.textContent = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(cursor);
       if (!dows.dataset.ready) {
@@ -13401,7 +13418,7 @@
     function openMDateCal() {
       if (noteCalOpen) closeNoteBrandCalendar();
       if (mDateCalOpen) { closeMDateCal(); return; }
-      const parsed = parseYmdParts(selectedDate || lastToday) || { y: new Date().getFullYear(), m: new Date().getMonth() };
+      const parsed = parseYmdParts(isAllDates() ? lastToday : (selectedDate || lastToday)) || { y: new Date().getFullYear(), m: new Date().getMonth() };
       mDateCalCursor = { y: parsed.y, m: parsed.m };
       mDateCalOpen = true;
       renderMDateCal();

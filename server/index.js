@@ -2963,6 +2963,28 @@ app.get(
   },
 );
 
+app.post(
+  '/api/cron/backup-now',
+  rateLimit({ windowMs: 60_000, max: 6 }),
+  async (req, res) => {
+    if (!isAuthorizedCron(req)) {
+      return res.status(401).json({ error: 'Non autorizzato' });
+    }
+    try {
+      await syncCheckinsBackup('manual-ops');
+      return res.json({
+        ok: true,
+        checkins: countCheckins(),
+        persistentDisk: String(DATABASE_PATH).startsWith('/var/data'),
+        databasePath: DATABASE_PATH,
+      });
+    } catch (err) {
+      console.error('[backup] manual failed:', err);
+      return res.status(500).json({ error: 'backup_failed' });
+    }
+  },
+);
+
 /**
  * Ripristino contatti da report email (ops).
  * Body: { rows: [...] } — PII cifrata sul server con FIELD_ENCRYPTION_KEY live.
