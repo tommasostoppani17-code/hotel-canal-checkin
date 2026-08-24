@@ -2986,6 +2986,9 @@ app.post(
       console.warn(
         `[restore] report checkins inserted=${result.inserted} skipped=${result.skipped} total=${result.total}`,
       );
+      if (result.inserted > 0) {
+        void syncCheckinsBackup('restore-report');
+      }
       return res.json(result);
     } catch (err) {
       console.error('[restore] failed:', err);
