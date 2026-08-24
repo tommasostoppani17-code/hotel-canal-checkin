@@ -4384,6 +4384,187 @@
       margin: 0;
     }
 
+    .holds-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .holds-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px clamp(14px, 2.2vw, 20px) 16px;
+      background: var(--sky-50);
+    }
+
+    .holds-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .holds-iban-hint {
+      font-size: 12px;
+      color: var(--text-muted, #5C6670);
+      max-width: 46%;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hold-card {
+      background: #fff;
+      border: 1px solid rgba(18, 68, 83, 0.08);
+      border-radius: var(--radius-ios);
+      padding: 12px 14px;
+      box-shadow: 0 1px 2px rgba(18, 68, 83, 0.04);
+    }
+
+    .hold-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .hold-card-title {
+      font-weight: 700;
+      color: var(--canal-petroleum);
+      font-size: 15px;
+    }
+
+    .hold-card-status {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #5C6670;
+      white-space: nowrap;
+    }
+
+    .hold-card-status.is-await { color: #B45309; }
+    .hold-card-status.is-ok { color: #0F766E; }
+    .hold-card-status.is-dead { color: #8A949C; }
+
+    .hold-card-meta {
+      font-size: 13px;
+      color: #5C6670;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .hold-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .hold-card-actions button {
+      appearance: none;
+      border: 1px solid rgba(18, 68, 83, 0.18);
+      background: #F7FBFD;
+      color: var(--canal-petroleum);
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .hold-card-actions button.hold-act-primary {
+      background: var(--canal-petroleum);
+      color: #fff;
+      border-color: var(--canal-petroleum);
+    }
+
+    .hold-card-actions button.hold-act-danger {
+      color: #C62828;
+      border-color: rgba(198, 40, 40, 0.35);
+      background: #FFF5F5;
+    }
+
+    .hold-extra-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--canal-petroleum);
+      background: #F7FBFD;
+      border: 1px solid rgba(18, 68, 83, 0.12);
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .hold-extra-pill input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .hold-share-link-box {
+      background: #fff;
+      border: 1.5px solid rgba(18, 68, 83, 0.2);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .hold-share-link-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #5C6670;
+      margin-bottom: 6px;
+    }
+
+    .hold-share-link {
+      font-size: 13px;
+      color: var(--canal-petroleum);
+      word-break: break-all;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .hold-share-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .hold-share-btn {
+      appearance: none;
+      border: 1px solid rgba(18, 68, 83, 0.18);
+      background: #F7FBFD;
+      color: var(--canal-petroleum);
+      border-radius: 12px;
+      padding: 12px 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .hold-share-btn--wa {
+      background: #25D366;
+      border-color: #25D366;
+      color: #fff;
+    }
+
+    .hold-share-btn--mail {
+      background: var(--canal-petroleum);
+      border-color: var(--canal-petroleum);
+      color: #fff;
+    }
+
     .feed-row {
       display: flex;
       align-items: flex-start;
@@ -7749,6 +7930,16 @@
             In camera
             <span class="dash-nav-badge hidden" id="inHouseCount">0</span>
           </button>
+          <button type="button" class="dash-nav-item" id="tabHolds" aria-label="Prenotazioni e link pagamento">
+            <span class="dash-nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L11 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M14 11a5 5 0 0 0-7.07 0L4.8 13.12a5 5 0 0 0 7.07 7.07L13 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            Prenotazioni
+            <span class="dash-nav-badge hidden" id="holdsCount">0</span>
+          </button>
         </nav>
       </div>
       <div class="dash-nav-spacer" aria-hidden="true"></div>
@@ -7846,6 +8037,8 @@
           </div>
           <button class="btn-action btn-action-ghost hidden" id="btnAddBlacklist" type="button">Nuova segnalazione</button>
           <button class="btn-action btn-action-ghost hidden" id="btnAddNote" type="button">Nuova nota</button>
+          <button class="btn-action btn-action-ghost hidden" id="btnAddHold" type="button">Nuovo link</button>
+          <button class="btn-action btn-action-outline hidden" id="btnAddHoldManual" type="button">A mano</button>
         </div>
       </header>
 
@@ -7975,6 +8168,20 @@
             </div>
           </div>
 
+          <div class="table-panel hidden holds-panel" id="holdsPanel">
+            <div class="notes-toolbar-inline">
+              <p class="notes-toolbar-hint">Hold camera · link bonifico IBAN</p>
+              <span class="holds-iban-hint" id="holdsIbanHint">IBAN…</span>
+            </div>
+            <div class="holds-scroll">
+              <div class="holds-list" id="holdsList"></div>
+            </div>
+            <div class="footer-summary">
+              <span id="holdsRowCount">0 prenotazioni</span>
+              <span class="footer-summary-meta">Camera bloccata fino a conferma o scadenza</span>
+            </div>
+          </div>
+
           <div class="table-panel hidden blacklist-panel" id="blacklistPanel">
             <div class="notes-toolbar-inline">
               <p class="settings-toolbar-hint">Ospiti segnalati</p>
@@ -8053,6 +8260,23 @@
                         <option value="60">1 ora</option>
                         <option value="never">Mai disconnettere</option>
                       </select>
+                    </div>
+                  </div>
+
+                  <div class="sys-settings-group">
+                    <div class="sys-settings-group-title">Bonifico IBAN (link prenotazioni)</div>
+                    <div class="sys-settings-row" style="flex-direction:column;align-items:stretch;gap:10px;">
+                      <div class="sys-settings-row-info">
+                        <span class="sys-settings-row-title">Dati per il link ospite</span>
+                        <span class="sys-settings-row-desc">Mostrati sulla pagina /paga quando l’ospite deve fare il bonifico.</span>
+                      </div>
+                      <label class="sheet-label" for="prefIban">IBAN</label>
+                      <input class="sys-settings-input" id="prefIban" placeholder="IT60X…" autocomplete="off" style="width:100%;max-width:none;">
+                      <label class="sheet-label" for="prefIbanHolder">Intestatario</label>
+                      <input class="sys-settings-input" id="prefIbanHolder" placeholder="Hotel Canal…" autocomplete="off" style="width:100%;max-width:none;">
+                      <label class="sheet-label" for="prefIbanBank">Banca (opzionale)</label>
+                      <input class="sys-settings-input" id="prefIbanBank" placeholder="Nome banca" autocomplete="off" style="width:100%;max-width:none;">
+                      <button type="button" class="btn-action" id="btnSaveIban" style="align-self:flex-start;margin-top:4px;">Salva IBAN</button>
                     </div>
                   </div>
 
@@ -8232,6 +8456,10 @@
           </div>
 
           <div class="table-panel hidden m-more-panel" id="morePanel">
+            <button type="button" class="m-more-item" data-more-view="holds">
+              Prenotazioni
+              <span>Link IBAN</span>
+            </button>
             <button type="button" class="m-more-item" data-more-view="blacklist">
               Segnalazioni
               <span id="moreBlacklistHint">Lista</span>
@@ -8280,6 +8508,148 @@
   </div>
 
   <p class="toast" id="error" role="status" aria-live="polite"></p>
+
+  <div class="sheet sheet--ig" id="holdSheet" hidden aria-hidden="true">
+    <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="holdSheetCloseBg" aria-label="Chiudi"></button>
+    <div class="sheet-panel sheet-panel--ig-report" role="dialog" aria-modal="true" aria-labelledby="holdSheetTitle">
+      <div class="ig-sheet-handle" aria-hidden="true"></div>
+      <header class="ig-sheet-bar">
+        <span class="ig-sheet-bar-side" aria-hidden="true"></span>
+        <h2 class="ig-sheet-bar-title" id="holdSheetTitle">Nuovo link</h2>
+        <button type="button" class="ig-sheet-bar-close" id="holdSheetClose" aria-label="Chiudi">×</button>
+      </header>
+      <div class="ig-sheet-body">
+        <form id="holdSheetForm" class="sheet-form sheet-form--flat" style="display:flex;flex-direction:column;gap:12px;padding:0;">
+          <input type="hidden" id="holdMode" value="link">
+          <div class="sheet-field">
+            <label class="sheet-label" id="lbl-hold-room" for="holdRoom">Camera *</label>
+            <input class="field" id="holdRoom" maxlength="12" placeholder="Es. 105" inputmode="numeric" autocomplete="off">
+          </div>
+          <div class="sheet-field" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <label class="sheet-label" id="lbl-hold-type" for="holdRoomType">Tipo stanza *</label>
+              <select class="field" id="holdRoomType">
+                <option value="">Seleziona…</option>
+                <option value="singola">Singola</option>
+                <option value="doppia">Doppia</option>
+                <option value="matrimoniale">Matrimoniale</option>
+                <option value="twin">Twin (2 letti)</option>
+                <option value="tripla">Tripla</option>
+                <option value="quadrupla">Quadrupla</option>
+                <option value="family">Family</option>
+                <option value="suite">Suite</option>
+              </select>
+            </div>
+            <div>
+              <label class="sheet-label" id="lbl-hold-board" for="holdBoardPlan">Trattamento *</label>
+              <select class="field" id="holdBoardPlan">
+                <option value="">Seleziona…</option>
+                <option value="solo_pernottamento">Solo pernottamento</option>
+                <option value="colazione_inclusa" selected>Colazione inclusa</option>
+                <option value="colazione_esclusa">Colazione non inclusa</option>
+                <option value="mezza_pensione">Mezza pensione</option>
+                <option value="pensione_completa">Pensione completa</option>
+              </select>
+            </div>
+          </div>
+          <div class="sheet-field">
+            <span class="sheet-label" id="lbl-hold-extras">Extra inclusi</span>
+            <div class="hold-extras-grid" id="holdExtrasGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="garage"> Garage</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="vista_canale"> Vista canale</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="vista_citta"> Vista città</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="balcone"> Balcone / terrazza</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="early_checkin"> Early check-in</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="late_checkout"> Late check-out</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="culla"> Culla</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="letto_extra"> Letto extra</label>
+              <label class="hold-extra-pill"><input type="checkbox" name="holdExtra" value="animali"> Animali ammessi</label>
+            </div>
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-label" id="lbl-hold-offer-notes" for="holdOfferNotes">Note offerta</label>
+            <textarea class="field field--textarea" id="holdOfferNotes" maxlength="2000" rows="3" placeholder="Es. transfer incluso, bottiglia di benvenuto, sconto ristorante…" style="height:88px;padding:12px 14px;resize:none;"></textarea>
+          </div>
+          <div class="sheet-field" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <label class="sheet-label" id="lbl-hold-in" for="holdCheckIn">Check-in *</label>
+              <input class="field" id="holdCheckIn" type="date" required>
+            </div>
+            <div>
+              <label class="sheet-label" id="lbl-hold-out" for="holdCheckOut">Check-out *</label>
+              <input class="field" id="holdCheckOut" type="date" required>
+            </div>
+          </div>
+          <div class="sheet-field" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <label class="sheet-label" id="lbl-hold-total" for="holdTotal">Totale € *</label>
+              <input class="field" id="holdTotal" inputmode="decimal" placeholder="180" autocomplete="off">
+            </div>
+            <div>
+              <label class="sheet-label" id="lbl-hold-deposit" for="holdDeposit">Acconto</label>
+              <select class="field" id="holdDeposit">
+                <option value="30">30%</option>
+                <option value="50" selected>50%</option>
+                <option value="100">100%</option>
+              </select>
+            </div>
+          </div>
+          <div class="sheet-field" id="holdExpireField">
+            <label class="sheet-label" id="lbl-hold-expire" for="holdExpireHours">Validità link (ore)</label>
+            <select class="field" id="holdExpireHours">
+              <option value="2">2 ore</option>
+              <option value="6">6 ore</option>
+              <option value="12">12 ore</option>
+              <option value="24" selected>24 ore</option>
+              <option value="48">48 ore</option>
+            </select>
+          </div>
+          <div class="sheet-field" id="holdManualGuestFields" hidden>
+            <label class="sheet-label" id="lbl-hold-guest" for="holdGuestName">Nome ospite *</label>
+            <input class="field" id="holdGuestName" maxlength="120" placeholder="Nome cognome" autocomplete="off">
+            <label class="sheet-label" style="margin-top:10px;" id="lbl-hold-phone" for="holdGuestPhone">Telefono</label>
+            <input class="field" id="holdGuestPhone" maxlength="40" placeholder="+39…" autocomplete="off">
+            <label class="sheet-label" style="margin-top:10px;" id="lbl-hold-email" for="holdGuestEmail">Email</label>
+            <input class="field" id="holdGuestEmail" maxlength="120" placeholder="email@…" autocomplete="off">
+          </div>
+          <p class="settings-lead" id="holdSheetHint">La camera resta bloccata finché il link è valido o confermi il bonifico. Vendita a nome di chi è collegato.</p>
+          <button type="submit" class="btn-primary" id="holdSheetSave" style="width:100%;height:50px;background:var(--canal-petroleum);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;">Crea link</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet sheet--ig" id="holdShareSheet" hidden aria-hidden="true">
+    <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="holdShareCloseBg" aria-label="Chiudi"></button>
+    <div class="sheet-panel sheet-panel--ig-report" role="dialog" aria-modal="true" aria-labelledby="holdShareTitle">
+      <div class="ig-sheet-handle" aria-hidden="true"></div>
+      <header class="ig-sheet-bar">
+        <span class="ig-sheet-bar-side" aria-hidden="true"></span>
+        <h2 class="ig-sheet-bar-title" id="holdShareTitle">Invia il link</h2>
+        <button type="button" class="ig-sheet-bar-close" id="holdShareClose" aria-label="Chiudi">×</button>
+      </header>
+      <div class="ig-sheet-body" style="display:flex;flex-direction:column;gap:14px;">
+        <p class="settings-lead" id="holdShareLead" style="margin:0;">Link pronto. Copialo o invialo all’ospite.</p>
+        <div class="hold-share-link-box">
+          <div class="hold-share-link-label">Link ospite</div>
+          <div class="hold-share-link" id="holdShareUrl">—</div>
+          <button type="button" class="btn-primary" id="btnHoldCopyLink" style="width:100%;height:48px;margin-top:10px;background:var(--canal-petroleum);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:600;">Copia questo link</button>
+        </div>
+        <div class="sheet-field">
+          <label class="sheet-label" for="holdShareMessage">Messaggio di accompagnamento</label>
+          <textarea class="field field--textarea" id="holdShareMessage" rows="8" style="height:160px;padding:12px 14px;resize:vertical;font-size:14px;line-height:1.4;"></textarea>
+        </div>
+        <div class="hold-share-actions">
+          <button type="button" class="hold-share-btn hold-share-btn--wa" id="btnHoldWhatsApp">WhatsApp</button>
+          <button type="button" class="hold-share-btn hold-share-btn--mail" id="btnHoldEmail">Email</button>
+          <button type="button" class="hold-share-btn" id="btnHoldSms">SMS</button>
+          <button type="button" class="hold-share-btn" id="btnHoldCopyMsg">Copia testo</button>
+        </div>
+        <button type="button" class="btn-action btn-action-outline" id="btnHoldNativeShare" style="width:100%;display:none;">Altro…</button>
+        <button type="button" class="btn-action btn-action-ghost" id="btnHoldShareDone" style="width:100%;">Fatto</button>
+      </div>
+    </div>
+  </div>
 
   <div class="sheet sheet--ig" id="noteSheet" hidden aria-hidden="true">
     <button type="button" class="sheet-backdrop sheet-backdrop--ig" id="noteSheetCloseBg" aria-label="Chiudi"></button>
@@ -8523,6 +8893,19 @@
     const inHouseScroll = document.getElementById('inHouseScroll');
     const inHouseRowCountEl = document.getElementById('inHouseRowCount');
     const inHouseCountEl = document.getElementById('inHouseCount');
+    const holdsPanel = document.getElementById('holdsPanel');
+    const holdsListEl = document.getElementById('holdsList');
+    const holdsRowCountEl = document.getElementById('holdsRowCount');
+    const holdsCountEl = document.getElementById('holdsCount');
+    const holdsIbanHint = document.getElementById('holdsIbanHint');
+    const btnAddHold = document.getElementById('btnAddHold');
+    const btnAddHoldManual = document.getElementById('btnAddHoldManual');
+    const holdSheet = document.getElementById('holdSheet');
+    const holdSheetForm = document.getElementById('holdSheetForm');
+    const holdSheetTitle = document.getElementById('holdSheetTitle');
+    const holdSheetSave = document.getElementById('holdSheetSave');
+    const holdModeEl = document.getElementById('holdMode');
+    let lastHolds = [];
     if (inHouseHead && inHouseScroll) {
       inHouseScroll.addEventListener('scroll', () => {
         inHouseHead.scrollLeft = inHouseScroll.scrollLeft;
@@ -8550,6 +8933,7 @@
     const tabRequests = document.getElementById('tabRequests');
     const tabCheckins = document.getElementById('tabCheckins');
     const tabInHouse = document.getElementById('tabInHouse');
+    const tabHolds = document.getElementById('tabHolds');
     const tabBlacklist = document.getElementById('tabBlacklist');
     const tabInfo = document.getElementById('tabInfo');
     const tabSettings = document.getElementById('tabSettings');
@@ -8956,6 +9340,7 @@
       if (activeView === 'settings') return settingsPanel;
       if (activeView === 'info') return infoPanel;
       if (activeView === 'inhouse') return inHousePanel;
+      if (activeView === 'holds') return holdsPanel;
       if (activeView === 'more') return morePanel;
       return checkinsPanel;
     }
@@ -9535,6 +9920,7 @@
       requests: 'Richieste speciali',
       checkins: 'Clienti',
       inhouse: 'In camera',
+      holds: 'Prenotazioni',
       blacklist: 'Segnalazioni',
       settings: 'Impostazioni',
       info: 'Registro direzione',
@@ -9545,6 +9931,7 @@
       requests: 'Turno · ordinate per scadenza',
       checkins: 'Oggi',
       inhouse: 'Soggiorno in corso',
+      holds: 'Link bonifico · hold anti-overbooking',
       blacklist: 'Lista reception',
       settings: 'Reception · account e automazioni',
       info: '',
@@ -9676,14 +10063,15 @@
       closeNotifyMenu();
       closeGuestSheet();
       if (view === 'info' && !canSeeStaffInfo()) view = 'checkins';
-      activeView = ['requests', 'checkins', 'inhouse', 'blacklist', 'settings', 'info', 'more'].includes(view) ? view : 'checkins';
+      activeView = ['requests', 'checkins', 'inhouse', 'holds', 'blacklist', 'settings', 'info', 'more'].includes(view) ? view : 'checkins';
       tabRequests.classList.toggle('is-on', activeView === 'requests');
       tabCheckins.classList.toggle('is-on', activeView === 'checkins');
       tabInHouse?.classList.toggle('is-on', activeView === 'inhouse');
+      tabHolds?.classList.toggle('is-on', activeView === 'holds');
       tabBlacklist.classList.toggle('is-on', activeView === 'blacklist');
       tabSettings?.classList.toggle('is-on', activeView === 'settings');
       tabInfo?.classList.toggle('is-on', activeView === 'info');
-      const moreOn = ['more', 'blacklist', 'settings', 'info'].includes(activeView);
+      const moreOn = ['more', 'blacklist', 'settings', 'info', 'holds'].includes(activeView);
       document.querySelectorAll('#mTabbar .m-tab').forEach((btn) => {
         const key = btn.getAttribute('data-m-view');
         btn.classList.toggle('is-on', key === 'more' ? moreOn : activeView === key);
@@ -9701,12 +10089,13 @@
       requestsPanel.classList.toggle('hidden', activeView !== 'requests');
       checkinsPanel.classList.toggle('hidden', activeView !== 'checkins');
       inHousePanel?.classList.toggle('hidden', activeView !== 'inhouse');
+      holdsPanel?.classList.toggle('hidden', activeView !== 'holds');
       blacklistPanel.classList.toggle('hidden', activeView !== 'blacklist');
       infoPanel?.classList.toggle('hidden', activeView !== 'info');
       settingsPanel?.classList.toggle('hidden', activeView !== 'settings');
       morePanel?.classList.toggle('hidden', activeView !== 'more');
       workspaceEl?.classList.toggle('is-settings', activeView === 'settings' || activeView === 'info');
-      workspaceEl?.classList.toggle('is-feed', activeView === 'requests' || activeView === 'blacklist');
+      workspaceEl?.classList.toggle('is-feed', activeView === 'requests' || activeView === 'blacklist' || activeView === 'holds');
       workspaceEl?.classList.toggle('is-more', activeView === 'more');
       const showDateToolbar = activeView === 'checkins';
       daysEl.classList.toggle('hidden', !showDateToolbar);
@@ -9714,13 +10103,17 @@
       btnCsv?.classList.toggle('hidden', activeView !== 'checkins');
       btnAddBlacklist.classList.toggle('hidden', activeView !== 'blacklist');
       btnAddNote.classList.toggle('hidden', activeView !== 'requests');
+      btnAddHold?.classList.toggle('hidden', activeView !== 'holds');
+      btnAddHoldManual?.classList.toggle('hidden', activeView !== 'holds');
       searchEl.placeholder = activeView === 'blacklist'
         ? 'Cerca nome o note…'
         : activeView === 'requests'
           ? 'Cerca ospite, stanza o nota…'
           : activeView === 'inhouse'
             ? 'Cerca ospite o stanza…'
-            : 'Cerca nome o stanza…';
+            : activeView === 'holds'
+              ? 'Cerca camera, causale o ospite…'
+              : 'Cerca nome o stanza…';
       clearServerToast();
       closeDashNav();
       if (!restore) replayMotion(activePanelEl(), 'motion-panel-in', 480);
@@ -9729,6 +10122,7 @@
       else if (activeView === 'settings') loadSettings();
       else if (activeView === 'info') loadRoadmap();
       else if (activeView === 'inhouse') loadInHouse();
+      else if (activeView === 'holds') loadHolds();
       else if (activeView === 'more') { /* elenco Altro: niente tabella */ }
       else if (lastCheckins.length) renderList(lastCheckins);
       else loadList();
@@ -10906,6 +11300,264 @@
       }
     }
 
+    const HOLD_STATUS_LABEL = {
+      hold: 'Link attivo',
+      details_submitted: 'Dati ricevuti',
+      awaiting_transfer: 'Bonifico dichiarato',
+      confirmed: 'Confermato',
+      expired: 'Scaduto',
+      cancelled: 'Annullato',
+    };
+
+    function holdStatusClass(status) {
+      if (status === 'awaiting_transfer' || status === 'details_submitted') return 'is-await';
+      if (status === 'confirmed') return 'is-ok';
+      if (status === 'expired' || status === 'cancelled') return 'is-dead';
+      return '';
+    }
+
+    function fmtHoldDate(ymd) {
+      if (!ymd) return '—';
+      const [y, m, d] = String(ymd).split('-');
+      return `${d}/${m}`;
+    }
+
+    function filteredHolds(rows) {
+      const q = searchEl.value.trim().toLowerCase();
+      if (!q) return rows;
+      return rows.filter((h) => {
+        const blob = [
+          h.roomNumber, h.paymentRef, h.guestName, h.guestPhone,
+          h.guestEmail, h.soldBy, h.status,
+        ].join(' ').toLowerCase();
+        return blob.includes(q);
+      });
+    }
+
+    function updateHoldsBadge(holds) {
+      const open = (holds || []).filter((h) =>
+        ['hold', 'details_submitted', 'awaiting_transfer'].includes(h.status),
+      ).length;
+      if (holdsCountEl) {
+        holdsCountEl.textContent = String(open);
+        holdsCountEl.classList.toggle('hidden', open === 0);
+      }
+    }
+
+    function renderHolds(rows) {
+      if (!holdsListEl) return;
+      const list = filteredHolds(rows);
+      if (holdsRowCountEl) {
+        holdsRowCountEl.textContent = `${list.length} prenotazion${list.length === 1 ? 'e' : 'i'}`;
+      }
+      if (!list.length) {
+        holdsListEl.innerHTML = '<p class="settings-lead" style="padding:12px 4px;">Nessuna prenotazione. Crea un link o aggiungi a mano.</p>';
+        return;
+      }
+      holdsListEl.innerHTML = list.map((h) => {
+        const canConfirm = ['hold', 'details_submitted', 'awaiting_transfer'].includes(h.status);
+        const canCancel = ['hold', 'details_submitted', 'awaiting_transfer'].includes(h.status);
+        const guest = h.guestName
+          ? escapeHtml(h.guestName)
+          : '<em>In attesa dati ospite</em>';
+        return `
+          <article class="hold-card" data-hold-id="${h.id}">
+            <div class="hold-card-top">
+              <div class="hold-card-title">${escapeHtml(h.roomNumber)} · ${escapeHtml(h.paymentRef)}</div>
+              <div class="hold-card-status ${holdStatusClass(h.status)}">${escapeHtml(HOLD_STATUS_LABEL[h.status] || h.status)}</div>
+            </div>
+            <div class="hold-card-meta">
+              ${escapeHtml(h.roomTypeLabel || '—')} · ${escapeHtml(h.boardPlanLabel || '—')}<br>
+              ${fmtHoldDate(h.checkIn)} → ${fmtHoldDate(h.checkOut)}
+              · € ${escapeHtml(h.amountDueEuros)} (${escapeHtml(String(h.depositPercent))}%)
+              · vendita ${escapeHtml(h.soldBy || '—')}<br>
+              ${(h.extrasLabels || []).length ? `${escapeHtml(h.extrasLabels.join(' · '))}<br>` : ''}
+              ${h.offerNotes ? `<span style="color:#124453">${escapeHtml(h.offerNotes)}</span><br>` : ''}
+              ${guest}
+              ${h.manual ? ' · <strong>manuale</strong>' : ''}
+            </div>
+            <div class="hold-card-actions">
+              ${h.payUrl && !['expired', 'cancelled'].includes(h.status) ? `<button type="button" class="hold-act-primary" data-hold-act="share" data-hold-id="${h.id}">Invia link</button>` : ''}
+              ${h.payUrl ? `<button type="button" data-hold-act="copy" data-hold-id="${h.id}">Copia link</button>` : ''}
+              <button type="button" data-hold-act="print" data-hold-id="${h.id}">Stampa</button>
+              ${canConfirm ? `<button type="button" data-hold-act="confirm" data-hold-id="${h.id}">Conferma bonifico</button>` : ''}
+              ${canCancel ? `<button type="button" class="hold-act-danger" data-hold-act="cancel" data-hold-id="${h.id}">Annulla</button>` : ''}
+            </div>
+          </article>`;
+      }).join('');
+    }
+
+    async function loadHolds() {
+      setPanelBusy(true);
+      try {
+        const res = await fetch('/api/staff/holds', { credentials: 'same-origin' });
+        if (res.status === 401) { showLogin(); return; }
+        const body = await res.json().catch(() => ({}));
+        lastHolds = body.holds || [];
+        updateHoldsBadge(lastHolds);
+        if (holdsIbanHint) {
+          const iban = body.iban || {};
+          holdsIbanHint.textContent = iban.configured
+            ? `IBAN ${String(iban.iban || '').slice(0, 8)}…`
+            : 'IBAN non configurato — Impostazioni';
+        }
+        renderHolds(lastHolds);
+      } catch (_) {
+        showServerToast('Errore di rete. Riprova.', true);
+      } finally {
+        setPanelBusy(false);
+      }
+    }
+
+    function closeHoldSheet() {
+      if (!holdSheet) return;
+      animateSheetClose(holdSheet, () => {
+        unlockSheetScroll();
+      });
+    }
+
+    function receptionistDisplayName() {
+      return (
+        String(currentStaff?.label || currentStaff?.name || currentStaff?.id || '').trim() ||
+        'Reception'
+      );
+    }
+
+    function fmtHoldDateLong(ymd) {
+      if (!ymd) return '—';
+      const [y, m, d] = String(ymd).split('-').map(Number);
+      if (!y || !m || !d) return String(ymd);
+      try {
+        return new Intl.DateTimeFormat('it-IT', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(new Date(Date.UTC(y, m - 1, d, 12)));
+      } catch (_) {
+        return `${d}/${m}/${y}`;
+      }
+    }
+
+    function buildHoldShareMessage(hold) {
+      const name = receptionistDisplayName();
+      const lines = [
+        'Buongiorno,',
+        '',
+        `sono ${name} della reception di Hotel Canal.`,
+        `Le mando il link per completare i dati e il bonifico di acconto per la camera ${hold.roomNumber}${hold.roomTypeLabel ? ` (${hold.roomTypeLabel})` : ''}.`,
+        '',
+        `Soggiorno: ${fmtHoldDateLong(hold.checkIn)} → ${fmtHoldDateLong(hold.checkOut)}`,
+        hold.boardPlanLabel ? `Trattamento: ${hold.boardPlanLabel}` : null,
+        (hold.extrasLabels || []).length ? `Extra: ${hold.extrasLabels.join(', ')}` : null,
+        hold.offerNotes ? `Note: ${hold.offerNotes}` : null,
+        `Acconto richiesto: € ${hold.amountDueEuros} (${hold.depositPercent}% su € ${hold.totalEuros})`,
+        `Causale bonifico: ${hold.paymentRef}`,
+        '',
+        'Apri questo link per inserire i suoi dati e le istruzioni di pagamento:',
+        hold.payUrl || '',
+        '',
+        'Cordiali saluti,',
+        name,
+        'Hotel Canal · Santa Croce 553 · Venezia',
+      ];
+      return lines.filter((x) => x != null).join('\n');
+    }
+
+    let shareHoldContext = null;
+
+    function closeHoldShareSheet() {
+      const sheet = document.getElementById('holdShareSheet');
+      if (!sheet) return;
+      animateSheetClose(sheet, () => {
+        shareHoldContext = null;
+        unlockSheetScroll();
+      });
+    }
+
+    function openHoldShareSheet(hold) {
+      if (!hold?.payUrl) return;
+      shareHoldContext = hold;
+      closeStaffMenu?.();
+      closeNoteCategoryMenu?.();
+      closeRoomSheet?.();
+      closeGuestSheet?.();
+      const sheet = document.getElementById('holdShareSheet');
+      const urlEl = document.getElementById('holdShareUrl');
+      const msgEl = document.getElementById('holdShareMessage');
+      const lead = document.getElementById('holdShareLead');
+      const nativeBtn = document.getElementById('btnHoldNativeShare');
+      if (urlEl) urlEl.textContent = hold.payUrl;
+      if (msgEl) msgEl.value = buildHoldShareMessage(hold);
+      if (lead) {
+        lead.textContent = `Camera ${hold.roomNumber} · ${hold.paymentRef} · vendita ${hold.soldBy || receptionistDisplayName()}`;
+      }
+      if (nativeBtn) {
+        nativeBtn.style.display = typeof navigator.share === 'function' ? '' : 'none';
+      }
+      sheet.hidden = false;
+      sheet.setAttribute('aria-hidden', 'false');
+      lockSheetScroll();
+      animateSheetOpen(sheet);
+    }
+
+    async function copyTextSafe(text, okMsg) {
+      try {
+        await navigator.clipboard.writeText(text || '');
+        showServerToast(okMsg || 'Copiato.');
+        return true;
+      } catch (_) {
+        showServerToast(text || '', true);
+        return false;
+      }
+    }
+
+    function openHoldSheet(mode = 'link') {
+      closeStaffMenu?.();
+      closeNoteCategoryMenu?.();
+      closeRoomSheet?.();
+      closeGuestSheet?.();
+      closeBlacklistSheet?.();
+      closeHoldShareSheet?.();
+      if (holdModeEl) holdModeEl.value = mode;
+      const manual = mode === 'manual';
+      if (holdSheetTitle) holdSheetTitle.textContent = manual ? 'Aggiungi a mano' : 'Nuovo link';
+      if (holdSheetSave) holdSheetSave.textContent = manual ? 'Salva prenotazione' : 'Crea link';
+      document.getElementById('holdExpireField').hidden = manual;
+      document.getElementById('holdManualGuestFields').hidden = !manual;
+      const today = new Date();
+      const ymd = (d) => d.toISOString().slice(0, 10);
+      const tomorrow = new Date(today.getTime() + 86400000);
+      document.getElementById('holdRoom').value = '';
+      document.getElementById('holdRoomType').value = 'doppia';
+      document.getElementById('holdBoardPlan').value = 'colazione_inclusa';
+      document.querySelectorAll('input[name="holdExtra"]').forEach((el) => { el.checked = false; });
+      document.getElementById('holdOfferNotes').value = '';
+      document.getElementById('holdCheckIn').value = ymd(today);
+      document.getElementById('holdCheckOut').value = ymd(tomorrow);
+      document.getElementById('holdTotal').value = '';
+      document.getElementById('holdDeposit').value = '50';
+      document.getElementById('holdExpireHours').value = '24';
+      document.getElementById('holdGuestName').value = '';
+      document.getElementById('holdGuestPhone').value = '';
+      document.getElementById('holdGuestEmail').value = '';
+      document.getElementById('lbl-hold-room')?.classList.remove('label-error-state');
+      document.getElementById('holdRoom')?.classList.remove('is-invalid');
+      document.getElementById('lbl-hold-type')?.classList.remove('label-error-state');
+      document.getElementById('holdRoomType')?.classList.remove('is-invalid');
+      document.getElementById('lbl-hold-board')?.classList.remove('label-error-state');
+      document.getElementById('holdBoardPlan')?.classList.remove('is-invalid');
+      document.getElementById('lbl-hold-guest')?.classList.remove('label-error-state');
+      document.getElementById('holdGuestName')?.classList.remove('is-invalid');
+      document.getElementById('holdSheetHint').textContent = manual
+        ? 'Prenotazione già confermata (walk-in / telefono). Camera bloccata. Vendita a nome di chi è collegato.'
+        : 'La camera resta bloccata finché il link è valido o confermi il bonifico. Vendita a nome di chi è collegato.';
+      holdSheet.hidden = false;
+      holdSheet.setAttribute('aria-hidden', 'false');
+      lockSheetScroll();
+      animateSheetOpen(holdSheet);
+      document.getElementById('holdRoom')?.focus();
+    }
+
     async function refreshInHouseCount() {
       try {
         const res = await fetch('/api/staff/in-house', { credentials: 'same-origin' });
@@ -11631,13 +12283,15 @@
       try {
         paintStaffSettingsForm();
         if (currentStaff?.label) paintSettingsIdentity(currentStaff.label, currentStaff.id);
-        const [statsRes, settingsRes] = await Promise.all([
+        const [statsRes, settingsRes, ibanRes] = await Promise.all([
           fetch('/api/staff/stats', { credentials: 'same-origin' }),
           fetch('/api/staff/settings', { credentials: 'same-origin' }),
+          fetch('/api/staff/holds/iban', { credentials: 'same-origin' }),
         ]);
         if (statsRes.status === 401 || settingsRes.status === 401) { showLogin(); return; }
         const body = await statsRes.json().catch(() => ({}));
         const settings = await settingsRes.json().catch(() => ({}));
+        const iban = await ibanRes.json().catch(() => ({}));
         if (body.staff) currentStaff = { ...currentStaff, ...body.staff };
         document.body.classList.toggle('manager', Boolean(currentStaff?.manager));
         if (settings.ok && settings.reportTime) {
@@ -11645,6 +12299,12 @@
           writeStaffSettings(prefs);
           paintStaffSettingsForm(prefs);
         }
+        const prefIban = document.getElementById('prefIban');
+        const prefIbanHolder = document.getElementById('prefIbanHolder');
+        const prefIbanBank = document.getElementById('prefIbanBank');
+        if (prefIban) prefIban.value = iban.iban || '';
+        if (prefIbanHolder) prefIbanHolder.value = iban.holder || '';
+        if (prefIbanBank) prefIbanBank.value = iban.bank || '';
         renderSettingsStats(body);
       } finally {
         setPanelBusy(false);
@@ -11723,9 +12383,235 @@
     tabRequests.addEventListener('click', () => setActiveView('requests'));
     tabCheckins.addEventListener('click', () => setActiveView('checkins'));
     tabInHouse?.addEventListener('click', () => setActiveView('inhouse'));
+    tabHolds?.addEventListener('click', () => setActiveView('holds'));
     tabBlacklist.addEventListener('click', () => setActiveView('blacklist'));
     tabInfo?.addEventListener('click', () => setActiveView('info'));
     tabSettings?.addEventListener('click', () => setActiveView('settings'));
+
+    btnAddHold?.addEventListener('click', () => openHoldSheet('link'));
+    btnAddHoldManual?.addEventListener('click', () => openHoldSheet('manual'));
+    document.getElementById('holdSheetClose')?.addEventListener('click', closeHoldSheet);
+    document.getElementById('holdSheetCloseBg')?.addEventListener('click', closeHoldSheet);
+    document.getElementById('holdShareClose')?.addEventListener('click', closeHoldShareSheet);
+    document.getElementById('holdShareCloseBg')?.addEventListener('click', closeHoldShareSheet);
+    document.getElementById('btnHoldShareDone')?.addEventListener('click', closeHoldShareSheet);
+
+    document.getElementById('btnHoldCopyLink')?.addEventListener('click', async () => {
+      const url = shareHoldContext?.payUrl || document.getElementById('holdShareUrl')?.textContent || '';
+      await copyTextSafe(url, 'Link copiato.');
+    });
+
+    document.getElementById('btnHoldCopyMsg')?.addEventListener('click', async () => {
+      const msg = document.getElementById('holdShareMessage')?.value || '';
+      await copyTextSafe(msg, 'Messaggio copiato.');
+    });
+
+    document.getElementById('btnHoldWhatsApp')?.addEventListener('click', () => {
+      const msg = document.getElementById('holdShareMessage')?.value || '';
+      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank', 'noopener');
+    });
+
+    document.getElementById('btnHoldEmail')?.addEventListener('click', () => {
+      const hold = shareHoldContext;
+      const msg = document.getElementById('holdShareMessage')?.value || '';
+      const subject = hold
+        ? `Hotel Canal · prenotazione camera ${hold.roomNumber}`
+        : 'Hotel Canal · link prenotazione';
+      const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(msg)}`;
+      window.location.href = mailto;
+    });
+
+    document.getElementById('btnHoldSms')?.addEventListener('click', () => {
+      const msg = document.getElementById('holdShareMessage')?.value || '';
+      const sms = /iPhone|iPad|Mac/i.test(navigator.userAgent)
+        ? `sms:&body=${encodeURIComponent(msg)}`
+        : `sms:?body=${encodeURIComponent(msg)}`;
+      window.location.href = sms;
+    });
+
+    document.getElementById('btnHoldNativeShare')?.addEventListener('click', async () => {
+      const hold = shareHoldContext;
+      const msg = document.getElementById('holdShareMessage')?.value || '';
+      if (!hold?.payUrl || typeof navigator.share !== 'function') return;
+      try {
+        await navigator.share({
+          title: `Hotel Canal · camera ${hold.roomNumber}`,
+          text: msg,
+          url: hold.payUrl,
+        });
+      } catch (_) { /* cancelled */ }
+    });
+
+    holdSheetForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mode = holdModeEl?.value || 'link';
+      const manual = mode === 'manual';
+      const payload = {
+        roomNumber: document.getElementById('holdRoom').value.trim(),
+        roomType: document.getElementById('holdRoomType').value,
+        boardPlan: document.getElementById('holdBoardPlan').value,
+        extras: [...document.querySelectorAll('input[name="holdExtra"]:checked')].map((el) => el.value),
+        offerNotes: document.getElementById('holdOfferNotes').value.trim(),
+        checkIn: document.getElementById('holdCheckIn').value,
+        checkOut: document.getElementById('holdCheckOut').value,
+        totalEuros: document.getElementById('holdTotal').value.trim(),
+        depositPercent: Number(document.getElementById('holdDeposit').value),
+        expireHours: Number(document.getElementById('holdExpireHours').value),
+        guestName: document.getElementById('holdGuestName').value.trim(),
+        guestPhone: document.getElementById('holdGuestPhone').value.trim(),
+        guestEmail: document.getElementById('holdGuestEmail').value.trim(),
+      };
+      document.getElementById('lbl-hold-room')?.classList.remove('label-error-state');
+      document.getElementById('holdRoom')?.classList.remove('is-invalid');
+      document.getElementById('lbl-hold-type')?.classList.remove('label-error-state');
+      document.getElementById('holdRoomType')?.classList.remove('is-invalid');
+      document.getElementById('lbl-hold-board')?.classList.remove('label-error-state');
+      document.getElementById('holdBoardPlan')?.classList.remove('is-invalid');
+      if (!payload.roomNumber) {
+        document.getElementById('lbl-hold-room')?.classList.add('label-error-state');
+        document.getElementById('holdRoom')?.classList.add('is-invalid');
+        return;
+      }
+      if (!payload.roomType) {
+        document.getElementById('lbl-hold-type')?.classList.add('label-error-state');
+        document.getElementById('holdRoomType')?.classList.add('is-invalid');
+        return;
+      }
+      if (!payload.boardPlan) {
+        document.getElementById('lbl-hold-board')?.classList.add('label-error-state');
+        document.getElementById('holdBoardPlan')?.classList.add('is-invalid');
+        return;
+      }
+      if (manual && !payload.guestName) {
+        document.getElementById('lbl-hold-guest')?.classList.add('label-error-state');
+        document.getElementById('holdGuestName')?.classList.add('is-invalid');
+        return;
+      }
+      holdSheetSave.disabled = true;
+      try {
+        const res = await fetch(manual ? '/api/staff/holds/manual' : '/api/staff/holds', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 401) { showLogin(); return; }
+        if (!res.ok) {
+          if (body.error === 'camera_occupata') {
+            showServerToast('Camera già in hold per queste date.', true);
+          } else {
+            showServerToast('Controlla i dati e riprova.', true);
+          }
+          return;
+        }
+        if (!manual && body.payUrl) {
+          animateSheetClose(holdSheet, () => {
+            openHoldShareSheet(body);
+          });
+          await loadHolds();
+        } else {
+          closeHoldSheet();
+          await loadHolds();
+          showServerToast(manual ? 'Prenotazione salvata.' : 'Link creato.');
+        }
+      } catch (_) {
+        showServerToast('Errore di rete. Riprova.', true);
+      } finally {
+        holdSheetSave.disabled = false;
+      }
+    });
+
+    holdsListEl?.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-hold-act]');
+      if (!btn) return;
+      const id = Number(btn.getAttribute('data-hold-id'));
+      const act = btn.getAttribute('data-hold-act');
+      const hold = lastHolds.find((h) => h.id === id);
+      if (!hold) return;
+      if (act === 'share') {
+        openHoldShareSheet(hold);
+        return;
+      }
+      if (act === 'copy') {
+        openHoldShareSheet(hold);
+        return;
+      }
+      if (act === 'print') {
+        window.open(`/api/staff/holds/${id}/print`, '_blank', 'noopener');
+        return;
+      }
+      if (act === 'confirm') {
+        btn.disabled = true;
+        try {
+          const res = await fetch(`/api/staff/holds/${id}/confirm`, {
+            method: 'POST',
+            credentials: 'same-origin',
+          });
+          if (res.status === 401) { showLogin(); return; }
+          if (!res.ok) {
+            showServerToast('Conferma non riuscita.', true);
+            return;
+          }
+          showServerToast('Bonifico confermato.');
+          await loadHolds();
+        } catch (_) {
+          showServerToast('Errore di rete. Riprova.', true);
+        } finally {
+          btn.disabled = false;
+        }
+        return;
+      }
+      if (act === 'cancel') {
+        if (!window.confirm('Annullare questo hold e liberare la camera?')) return;
+        btn.disabled = true;
+        try {
+          const res = await fetch(`/api/staff/holds/${id}/cancel`, {
+            method: 'POST',
+            credentials: 'same-origin',
+          });
+          if (res.status === 401) { showLogin(); return; }
+          if (!res.ok) {
+            showServerToast('Annullamento non riuscito.', true);
+            return;
+          }
+          showServerToast('Hold annullato.');
+          await loadHolds();
+        } catch (_) {
+          showServerToast('Errore di rete. Riprova.', true);
+        } finally {
+          btn.disabled = false;
+        }
+      }
+    });
+
+    document.getElementById('btnSaveIban')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btnSaveIban');
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/staff/holds/iban', {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            iban: document.getElementById('prefIban')?.value || '',
+            holder: document.getElementById('prefIbanHolder')?.value || '',
+            bank: document.getElementById('prefIbanBank')?.value || '',
+          }),
+        });
+        if (res.status === 401) { showLogin(); return; }
+        if (!res.ok) {
+          showServerToast('Salvataggio IBAN non riuscito.', true);
+          return;
+        }
+        showServerToast('IBAN salvato.');
+      } catch (_) {
+        showServerToast('Errore di rete. Riprova.', true);
+      } finally {
+        btn.disabled = false;
+      }
+    });
 
     document.getElementById('mTabbar')?.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-m-view]');
@@ -12576,6 +13462,7 @@
         if (activeView === 'blacklist') loadBlacklist();
         else if (activeView === 'requests') loadReceptionNotes();
         else if (activeView === 'inhouse') loadInHouse();
+        else if (activeView === 'holds') renderHolds(lastHolds);
         else loadList();
       }, 180);
     });

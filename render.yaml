@@ -32,6 +32,10 @@ services:
         value: grandcanalhotels@gmail.com
       - key: REPORT_SEND_TIME
         value: "22:35"
+      - key: HOTEL_IBAN
+        sync: false
+      - key: HOTEL_IBAN_HOLDER
+        sync: false
       - key: TABLE_BOOKING_EMAIL
         sync: false
       - key: RESEND_API_KEY

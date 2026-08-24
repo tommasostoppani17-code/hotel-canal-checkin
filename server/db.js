@@ -231,9 +231,71 @@ export function initDb(databasePath) {
     );
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS room_holds (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      token TEXT NOT NULL UNIQUE,
+      payment_ref TEXT NOT NULL UNIQUE,
+      room_number TEXT NOT NULL,
+      check_in TEXT NOT NULL,
+      check_out TEXT NOT NULL,
+      total_cents INTEGER NOT NULL,
+      deposit_percent INTEGER NOT NULL DEFAULT 100,
+      amount_due_cents INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'hold',
+      sold_by TEXT NOT NULL,
+      expires_at TEXT,
+      guest_name TEXT,
+      guest_phone TEXT,
+      guest_email TEXT,
+      guests_count INTEGER,
+      guest_notes TEXT,
+      privacy_accepted_at TEXT,
+      details_submitted_at TEXT,
+      transfer_declared_at TEXT,
+      confirmed_at TEXT,
+      confirmed_by TEXT,
+      cancelled_at TEXT,
+      cancelled_by TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT,
+      manual INTEGER NOT NULL DEFAULT 0
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_room_holds_status
+      ON room_holds (status, check_in, check_out);
+
+    CREATE INDEX IF NOT EXISTS idx_room_holds_room
+      ON room_holds (room_number, status);
+
+    CREATE INDEX IF NOT EXISTS idx_room_holds_expires
+      ON room_holds (expires_at, status);
+  `);
+
+  ensureRoomHoldColumn('room_type', 'room_type TEXT');
+  ensureRoomHoldColumn('board_plan', 'board_plan TEXT');
+  ensureRoomHoldColumn('extras', 'extras TEXT');
+  ensureRoomHoldColumn('offer_notes', 'offer_notes TEXT');
+
   seedStaffRoster();
 
   return db;
+}
+
+function ensureRoomHoldColumn(name, ddl) {
+  const ALLOWED = {
+    room_type: 'room_type TEXT',
+    board_plan: 'board_plan TEXT',
+    extras: 'extras TEXT',
+    offer_notes: 'offer_notes TEXT',
+  };
+  if (!ALLOWED[name] || ALLOWED[name] !== ddl) {
+    throw new Error(`[db] colonna room_holds non consentita: ${name}`);
+  }
+  const cols = db.prepare(`PRAGMA table_info(room_holds)`).all();
+  if (!cols.some((c) => c.name === name)) {
+    db.exec(`ALTER TABLE room_holds ADD COLUMN ${ddl}`);
+  }
 }
 
 function parseSqliteUtc(createdAt) {

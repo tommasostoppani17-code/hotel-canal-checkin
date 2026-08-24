@@ -66,12 +66,29 @@ import {
   getReportSendTime,
   setReportSendTime,
   RECEPTION_NOTE_CATEGORIES,
+  getDb,
 } from './db.js';
 import {
   runDailyReport,
   runMonthlyStaffReport,
   sendTableBookingAlert,
 } from './mail.js';
+import {
+  listRoomHolds,
+  createRoomHold,
+  createManualRoomHold,
+  getRoomHoldById,
+  getRoomHoldByToken,
+  submitHoldGuestDetails,
+  declareHoldTransfer,
+  confirmRoomHold,
+  cancelRoomHold,
+  publicHoldPayload,
+  staffHoldPayload,
+  getHotelIbanConfig,
+  setHotelIbanConfig,
+  expireDueHolds,
+} from './room-holds.js';
 import { getCsvMedia, whatsappConfigured, sendTableBookingWhatsApp } from './whatsapp.js';
 import {
   sendWelcomeEmail,
@@ -440,6 +457,14 @@ app.get(['/staff.html', '/staff', '/staff/'], (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.type('html');
   return res.sendFile(path.join(rootDir, 'public', 'staff.html'));
+});
+
+/** Link pagamento camera (bonifico IBAN) — pagina ospite. */
+app.get(['/paga/:token', '/paga/:token/'], (req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'paga.html'));
 });
 
 const STAFF_ONLY_HTML = {
@@ -853,11 +878,17 @@ function bootstrapStaffPinHashesFromEnv() {
   }
 
   if (!isLocalStaffRuntime()) return;
+  // Solo account senza hash: NON sovrascrivere password già cambiate in locale.
   const localPin = '1234';
+  let seeded = 0;
   for (const member of roster) {
+    if (getStaffPinHash(member.id)) continue;
     setStaffPinHash(member.id, hashStaffPin(localPin));
+    seeded += 1;
   }
-  console.log('[staff] Locale: entra con Tommaso e 1234');
+  if (seeded) {
+    console.log(`[staff] Locale: ${seeded} account senza password → default 1234 (Tommaso / 1234)`);
+  }
 }
 
 function staffAuthConfigured() {
@@ -2524,6 +2555,297 @@ app.delete(
   },
 );
 
+/* ——— Hold camera / link IBAN ——— */
+
+app.get(
+  '/api/staff/holds',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (_req, res) => {
+    expireDueHolds();
+    const base = publicBaseUrl();
+    const holds = listRoomHolds({ includeClosed: true }).map((h) =>
+      staffHoldPayload(h, base),
+    );
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({
+      holds,
+      iban: getHotelIbanConfig(),
+    });
+  },
+);
+
+app.get(
+  '/api/staff/holds/iban',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (_req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(getHotelIbanConfig());
+  },
+);
+
+app.put(
+  '/api/staff/holds/iban',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  requireStaff,
+  (req, res) => {
+    const cfg = setHotelIbanConfig(
+      {
+        iban: req.body?.iban,
+        holder: req.body?.holder,
+        bank: req.body?.bank,
+      },
+      req.staffUser?.staffName,
+    );
+    return res.json(cfg);
+  },
+);
+
+app.post(
+  '/api/staff/holds',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const soldBy =
+      String(req.body?.soldBy || '').trim() ||
+      req.staffUser?.staffName ||
+      '';
+    const result = createRoomHold({
+      roomNumber: req.body?.roomNumber,
+      checkIn: req.body?.checkIn,
+      checkOut: req.body?.checkOut,
+      totalEuros: req.body?.totalEuros,
+      depositPercent: req.body?.depositPercent,
+      expireHours: req.body?.expireHours,
+      soldBy,
+      guestName: req.body?.guestName,
+      guestPhone: req.body?.guestPhone,
+      guestEmail: req.body?.guestEmail,
+      guestsCount: req.body?.guestsCount,
+      guestNotes: req.body?.guestNotes,
+      roomType: req.body?.roomType,
+      boardPlan: req.body?.boardPlan,
+      extras: req.body?.extras,
+      offerNotes: req.body?.offerNotes,
+    });
+    if (!result.ok) {
+      const status =
+        result.error === 'camera_occupata'
+          ? 409
+          : result.error === 'date_non_valide' ||
+              result.error === 'prezzo_non_valido' ||
+              result.error === 'stanza_mancante'
+            ? 400
+            : 400;
+      return res.status(status).json(result);
+    }
+    return res.status(201).json(staffHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
+app.post(
+  '/api/staff/holds/manual',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const soldBy =
+      String(req.body?.soldBy || '').trim() ||
+      req.staffUser?.staffName ||
+      '';
+    const result = createManualRoomHold({
+      roomNumber: req.body?.roomNumber,
+      checkIn: req.body?.checkIn,
+      checkOut: req.body?.checkOut,
+      totalEuros: req.body?.totalEuros,
+      depositPercent: req.body?.depositPercent ?? 100,
+      soldBy,
+      guestName: req.body?.guestName,
+      guestPhone: req.body?.guestPhone,
+      guestEmail: req.body?.guestEmail,
+      guestsCount: req.body?.guestsCount,
+      guestNotes: req.body?.guestNotes,
+      roomType: req.body?.roomType,
+      boardPlan: req.body?.boardPlan,
+      extras: req.body?.extras,
+      offerNotes: req.body?.offerNotes,
+    });
+    if (!result.ok) {
+      const status = result.error === 'camera_occupata' ? 409 : 400;
+      return res.status(status).json(result);
+    }
+    return res.status(201).json(staffHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
+app.get(
+  '/api/staff/holds/:id',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const hold = getRoomHoldById(id);
+    if (!hold) return res.status(404).json({ error: 'Hold non trovato' });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(staffHoldPayload(hold, publicBaseUrl()));
+  },
+);
+
+app.get(
+  '/api/staff/holds/:id/print',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).type('html').send('<p>Id non valido</p>');
+    }
+    const hold = getRoomHoldById(id);
+    if (!hold) {
+      return res.status(404).type('html').send('<p>Hold non trovato</p>');
+    }
+    const payload = staffHoldPayload(hold, publicBaseUrl());
+    const iban = payload.iban || getHotelIbanConfig();
+    const esc = (s) =>
+      String(s ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    const statusLabel = {
+      hold: 'In attesa dati ospite',
+      details_submitted: 'Dati ricevuti — in attesa bonifico',
+      awaiting_transfer: 'Ospite dichiara bonifico inviato',
+      confirmed: 'Confermato',
+      expired: 'Scaduto',
+      cancelled: 'Annullato',
+    };
+    res.setHeader('Cache-Control', 'no-store');
+    res.type('html').send(`<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hold ${esc(payload.paymentRef)} · Hotel Canal</title>
+  <style>
+    body { font-family: Georgia, "Times New Roman", serif; color: #124453; margin: 24px; max-width: 640px; }
+    h1 { font-size: 22px; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 4px; }
+    .sub { color: #5C6670; font-size: 13px; margin-bottom: 20px; }
+    .box { border: 1.5px solid #124453; border-radius: 8px; padding: 14px 16px; margin: 12px 0; }
+    .row { margin: 6px 0; font-size: 15px; }
+    .label { color: #5C6670; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .ref { font-size: 20px; font-weight: 700; letter-spacing: 0.08em; }
+    .link { word-break: break-all; font-size: 13px; color: #0A2D37; }
+    @media print { button { display: none; } body { margin: 12mm; } }
+  </style>
+</head>
+<body>
+  <button type="button" onclick="window.print()" style="margin-bottom:16px;padding:8px 14px;font-size:14px;">Stampa</button>
+  <h1>Hotel Canal</h1>
+  <p class="sub">Foglio hold / link pagamento · Santa Croce 553 · Venezia</p>
+  <div class="box">
+    <div class="label">Causale bonifico</div>
+    <div class="ref">${esc(payload.paymentRef)}</div>
+  </div>
+  <div class="row"><span class="label">Stato</span><br>${esc(statusLabel[payload.status] || payload.status)}</div>
+  <div class="row"><span class="label">Camera</span><br>${esc(payload.roomNumber)}${payload.roomTypeLabel ? ` · ${esc(payload.roomTypeLabel)}` : ''}</div>
+  <div class="row"><span class="label">Trattamento</span><br>${esc(payload.boardPlanLabel || '—')}</div>
+  <div class="row"><span class="label">Extra</span><br>${esc((payload.extrasLabels || []).join(', ') || '—')}</div>
+  <div class="row"><span class="label">Note offerta</span><br>${esc(payload.offerNotes || '—')}</div>
+  <div class="row"><span class="label">Soggiorno</span><br>${esc(payload.checkIn)} → ${esc(payload.checkOut)}</div>
+  <div class="row"><span class="label">Totale / acconto</span><br>€ ${esc(payload.totalEuros)} · ${esc(payload.depositPercent)}% → <strong>€ ${esc(payload.amountDueEuros)}</strong></div>
+  <div class="row"><span class="label">Vendita di</span><br>${esc(payload.soldBy)}</div>
+  <div class="row"><span class="label">Ospite</span><br>${esc(payload.guestName || '—')} · ${esc(payload.guestPhone || '—')} · ${esc(payload.guestEmail || '—')}</div>
+  <div class="row"><span class="label">IBAN</span><br>${esc(iban.iban || '—')}<br>${esc(iban.holder || '')}</div>
+  <div class="row"><span class="label">Link ospite</span><br><span class="link">${esc(payload.payUrl)}</span></div>
+  <div class="row"><span class="label">Scade</span><br>${esc(payload.expiresAt || '—')}</div>
+  <script>window.addEventListener('load', () => { /* ready */ });</script>
+</body>
+</html>`);
+  },
+);
+
+app.post(
+  '/api/staff/holds/:id/confirm',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = confirmRoomHold(id, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+    return res.json(staffHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
+app.post(
+  '/api/staff/holds/:id/cancel',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const result = cancelRoomHold(id, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+    return res.json(staffHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
+app.get(
+  '/api/paga/:token',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  (req, res) => {
+    const hold = getRoomHoldByToken(req.params.token);
+    if (!hold) {
+      return res.status(404).json({ error: 'Link non valido o scaduto', code: 'not_found' });
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(publicHoldPayload(hold, publicBaseUrl()));
+  },
+);
+
+app.post(
+  '/api/paga/:token/details',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  (req, res) => {
+    const result = submitHoldGuestDetails(req.params.token, {
+      guestName: req.body?.guestName,
+      guestPhone: req.body?.guestPhone,
+      guestEmail: req.body?.guestEmail,
+      guestsCount: req.body?.guestsCount,
+      guestNotes: req.body?.guestNotes,
+      privacyAccepted: req.body?.privacyAccepted,
+    });
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+    return res.json(publicHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
+app.post(
+  '/api/paga/:token/transfer-done',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  (req, res) => {
+    const result = declareHoldTransfer(req.params.token);
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+    return res.json(publicHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
 app.post(
   '/api/cron/daily-report',
   rateLimit({ windowMs: 60_000, max: 10 }),
@@ -2540,6 +2862,81 @@ app.post(
     return res.status(500).json({ error: 'Errore report' });
   }
 });
+
+/**
+ * Reset password di UN solo account staff (ops / emergenza).
+ * Auth: Authorization Bearer CRON_SECRET
+ * Body: { staffId: "tommaso", newPin: "...." }
+ * Non tocca gli altri account.
+ */
+app.post(
+  '/api/cron/staff-pin-reset',
+  rateLimit({ windowMs: 60_000, max: 6 }),
+  (req, res) => {
+    if (!isAuthorizedCron(req)) {
+      return res.status(401).json({ error: 'Non autorizzato' });
+    }
+    const staffId = String(req.body?.staffId || '')
+      .trim()
+      .toLowerCase();
+    const newPin = String(req.body?.newPin || req.body?.pin || '').trim();
+    if (!staffId || !/^[a-z0-9_-]{2,40}$/.test(staffId)) {
+      return res.status(400).json({ error: 'staffId non valido' });
+    }
+    const member = getStaffMember(staffId);
+    if (!member || !member.active) {
+      return res.status(404).json({ error: 'Account staff non trovato' });
+    }
+    if (!isUsableStaffPassword(newPin)) {
+      return res.status(400).json({
+        error: 'Password 4–64 caratteri, senza spazi',
+        code: 'pin_format',
+      });
+    }
+    setStaffPinHash(staffId, hashStaffPin(newPin));
+    console.warn(
+      `[staff] PIN reset ops per ${staffId} da cron (altri account intatti)`,
+    );
+    return res.json({
+      ok: true,
+      staffId,
+      label: member.label || member.name || staffId,
+      updatedAt: new Date().toISOString(),
+    });
+  },
+);
+
+app.get(
+  '/api/cron/staff-pin-status',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  (req, res) => {
+    if (!isAuthorizedCron(req)) {
+      return res.status(401).json({ error: 'Non autorizzato' });
+    }
+    const roster = listStaffRoster({ activeOnly: false });
+    const db = getDb();
+    const rows = db
+      .prepare(
+        `SELECT staff_id, updated_at, length(pin_hash) AS hash_len FROM staff_credentials`,
+      )
+      .all();
+    const byId = Object.fromEntries(rows.map((r) => [r.staff_id, r]));
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({
+      ok: true,
+      databasePath: DATABASE_PATH,
+      persistentDisk: String(DATABASE_PATH).startsWith('/var/data'),
+      checkins: countCheckins(),
+      staff: roster.map((m) => ({
+        id: m.id,
+        label: m.label || m.name,
+        active: Boolean(m.active),
+        hasPin: Boolean(byId[m.id]?.hash_len),
+        pinUpdatedAt: byId[m.id]?.updated_at || null,
+      })),
+    });
+  },
+);
 
 app.post(
   '/api/cron/monthly-staff-report',

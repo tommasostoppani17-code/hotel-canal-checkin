@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0a2d37">
+  <title>Prenotazione · Hotel Canal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --canal: #124453;
+      --canal-dark: #0A2D37;
+      --text: #1D1D1F;
+      --muted: #5C6670;
+      --card: #E4EEF4;
+      --err: #C62828;
+      --radius: 20px;
+      --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Montserrat, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(180deg, rgba(10, 45, 55, 0.55), rgba(10, 45, 55, 0.72)),
+        url('/venice-bg.jpg') center / cover no-repeat fixed;
+      padding: 24px 16px 48px;
+    }
+    .wrap {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .brand {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .brand h1 {
+      font-family: Cinzel, Georgia, serif;
+      font-size: 22px;
+      letter-spacing: 0.18em;
+      margin: 0 0 6px;
+      font-weight: 700;
+    }
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+    .card {
+      background: linear-gradient(180deg, #EEF5F9, #D7E6EF);
+      border-radius: var(--radius);
+      padding: 24px 20px 20px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+    .card h2 {
+      font-family: Cinzel, Georgia, serif;
+      font-size: 18px;
+      color: var(--canal);
+      margin: 0 0 6px;
+      letter-spacing: 0.04em;
+    }
+    .lead {
+      margin: 0 0 18px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .meta {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.65);
+      border-radius: 14px;
+      font-size: 14px;
+    }
+    .meta strong { color: var(--canal); }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--canal);
+      margin: 0 0 6px 2px;
+    }
+    .field label.label-error-state { color: var(--err); }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      height: 48px;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      background: #fff;
+      padding: 0 14px;
+      font-size: 16px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+    }
+    .field textarea {
+      height: 88px;
+      padding: 12px 14px;
+      resize: none;
+    }
+    .field input.is-invalid,
+    .field textarea.is-invalid,
+    .field select.is-invalid {
+      border-color: var(--err);
+      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.12);
+    }
+    .privacy {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 8px 0 16px;
+      line-height: 1.4;
+    }
+    .privacy input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; }
+    .privacy.is-invalid label { color: var(--err); }
+    .btn {
+      width: 100%;
+      height: 52px;
+      border: none;
+      border-radius: 14px;
+      background: var(--canal);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn:active { background: var(--canal-dark); transform: scale(0.985); }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--canal);
+      border: 1.5px solid rgba(18, 68, 83, 0.35);
+      margin-top: 10px;
+    }
+    .pay-box {
+      border: 1.5px solid var(--canal);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+      margin: 12px 0 16px;
+    }
+    .pay-box .k {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .pay-box .v {
+      font-size: 16px;
+      color: var(--canal);
+      font-weight: 600;
+      word-break: break-all;
+      margin-bottom: 12px;
+    }
+    .pay-box .v.ref {
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      font-family: Cinzel, Georgia, serif;
+    }
+    .hint {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin: 0 0 14px;
+    }
+    .status-banner {
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(18, 68, 83, 0.08);
+      color: var(--canal);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .hidden { display: none !important; }
+    .ios-shake {
+      animation: shake 0.42s var(--ios-ease);
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1d1d1f;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 20;
+      max-width: 90vw;
+    }
+    .toast.is-on { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="wrap">
+    <div class="brand">
+      <h1>HOTEL CANAL</h1>
+      <p>Santa Croce 553 · Venezia</p>
+    </div>
+
+    <div class="card" id="card">
+      <div id="stateLoading">
+        <h2>Caricamento…</h2>
+        <p class="lead">Sto aprendo la tua prenotazione.</p>
+      </div>
+
+      <div id="stateError" class="hidden">
+        <h2>Link non disponibile</h2>
+        <p class="lead" id="errorLead">Questo link non è valido o è scaduto. Contatta la reception.</p>
+      </div>
+
+      <div id="stateForm" class="hidden">
+        <h2>I tuoi dati</h2>
+        <p class="lead">Compila i dettagli per riservare la camera. Poi riceverai le istruzioni per il bonifico.</p>
+        <div class="meta" id="stayMeta"></div>
+        <form id="detailsForm" autocomplete="off" novalidate>
+          <div class="field">
+            <label id="lbl-name" for="guestName">Nome completo</label>
+            <input id="guestName" name="guestName" maxlength="120" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label id="lbl-phone" for="guestPhone">Telefono</label>
+            <input id="guestPhone" name="guestPhone" type="tel" maxlength="40" required autocomplete="tel">
+          </div>
+          <div class="field">
+            <label id="lbl-email" for="guestEmail">Email</label>
+            <input id="guestEmail" name="guestEmail" type="email" maxlength="120" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label id="lbl-pax" for="guestsCount">Ospiti</label>
+            <select id="guestsCount" name="guestsCount" required>
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="field">
+            <label id="lbl-notes" for="guestNotes">Note (opzionale)</label>
+            <textarea id="guestNotes" name="guestNotes" maxlength="500" placeholder="Arrivo tardi, culla, ecc."></textarea>
+          </div>
+          <div class="privacy" id="privacyWrap">
+            <input type="checkbox" id="privacyAccepted" name="privacyAccepted">
+            <label for="privacyAccepted" id="lbl-privacy">
+              Accetto il trattamento dei dati per gestire la prenotazione
+              (<a href="/privacy.html" target="_blank" rel="noopener">Informativa privacy</a>.
+            </label>
+          </div>
+          <button class="btn" type="submit" id="btnSubmit">Continua al pagamento</button>
+        </form>
+      </div>
+
+      <div id="statePay" class="hidden">
+        <h2>Bonifico</h2>
+        <p class="lead">Effettua il bonifico con la causale esatta. La reception confermerà la camera quando arriva il pagamento.</p>
+        <div class="meta" id="payMeta"></div>
+        <div class="pay-box" id="payBox"></div>
+        <p class="hint">Usa sempre la causale indicata: così colleghiamo il bonifico alla tua camera senza errori.</p>
+        <button class="btn" type="button" id="btnTransferDone">Ho effettuato il bonifico</button>
+        <button class="btn btn-ghost" type="button" id="btnCopyRef">Copia causale</button>
+      </div>
+
+      <div id="stateAwaiting" class="hidden">
+        <div class="status-banner">Bonifico segnalato</div>
+        <h2>Grazie</h2>
+        <p class="lead">Abbiamo ricevuto la tua segnalazione. La reception confronterà il bonifico e ti conferma la camera.</p>
+        <div class="pay-box" id="awaitBox"></div>
+      </div>
+
+      <div id="stateConfirmed" class="hidden">
+        <div class="status-banner">Prenotazione confermata</div>
+        <h2>A presto a Venezia</h2>
+        <p class="lead" id="confirmedLead">Il tuo pagamento è stato confermato dalla reception.</p>
+        <div class="meta" id="confirmedMeta"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = location.pathname.split('/').filter(Boolean).pop();
+    const card = document.getElementById('card');
+    const toast = document.getElementById('toast');
+    let data = null;
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('is-on');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove('is-on'), 2800);
+    }
+
+    function shakeCard() {
+      card.classList.remove('ios-shake');
+      void card.offsetWidth;
+      card.classList.add('ios-shake');
+    }
+
+    function clearFieldErrors() {
+      document.querySelectorAll('.label-error-state').forEach((el) => el.classList.remove('label-error-state'));
+      document.querySelectorAll('.is-invalid').forEach((el) => el.classList.remove('is-invalid'));
+      document.getElementById('privacyWrap')?.classList.remove('is-invalid');
+    }
+
+    function showFieldError(fieldId, labelId) {
+      const input = document.getElementById(fieldId);
+      const label = document.getElementById(labelId);
+      input?.classList.add('is-invalid');
+      label?.classList.add('label-error-state');
+      shakeCard();
+    }
+
+    function showPrivacyError() {
+      document.getElementById('privacyWrap')?.classList.add('is-invalid');
+      document.getElementById('lbl-privacy')?.classList.add('label-error-state');
+      shakeCard();
+    }
+
+    function fmtDate(ymd) {
+      if (!ymd) return '—';
+      const [y, m, d] = String(ymd).split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function stayHtml(d) {
+      const extras = (d.extrasLabels || []).join(' · ');
+      return `
+        <div><strong>Camera ${escapeHtml(d.roomNumber)}${d.roomTypeLabel ? ` · ${escapeHtml(d.roomTypeLabel)}` : ''}</strong></div>
+        <div>${fmtDate(d.checkIn)} → ${fmtDate(d.checkOut)}</div>
+        ${d.boardPlanLabel ? `<div>${escapeHtml(d.boardPlanLabel)}</div>` : ''}
+        ${extras ? `<div>${escapeHtml(extras)}</div>` : ''}
+        ${d.offerNotes ? `<div>${escapeHtml(d.offerNotes)}</div>` : ''}
+        <div>Totale € ${escapeHtml(d.totalEuros)} · acconto ${escapeHtml(String(d.depositPercent))}% → <strong>€ ${escapeHtml(d.amountDueEuros)}</strong></div>
+      `;
+    }
+
+    function payHtml(d) {
+      const iban = d.iban || {};
+      return `
+        <div class="k">Importo</div>
+        <div class="v">€ ${escapeHtml(d.amountDueEuros)}</div>
+        <div class="k">IBAN</div>
+        <div class="v">${escapeHtml(iban.number || '—')}</div>
+        <div class="k">Intestatario</div>
+        <div class="v">${escapeHtml(iban.holder || '—')}</div>
+        ${iban.bank ? `<div class="k">Banca</div><div class="v">${escapeHtml(iban.bank)}</div>` : ''}
+        <div class="k">Causale (obbligatoria)</div>
+        <div class="v ref">${escapeHtml(d.paymentRef)}</div>
+      `;
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function hideAll() {
+      ['stateLoading', 'stateError', 'stateForm', 'statePay', 'stateAwaiting', 'stateConfirmed']
+        .forEach((id) => document.getElementById(id).classList.add('hidden'));
+    }
+
+    function render() {
+      hideAll();
+      if (!data) {
+        document.getElementById('stateError').classList.remove('hidden');
+        return;
+      }
+      if (data.status === 'expired' || data.status === 'cancelled') {
+        document.getElementById('errorLead').textContent =
+          data.status === 'expired'
+            ? 'Questo link è scaduto. Contatta la reception per un nuovo link.'
+            : 'Questa prenotazione è stata annullata.';
+        document.getElementById('stateError').classList.remove('hidden');
+        return;
+      }
+      if (data.status === 'confirmed') {
+        document.getElementById('confirmedMeta').innerHTML = stayHtml(data);
+        document.getElementById('stateConfirmed').classList.remove('hidden');
+        return;
+      }
+      if (data.status === 'awaiting_transfer') {
+        document.getElementById('awaitBox').innerHTML = payHtml(data);
+        document.getElementById('stateAwaiting').classList.remove('hidden');
+        return;
+      }
+      if (data.status === 'details_submitted' || data.hasDetails) {
+        document.getElementById('payMeta').innerHTML = stayHtml(data);
+        document.getElementById('payBox').innerHTML = payHtml(data);
+        if (!data.iban?.configured) {
+          showToast('IBAN hotel non configurato: contatta la reception.');
+        }
+        document.getElementById('statePay').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('stayMeta').innerHTML = stayHtml(data);
+      document.getElementById('stateForm').classList.remove('hidden');
+    }
+
+    async function load() {
+      try {
+        const res = await fetch(`/api/paga/${encodeURIComponent(token)}`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) {
+          data = null;
+          hideAll();
+          document.getElementById('stateError').classList.remove('hidden');
+          return;
+        }
+        data = await res.json();
+        render();
+      } catch (_) {
+        data = null;
+        hideAll();
+        document.getElementById('stateError').classList.remove('hidden');
+        showToast('Errore di rete. Riprova.');
+      }
+    }
+
+    document.getElementById('detailsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearFieldErrors();
+      const btn = document.getElementById('btnSubmit');
+      const body = {
+        guestName: document.getElementById('guestName').value.trim(),
+        guestPhone: document.getElementById('guestPhone').value.trim(),
+        guestEmail: document.getElementById('guestEmail').value.trim(),
+        guestsCount: Number(document.getElementById('guestsCount').value),
+        guestNotes: document.getElementById('guestNotes').value.trim(),
+        privacyAccepted: document.getElementById('privacyAccepted').checked,
+      };
+      if (!body.guestName) return showFieldError('guestName', 'lbl-name');
+      if (!body.guestPhone) return showFieldError('guestPhone', 'lbl-phone');
+      if (!body.guestEmail) return showFieldError('guestEmail', 'lbl-email');
+      if (!body.privacyAccepted) return showPrivacyError();
+
+      btn.disabled = true;
+      try {
+        const res = await fetch(`/api/paga/${encodeURIComponent(token)}/details`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (json.field === 'guestName') showFieldError('guestName', 'lbl-name');
+          else if (json.field === 'guestPhone') showFieldError('guestPhone', 'lbl-phone');
+          else if (json.field === 'guestEmail') showFieldError('guestEmail', 'lbl-email');
+          else if (json.field === 'privacy') showPrivacyError();
+          else {
+            shakeCard();
+            showToast('Controlla i dati e riprova.');
+          }
+          return;
+        }
+        data = json;
+        render();
+      } catch (_) {
+        showToast('Errore di rete. Riprova.');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('btnTransferDone').addEventListener('click', async () => {
+      const btn = document.getElementById('btnTransferDone');
+      btn.disabled = true;
+      try {
+        const res = await fetch(`/api/paga/${encodeURIComponent(token)}/transfer-done`, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          showToast(json.error === 'completa_dati_prima' ? 'Completa prima i tuoi dati.' : 'Operazione non riuscita.');
+          return;
+        }
+        data = json;
+        render();
+      } catch (_) {
+        showToast('Errore di rete. Riprova.');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('btnCopyRef').addEventListener('click', async () => {
+      const ref = data?.paymentRef || '';
+      try {
+        await navigator.clipboard.writeText(ref);
+        showToast('Causale copiata');
+      } catch (_) {
+        showToast(ref);
+      }
+    });
+
+    load();
+  </script>
+</body>
+</html>
