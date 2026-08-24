@@ -150,6 +150,24 @@ const DATABASE_PATH =
   }
 }
 
+/**
+ * Ferrea: su Render il DB deve stare sul disco persistente.
+ * Evita di nuovo wipe di check-in e password a ogni deploy.
+ */
+function assertPersistentDatabasePath() {
+  const onRender = process.env.RENDER === 'true';
+  if (!onRender) return;
+  const raw = String(DATABASE_PATH || '').trim();
+  if (!raw.startsWith('/var/data/')) {
+    throw new Error(
+      `DATABASE_PATH obbligatorio su Render sotto /var/data/ (ora: ${raw || '(vuoto)'}). ` +
+        'Senza disco persistente ogni deploy cancella check-in e password staff.',
+    );
+  }
+}
+
+assertPersistentDatabasePath();
+
 /** Token report manuale: solo se impostato in env (niente hardcoded in prod). */
 const REPORT_TRIGGER_TOKEN = String(process.env.REPORT_TRIGGER_TOKEN || '')
   .trim()
@@ -1072,6 +1090,11 @@ app.get(
   if (!dataReady) {
     blockers.push('Disco persistente o backup Gist mancante');
   }
+  if (!onPersistentDisk) {
+    blockers.push(
+      'DATABASE_PATH non è /var/data/... — rischio wipe a ogni deploy',
+    );
+  }
   res.setHeader('Cache-Control', 'no-store');
   res.json({
     ok: blockers.length === 0,
@@ -1084,6 +1107,7 @@ app.get(
     dataReady,
     backupConfigured: backupOk,
     persistentDisk: onPersistentDisk,
+    databasePath: DATABASE_PATH,
     blockers,
   });
 });

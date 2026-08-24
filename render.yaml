@@ -1,5 +1,9 @@
 # Hotel Canal Check-in — Blueprint Render (production)
 # Requires payment method on Render for Starter + persistent disk.
+#
+# FERREA — NON cambiare DATABASE_PATH e NON togliere il disk.
+# Deve restare /var/data/checkins.db sul mount /var/data, altrimenti
+# ogni deploy cancella check-in e password staff (già successo).
 services:
   - type: web
     name: hotel-canal-checkin
@@ -22,6 +26,7 @@ services:
         value: Hotel Canal
       - key: CRON_TZ
         value: Europe/Rome
+      # OBBLIGATORIO: disco persistente. Mai ./data/ in produzione.
       - key: DATABASE_PATH
         value: /var/data/checkins.db
       - key: PUBLIC_URL
