@@ -355,12 +355,10 @@ function romeClockMinutes(from = new Date()) {
   return clockMinutes(romeClockTime(from));
 }
 
-function effectiveCheckoutYmd(row) {
+/** Solo checkout dichiarato dall'ospite/staff. Mai inventare = stay_date (rompe In camera). */
+function explicitCheckoutYmd(row) {
   const checkout = String(row?.checkout_date || '').trim();
-  if (checkout) return checkout;
-  const stay = String(row?.stay_date || '').trim();
-  if (stay) return stay;
-  return romeCalendarDate(row?.created_at);
+  return /^\d{4}-\d{2}-\d{2}$/.test(checkout) ? checkout : '';
 }
 
 function inHouseContext(now = new Date()) {
@@ -373,12 +371,16 @@ function inHouseContext(now = new Date()) {
   };
 }
 
-/** Soggiorno in corso: check-in ≤ oggi e non oltre l'orario di checkout nel giorno di partenza. */
+/**
+ * Soggiorno in corso: check-in ≤ oggi e non oltre l'orario di checkout nel giorno di partenza.
+ * Senza checkout_date (es. restore da report) resta in camera finché non c'è una data di partenza.
+ */
 export function isInHouseStay(row, ctx = inHouseContext()) {
   const { today, now, checkoutTime } = ctx;
   const stay = String(row?.stay_date || '').trim() || romeCalendarDate(row?.created_at);
   if (stay > today) return false;
-  const checkout = effectiveCheckoutYmd(row);
+  const checkout = explicitCheckoutYmd(row);
+  if (!checkout) return true;
   if (checkout > today) return true;
   if (checkout < today) return false;
   return romeClockMinutes(now) < clockMinutes(checkoutTime);
@@ -389,8 +391,8 @@ export function isCheckoutDueGrace(row, ctx = inHouseContext()) {
   const { today, now, checkoutTime, graceMinutes } = ctx;
   const stay = String(row?.stay_date || '').trim() || romeCalendarDate(row?.created_at);
   if (stay > today) return false;
-  const checkout = effectiveCheckoutYmd(row);
-  if (checkout !== today) return false;
+  const checkout = explicitCheckoutYmd(row);
+  if (!checkout || checkout !== today) return false;
   const nowMin = romeClockMinutes(now);
   const checkoutMin = clockMinutes(checkoutTime);
   return nowMin >= checkoutMin && nowMin < checkoutMin + graceMinutes;
