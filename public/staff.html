@@ -11200,7 +11200,9 @@
         ? `Checkout oggi · oltre le ${inHouseMeta.checkoutTime || '10:30'}`
         : (activeView === 'inhouse' && row.checkoutDate)
           ? `Checkout ${formatDateShort(row.checkoutDate)}`
-          : (row.stayDate ? formatDateShort(row.stayDate) : '');
+          : (activeView === 'inhouse')
+            ? 'Checkout non indicato'
+            : (row.stayDate ? formatDateShort(row.stayDate) : '');
       const mobile = isMobileGuestList();
       const contacts = `<div class="cell-contacts">${phoneCell}${emailCell}</div>`;
       const rowClass = [
