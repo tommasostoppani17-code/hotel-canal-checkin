@@ -25,6 +25,7 @@ import {
   exportStaffMonthStats,
   mergeStaffMonthStats,
   mergeStaffMonthStatsFromCheckins,
+  rebuildStaffMonthStatsFromCheckins,
   romeCalendarDate,
   parseStayDate,
   parseCheckoutDate,
@@ -57,6 +58,7 @@ import {
   setStaffPinHash,
   logStaffAccess,
   getStaffAccountStats,
+  getMonthlyStaffStats,
   listStaffRoster,
   getStaffMember,
   findStaffMemberByLogin,
@@ -252,9 +254,9 @@ async function restoreCheckinsBackupIfNeeded() {
       void syncCheckinsBackup('seed-purge');
     }
     const mergedStats = mergeStaffMonthStats(staffMonthStats);
-    const mergedLive = mergeStaffMonthStatsFromCheckins();
+    const rebuilt = rebuildStaffMonthStatsFromCheckins();
     console.log(
-      `[backup] staff stats: +${mergedStats} da gist, +${mergedLive} da check-in vivi`,
+      `[backup] staff stats: +${mergedStats} da gist, rebuild mesi vivi ${rebuilt.months.join(',') || '(nessuno)'} (${rebuilt.staffRows} righe)`,
     );
   } catch (err) {
     console.error('[backup] restore failed:', err.message || err);
@@ -2985,6 +2987,36 @@ app.post(
   },
 );
 
+app.post(
+  '/api/cron/rebuild-staff-stats',
+  rateLimit({ windowMs: 60_000, max: 6 }),
+  async (req, res) => {
+    if (!isAuthorizedCron(req)) {
+      return res.status(401).json({ error: 'Non autorizzato' });
+    }
+    try {
+      const rebuilt = rebuildStaffMonthStatsFromCheckins();
+      const monthly = getMonthlyStaffStats();
+      await syncCheckinsBackup('rebuild-staff-stats');
+      return res.json({
+        ok: true,
+        checkins: countCheckins(),
+        rebuilt,
+        ranking: (monthly.ranking || []).map((row) => ({
+          receptionist: row.receptionist,
+          checkins: Number(row.totale_registrati) || 0,
+          coupons: Number(row.coupon_emessi) || 0,
+        })),
+        source: monthly.source,
+        yearMonth: monthly.yearMonth,
+      });
+    } catch (err) {
+      console.error('[stats] rebuild failed:', err);
+      return res.status(500).json({ error: 'rebuild_failed' });
+    }
+  },
+);
+
 /**
  * Ripristino contatti da report email (ops).
  * Body: { rows: [...] } — PII cifrata sul server con FIELD_ENCRYPTION_KEY live.
@@ -3005,6 +3037,7 @@ app.post(
     }
     try {
       const result = restoreReportCheckins(rows);
+      rebuildStaffMonthStatsFromCheckins();
       console.warn(
         `[restore] report checkins inserted=${result.inserted} skipped=${result.skipped} total=${result.total}`,
       );

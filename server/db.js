@@ -846,6 +846,8 @@ export function exportStaffMonthStats() {
 /**
  * Unisce stats da backup: tiene il massimo tra locale e backup
  * (mai abbassare i contatori dopo un restore parziale).
+ * Per i mesi ancora presenti in `checkins`, usa sempre
+ * rebuildStaffMonthStatsFromCheckins() dopo il merge.
  */
 export function mergeStaffMonthStats(rows) {
   if (!Array.isArray(rows) || !rows.length) return 0;
@@ -877,37 +879,83 @@ export function mergeStaffMonthStats(rows) {
   return tx(rows);
 }
 
-/**
- * Ricalcola i mesi ancora presenti in `checkins` e fa merge (MAX) sul rollup.
- * Non cancella mesi storici già solo nel rollup (post GDPR).
- */
-export function mergeStaffMonthStatsFromCheckins() {
+function yearMonthFromCheckinRow(row) {
+  const stay = String(row?.stay_date || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(stay)) return stay.slice(0, 7);
+  return romeYearMonthFromUtc(row?.created_at);
+}
+
+function checkinHasCoupon(row, staff) {
+  return (
+    Boolean(row?.coupon_sent_at) ||
+    (Boolean(row?.coupon_token) &&
+      Boolean(String(row?.room_number || '').trim()) &&
+      staff !== 'RECEPTION')
+  );
+}
+
+/** Aggrega check-in vivi → { year_month, receptionist, checkins, coupons }[] */
+export function aggregateStaffMonthFromCheckins({ yearMonth = null } = {}) {
   const rows = db
     .prepare(
       `
-      SELECT receptionist, coupon_sent_at, coupon_token, room_number, created_at
+      SELECT receptionist, coupon_sent_at, coupon_token, room_number, created_at, stay_date
       FROM checkins
     `,
     )
     .all();
-  if (!rows.length) return 0;
-
+  const want = yearMonth ? String(yearMonth) : null;
   const map = new Map();
   for (const row of rows) {
-    const ym = romeYearMonthFromUtc(row.created_at);
+    const ym = yearMonthFromCheckinRow(row);
+    if (want && ym !== want) continue;
     const staff = normalizeReceptionist(row.receptionist);
     const key = `${ym}\0${staff}`;
-    const cur = map.get(key) || { year_month: ym, receptionist: staff, checkins: 0, coupons: 0 };
+    const cur = map.get(key) || {
+      year_month: ym,
+      receptionist: staff,
+      checkins: 0,
+      coupons: 0,
+    };
     cur.checkins += 1;
-    const hasCoupon =
-      Boolean(row.coupon_sent_at) ||
-      (Boolean(row.coupon_token) &&
-        Boolean(String(row.room_number || '').trim()) &&
-        staff !== 'RECEPTION');
-    if (hasCoupon) cur.coupons += 1;
+    if (checkinHasCoupon(row, staff)) cur.coupons += 1;
     map.set(key, cur);
   }
-  return mergeStaffMonthStats([...map.values()]);
+  return [...map.values()];
+}
+
+/**
+ * Ricalcola i mesi ancora presenti in `checkins` e SOVRASCRIVE il rollup
+ * (niente MAX: i numeri gonfi da Gist/restore devono tornare ai check-in reali).
+ * I mesi solo storici (post GDPR) restano intatti.
+ */
+export function rebuildStaffMonthStatsFromCheckins() {
+  const aggregated = aggregateStaffMonthFromCheckins();
+  const monthsTouched = [...new Set(aggregated.map((r) => r.year_month))];
+  if (!monthsTouched.length) {
+    return { months: [], staffRows: 0 };
+  }
+
+  const del = db.prepare(`DELETE FROM staff_month_stats WHERE year_month = ?`);
+  const ins = db.prepare(`
+    INSERT INTO staff_month_stats (year_month, receptionist, checkins, coupons)
+    VALUES (@year_month, @receptionist, @checkins, @coupons)
+  `);
+  const tx = db.transaction(() => {
+    for (const ym of monthsTouched) del.run(ym);
+    for (const row of aggregated) {
+      if (!row.receptionist || row.receptionist === 'RECEPTION') continue;
+      ins.run(row);
+    }
+  });
+  tx();
+  return { months: monthsTouched, staffRows: aggregated.length };
+}
+
+/** @deprecated alias — usa rebuild (replace), non merge MAX. */
+export function mergeStaffMonthStatsFromCheckins() {
+  const result = rebuildStaffMonthStatsFromCheckins();
+  return result.staffRows;
 }
 
 /** Elimina check-in del giorno (Rome) su una stanza (solo account tester). */
@@ -1283,9 +1331,40 @@ export function markReported(ids) {
   return result.changes;
 }
 
-/** Stats for a calendar month (YYYY-MM). Prefer rollup table (GDPR-safe). */
+/** Stats for a calendar month (YYYY-MM). Prefer live check-ins when still in DB. */
 export function getMonthlyStaffStats(yearMonth = null) {
   const ym = String(yearMonth || romeYearMonthNow());
+
+  const liveAgg = aggregateStaffMonthFromCheckins({ yearMonth: ym });
+  if (liveAgg.length) {
+    const liveRanking = liveAgg
+      .filter((row) => row.receptionist && row.receptionist !== 'RECEPTION')
+      .map((row) => ({
+        receptionist: row.receptionist,
+        totale_registrati: row.checkins,
+        coupon_emessi: row.coupons,
+      }))
+      .sort(
+        (a, b) =>
+          b.totale_registrati - a.totale_registrati ||
+          b.coupon_emessi - a.coupon_emessi ||
+          a.receptionist.localeCompare(b.receptionist),
+      );
+    const totals = liveRanking.reduce(
+      (acc, row) => {
+        acc.totale_mese += Number(row.totale_registrati) || 0;
+        acc.totale_coupon += Number(row.coupon_emessi) || 0;
+        return acc;
+      },
+      { totale_mese: 0, totale_coupon: 0 },
+    );
+    return {
+      totals,
+      ranking: rankingForOfficialStaff(liveRanking),
+      yearMonth: ym,
+      source: 'checkins',
+    };
+  }
 
   const rollupRanking = db
     .prepare(
@@ -1318,49 +1397,11 @@ export function getMonthlyStaffStats(yearMonth = null) {
     };
   }
 
-  // Fallback: check-in ancora in DB (utile in locale / primi giorni)
-  const totals = db
-    .prepare(
-      `
-      SELECT
-        COUNT(*) AS totale_mese,
-        SUM(
-          CASE
-            WHEN coupon_token IS NOT NULL AND coupon_token != '' THEN 1
-            ELSE 0
-          END
-        ) AS totale_coupon
-      FROM checkins
-      WHERE strftime('%Y-%m', created_at) = ?
-    `,
-    )
-    .get(ym);
-
-  const ranking = db
-    .prepare(
-      `
-      SELECT
-        COALESCE(NULLIF(TRIM(receptionist), ''), 'RECEPTION') AS receptionist,
-        COUNT(*) AS totale_registrati,
-        SUM(
-          CASE
-            WHEN coupon_token IS NOT NULL AND coupon_token != '' THEN 1
-            ELSE 0
-          END
-        ) AS coupon_emessi
-      FROM checkins
-      WHERE strftime('%Y-%m', created_at) = ?
-      GROUP BY COALESCE(NULLIF(TRIM(receptionist), ''), 'RECEPTION')
-      ORDER BY totale_registrati DESC, coupon_emessi DESC
-    `,
-    )
-    .all(ym);
-
   return {
-    totals,
-    ranking: rankingForOfficialStaff(ranking),
+    totals: { totale_mese: 0, totale_coupon: 0 },
+    ranking: [],
     yearMonth: ym,
-    source: 'checkins',
+    source: 'empty',
   };
 }
 
