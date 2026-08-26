@@ -6257,8 +6257,10 @@
 
     .secure-cell-wrapper .phone-text,
     .secure-cell-wrapper .email-text,
+    .secure-cell-wrapper .contact-text,
     .phone-wrapper .phone-text,
-    .phone-wrapper .email-text {
+    .phone-wrapper .email-text,
+    .phone-wrapper .contact-text {
       flex: 0 1 auto;
       width: auto;
       max-width: 100%;
@@ -6273,39 +6275,51 @@
       padding-right: 0;
       font-variant-numeric: tabular-nums;
       text-align: left;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      color: inherit;
     }
 
-    .matrix-table td.col-phone .secure-cell-wrapper .phone-text {
+    .matrix-table td.col-phone .secure-cell-wrapper .phone-text,
+    .matrix-table td.col-email .secure-cell-wrapper .email-text {
       text-align: left;
     }
 
     .phone-text,
-    .email-text {
+    .email-text,
+    .contact-text {
       transition: opacity 200ms ease, color 200ms ease, background 160ms ease;
     }
 
     .phone-text.contact-copy-target,
-    .email-text.contact-copy-target {
+    .email-text.contact-copy-target,
+    .contact-text.contact-copy-target {
       cursor: copy;
       border-radius: 4px;
     }
 
     .phone-text.contact-copy-target:active,
-    .email-text.contact-copy-target:active {
+    .email-text.contact-copy-target:active,
+    .contact-text.contact-copy-target:active {
       background: rgba(18, 68, 83, 0.06);
     }
 
     .phone-text.is-copied,
-    .email-text.is-copied {
+    .email-text.is-copied,
+    .contact-text.is-copied {
       background: rgba(18, 68, 83, 0.1);
     }
 
     .phone-text.is-fading,
-    .email-text.is-fading {
+    .email-text.is-fading,
+    .contact-text.is-fading {
       opacity: 0;
     }
 
-    .phone-text.is-revealed {
+    .phone-text.is-revealed,
+    .email-text.is-revealed,
+    .contact-text.is-revealed {
       color: var(--text-main);
       font-weight: 600;
       overflow: hidden;
@@ -6315,18 +6329,10 @@
       overflow-wrap: normal;
     }
 
-    .email-text {
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      word-break: keep-all;
-      overflow-wrap: normal;
-    }
-
-    .phone-wrapper .email-text {
-      font-family: inherit;
-      font-size: 13px;
+    .contact-text.data-empty {
+      color: #8a9ba8;
+      font-weight: 500;
+      font-style: normal;
     }
 
     .matrix-table td.col-phone .secure-cell-wrapper,
@@ -7034,30 +7040,42 @@
       .clients-matrix .cell-contacts {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 0;
         width: 100%;
         margin-top: 10px;
-        padding-top: 12px;
+        padding-top: 4px;
         border-top: 1px solid rgba(18, 68, 83, 0.08);
       }
 
-      .clients-matrix .cell-receptionist-wrap .btn-row-menu,
-      .clients-matrix .col-actions .btn-row-menu {
-        position: static;
-        top: auto;
-        right: auto;
+      .clients-matrix .cell-contacts .secure-cell-wrapper,
+      .clients-matrix .cell-contacts .secure-cell-wrapper.contact-row {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 44px;
+        align-items: center;
+        column-gap: 10px;
+        width: 100%;
+        min-height: 52px;
+        height: 52px;
         margin: 0;
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        min-height: 44px;
-        border-radius: 14px;
-        background: rgba(18, 68, 83, 0.06);
+        padding: 4px 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 15px;
+        font-weight: 500;
         color: var(--canal-petroleum);
+        border-bottom: 1px solid rgba(18, 68, 83, 0.06);
       }
 
-      .clients-matrix .contact-ios-label {
-        display: none;
+      .clients-matrix .cell-contacts .secure-cell-wrapper:last-child {
+        border-bottom: 0;
+      }
+
+      .clients-matrix .cell-contacts .contact-stack {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+        min-width: 0;
       }
 
       .clients-matrix .cell-contacts .contact-ios-label {
@@ -7068,7 +7086,52 @@
         text-transform: uppercase;
         color: #8a9ba8;
         line-height: 1.2;
-        margin-bottom: 2px;
+        margin: 0;
+      }
+
+      .clients-matrix .cell-contacts .contact-text,
+      .clients-matrix .cell-contacts .phone-text,
+      .clients-matrix .cell-contacts .email-text,
+      .clients-matrix .cell-contacts .data-empty {
+        font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.3;
+        color: var(--canal-petroleum);
+        min-height: 0;
+      }
+
+      .clients-matrix .cell-contacts .contact-text.data-empty,
+      .clients-matrix .cell-contacts .data-empty {
+        color: #8a9ba8;
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      .clients-matrix .cell-contacts .contact-text.is-revealed,
+      .clients-matrix .cell-contacts .phone-text.is-revealed,
+      .clients-matrix .cell-contacts .email-text.is-revealed {
+        font-weight: 600;
+        color: var(--canal-petroleum);
+      }
+
+      .clients-matrix .cell-contacts .btn-reveal {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 14px;
+        background: rgba(18, 68, 83, 0.06);
+        color: var(--canal-petroleum);
+        opacity: 1;
+      }
+
+      .clients-matrix .cell-contacts .secure-cell-wrapper.is-empty .btn-reveal {
+        opacity: 0.35;
+      }
+
+      .clients-matrix .contact-ios-label {
+        display: none;
       }
 
       .clients-matrix .secure-cell-wrapper,
@@ -7089,6 +7152,7 @@
 
       .clients-matrix .secure-cell-wrapper .phone-text,
       .clients-matrix .secure-cell-wrapper .email-text,
+      .clients-matrix .secure-cell-wrapper .contact-text,
       .clients-matrix .phone-wrapper .phone-text,
       .clients-matrix .phone-wrapper .email-text,
       .clients-matrix .data-empty {
@@ -7100,7 +7164,7 @@
       .clients-matrix .data-empty {
         color: #8a9ba8;
         font-style: normal;
-        font-size: 14px;
+        font-size: 15px;
       }
 
       .clients-matrix .btn-reveal {
@@ -7116,6 +7180,21 @@
         align-self: center;
         margin: 0;
         flex-shrink: 0;
+      }
+
+      .clients-matrix .cell-receptionist-wrap .btn-row-menu,
+      .clients-matrix .col-actions .btn-row-menu {
+        position: static;
+        top: auto;
+        right: auto;
+        margin: 0;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 14px;
+        background: rgba(18, 68, 83, 0.06);
+        color: var(--canal-petroleum);
       }
 
       .clients-matrix .cell-receptionist-wrap .btn-row-menu:hover,
@@ -10801,12 +10880,12 @@
       const empty = !hasValue;
       const copyHint = kind === 'phone' ? 'Doppio tap per copiare telefono' : 'Doppio tap per copiare email';
       const textInner = empty
-        ? `<span class="data-empty" aria-hidden="true">Non fornito</span>`
-        : `<span class="phone-text contact-copy-target ${textClass}" data-${kind}-text="${row.id}" data-copy-kind="${kind}" data-mask="${escapeAttr(masked)}" title="${escapeAttr(copyHint)}" tabindex="0" role="button" aria-label="${escapeAttr(copyHint)}">${escapeHtml(masked)}</span>`;
+        ? `<span class="contact-text data-empty" aria-hidden="true">Non fornito</span>`
+        : `<span class="contact-text contact-copy-target ${textClass || ''}" data-${kind}-text="${row.id}" data-copy-kind="${kind}" data-mask="${escapeAttr(masked)}" title="${escapeAttr(copyHint)}" tabindex="0" role="button" aria-label="${escapeAttr(copyHint)}">${escapeHtml(masked)}</span>`;
       const revealBtn = empty
         ? `<button type="button" class="btn-reveal" disabled tabindex="-1" aria-hidden="true">${EYE_ICON}</button>`
         : `<button type="button" class="btn-reveal" data-reveal-${kind}="${row.id}" aria-label="${labelShow}">${EYE_ICON}</button>`;
-      return `<div class="secure-cell-wrapper${empty ? ' is-empty' : ''}">
+      return `<div class="secure-cell-wrapper contact-row${empty ? ' is-empty' : ''}" data-contact-kind="${kind}">
         <div class="contact-stack">
           <span class="contact-ios-label">${label}</span>
           ${textInner}
@@ -11042,7 +11121,7 @@
       guestSheetRow = row;
       const guestLabel = formatGuestDisplayName(row.guestName);
       const room = String(row.roomNumber || '').trim();
-      const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
+      const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, 'phone-text', 'phone', 'Mostra telefono', 'Nascondi telefono');
       const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
       const staff = formatStaffDisplayName(row.receptionist);
       const meta = guestSheetMetaLine(row);
@@ -11246,7 +11325,7 @@
     }
 
     function guestMatrixRowHtml(row, { checkoutDue = false } = {}) {
-      const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone', 'Mostra telefono', 'Nascondi telefono');
+      const phoneCell = maskedContactCell(row, 'phone', row.phoneMasked, row.hasPhone, 'phone-text', 'phone', 'Mostra telefono', 'Nascondi telefono');
       const emailCell = maskedContactCell(row, 'email', row.emailMasked, row.hasEmail, 'email-text', 'email', 'Mostra email', 'Nascondi email');
       const guestLabel = formatGuestDisplayName(row.guestName);
       const guestTitle = String(row.guestName || '').trim() || '—';
@@ -11262,7 +11341,10 @@
       const staffMeta = mobile && staffLabel && staffLabel !== '—'
         ? `<div class="cell-staff-meta">Check-in da ${escapeHtml(staffLabel)}</div>`
         : '';
-      const contacts = `<div class="cell-contacts">${phoneCell}${emailCell}</div>`;
+      const contacts = `<div class="cell-contacts">
+              ${phoneCell}
+              ${emailCell}
+            </div>`;
       const rowClass = [
         row.blacklisted ? 'is-blacklisted' : '',
         checkoutDue ? 'is-checkout-due' : '',
