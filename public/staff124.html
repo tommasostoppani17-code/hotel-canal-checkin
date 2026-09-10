@@ -5,16 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
   <meta name="robots" content="noindex, nofollow">
   <meta name="color-scheme" content="light only">
-  <meta name="theme-color" content="#0b1325">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Riva OS">
+  <meta name="apple-mobile-web-app-title" content="Riva">
   <link rel="manifest" id="rivaManifestLink" href="/staff124-manifest.webmanifest">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <title>Clienti — Riva OS</title>
-  <script src="/js/pwa-boot.js?v=181" defer></script>
+  <script>
+    /* PWA standalone ASAP — prima del CSS, evita flash di “slot browser” */
+    (function () {
+      try {
+        var standalone =
+          (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+          window.navigator.standalone === true;
+        if (standalone) document.documentElement.classList.add('is-pwa-standalone');
+      } catch (_) { /* ignore */ }
+    })();
+  </script>
+  <script src="/js/pwa-boot.js?v=182" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Montserrat 300 = titolo Check-in; display=swap obbligatorio -->
@@ -22515,7 +22527,7 @@
   <link rel="stylesheet" href="/css/clienti-desktop.css?v=2">
   <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=3">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
-  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=2">
+  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=3">
   <link rel="stylesheet" href="/css/layout-stability.css?v=3">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
   <link rel="stylesheet" href="/css/riva-access-aligned.css?v=9">

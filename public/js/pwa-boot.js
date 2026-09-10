@@ -1,9 +1,17 @@
 /**
  * Riva OS — PWA boot (Service Worker + install readiness).
- * Incluso da staff.html / pagine dashboard. Non tocca le API.
+ * Incluso da staff / staff124. Non tocca le API.
  */
 (function registerRivaPwa() {
-  // Manifest tenant-aware: /h/{slug}/staff-manifest.webmanifest
+  try {
+    var standalone =
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      window.navigator.standalone === true;
+    if (standalone) {
+      document.documentElement.classList.add('is-pwa-standalone');
+    }
+  } catch (_) { /* ignore */ }
+
   try {
     const link = document.getElementById('rivaManifestLink');
     const base = window.__TENANT_BASE__;
@@ -20,7 +28,6 @@
     || host === '127.0.0.1'
     || host === '0.0.0.0'
     || host.endsWith('.local');
-  /* Tunnel di sviluppo: stesso problema dello SW che nasconde i CSS nuovi. */
   const isDevTunnel =
     host.includes('trycloudflare.com')
     || host.includes('ngrok')
@@ -40,7 +47,6 @@
     } catch (_) { /* ignore */ }
   };
 
-  // In locale / tunnel lo SW fa flash di CSS vecchi: spegni tutto.
   if (isLocal || isDevTunnel) {
     wipeSwAndCaches();
     return;
@@ -55,7 +61,7 @@
 
   const register = () => {
     navigator.serviceWorker
-      .register('/sw.js?v=181', { scope: '/' })
+      .register('/sw.js?v=182', { scope: '/' })
       .then((reg) => {
         try { reg.update(); } catch (_) { /* ignore */ }
         if (reg.waiting) {
@@ -71,9 +77,7 @@
           });
         });
       })
-      .catch(() => {
-        /* SW opzionale */
-      });
+      .catch(() => { /* SW opzionale */ });
   };
 
   if (document.readyState === 'complete') register();
