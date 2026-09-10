@@ -1,0 +1,1389 @@
+/**
+ * RIVA OS — Chiusura turno · Vertical Closure Engine
+ * Instagram Mobile Feed Shell / Apple Drawing Native Layer
+ *
+ * Scope: solo .workspace.is-shift-audit
+ * Obiettivo: UN feed verticale fluido (niente 2 colonne, niente scroll spezzati).
+ */
+
+/* ==========================================================================
+   Feed isolation
+   ========================================================================== */
+
+.workspace.is-shift-audit .shift-audit-panel:not(.hidden):not([hidden]) {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  background: #fafafa !important;
+  color: #262626;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Turni: barra Mattina/Pom/Sera nascosta — selezione automatica via fascia oraria */
+.workspace.is-shift-audit .sc-shift-bar,
+.workspace.is-shift-audit #shiftNameSeg {
+  display: none !important;
+}
+
+/* Indicatore automatico turno: primo blocco del feed, fuori dalle card */
+.workspace.is-shift-audit .sc-shift-indicator,
+.workspace.is-shift-audit #auditKeysShiftList.sc-keys-tl {
+  position: relative !important;
+  z-index: auto !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 2px 0 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Wrapper feed = unico scroller verticale (come Note / Clienti) */
+.workspace.is-shift-audit .sc-scroll,
+.workspace.is-shift-audit .closure-feed-wrapper {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain;
+  display: block !important;
+  height: auto !important;
+  max-height: none !important;
+  background: #fafafa !important;
+  color: #262626;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 20px clamp(14px, 3vw, 24px) calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+  box-sizing: border-box;
+}
+
+/* Colonna centrale compatta (max-w ≈ Instagram feed) */
+.workspace.is-shift-audit .sc-cockpit--flat,
+.workspace.is-shift-audit .closure-feed-column {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  max-width: 640px !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin: 0 auto !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
+  grid-template-columns: none !important;
+  grid-template-areas: none !important;
+}
+
+/* Neutralizza qualsiasi residuo a due colonne */
+.workspace.is-shift-audit .sc-flat-col,
+.workspace.is-shift-audit .sc-flat-col--main,
+.workspace.is-shift-audit .sc-flat-col--side,
+.workspace.is-shift-audit .sc-main-col,
+.workspace.is-shift-audit .sc-side {
+  display: contents !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+/* ==========================================================================
+   Card stile post Instagram
+   ========================================================================== */
+
+.workspace.is-shift-audit .sc-flat-block.sc-ig-card,
+.workspace.is-shift-audit .closure-feed-card {
+  background: #ffffff !important;
+  border: 1px solid #efefef !important;
+  border-radius: 16px !important;
+  padding: 1.35rem 1.25rem 1.25rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01) !important;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-flat-block__title {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: #8e8e93 !important;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__title {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.035em !important;
+  color: #262626 !important;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__lead,
+.workspace.is-shift-audit .sc-flat-block__sub {
+  color: #8e8e93 !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__date {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #8e8e93 !important;
+  background: #fff !important;
+  border: 1px solid #efefef !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+}
+
+.workspace.is-shift-audit .sc-test-note {
+  margin: -8px 0 0 !important;
+  padding: 10px 12px !important;
+  border: 1px solid #fde68a !important;
+  border-radius: 12px !important;
+  background: #fffbeb !important;
+  color: #92400e !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.workspace.is-shift-audit .sc-test-note[hidden] {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block__meta {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  color: #262626 !important;
+  background: #fafafa !important;
+  border: 1px solid #efefef !important;
+  border-radius: 10px !important;
+  padding: 4px 10px !important;
+}
+
+/* ==========================================================================
+   Cassa semplificata (tassa auto + contanti)
+   ========================================================================== */
+
+.workspace.is-shift-audit .sc-cash-simple {
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: 14px !important;
+}
+
+@media (min-width: 520px) {
+  .workspace.is-shift-audit .sc-cash-simple {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+
+  .workspace.is-shift-audit .sc-cash-simple > .sc-cash-live[hidden] {
+    display: none !important;
+  }
+
+  .workspace.is-shift-audit .sc-cash-simple > .sc-cash-diff {
+    grid-column: 1 / -1;
+  }
+}
+
+.workspace.is-shift-audit .sc-flat-block--cash .sc-cash-hero,
+.workspace.is-shift-audit .sc-cash-simple .sc-cash-hero {
+  margin: 0 !important;
+  padding: 16px 16px 14px !important;
+  border-radius: 14px !important;
+  border: 1px solid #efefef !important;
+  background: #fafafa !important;
+  color: #262626 !important;
+  min-height: 80px;
+  justify-content: center;
+  box-shadow: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--cash .sc-cash-hero__label,
+.workspace.is-shift-audit .sc-cash-simple .sc-cash-hero__label {
+  color: #8e8e93 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--cash .sc-cash-hero__value,
+.workspace.is-shift-audit .sc-cash-simple .sc-cash-hero__value {
+  color: #262626 !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+}
+
+.workspace.is-shift-audit .sc-cash-field .field,
+.workspace.is-shift-audit .sc-cash-input-wrap .field {
+  background: #fafafa !important;
+  border: 1px solid #efefef !important;
+  border-radius: 12px !important;
+  min-height: 48px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-weight: 700 !important;
+}
+
+.workspace.is-shift-audit .sc-cash-field .field:focus,
+.workspace.is-shift-audit .sc-cash-input-wrap .field:focus {
+  background: #fff !important;
+  border-color: #262626 !important;
+  outline: none !important;
+}
+
+/* ==========================================================================
+   Apple Drawing — micro-puntini
+   ========================================================================== */
+
+.workspace.is-shift-audit .apple-signature-canvas,
+.workspace.is-shift-audit .sc-hand-sign__pad-wrap,
+.workspace.is-shift-audit .sc-hand-sign__pad-wrap--apple {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  background-color: #fafafa !important;
+  background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px) !important;
+  background-size: 16px 16px !important;
+  background-position: 8px 8px !important;
+  border: 1px solid #efefef !important;
+  border-radius: 14px !important;
+  min-height: 180px !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.workspace.is-shift-audit .sc-hand-sign {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__meta {
+  padding: 0 !important;
+  margin: 0 0 10px !important;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__pad {
+  min-height: 180px !important;
+  height: 180px !important;
+  width: 100% !important;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+@media (min-width: 720px) {
+  .workspace.is-shift-audit .apple-signature-canvas,
+  .workspace.is-shift-audit .sc-hand-sign__pad-wrap--apple,
+  .workspace.is-shift-audit .sc-hand-sign__pad {
+    min-height: 200px !important;
+    height: 200px !important;
+  }
+}
+
+/* Schedine: sezione 4 sequenziale + badge ambra + alert documenti */
+.workspace.is-shift-audit .sc-alloggiati-alert:not([hidden]),
+.workspace.is-shift-audit .sc-flat-block--alloggiati:not([hidden]) {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #efefef !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01) !important;
+  padding: 1.35rem 1.25rem 1.25rem !important;
+  margin: 0 !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert[hidden] {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__badge {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  padding: 0 8px !important;
+  border-radius: 999px !important;
+  border: 1px solid #fde68a !important;
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__num,
+.workspace.is-shift-audit .sc-alloggiati-alert__head,
+.workspace.is-shift-audit .sc-alloggiati-alert__title,
+.workspace.is-shift-audit .sc-alloggiati-alert__sub {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  max-height: none !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__row {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-width: 0;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid #fafafa !important;
+  background: transparent !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__row:last-child {
+  border-bottom: 0 !important;
+  padding-bottom: 2px !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__room {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  border: 1px solid #efefef !important;
+  background: #ffffff !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  color: #262626 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1 !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__body {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__guest {
+  margin: 0 !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  color: #262626 !important;
+  line-height: 1.3 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__doc,
+.workspace.is-shift-audit .sc-alloggiati-alert__contact {
+  margin: 3px 0 0 !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  color: #d97706 !important;
+  line-height: 1.35 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Storico: badge chiavi pastello + cassa flat + Tu cerchio */
+.workspace.is-shift-audit .shift-audit-pill--status {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  border: 0 !important;
+}
+
+.workspace.is-shift-audit .shift-audit-pill--status.is-ok,
+.workspace.is-shift-audit .shift-audit-pill.is-ok {
+  background-color: rgba(16, 185, 129, 0.06) !important;
+  color: #065f46 !important;
+}
+
+.workspace.is-shift-audit .shift-audit-pill--status.is-warn,
+.workspace.is-shift-audit .shift-audit-pill.is-warn {
+  background-color: rgba(245, 158, 11, 0.06) !important;
+  color: #b45309 !important;
+}
+
+.workspace.is-shift-audit .sc-history-cash {
+  display: block !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #262626 !important;
+  text-align: right !important;
+  letter-spacing: -0.02em !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+.workspace.is-shift-audit .sc-history-anom {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #8e8e93 !important;
+  background: transparent !important;
+}
+
+.workspace.is-shift-audit .sc-history-who.is-me {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  background: #262626 !important;
+  color: #fff !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+}
+
+.workspace.is-shift-audit .sc-history-table td {
+  overflow: visible !important;
+  vertical-align: middle !important;
+}
+
+.workspace.is-shift-audit .shift-audit-pill--cash {
+  display: none !important;
+}
+
+/* Note progressive: un campo, CTA testo */
+.workspace.is-shift-audit .sc-handoff-field {
+  background: #fff !important;
+  min-height: 56px !important;
+}
+
+.workspace.is-shift-audit .sc-handoff-add {
+  width: auto !important;
+  min-height: 36px !important;
+  margin-top: 10px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #262626 !important;
+  justify-content: flex-start !important;
+  padding: 0 4px !important;
+}
+
+/* Firma: stessa larghezza del titolo card, zero inset fantasma */
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign,
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__pad-wrap,
+.workspace.is-shift-audit .sc-flat-block--seal .sc-submit,
+.workspace.is-shift-audit .sc-flat-block--seal .sc-seal-footnote {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   CTA / pill interactive (no flash blu iOS)
+   ========================================================================== */
+
+.workspace.is-shift-audit .interactive-pill-btn,
+.workspace.is-shift-audit .sc-keys-cta,
+.workspace.is-shift-audit .sc-submit,
+.workspace.is-shift-audit .sc-handoff-add {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  transition: transform 100ms ease-out, background 0.15s ease, opacity 0.15s ease;
+}
+
+.workspace.is-shift-audit .interactive-pill-btn:active,
+.workspace.is-shift-audit .sc-keys-cta:active:not(:disabled),
+.workspace.is-shift-audit .sc-submit:active:not(:disabled),
+.workspace.is-shift-audit .sc-handoff-add:active {
+  transform: scale(0.98);
+}
+
+.workspace.is-shift-audit .sc-keys-cta,
+.workspace.is-shift-audit .sc-submit {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 44px !important;
+  margin-top: 1rem !important;
+  border-radius: 12px !important;
+  background: #262626 !important;
+  border: 1px solid #262626 !important;
+  color: #fff !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  pointer-events: auto !important;
+}
+
+/* Timeline turni: mai aspetto form / radio — solo filo + pallini */
+.workspace.is-shift-audit .sc-keys-tl,
+.workspace.is-shift-audit .sc-keys-status {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item,
+.workspace.is-shift-audit .sc-keys-status__row {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__dot,
+.workspace.is-shift-audit .sc-keys-status__check {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  box-sizing: border-box !important;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-done .sc-keys-tl__dot {
+  background: #e8f5e9 !important;
+  color: #065f46 !important;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-active .sc-keys-tl__dot {
+  background: #262626 !important;
+  color: transparent !important;
+  box-shadow: 0 0 0 3px rgba(38, 38, 38, 0.1) !important;
+  animation: scKeysPulse 1.6s ease-in-out infinite;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-pending .sc-keys-tl__dot {
+  background: #fff !important;
+  border: 1.5px solid #efefef !important;
+  color: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item:not(:last-child) .sc-keys-tl__rail::after {
+  width: 1.5px !important;
+  background: #efefef !important;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-done .sc-keys-tl__line {
+  color: #8e8e93 !important;
+  font-weight: 500 !important;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-active .sc-keys-tl__line {
+  color: #262626 !important;
+  font-weight: 900 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace.is-shift-audit .sc-keys-tl__item.is-active .sc-keys-tl__dot {
+    animation: none !important;
+  }
+}
+
+.workspace.is-shift-audit .sc-submit:disabled,
+.workspace.is-shift-audit .sc-submit.is-disabled {
+  background: #f2f2f7 !important;
+  border-color: #f2f2f7 !important;
+  color: #c7c7cc !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+}
+
+/* Alert alloggiati = card IG nel flusso (solo se non hidden) — gestito sopra */
+
+/* Storico: scroll interno protetto, pagina resta fluida */
+.workspace.is-shift-audit .sc-flat-block--history .sc-history-scroll {
+  max-height: min(42vh, 320px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #efefef;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.workspace.is-shift-audit .sc-history-table {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+}
+
+.workspace.is-shift-audit .sc-history-table th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+/* Landscape: MAI tornare a 2 colonne / overflow hidden */
+@media (orientation: landscape) and (min-width: 900px) {
+  .workspace.is-shift-audit .sc-scroll,
+  .workspace.is-shift-audit .closure-feed-wrapper {
+    overflow-y: auto !important;
+    display: block !important;
+  }
+
+  .workspace.is-shift-audit .sc-cockpit--flat,
+  .workspace.is-shift-audit .closure-feed-column {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+/* ==========================================================================
+   Popover dettaglio storico — sezioni geometriche Instagram
+   ========================================================================== */
+
+#closureDetailSheet .ig-sheet-body {
+  padding: 8px 18px calc(22px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+#closureDetailSheet .sc-cd {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #262626;
+}
+
+#closureDetailSheet .sc-cd-head {
+  padding: 4px 0 14px;
+  border-bottom: 1px solid #efefef;
+  margin-bottom: 4px;
+}
+
+#closureDetailSheet .sc-cd-head__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#closureDetailSheet .sc-cd-head__shift {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #262626;
+  line-height: 1.25;
+}
+
+#closureDetailSheet .sc-cd-head__date {
+  flex: 0 0 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e8e93;
+  letter-spacing: -0.01em;
+}
+
+#closureDetailSheet .sc-cd-head__meta {
+  margin: 8px 0 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c7c7cc;
+  line-height: 1.35;
+}
+
+#closureDetailSheet .sc-cd-section {
+  padding: 16px 0;
+  border-bottom: 1px solid #efefef;
+}
+
+#closureDetailSheet .sc-cd-section:last-child {
+  border-bottom: 0;
+  padding-bottom: 8px;
+}
+
+#closureDetailSheet .sc-cd-section__label {
+  margin: 0 0 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+#closureDetailSheet .sc-cd-cash {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+  background: #fafafa;
+  border: 1px solid #efefef;
+  border-radius: 10px;
+}
+
+#closureDetailSheet .sc-cd-cash__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 4px;
+}
+
+#closureDetailSheet .sc-cd-cash__k {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+#closureDetailSheet .sc-cd-cash__v {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e8e93;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+#closureDetailSheet .sc-cd-cash__v.is-strong {
+  color: #262626;
+  font-weight: 700;
+}
+
+#closureDetailSheet .sc-cd-cash__v.is-plus {
+  color: #059669 !important;
+  font-weight: 700;
+}
+
+#closureDetailSheet .sc-cd-cash__v.is-minus {
+  color: #c62828;
+  font-weight: 700;
+}
+
+#closureDetailSheet .sc-cd-cash__v.is-zero {
+  color: #8e8e93;
+}
+
+#closureDetailSheet .sc-cd-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#closureDetailSheet .sc-cd-notes--anom {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f2f2f7;
+}
+
+#closureDetailSheet .sc-cd-notes__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #636366;
+  line-height: 1.45;
+}
+
+#closureDetailSheet .sc-cd-notes__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c7c7cc;
+}
+
+#closureDetailSheet .sc-cd-notes__room {
+  font-size: 12px;
+  font-weight: 800;
+  color: #262626;
+  letter-spacing: -0.02em;
+}
+
+#closureDetailSheet .sc-cd-notes__text {
+  font-weight: 500;
+  color: #636366;
+}
+
+#closureDetailSheet .sc-cd-empty,
+#closureDetailSheet .sc-cd-keys-ok {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e8e93;
+}
+
+#closureDetailSheet .sc-cd-keys {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#closureDetailSheet .sc-cd-keys__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#closureDetailSheet .sc-cd-keys__badge {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 22px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid #fde68a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #b45309;
+  white-space: normal;
+  line-height: 1.35;
+  text-align: left;
+}
+
+#closureDetailSheet .sc-cd-keys__reason {
+  display: none;
+}
+
+#closureDetailSheet .sc-cd-section--sig {
+  border-bottom: 0;
+  padding-bottom: 4px;
+}
+
+#closureDetailSheet .sc-closure-sig {
+  margin: 0;
+  padding: 20px 16px;
+  border: 1px solid #efefef;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+
+#closureDetailSheet .sc-closure-sig img {
+  display: block;
+  width: 100%;
+  max-height: 148px;
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (max-width: 380px) {
+  #closureDetailSheet .sc-cd-cash {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Report completo — sintesi + sezioni */
+#closureDetailSheet .sheet-panel--closure-report .ig-sheet-body {
+  padding-bottom: 8px;
+}
+
+#closureDetailSheet .sc-cd-head__brand {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c7c7cc;
+}
+
+#closureDetailSheet .sc-cd-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin: 12px 0 4px;
+}
+
+#closureDetailSheet .sc-cd-summary__pill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 6px;
+  border-radius: 10px;
+  background: #fafafa;
+  border: 1px solid #efefef;
+  text-align: center;
+}
+
+#closureDetailSheet .sc-cd-summary__pill.is-ok {
+  background: rgba(16, 185, 129, 0.06);
+  border-color: rgba(16, 185, 129, 0.18);
+}
+
+#closureDetailSheet .sc-cd-summary__pill.is-warn {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+#closureDetailSheet .sc-cd-summary__k {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+#closureDetailSheet .sc-cd-summary__v {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #262626;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+#closureDetailSheet .sc-cd-cash--wide {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#closureDetailSheet .sc-cd-lead {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 650;
+  color: #262626;
+}
+
+#closureDetailSheet .sc-cd-footnote {
+  margin: 10px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: #8e8e93;
+  line-height: 1.4;
+}
+
+#closureDetailSheet .sc-cd-keys__badge.is-miss {
+  background: rgba(198, 40, 40, 0.06);
+  border-color: rgba(198, 40, 40, 0.2);
+  color: #c62828;
+}
+
+#closureDetailSheet .sc-cd-keys-dd {
+  margin-top: 12px;
+  border: 1px solid #efefef;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+#closureDetailSheet .sc-cd-keys-dd__sum {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #636366;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#closureDetailSheet .sc-cd-keys-dd__sum::-webkit-details-marker {
+  display: none;
+}
+
+#closureDetailSheet .sc-cd-keys-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0 8px 10px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+#closureDetailSheet .sc-cd-keys-grid__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #fafafa;
+  border: 1px solid #efefef;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+#closureDetailSheet .sc-cd-keys-grid__item.is-ok {
+  color: #059669;
+}
+
+#closureDetailSheet .sc-cd-keys-grid__item.is-miss {
+  color: #c62828;
+  background: rgba(198, 40, 40, 0.05);
+  border-color: rgba(198, 40, 40, 0.15);
+}
+
+#closureDetailSheet .sc-cd-keys-grid__rm {
+  font-variant-numeric: tabular-nums;
+}
+
+#closureDetailSheet .sc-cd-keys-grid__st {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+#closureDetailSheet .sc-closure-sig__cap {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+@media (max-width: 520px) {
+  #closureDetailSheet .sc-cd-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #closureDetailSheet .sc-cd-keys-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  #closureDetailSheet .sc-cd-cash--wide {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #closureDetailSheet .sc-cd-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #closureDetailSheet .sc-cd-keys-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Compact sections (come Verifica chiavi) + Report Excel dropdown
+   ========================================================================== */
+
+.workspace.is-shift-audit .sc-flat-page-head {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-compact-body[hidden] {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-compact-body:not([hidden]) {
+  display: block !important;
+  margin-top: 12px !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--compact .sc-keys-cta {
+  margin-top: 0 !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-submit {
+  margin-top: 12px !important;
+}
+
+/* Firma — layout IG minimale: pad + CTA, niente testo ammassato */
+.workspace.is-shift-audit .sc-flat-block--seal .sc-sign-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  margin-top: 14px !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-sign-panel[hidden] {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign {
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__meta {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__clear {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 3 !important;
+  appearance: none !important;
+  margin: 0 !important;
+  padding: 6px 10px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #8e8e93 !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__clear[hidden] {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__pad-wrap,
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__pad-wrap--apple {
+  min-height: 160px !important;
+  border-radius: 12px !important;
+  border: 1px solid #efefef !important;
+  background-color: #fafafa !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__pad {
+  min-height: 160px !important;
+  height: 160px !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-hand-sign__hint {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #c7c7cc !important;
+  letter-spacing: -0.01em !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-seal-footnote {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-submit {
+  width: 100% !important;
+  margin-top: 0 !important;
+  min-height: 44px !important;
+  border-radius: 12px !important;
+  background: #262626 !important;
+  border: 1px solid #262626 !important;
+  color: #fff !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  text-transform: none !important;
+}
+
+.workspace.is-shift-audit .sc-report-dd {
+  margin: 0 !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.workspace.is-shift-audit .sc-report-dd__summary {
+  list-style: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  min-height: 44px !important;
+  padding: 10px 12px !important;
+  cursor: pointer !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  color: #111 !important;
+  background: #f7f7f7 !important;
+  border: 0 !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+}
+
+.workspace.is-shift-audit .sc-report-dd__summary::-webkit-details-marker {
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-report-dd__chevron {
+  color: #666 !important;
+  font-size: 14px !important;
+}
+
+.workspace.is-shift-audit .sc-report-dd[open] .sc-report-dd__chevron {
+  transform: rotate(180deg);
+}
+
+.workspace.is-shift-audit .sc-report-dd__panel {
+  border-top: 1px solid #d0d0d0 !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  background: #fff !important;
+}
+
+/* Tabella report stile foglio Excel — poco CSS, niente colori fancy */
+.workspace.is-shift-audit .sc-report-excel {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: auto !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  color: #111 !important;
+  background: #fff !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel th,
+.workspace.is-shift-audit .sc-report-excel td {
+  border: 1px solid #cfcfcf !important;
+  padding: 6px 8px !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  background: #fff !important;
+  color: #111 !important;
+  font-weight: 400 !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel thead th {
+  background: #efefef !important;
+  font-weight: 700 !important;
+  color: #111 !important;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.workspace.is-shift-audit .sc-report-excel__num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel__empty {
+  white-space: normal !important;
+  color: #555 !important;
+  padding: 14px 10px !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel__dl {
+  text-align: right !important;
+  white-space: nowrap !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel__btn {
+  appearance: none !important;
+  display: inline-block !important;
+  margin: 0 0 0 4px !important;
+  padding: 3px 8px !important;
+  border: 1px solid #999 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  color: #111 !important;
+  font-family: inherit !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel__btn--ghost {
+  border-color: #ccc !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel__btn:active {
+  background: #f0f0f0 !important;
+}
+
+.workspace.is-shift-audit .sc-report-excel__row.is-mine td:first-child {
+  font-weight: 700 !important;
+}
+
+.workspace.is-shift-audit .sc-history-scroll,
+.workspace.is-shift-audit .sc-history-table {
+  display: none !important;
+}

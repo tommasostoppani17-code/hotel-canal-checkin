@@ -1,0 +1,578 @@
+/* ==========================================================================
+   Riva OS — Colazioni (foglio operativo, tabella staff)
+   Instagram geometry: hotel tabs HK + floating rounded table card
+   ========================================================================== */
+
+.workspace.is-ops-colazioni .ops-bf-shell,
+.workspace.is-ops-colazioni .ops-bf-page,
+.workspace.is-ops-colazioni .ops-bf-board {
+  background: #fafafa !important;
+}
+
+.workspace.is-ops-colazioni .ops-bf-page {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.workspace.is-ops-colazioni .ops-bf-board {
+  padding: 0;
+  overflow: visible;
+}
+
+.workspace.is-ops-colazioni .ops-bf-structures,
+.workspace.is-ops-colazioni .ops-bf-feed,
+.workspace.is-ops-colazioni .ops-bf-row {
+  display: none !important;
+}
+
+/* Toolbar slot = selettore hotel full-bleed (stesso di Housekeeping) */
+.workspace.is-ops.is-ops-colazioni #opsHkToolbarSlot {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 1 100%;
+  width: 100%;
+  margin-left: 0;
+  padding: 0;
+}
+
+.workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot,
+.workspace.is-ops.is-ops-colazioni #opsBfToolbarSlot {
+  display: none !important;
+}
+
+.workspace.is-ops.is-ops-colazioni .bf-structures-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+}
+
+.workspace.is-ops.is-ops-colazioni #opsHkToolbarSlot .bf-structures.ops-sec-tabs,
+.workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .bf-structures.ops-sec-tabs {
+  display: flex !important;
+  justify-content: safe center;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  padding: 0 8px;
+  background: #fff !important;
+  border: 0;
+  border-bottom: 1px solid #efefef !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  gap: 0;
+}
+
+.workspace.is-ops.is-ops-colazioni #opsHkToolbarSlot .bf-structures .ops-sec-tab,
+.workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .bf-structures .ops-sec-tab {
+  gap: 6px;
+}
+
+.bf-structures__n {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  font-weight: 650;
+  opacity: 0.55;
+  margin-left: 2px;
+}
+
+.ops-sec-tab.is-on .bf-structures__n {
+  opacity: 0.85;
+}
+
+.bf-structures__draft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 2px;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.ops-sec-tab.is-on .bf-structures__draft {
+  background: #0a0a0a;
+  box-shadow: inset 0 0 0 1.5px #fff;
+}
+
+.workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .ops-bf-stats {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 0;
+  padding: 3px 10px 5px;
+  line-height: 1;
+  white-space: nowrap;
+  background: #fafafa;
+  border-top: 1px solid #efefef;
+}
+
+.workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .ops-bf-stats__n {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #636366;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .ops-bf-stats__lbl {
+  display: none;
+}
+
+.bf-wrap {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 0 40px;
+  box-sizing: border-box;
+}
+
+/* Card fluttuante: stacca la griglia dalla toolbar */
+.bf-table-card {
+  margin: 1.5rem clamp(12px, 2.5vw, 20px) 1.25rem;
+  background: #ffffff;
+  border: 1px solid #efefef;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+/* Tabella */
+.bf-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.bf-table thead th {
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #86868b;
+  text-align: left;
+  background: #fff;
+  border-bottom: 1px solid #efefef;
+  white-space: nowrap;
+}
+
+.bf-table thead th:first-child {
+  padding-left: 18px;
+}
+
+.bf-table thead th:last-child {
+  padding-right: 18px;
+}
+
+.bf-table th.bf-th-pax,
+.bf-table th.bf-th-status,
+.bf-table td.bf-td-pax,
+.bf-table td.bf-td-status {
+  text-align: center;
+}
+
+.bf-table th.bf-th-room,
+.bf-table td.bf-td-room {
+  width: 42%;
+}
+
+.bf-table th.bf-th-pax,
+.bf-table td.bf-td-pax {
+  width: 24%;
+}
+
+.bf-table th.bf-th-status,
+.bf-table td.bf-td-status {
+  width: 34%;
+}
+
+.bf-table tbody tr {
+  background: #fff;
+  transition: background-color 150ms ease;
+}
+
+.bf-table tbody tr:hover {
+  background: rgba(10, 10, 10, 0.025);
+}
+
+.bf-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.bf-table tbody td {
+  padding: 0 12px;
+  height: 56px;
+  vertical-align: middle;
+  border-bottom: 1px solid #efefef;
+  color: #1d1d1f;
+  font-size: 13px;
+}
+
+.bf-table tbody td:first-child {
+  padding-left: 18px;
+}
+
+.bf-table tbody td:last-child {
+  padding-right: 18px;
+}
+
+.bf-table tbody tr.is-no td {
+  color: #8e8e93;
+}
+
+.bf-table tbody tr.is-unset {
+  background: #fafafa;
+}
+
+.bf-table tbody tr.is-unset:hover {
+  background: #f5f5f5;
+}
+
+.bf-room {
+  appearance: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  max-width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-room:active {
+  opacity: 0.65;
+}
+
+.bf-room__num {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+  line-height: 1.2;
+}
+
+.bf-table tr.is-no .bf-room__num {
+  color: #8e8e93;
+}
+
+.bf-room__hotel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8e8e93;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bf-room__hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a8a8a8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+/* Pax − N + */
+.bf-stepper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  vertical-align: middle;
+}
+
+.bf-stepper__btn {
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #efefef;
+  border-radius: 8px;
+  background: #fff;
+  color: #0a0a0a;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-stepper__btn:hover {
+  background: #f5f5f5;
+}
+
+.bf-stepper__btn:active {
+  background: #efefef;
+}
+
+.bf-stepper__val {
+  min-width: 36px;
+  padding: 0 4px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #0a0a0a;
+}
+
+/* Sì / No */
+.bf-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 3px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
+.bf-toggle__btn {
+  appearance: none;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  border-radius: 8px;
+  padding: 8px 16px;
+  min-height: 34px;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-toggle__btn.is-on {
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.bf-toggle__btn.is-on.is-no {
+  background: #6b7280;
+  color: #fff;
+}
+
+.bf-toggle__btn:focus-visible {
+  outline: 2px solid #0a0a0a;
+  outline-offset: 1px;
+}
+
+.bf-empty {
+  margin: 48px 16px;
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8e8e8e;
+}
+
+/* Compat soft-update / skeleton */
+.bf-rows {
+  display: contents;
+}
+
+.ig-grid-container {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.ig-stories-filter-bar {
+  display: none;
+}
+
+.ig-bf-empty {
+  margin: 48px 16px;
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8e8e8e;
+}
+
+/* Skeleton: card + cascade shimmer */
+.ops-skeleton-bf-wrap {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 0 40px;
+  box-sizing: border-box;
+}
+
+.ops-skeleton-bf-card {
+  margin: 1.5rem clamp(12px, 2.5vw, 20px) 1.25rem;
+  background: #fff;
+  border: 1px solid #efefef;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.ops-skeleton-bf-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.ops-skeleton-bf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 56px;
+  padding: 0 18px;
+  border-bottom: 1px solid #efefef;
+  background: #fff;
+}
+
+.ops-skeleton-bf-row:last-child {
+  border-bottom: 0;
+}
+
+.ops-skeleton-bf-row .skel-block {
+  position: relative;
+  overflow: hidden;
+  background: #f4f4f4;
+}
+
+@keyframes bfShimmerWave {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.ops-skeleton-bf-row .skel-block.skeleton-shimmer::after {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 20%,
+    rgba(255, 255, 255, 0.65) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: bfShimmerWave 1.6s infinite ease-in-out;
+  content: "";
+}
+
+@media (max-width: 640px) {
+  .bf-table-card,
+  .ops-skeleton-bf-card {
+    margin: 1.25rem 12px 1rem;
+    border-radius: 14px;
+  }
+
+  .bf-table th.bf-th-pax,
+  .bf-table th.bf-th-status {
+    font-size: 10px;
+  }
+
+  .bf-table tbody td {
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .bf-table thead th:first-child,
+  .bf-table tbody td:first-child,
+  .ops-skeleton-bf-row {
+    padding-left: 14px;
+  }
+
+  .bf-table thead th:last-child,
+  .bf-table tbody td:last-child {
+    padding-right: 14px;
+  }
+
+  .bf-room__hint {
+    max-width: 140px;
+  }
+
+  .bf-toggle__btn {
+    padding: 8px 12px;
+  }
+
+  .bf-stepper__btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .ops-bf-stats {
+    padding: 3px 10px 5px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Anti-flicker click (iOS / IG): layer GPU + press scale, zero flash
+   Selettori reali: .bf-stepper__btn (+/−), .bf-toggle__btn (Sì/No), tr[data-bf-row]
+   Alias protocollo (.pax-btn / .status-pill / .breakfast-row-premium) per compat.
+   ═══════════════════════════════════════════════════════════════ */
+.bf-table tbody tr[data-bf-row],
+.bf-stepper__btn,
+.bf-toggle__btn,
+.bf-toggle,
+.bf-stepper,
+.breakfast-row-premium,
+.pax-btn,
+.status-pill,
+.status-pill-box {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+.bf-table tbody tr[data-bf-row] {
+  contain: layout style;
+  content-visibility: auto;
+}
+
+.bf-stepper__btn,
+.bf-toggle__btn,
+.pax-btn,
+.status-pill {
+  transition: transform 80ms ease-out, background-color 80ms ease-out, color 80ms ease-out;
+}
+
+.bf-stepper__btn:active,
+.bf-toggle__btn:active,
+.pax-btn:active,
+.status-pill:active {
+  transform: scale(0.96) translateZ(0) !important;
+}
+
+/* Nessun fade-in sulle righe già montate (solo skeleton iniziale) */
+.bf-rows .fade-in-premium,
+.bf-table tbody tr.fade-in-premium {
+  animation: none !important;
+}

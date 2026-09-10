@@ -1,0 +1,566 @@
+/* Riva OS — Instagram Pure Minimal (override finale su classi reali) */
+:root {
+  --ig-black: #000;
+  --ig-white: #fff;
+  --ig-bg: #fafafa;
+  --ig-border: #f1f1f1;
+  --ig-muted: #737373;
+  --ig-muted-2: #a1a1aa;
+  --ig-green-bg: #0d2818;
+  --ig-green-mid: #113820;
+  --ig-green-glow: #10b981;
+}
+
+/* —— 1. Rack Prenotazioni —— */
+.holds-panel .rack-frame,
+.rack-frame {
+  --rack-grid-bg: #f5f5f5 !important;
+  --rack-grid-line: rgba(0, 0, 0, 0.045) !important;
+  --rack-row-h: 44px;
+  --rack-hk-ready: var(--ig-green-glow);
+}
+
+.holds-panel .rack-toolbar-actions,
+.rack-toolbar-actions {
+  max-width: 420px !important;
+  width: auto !important;
+  margin-left: auto !important;
+  gap: 6px !important;
+  justify-content: flex-end !important;
+}
+
+.holds-panel .rack-toolbar-btn,
+.rack-toolbar-btn {
+  flex: 0 0 auto !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
+
+/* iPad landscape: non allargare Vendi/Modifica/Compatta a tutta larghezza */
+@media (min-width: 900px) {
+  .holds-panel .rack-toolbar-actions {
+    width: auto !important;
+    max-width: 420px !important;
+  }
+
+  .holds-panel .rack-toolbar-actions .rack-toolbar-btn {
+    flex: 0 0 auto !important;
+  }
+}
+
+.holds-panel .rack-day,
+.rack-day,
+.holds-panel .rack-cell,
+.rack-cell {
+  border-right-color: rgba(0, 0, 0, 0.035) !important;
+}
+
+.holds-panel .rack-bar,
+.rack-bar {
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.015em !important;
+  gap: 5px !important;
+  padding: 0 8px 0 2px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  /* Niente transition su transform: durante lo scroll costa frame su iPad */
+  transition:
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease,
+    filter 0.15s ease;
+}
+
+.holds-panel .rack-bar-channel,
+.rack-bar-channel {
+  gap: 0;
+  margin-left: 4px !important;
+  margin-right: 6px !important;
+}
+
+.holds-panel .rack-bar-label,
+.rack-bar-label {
+  gap: 2px !important;
+  font-size: inherit;
+}
+
+/* Camera pronta = verde foresta IG luxury */
+.holds-panel .rack-bar.is-hk-pronta,
+.rack-bar.is-hk-pronta {
+  background: linear-gradient(135deg, var(--ig-green-bg) 0%, var(--ig-green-mid) 100%) !important;
+  border: 1px solid var(--ig-green-glow) !important;
+  color: #ecfdf5 !important;
+  box-shadow:
+    0 0 12px rgba(16, 185, 129, 0.14),
+    0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+.holds-panel .rack-bar.is-hk-pronta:hover,
+.holds-panel .rack-bar.is-hk-pronta.is-on,
+.rack-bar.is-hk-pronta:hover,
+.rack-bar.is-hk-pronta.is-on {
+  filter: brightness(1.06);
+  box-shadow:
+    0 0 16px rgba(16, 185, 129, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.14) !important;
+}
+
+.holds-panel .rack-room-label.is-hk-pronta,
+.rack-room-label.is-hk-pronta {
+  box-shadow: inset 3px 0 0 var(--ig-green-glow) !important;
+}
+
+/* —— 2. Housekeeping densità —— */
+.ops-rooms-grid {
+  --ops-tile-min: 118px !important;
+  gap: 8px !important;
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ops-room {
+  min-height: 88px !important;
+  padding: 10px 8px 8px !important;
+  border-radius: 10px !important;
+  border-color: var(--ig-border) !important;
+  gap: 4px !important;
+}
+
+.ops-room__num {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+}
+
+.ops-room__status {
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase;
+}
+
+.ops-stats-line {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ig-muted) !important;
+  gap: 10px 14px !important;
+  justify-content: center !important;
+}
+
+.ops-stats-line strong {
+  color: var(--ig-black) !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+}
+
+/* HK: microbarra sotto i tab — testo piccolo, non badge grandi */
+.workspace.is-ops-rooms .ops-stats-line {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  gap: 4px 6px !important;
+  color: #8e8e93 !important;
+}
+
+.workspace.is-ops-rooms .ops-stats-line strong {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #636366 !important;
+}
+
+/* Semaforo → micro badge orizzontale */
+.ops-semaforo {
+  flex-direction: row !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 4px 7px !important;
+  gap: 4px !important;
+  border-radius: 999px !important;
+  background: #f4f4f5 !important;
+  border-color: transparent !important;
+}
+
+.ops-semaforo__lamp {
+  width: 7px !important;
+  height: 7px !important;
+}
+
+/* —— 3. Colazioni: stories + densità riga —— */
+.ops-bf-structures {
+  gap: 8px !important;
+  padding: 10px 16px !important;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom-color: var(--ig-border) !important;
+}
+
+.ops-bf-structure {
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+  background: #f4f4f5 !important;
+  border: 1px solid var(--ig-border) !important;
+  color: var(--ig-muted) !important;
+}
+
+.ops-bf-structure.is-on {
+  background: var(--ig-black) !important;
+  border-color: var(--ig-black) !important;
+  color: var(--ig-white) !important;
+}
+
+.ops-bf-filters {
+  background: transparent !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.ops-bf-filter {
+  border-radius: 999px !important;
+  background: #f4f4f5 !important;
+  color: var(--ig-muted) !important;
+  padding: 6px 12px !important;
+  min-height: 32px !important;
+  height: auto !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+.ops-bf-filter.is-on {
+  background: var(--ig-black) !important;
+  color: var(--ig-white) !important;
+}
+
+.ops-bf-shell,
+.ops-bf-page,
+.ops-bf-feed {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.ops-bf-row {
+  gap: 10px !important;
+  padding: 8px 12px !important;
+  align-items: center !important;
+}
+
+.ops-bf-row__main {
+  gap: 10px !important;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ops-bf-row__side {
+  gap: 10px !important;
+  flex-shrink: 0;
+  margin-left: 0 !important;
+}
+
+.ops-bf-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 11px !important;
+}
+
+.ops-bf-row__title {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.ops-bf-row__meta,
+.ops-bf-row__hotel {
+  font-size: 11px !important;
+}
+
+.ops-bf-switch {
+  width: 42px !important;
+  height: 24px !important;
+}
+
+.ops-bf-switch__knob {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* —— 4. Impostazioni Bonifico — input underline + CTA compatta —— */
+#holdsIbanSettings .settings-pane-body,
+.settings-pane[data-settings-pane="iban"] .settings-pane-body {
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+#holdsIbanSettings .sys-settings-fields,
+.settings-pane[data-settings-pane="iban"] .sys-settings-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 420px;
+}
+
+#holdsIbanSettings .sys-field,
+.settings-pane[data-settings-pane="iban"] .sys-field {
+  display: block;
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--ig-border);
+  background: transparent;
+  border-radius: 0;
+}
+
+#holdsIbanSettings .sys-field:focus-within,
+.settings-pane[data-settings-pane="iban"] .sys-field:focus-within {
+  border-bottom-color: var(--ig-black);
+}
+
+#holdsIbanSettings .sys-field__label,
+.settings-pane[data-settings-pane="iban"] .sys-field__label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ig-muted-2);
+}
+
+#holdsIbanSettings .sys-settings-input,
+.settings-pane[data-settings-pane="iban"] .sys-settings-input {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  padding: 4px 0 10px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 15px !important;
+  font-weight: 550;
+  color: var(--ig-black);
+  outline: none;
+}
+
+#holdsIbanSettings .sys-settings-input:focus,
+.settings-pane[data-settings-pane="iban"] .sys-settings-input:focus {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+#holdsIbanSettings #btnSaveIban,
+.settings-pane[data-settings-pane="iban"] #btnSaveIban {
+  width: auto !important;
+  min-width: 160px;
+  max-width: 200px;
+  height: 40px !important;
+  min-height: 40px !important;
+  margin: 8px auto 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border-radius: 8px !important;
+  background: var(--ig-black) !important;
+  color: var(--ig-white) !important;
+  border: 0 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 0 20px !important;
+}
+
+/* Settings panes — anti-sfilacciamento */
+.workspace.is-settings-page .settings-pane-body--stack,
+.workspace.is-settings .settings-pane-body--stack {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Pane IG (Hotel / Personale / Sicurezza): box interni, non card unica */
+.settings-pane-body--stack.settings-hotel,
+.settings-pane-body--stack.settings-staff,
+.settings-pane-body--stack.settings-security {
+  max-width: none;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+@media (min-width: 600px) and (max-width: 1380px) {
+  .workspace.is-settings-page .settings-pane-body--stack,
+  .workspace.is-settings .settings-pane-body--stack {
+    max-width: min(720px, 100%);
+  }
+
+  .settings-pane-body--stack.settings-hotel,
+  .settings-pane-body--stack.settings-staff,
+  .settings-pane-body--stack.settings-security {
+    max-width: min(720px, 100%);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) and (orientation: portrait) {
+  .workspace.is-settings-page .settings-pane-body--stack,
+  .workspace.is-settings .settings-pane-body--stack {
+    max-width: min(680px, calc(100% - 8px));
+  }
+}
+
+@media (max-width: 900px) {
+  .ops-rooms-grid {
+    --ops-tile-min: 104px !important;
+  }
+
+  .ops-bf-row {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+/* —— Sidebar IG (desktop): stacca dal rack bianco —— */
+@media (min-width: 1381px) {
+  body.is-dashboard .dash-sidebar,
+  .dash-sidebar {
+    background: #fafafa !important;
+    background-image: none !important;
+    color: #262626 !important;
+    border-right: 1px solid #efefef !important;
+    box-shadow: inset -1px 0 0 0 #efefef;
+  }
+
+  body.is-dashboard .dash-sidebar .dash-brand-name,
+  body.is-dashboard .dash-sidebar .riva-wordmark,
+  .dash-sidebar .dash-brand-sub,
+  .dash-sidebar .dash-nav-section-label {
+    color: #8e8e8e !important;
+  }
+
+  .dash-sidebar .dash-brand-name,
+  .dash-sidebar .riva-wordmark__text {
+    color: #262626 !important;
+  }
+
+  .dash-sidebar .dash-sidebar-top,
+  .dash-sidebar .dash-nav-secondary {
+    border-color: #efefef !important;
+  }
+
+  .dash-sidebar .dash-nav-item {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    border-radius: 0 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #262626 !important;
+    transition: background-color 0.1s ease !important;
+  }
+
+  .dash-sidebar .btn-logout {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .dash-sidebar .dash-nav-item:hover {
+    background: #f0f0f0 !important;
+    color: #262626 !important;
+  }
+
+  .dash-sidebar .dash-nav-item.is-on {
+    background: #f0f0f0 !important;
+    font-weight: 700 !important;
+    color: #262626 !important;
+    box-shadow: none !important;
+  }
+
+  .dash-sidebar .dash-nav-item .dash-nav-icon,
+  .dash-sidebar .dash-nav-item .dash-nav-icon svg {
+    color: #262626 !important;
+    stroke: currentColor;
+  }
+
+  .dash-sidebar .dash-nav-item.is-on .dash-nav-badge {
+    background: #262626 !important;
+    color: #fff !important;
+  }
+
+  .dash-sidebar .btn-logout {
+    color: #262626 !important;
+    border-color: #efefef !important;
+  }
+
+  .dash-sidebar .dash-staff-user {
+    color: #8e8e8e !important;
+  }
+}
+
+/* —— Action sheet / orb: Slide & Blur iOS —— */
+#rowMenuBackdrop.row-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 229;
+  background-color: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition:
+    background-color 0.25s cubic-bezier(0.1, 0.76, 0.55, 0.94),
+    backdrop-filter 0.25s cubic-bezier(0.1, 0.76, 0.55, 0.94),
+    -webkit-backdrop-filter 0.25s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+  pointer-events: none;
+  opacity: 1;
+}
+
+#rowMenuBackdrop.row-menu-backdrop.is-visible {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  pointer-events: auto;
+}
+
+/* Hold/rack: niente velo — il planner resta leggibile sotto */
+#rowMenuBackdrop.row-menu-backdrop.is-visible.is-orb-mode {
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Orb desktop: emerge con scale (sheet phone usa già igSheetIn in staff.html) */
+@media (min-width: 768px) {
+  #rowMenu.row-menu--hold.row-menu--orb:not(.is-bottom-sheet) {
+    will-change: transform, opacity;
+    transform: translate3d(0, 12px, 0) scale(0.96);
+    opacity: 0;
+    transition:
+      transform 0.22s cubic-bezier(0.1, 0.76, 0.55, 0.94),
+      opacity 0.18s ease;
+  }
+
+  #rowMenu.row-menu--hold.row-menu--orb:not(.is-bottom-sheet).is-opening {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+
+  #rowMenu.row-menu--hold.row-menu--orb:not(.is-bottom-sheet).is-closing {
+    transform: translate3d(0, 8px, 0) scale(0.98);
+    opacity: 0;
+  }
+}
+

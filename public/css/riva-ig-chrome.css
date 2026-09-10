@@ -1,0 +1,799 @@
+/**
+ * Riva OS — Chrome unificato stile Instagram
+ * Tier 1: .dash-topbar = sempre Riva + notifiche (mai titoli sezione)
+ * Tier 2: .ig-subbar = solo azioni / filtri contestuali (niente titoli)
+ */
+
+:root {
+  --ig-chrome-pad-x: clamp(16px, 2.5vw, 24px);
+  --ig-chrome-pad-y: 10px;
+  --ig-chrome-row-gap: 8px;
+  --ig-chrome-border: #dbdbdb;
+  --ig-chrome-bg: #ffffff;
+  --ig-chrome-wash: #fafafa;
+  --ig-chrome-shadow: 0 1px 0 #dbdbdb, 0 4px 14px rgba(0, 0, 0, 0.06);
+  --ig-tab-h: 48px;
+  /* Altezza fissa uguale per tutte le barre sezione */
+  --riva-section-bar-h: 48px;
+  --ig-seg-bar-h: 48px;
+  --ig-seg-btn-h: 36px;
+}
+
+/* ── Tier 1: topbar brand — superficie elevata sopra il contenuto ── */
+.dash-topbar {
+  position: relative !important;
+  z-index: 40 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box !important;
+  min-height: calc(52px + env(safe-area-inset-top, 0px));
+  /* Keep lateral pad; never zero safe-area top (PWA standalone / notch) */
+  padding:
+    env(safe-area-inset-top, 0px)
+    var(--ig-chrome-pad-x)
+    0 !important;
+  background: var(--ig-chrome-bg) !important;
+  border-bottom: 1px solid var(--ig-chrome-border) !important;
+  box-shadow: none !important;
+}
+
+.dash-topbar .dash-topbar-titles,
+.dash-topbar .m-brand-title,
+.ig-subbar-title {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Riva al centro topbar — dettaglio in riva-staff-topbar.css */
+.dash-topbar-head {
+  position: static !important;
+}
+
+.dash-topbar .m-brand-bar {
+  position: absolute !important;
+  left: 50% !important;
+  top: calc(50% + env(safe-area-inset-top, 0px) / 2) !important;
+  transform: translate(-50%, -50%) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dash-topbar .m-brand-kicker,
+.dash-topbar .riva-wordmark__text {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.dash-topbar-actions {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  flex: 0 0 auto !important;
+  max-width: none !important;
+  min-height: 40px;
+  margin-left: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.dash-topbar-actions > :not(.notify-wrap) {
+  display: none !important;
+}
+
+/* ── Tier 2: subbar — stessa superficie bianca, ombra che “stacca” dal body ── */
+.ig-subbar,
+.workspace-toolbar,
+.notes-toolbar-inline,
+.blacklist-toolbar-inline,
+.ops-toolbar,
+.rack-sticky-header {
+  position: relative !important;
+  z-index: 30 !important;
+  background: var(--ig-chrome-bg) !important;
+  border-bottom: 1px solid var(--ig-chrome-border) !important;
+  box-shadow: var(--ig-chrome-shadow) !important;
+}
+
+/* Sotto il chrome: wash grigio (il bianco della top bar si legge subito) */
+body.is-dashboard .workspace-body,
+body.is-dashboard .workspace-body.content-card,
+body.is-dashboard .table-panel,
+body.is-dashboard .holds-panel,
+body.is-dashboard .notes-panel,
+body.is-dashboard .blacklist-panel,
+body.is-dashboard .ops-panel,
+body.is-dashboard .settings-scroll,
+body.is-dashboard .alloggiati-panel {
+  background: var(--ig-chrome-wash) !important;
+}
+
+/* Pannelli lista/tabella: card bianca dentro il wash */
+body.is-dashboard .table-scroll,
+body.is-dashboard .notes-scroll,
+body.is-dashboard .blacklist-scroll,
+body.is-dashboard .clients-matrix .table-scroll {
+  background: #ffffff !important;
+}
+
+.workspace-toolbar,
+.notes-toolbar-inline,
+.blacklist-toolbar-inline,
+.ops-toolbar {
+  padding: var(--ig-chrome-pad-y) var(--ig-chrome-pad-x) !important;
+  box-sizing: border-box;
+}
+
+.ig-subbar-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+.ig-subbar-head:has(.ig-subbar-actions > :not(.hidden):not([hidden])) {
+  margin-bottom: 8px;
+  min-height: var(--ig-seg-bar-h, 44px);
+}
+
+/* Niente riga azioni vuota (HK / Colazioni / Chiusura turno / Impostazioni / Clienti / Richieste) */
+.workspace.is-clients .ig-subbar-head,
+.workspace.is-requests .ig-subbar-head,
+.workspace.is-ops-rooms .ig-subbar-head,
+.workspace.is-ops-colazioni .ig-subbar-head,
+.workspace.is-shift-audit .ig-subbar-head,
+.workspace.is-settings-page .ig-subbar-head,
+.workspace.is-more .ig-subbar-head,
+.ig-subbar-head:not(:has(.ig-subbar-actions > :not(.hidden):not([hidden]))) {
+  display: none !important;
+}
+
+/* Clienti: una sola riga filtri + ricerca + */
+.workspace.is-clients .workspace-toolbar {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.workspace.is-clients .dash-toolbar {
+  width: 100%;
+}
+
+.ig-subbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  max-width: 100%;
+  width: 100%;
+}
+
+.workspace.is-holds .ig-subbar-actions {
+  justify-content: stretch;
+}
+
+.workspace.is-requests .ig-subbar-actions,
+.workspace.is-clients .ig-subbar-actions {
+  justify-content: flex-start;
+}
+
+.ig-subbar-actions .btn-action {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.ig-subbar-actions .btn-action.hidden,
+.ig-subbar-actions .holds-top-actions.hidden,
+.ig-subbar-actions .holds-top-actions[hidden] {
+  display: none !important;
+}
+
+.workspace.is-holds .workspace-toolbar,
+.workspace.is-alloggiati .workspace-toolbar {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.workspace.is-holds .toolbar-field--period,
+.workspace.is-holds .toolbar-field--search,
+.workspace.is-holds .dash-toolbar {
+  display: none !important;
+}
+
+.workspace.is-alloggiati .dash-toolbar {
+  display: flex !important;
+}
+
+.workspace-toolbar .dash-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ig-chrome-row-gap);
+  width: 100%;
+}
+
+.toolbar-label {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.toolbar-field--search {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.toolbar-field--period {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Clienti: tasti a sx (zona che cresce), ricerca compatta a destra — come skeleton */
+.workspace.is-clients .toolbar-field--period {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.workspace.is-clients .toolbar-field--search {
+  flex: 0 1 240px;
+  max-width: 280px;
+  min-width: 140px;
+  margin-left: auto;
+}
+
+.workspace.is-clients .dash-toolbar,
+.workspace.is-clients .workspace-toolbar .dash-toolbar {
+  flex-wrap: nowrap;
+}
+
+.toolbar-field--hk {
+  flex: 1 1 100%;
+  min-width: 0;
+  display: none;
+}
+
+/* Housekeeping + Colazioni: stessa barra slot (#opsHkToolbarSlot) */
+.workspace.is-ops-rooms .toolbar-field--hk,
+body.hk-app #opsHkToolbarSlot.toolbar-field--hk,
+.workspace.is-ops-colazioni .toolbar-field--hk,
+.workspace.is-ops-colazioni #opsHkToolbarSlot {
+  display: flex !important;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff;
+}
+
+.workspace.is-ops-rooms .toolbar-field--period,
+.workspace.is-ops-rooms .toolbar-field--search,
+.workspace.is-ops-rooms .ops-bf-toolbar-slot,
+.workspace.is-ops-rooms .ig-subbar-actions .btn-action,
+.workspace.is-ops-colazioni .ops-bf-toolbar-slot,
+.workspace.is-ops-colazioni #opsBfToolbarSlot {
+  display: none !important;
+}
+
+.workspace.is-ops-rooms .workspace-toolbar,
+.workspace.is-ops-colazioni .workspace-toolbar {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.workspace.is-ops-rooms .dash-toolbar,
+.workspace.is-ops-colazioni .dash-toolbar {
+  display: flex !important;
+  justify-content: center;
+  width: 100%;
+}
+
+.ig-subbar-tabs-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--riva-section-bar-h, 48px);
+  height: var(--riva-section-bar-h, 48px);
+  box-sizing: border-box;
+}
+
+/* Housekeeping + Colazioni: stessa barra (tabs underline + microstats sotto) */
+.workspace.is-ops-rooms .ig-subbar-tabs-inner,
+.workspace.is-ops-colazioni .ig-subbar-tabs-inner,
+body.hk-app .ig-subbar-tabs-inner {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  background: #fff !important;
+}
+
+.workspace.is-ops-rooms .ig-subbar-tabs-inner .ops-sec-tabs,
+.workspace.is-ops-colazioni .ig-subbar-tabs-inner .ops-sec-tabs,
+body.hk-app .ig-subbar-tabs-inner .ops-sec-tabs {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  justify-content: safe center !important;
+  border-bottom: 1px solid var(--ig-chrome-border, #efefef) !important;
+  background: #fff !important;
+  padding: 0 8px !important;
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  height: var(--riva-section-bar-h, 48px) !important;
+}
+
+.workspace.is-ops-rooms .ig-subbar-tabs-inner .ops-stats-line,
+.workspace.is-ops-colazioni .ig-subbar-tabs-inner .ops-stats-line,
+body.hk-app .ig-subbar-tabs-inner .ops-stats-line {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px 6px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 3px 10px 5px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  border-top: 1px solid #efefef;
+  background: #fafafa;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+  color: #8e8e93 !important;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.workspace.is-ops-rooms .ig-subbar-tabs-inner .ops-stats-line strong,
+.workspace.is-ops-colazioni .ig-subbar-tabs-inner .ops-stats-line strong,
+body.hk-app .ig-subbar-tabs-inner .ops-stats-line strong {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #636366 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.workspace.is-ops-rooms .ig-subbar-tabs-inner .ops-stats-dot,
+.workspace.is-ops-colazioni .ig-subbar-tabs-inner .ops-stats-dot,
+body.hk-app .ig-subbar-tabs-inner .ops-stats-dot {
+  color: #c7c7cc;
+  font-weight: 400;
+}
+
+.ig-subbar-tabs-inner .ops-sec-tabs {
+  margin: 0 !important;
+  width: auto !important;
+  max-width: 100% !important;
+  justify-content: center !important;
+  border-bottom: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  height: var(--riva-section-bar-h, 48px) !important;
+}
+
+.ig-subbar-tabs-inner .ops-sec-tab {
+  flex: 0 0 auto;
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  height: var(--riva-section-bar-h, 48px) !important;
+}
+
+.ig-subbar-tabs-inner .ops-stats-line {
+  margin: 0;
+  padding: 0 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ig-text-secondary, #8e8e8e);
+  text-align: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Colazioni: stessa barra sezioni di Housekeeping (niente slot legacy) */
+.workspace.is-ops-colazioni .toolbar-field--period,
+.workspace.is-ops-colazioni .toolbar-field--search,
+.workspace.is-ops-colazioni .ig-subbar-head {
+  display: none !important;
+}
+
+/* Chiusura turno: niente toolbar vuota */
+.workspace.is-shift-audit .workspace-toolbar {
+  display: none !important;
+}
+
+/* Richieste: capsule + layout → /css/riva-capsule-toolbars.css (gemello Clienti) */
+
+/* Feed (Note / Segnalazioni): due righe = un blocco unico */
+.workspace.is-feed:not(.is-holds) .workspace-toolbar {
+  border-bottom: 0 !important;
+  padding-bottom: 8px !important;
+}
+
+.workspace.is-feed:not(.is-holds) .notes-toolbar-inline,
+.workspace.is-feed:not(.is-holds) .blacklist-toolbar-inline {
+  border-top: 0 !important;
+  padding-top: 0 !important;
+  margin-top: -2px;
+}
+
+/* Tab underline unificati (HK, rack view, ecc.) */
+.ops-sec-tabs,
+.ig-tabs-underline {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  padding: 0 8px;
+  background: var(--ig-chrome-bg);
+  border-bottom: 1px solid var(--ig-chrome-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.ops-sec-tab,
+.ig-tab {
+  appearance: none;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ig-tab-h);
+  padding: 0 16px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--ig-text-secondary, #8e8e8e);
+  font-family: var(--ig-font, "Montserrat", sans-serif);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.ops-sec-tab.is-on,
+.ig-tab.is-on {
+  color: var(--ig-text, #262626) !important;
+  font-weight: 700 !important;
+  border-bottom-color: var(--ig-text, #262626) !important;
+  -webkit-text-fill-color: var(--ig-text, #262626) !important;
+}
+
+/* Segmented pill unificati */
+.notes-kind-filters,
+.date-segment,
+.rack-view-modes,
+.ops-bf-filters,
+.notes-kind-filters,
+.ig-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--ig-bg-tertiary, #f2f2f7) !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+}
+
+.notes-filter-pill,
+.date-pill,
+.rack-view-btn,
+.ops-bf-filter,
+.ig-seg-btn {
+  min-height: 36px !important;
+  padding: 0 14px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  font-family: var(--ig-font, "Montserrat", sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ig-text-secondary, #8e8e8e) !important;
+  touch-action: manipulation;
+}
+
+.notes-filter-pill.is-on,
+.date-pill.is-on,
+.rack-view-btn.is-on,
+.ops-bf-filter.is-on,
+.ig-seg-btn.is-on {
+  background: var(--ig-text, #262626) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.notes-done-toggle {
+  min-height: 36px;
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ig-bg-tertiary, #f2f2f7);
+  font-family: var(--ig-font, "Montserrat", sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ig-text-secondary);
+  touch-action: manipulation;
+}
+
+.notes-done-toggle[aria-pressed="true"],
+.notes-done-toggle.is-on {
+  background: var(--ig-text, #262626);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Rack: stesso padding subbar */
+.rack-sticky-header > .rack-toolbar-actions,
+.rack-chrome-top {
+  padding-left: var(--ig-chrome-pad-x) !important;
+  padding-right: var(--ig-chrome-pad-x) !important;
+}
+
+.rack-toolbar-period {
+  gap: 6px;
+}
+
+.rack-nav-btn,
+.rack-view-btn,
+.rack-toolbar-btn {
+  min-height: 36px !important;
+  touch-action: manipulation;
+}
+
+/* HK: griglia touch-friendly */
+.ops-rooms-pager {
+  touch-action: pan-x !important;
+}
+
+.ops-rooms-page {
+  touch-action: pan-y !important;
+}
+
+.ops-room__body,
+.ops-semaforo:not(.ops-semaforo--blocked) {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  touch-action: manipulation !important;
+}
+
+.ops-room__body:active,
+.ops-semaforo:active:not(.ops-semaforo--blocked) {
+  opacity: 0.72;
+}
+
+/* HK senza toolbar duplicata nel pannello */
+.workspace.is-ops-rooms .ops-rooms-shell > .ops-toolbar,
+body.hk-app .ops-rooms-shell > .ops-toolbar {
+  display: none !important;
+}
+
+.workspace.is-ops-rooms .ops-rooms-content,
+body.hk-app .ops-rooms-content {
+  padding-top: 4px;
+}
+
+/* Ops sheet: pannello sempre sopra backdrop scuro */
+#opsIgSheet .sheet-panel--ops {
+  background: #fff !important;
+  color: #262626 !important;
+}
+
+#opsIgSheet .ops-bf-sheet-card {
+  background: #fff !important;
+  border: 1px solid #efefef !important;
+}
+
+#opsIgSheet .ops-bf-sheet-card--muted {
+  background: #fafafa !important;
+}
+
+#opsIgSheet .ops-bf-choice__btn {
+  min-height: 48px !important;
+  background: #f2f2f7 !important;
+  color: #8e8e8e !important;
+  border: 1px solid #efefef !important;
+  border-radius: 12px !important;
+}
+
+#opsIgSheet .ops-bf-choice__btn.is-on {
+  background: #0a0a0a !important;
+  border-color: #0a0a0a !important;
+  color: #fff !important;
+}
+
+#opsIgSheet .btn-primary {
+  min-height: 48px !important;
+}
+
+@media (max-width: 720px) {
+  .ig-subbar-actions .btn-label-full {
+    display: none;
+  }
+
+  .ig-subbar-actions .btn-label-compact {
+    display: inline;
+  }
+
+  .ig-subbar-tabs-inner .ops-sec-tabs {
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Stats: microbarra sotto i tab (HK + Colazioni) */
+  .workspace.is-ops-rooms .ig-subbar-tabs-inner .ops-stats-line,
+  .workspace.is-ops-colazioni .ig-subbar-tabs-inner .ops-stats-line {
+    display: flex !important;
+  }
+
+  .workspace:not(.is-ops-rooms):not(.is-ops-colazioni) .ig-subbar-tabs-inner .ops-stats-line {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Barre sezione — ALTEZZA IDENTICA (Clienti / Prenotazioni / Report / HK / Alloggiati)
+   ═══════════════════════════════════════════════ */
+.workspace.is-holds .workspace-toolbar.ig-subbar,
+.workspace.is-clients .workspace-toolbar.ig-subbar,
+.workspace.is-alloggiati .workspace-toolbar.ig-subbar,
+.workspace.is-requests .workspace-toolbar.ig-subbar,
+.workspace.is-feed .workspace-toolbar.ig-subbar {
+  height: var(--riva-section-bar-h, 48px) !important;
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  max-height: var(--riva-section-bar-h, 48px) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+/* HK Camere + Colazioni: barra tab + microbarra sotto — non clippare */
+.workspace.is-ops-rooms .workspace-toolbar.ig-subbar,
+.workspace.is-ops-colazioni .workspace-toolbar.ig-subbar {
+  height: auto !important;
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  max-height: none !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: stretch !important;
+  overflow: visible !important;
+}
+
+.workspace.is-ops-rooms .dash-toolbar,
+.workspace.is-ops-colazioni .dash-toolbar {
+  height: auto !important;
+  min-height: 0 !important;
+  align-items: stretch !important;
+}
+
+.workspace.is-ops-rooms .ops-hk-toolbar-slot,
+.workspace.is-ops-rooms #opsHkToolbarSlot,
+.workspace.is-ops-colazioni .ops-hk-toolbar-slot,
+.workspace.is-ops-colazioni #opsHkToolbarSlot {
+  width: 100% !important;
+  flex: 1 1 auto !important;
+}
+
+/* Prenotazioni: i tasti devono stare tutti — niente clip a 48px */
+.workspace.is-holds .workspace-toolbar.ig-subbar {
+  height: auto !important;
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.workspace.is-holds .ig-subbar-head,
+.workspace.is-clients .dash-toolbar,
+.workspace.is-alloggiati .dash-toolbar,
+.workspace.is-ops-rooms .dash-toolbar,
+.workspace.is-ops-colazioni .dash-toolbar {
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  align-items: center !important;
+}
+
+.workspace.is-holds .ig-subbar-head {
+  height: auto !important;
+  min-height: var(--ig-seg-bar-h, 44px) !important;
+  align-items: center !important;
+}
+
+.workspace.is-holds .holds-top-actions {
+  height: var(--riva-cap-h, 36px) !important;
+  min-height: var(--riva-cap-h, 36px) !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  row-gap: 0;
+}
+
+.workspace.is-shift-audit .sc-shift-bar {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border: none !important;
+}
+
+.workspace.is-shift-audit .sc-shift-bar__btn {
+  display: none !important;
+}
+
+.ops-sec-tabs {
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  height: var(--riva-section-bar-h, 48px) !important;
+  box-sizing: border-box !important;
+}
+
+.ops-sec-tab {
+  min-height: var(--riva-section-bar-h, 48px) !important;
+  height: var(--riva-section-bar-h, 48px) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.date-segment,
+.alloggiati-filters {
+  min-height: var(--ig-seg-btn-h, 36px) !important;
+  height: var(--ig-seg-btn-h, 36px) !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+}

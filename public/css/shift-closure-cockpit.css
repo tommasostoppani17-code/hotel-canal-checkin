@@ -1,0 +1,2580 @@
+/**
+ * Chiusura turno — cockpit Riva OS (ISOLATO)
+ * Tutte le regole vivono SOLO sotto .workspace.is-shift-audit
+ * Non toccare Clienti / HK / Colazioni / Prenotazioni.
+ */
+
+.workspace.is-shift-audit .workspace-toolbar{
+  display: none !important;
+}
+
+/* Mai !important senza :not(.hidden) — altrimenti la Chiusura turno resta visibile su tutte le view */
+.workspace.is-shift-audit .shift-audit-panel.hidden, .shift-audit-panel.hidden, .workspace.is-shift-audit .shift-audit-panel[hidden], .shift-audit-panel[hidden]{
+  display: none !important;
+}
+
+.workspace.is-shift-audit .shift-audit-panel:not(.hidden):not([hidden]){
+  display: flex !important;
+  flex-direction: column;
+  min-height: 0;
+  background: #fafafa !important;
+}
+
+.workspace.is-shift-audit .sc-shift-bar{
+  display: none !important;
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  overflow: hidden;
+}
+
+.workspace.is-shift-audit .sc-shift-bar__btn{
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-scroll{
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 16px clamp(16px, 3vw, 32px) calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+.workspace.is-shift-audit .sc-cockpit{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
+.workspace.is-shift-audit .sc-card{
+  border: 1px solid #efefef;
+  border-radius: 16px;
+  background: #fff;
+  padding: 18px 18px 16px;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-card.is-skeleton .sc-skel-block{
+  display: block;
+}
+
+.workspace.is-shift-audit .sc-card__head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.workspace.is-shift-audit .sc-card__eyebrow{
+  display: block;
+  margin: 0 0 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-card__title{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #0a0a0a;
+  line-height: 1.25;
+  text-transform: none;
+}
+
+.workspace.is-shift-audit .sc-card__meta{
+  font-size: 12px;
+  font-weight: 600;
+  color: #636366;
+  white-space: nowrap;
+  padding-top: 4px;
+}
+
+.workspace.is-shift-audit .sc-link-btn{
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #262626;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.workspace.is-shift-audit .sc-link-btn:active{
+  opacity: 0.7;
+}
+
+/* Keys — compact status on page; grid lives in sheet */
+.workspace.is-shift-audit .sc-main-col{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.workspace.is-shift-audit .sc-keys-status,
+.workspace.is-shift-audit .sc-keys-tl{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0 0 0;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Timeline turni — filo di consegna (read-only, mai form) */
+.workspace.is-shift-audit .sc-keys-tl__item,
+.workspace.is-shift-audit .sc-keys-status__row{
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  margin: 0;
+  padding: 0 0 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: none;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item:last-child,
+.workspace.is-shift-audit .sc-keys-status__row:last-child{
+  padding-bottom: 2px;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__rail{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item:not(:last-child) .sc-keys-tl__rail::after{
+  content: "";
+  position: absolute;
+  top: 20px;
+  bottom: -14px;
+  left: 50%;
+  width: 1.5px;
+  transform: translateX(-50%);
+  background: #efefef;
+  pointer-events: none;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__dot,
+.workspace.is-shift-audit .sc-keys-status__check{
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: #065f46;
+  background: #e8f5e9;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-done .sc-keys-tl__dot{
+  background: #e8f5e9;
+  color: #065f46;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-active .sc-keys-tl__dot{
+  background: #262626;
+  color: #262626;
+  box-shadow: 0 0 0 3px rgba(38, 38, 38, 0.12);
+  animation: scKeysPulse 1.6s ease-in-out infinite;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-pending .sc-keys-tl__dot{
+  background: #fff;
+  border: 1.5px solid #efefef;
+  color: transparent;
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes scKeysPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(38, 38, 38, 0.1); }
+  50% { box-shadow: 0 0 0 5px rgba(38, 38, 38, 0.06); }
+}
+
+.workspace.is-shift-audit .sc-keys-tl__body{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__line{
+  margin: 0;
+  min-width: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-done .sc-keys-tl__line{
+  color: #8e8e93;
+  font-weight: 500;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-active .sc-keys-tl__line{
+  color: #262626;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-pending .sc-keys-tl__line{
+  color: #c7c7cc;
+  font-weight: 500;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__shift{
+  font-weight: inherit;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__sep{
+  margin: 0 0.35em;
+  opacity: 0.55;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__meta{
+  font-weight: 500;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__item.is-active .sc-keys-tl__meta{
+  font-weight: 700;
+}
+
+.workspace.is-shift-audit .sc-keys-tl__badge{
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #262626;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.workspace.is-shift-audit .sc-keys-status__row:hover:not(:disabled),
+.workspace.is-shift-audit .sc-keys-status__row.is-active,
+.workspace.is-shift-audit .sc-keys-status__row.is-done{
+  background: transparent !important;
+  box-shadow: none !important;
+  opacity: 1;
+  cursor: default;
+}
+
+.workspace.is-shift-audit .sc-keys-status__who{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-keys-cta{
+  appearance: none;
+  width: 100%;
+  min-height: 52px;
+  margin: 1rem 0 0;
+  border: 0;
+  border-radius: 14px;
+  background: #262626;
+  color: #fff;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.workspace.is-shift-audit .sc-keys-cta:disabled{
+  opacity: 0.42;
+  cursor: default;
+}
+
+.workspace.is-shift-audit .sc-keys-cta:active:not(:disabled){
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.workspace.is-shift-audit .sc-keys-hint{
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8e8e93;
+  line-height: 1.4;
+}
+
+/* Keys grid (inside sheet) */
+#auditKeysSheet .sc-keys-sheet-body{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#auditKeysSheet .sc-keys-mark-all{
+  appearance: none;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  border: 1.5px solid #efefef;
+  border-radius: 14px;
+  background: #fff;
+  color: #262626;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+
+#auditKeysSheet .sc-keys-mark-all:active{
+  background: #fafafa;
+}
+
+#auditKeysSheet .sc-keys-search-wrap{
+  display: block;
+  margin: 0;
+}
+
+#auditKeysSheet .sc-keys-search{
+  width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1.5px solid #efefef;
+  background: #fff;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #262626;
+  box-sizing: border-box;
+}
+
+#auditKeysSheet .sc-keys-search:focus{
+  outline: none;
+  border-color: #262626;
+}
+
+#auditKeysSheet .sc-keys-grid,
+.workspace.is-shift-audit .sc-keys-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 10px;
+  max-height: none;
+  overflow: visible;
+  padding: 2px;
+}
+
+#auditKeysSheet .sc-keys-grid{
+  /* Un solo scroll: il body dello sheet */
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#auditKeysSheet .sc-key-cell{
+  display: block;
+  min-width: 0;
+}
+
+#auditKeysSheet .sc-key-tile,
+.workspace.is-shift-audit .sc-key-tile{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 56px;
+  height: 56px;
+  padding: 8px 4px 6px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1.5px solid #efefef;
+  background: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+#auditKeysSheet .sc-key-tile:active,
+.workspace.is-shift-audit .sc-key-tile:active{
+  transform: scale(0.98);
+}
+
+#auditKeysSheet .sc-key-tile input,
+.workspace.is-shift-audit .sc-key-tile input{
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#auditKeysSheet .sc-key-tile__num,
+.workspace.is-shift-audit .sc-key-tile__num,
+.workspace.is-shift-audit .room-grid-tile,
+.workspace.is-shift-audit .sc-key-tile .room-grid-tile{
+  display: block;
+  width: 100%;
+  max-width: 100% !important;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0 4px;
+  box-sizing: border-box;
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #262626;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Suite / nomi lunghi: font ridotto + ellipsis (mai fuori dal tile) */
+#auditKeysSheet .sc-key-tile.is-named .sc-key-tile__num,
+.workspace.is-shift-audit .sc-key-tile.is-named .sc-key-tile__num{
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Nomi medi (≤6 char): leggermente più grandi, ancora contenuti */
+#auditKeysSheet .sc-key-tile.is-named.is-named-sm .sc-key-tile__num,
+.workspace.is-shift-audit .sc-key-tile.is-named.is-named-sm .sc-key-tile__num{
+  font-size: 11px;
+}
+
+#auditKeysSheet .sc-key-tile__mark,
+.workspace.is-shift-audit .sc-key-tile__mark{
+  flex: 0 0 14px;
+  height: 14px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #c7c7cc;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+#auditKeysSheet .sc-key-tile.is-on,
+.workspace.is-shift-audit .sc-key-tile.is-on{
+  background: #ffffff;
+  border-color: #262626;
+}
+
+#auditKeysSheet .sc-key-tile.is-on .sc-key-tile__mark,
+.workspace.is-shift-audit .sc-key-tile.is-on .sc-key-tile__mark{
+  color: #262626;
+}
+
+#auditKeysSheet .sc-key-tile.is-missing,
+.workspace.is-shift-audit .sc-key-tile.is-missing{
+  background: rgba(245, 158, 11, 0.08);
+  border-color: #f59e0b;
+}
+
+#auditKeysSheet .sc-key-tile.is-missing .sc-key-tile__num,
+.workspace.is-shift-audit .sc-key-tile.is-missing .sc-key-tile__num{
+  color: #92400e;
+}
+
+#auditKeysSheet .sc-key-tile.is-missing .sc-key-tile__mark,
+.workspace.is-shift-audit .sc-key-tile.is-missing .sc-key-tile__mark{
+  color: #d97706;
+}
+
+/* Step motivazioni — fuori dalla griglia */
+#auditKeysSheet .sc-keys-step{
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
+}
+
+#auditKeysSheet .sc-keys-step.is-active{
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+#auditKeysSheet .sc-keys-step[hidden]{
+  display: none !important;
+}
+
+#auditKeysSheet .sc-keys-reasons-kicker{
+  margin: 0 0 4px;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+#auditKeysSheet .sc-keys-reasons-lead{
+  margin: 0 0 14px;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #636366;
+  line-height: 1.35;
+}
+
+#auditKeysSheet .sc-keys-reasons-list{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#auditKeysSheet .sc-keys-reason-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #efefef;
+}
+
+#auditKeysSheet .sc-keys-reason-row:last-child{
+  border-bottom: 0;
+}
+
+#auditKeysSheet .sc-keys-reason-row__lab{
+  flex: 0 0 auto;
+  min-width: 88px;
+  margin: 0;
+}
+
+#auditKeysSheet .sc-keys-reason-row__room{
+  display: block;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+}
+
+#auditKeysSheet .sc-keys-reason-row__lab.label-error-state .sc-keys-reason-row__room{
+  color: #c62828;
+}
+
+#auditKeysSheet .sc-keys-reason-row__input{
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  height: 40px;
+  margin: 0;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+  background: #fafafa;
+  padding: 0 12px;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a0a0a;
+  box-sizing: border-box;
+}
+
+#auditKeysSheet .sc-keys-reason-row__input:focus{
+  outline: none;
+  border-color: #d4d4d8;
+  background: #fff;
+}
+
+#auditKeysSheet .sc-keys-reason-row__input.is-invalid{
+  border-color: #c62828;
+  background: #fff;
+}
+
+#auditKeysSheet .sc-keys-sheet-foot{
+  gap: 10px;
+}
+
+#auditKeysSheet .sc-keys-sheet-foot .btn-primary{
+  flex: 1 1 auto;
+}
+
+#auditKeysSheet .sc-keys-sheet-foot .btn-exit[hidden]{
+  display: none !important;
+}
+
+#auditKeysSheet .sc-key-tile.is-skeleton,
+.workspace.is-shift-audit .sc-key-tile.is-skeleton{
+  pointer-events: none;
+  border-color: transparent;
+  background: linear-gradient(90deg, #f0f0f0 25%, #f7f7f7 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: scShimmer 1.15s ease-in-out infinite;
+}
+
+@keyframes scShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Confirm chiusura — stesso sheet IG degli altri (bottom, non trascinabile) */
+#auditConfirmSheet.sheet.sheet--ig{
+  align-items: flex-end !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  padding: 0 !important;
+}
+
+#auditConfirmSheet .sheet-panel--audit-confirm{
+  width: 100% !important;
+  max-width: var(--ig-form-panel-max, 460px) !important;
+  margin: 0 auto !important;
+  border-radius: 28px 28px 0 0 !important;
+  max-height: min(70dvh, 420px) !important;
+  transform: none !important;
+}
+
+#auditConfirmSheet .ig-sheet-body{
+  padding: 8px 20px 12px !important;
+}
+
+#auditConfirmSheet .sc-confirm-lead{
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+  line-height: 1.35;
+}
+
+#auditConfirmSheet .sc-confirm-body{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #8e8e93;
+}
+
+#auditConfirmSheet .sheet-foot--split{
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+#auditConfirmSheet .sheet-foot--split .btn-exit,
+#auditConfirmSheet .sheet-foot--split .btn-primary{
+  width: 100% !important;
+  min-height: 48px !important;
+  height: 48px !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+}
+
+#auditConfirmSheet .sheet-foot--split .btn-exit{
+  border: 1px solid #efefef !important;
+  background: #fafafa !important;
+  color: #0a0a0a !important;
+}
+
+#auditConfirmSheet .sheet-foot--split .btn-primary{
+  border: 0 !important;
+  background: #0a0a0a !important;
+  color: #fff !important;
+}
+
+@media (min-width: 768px) {
+  #auditConfirmSheet.sheet.sheet--ig{
+    align-items: center !important;
+    padding: 24px !important;
+  }
+
+  #auditConfirmSheet .sheet-panel--audit-confirm{
+    border-radius: 20px !important;
+    max-width: 400px !important;
+    width: min(400px, calc(100vw - 48px)) !important;
+    max-height: none !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  #auditConfirmSheet .ig-sheet-handle{
+    display: none;
+  }
+}
+
+.workspace.is-shift-audit .sc-empty{
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8e8e8e;
+  border: 1px dashed #e0e0e0;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+#auditKeysSheet .sc-empty{
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8e8e93;
+  border: 1px dashed #efefef;
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* Cash */
+.workspace.is-shift-audit .sc-cash-hero{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 16px 16px 14px;
+  border-radius: 14px;
+  background: #0a0a0a;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-cash-hero__label{
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.workspace.is-shift-audit .sc-cash-hero__value{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.workspace.is-shift-audit .sc-cash-rows{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 1px solid #efefef;
+  border-radius: 14px;
+  background: #fff;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.workspace.is-shift-audit .sc-cash-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f2f2f7;
+  font-size: 13px;
+  font-weight: 550;
+  color: #636366;
+  line-height: 1.35;
+}
+
+.workspace.is-shift-audit .sc-cash-row:last-child{
+  border-bottom: 0;
+}
+
+.workspace.is-shift-audit .sc-cash-row strong{
+  font-size: 14px;
+  font-weight: 700;
+  color: #0a0a0a;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.workspace.is-shift-audit .sc-cash-row__pos{
+  color: #1b7f4a !important;
+}
+
+.workspace.is-shift-audit .sc-cash-row--total{
+  padding-top: 8px;
+  margin-top: 2px;
+  border-top: 1px solid #efefef;
+  color: #262626;
+  font-weight: 700;
+}
+
+.workspace.is-shift-audit .sc-cash-row--total strong{
+  font-size: 16px;
+}
+
+.workspace.is-shift-audit .sc-cash-row--muted{
+  background: #fafafa;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-cash-row--muted strong{
+  color: #636366;
+  font-weight: 650;
+}
+
+.workspace.is-shift-audit .sc-cash-field{
+  margin: 0;
+}
+
+.workspace.is-shift-audit .sc-cash-input-wrap{
+  position: relative;
+}
+
+.workspace.is-shift-audit .sc-cash-euro{
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 700;
+  color: #8e8e93;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.workspace.is-shift-audit .sc-cash-field .sheet-label{
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-cash-field .field{
+  width: 100%;
+  min-height: 56px;
+  border-radius: 14px;
+  border: 1.5px solid #efefef !important;
+  background: #fff !important;
+  padding: 14px 16px 14px 40px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #0a0a0a;
+  -webkit-text-fill-color: #0a0a0a;
+  text-align: left;
+  box-sizing: border-box;
+  box-shadow: none !important;
+}
+
+.workspace.is-shift-audit .sc-cash-field .field::placeholder{
+  color: #c7c7cc;
+  -webkit-text-fill-color: #c7c7cc;
+  font-weight: 600;
+}
+
+.workspace.is-shift-audit .sc-cash-field .field:focus{
+  background: #fff !important;
+  border-color: #0a0a0a !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08) !important;
+}
+
+.workspace.is-shift-audit .sc-cash-field .field.is-invalid{
+  border-color: #c62828 !important;
+  background: #fff9f9 !important;
+}
+
+.workspace.is-shift-audit .sc-cash-field .label-error-state{
+  color: #c62828 !important;
+}
+
+.workspace.is-shift-audit .sc-cash-diff{
+  margin: 8px 0 0;
+  min-height: 16px;
+  font-size: 12px;
+  font-weight: 650;
+  color: #c62828;
+}
+
+.workspace.is-shift-audit .sc-cash-diff:empty{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-cash-diff.is-ok{
+  color: #1b7f4a;
+}
+
+/* Handoff / sign list */
+.workspace.is-shift-audit .sc-sign-list{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workspace.is-shift-audit .sc-sign-row{
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #efefef;
+  border-radius: 14px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-sign-row.is-active{
+  border-color: #0a0a0a;
+  background: #fafafa;
+  box-shadow: inset 0 0 0 1px #0a0a0a;
+}
+
+.workspace.is-shift-audit .sc-sign-row.is-todo{
+  opacity: 0.72;
+}
+
+.workspace.is-shift-audit .sc-sign-row__avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  flex: 0 0 auto;
+}
+
+.workspace.is-shift-audit .sc-sign-row__avatar.is-muted{
+  background: #f2f2f7;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-sign-row__body{
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.workspace.is-shift-audit .sc-sign-row__top{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.workspace.is-shift-audit .sc-sign-row__shift{
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-sign-row__who{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+  line-height: 1.25;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace.is-shift-audit .sc-sign-row__who em{
+  font-style: normal;
+  font-weight: 550;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-sign-row__time{
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-sign-row__meta{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e8e8e;
+}
+
+.workspace.is-shift-audit .sc-sign-pill{
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: #f2f2f7;
+  color: #8e8e8e;
+}
+
+.workspace.is-shift-audit .sc-sign-pill.is-ok{
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.workspace.is-shift-audit .sc-sign-pill.is-warn{
+  background: #fff8e1;
+  color: #9a6b00;
+}
+
+.workspace.is-shift-audit .sc-sign-pill--open{
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.workspace.is-shift-audit .sc-sign-now{
+  appearance: none;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.workspace.is-shift-audit .sc-sign-now:hover{
+  background: #262626;
+}
+
+/* Monthly history */
+.workspace.is-shift-audit .sc-history-scroll{
+  max-height: min(48vh, 420px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  border: 1px solid #efefef;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.workspace.is-shift-audit .sc-history-table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.workspace.is-shift-audit .sc-history-table thead{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fafafa;
+}
+
+.workspace.is-shift-audit .sc-history-table th{
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+  padding: 10px 12px;
+  border-bottom: 1px solid #efefef;
+  white-space: nowrap;
+}
+
+.workspace.is-shift-audit .sc-history-table td{
+  padding: 12px;
+  border-bottom: 1px solid #f2f2f7;
+  color: #262626;
+  vertical-align: middle;
+  line-height: 1.3;
+  overflow: visible;
+}
+
+.workspace.is-shift-audit .sc-history-table td .shift-audit-pill{
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-history-table tbody tr:last-child td{
+  border-bottom: 0;
+}
+
+.workspace.is-shift-audit .sc-history-table tr.shift-audit-history-row{
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.workspace.is-shift-audit .sc-history-table tr.shift-audit-history-row:hover{
+  background: #fafafa;
+}
+
+.workspace.is-shift-audit .sc-history-table tr.shift-audit-history-row:active{
+  background: #f2f2f7;
+}
+
+.workspace.is-shift-audit .sc-history-table tr.shift-audit-history-row.is-mine{
+  background: #fafafa;
+}
+
+.workspace.is-shift-audit .sc-history-who.is-me{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  background: #262626;
+  color: #fff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.workspace.is-shift-audit .sc-closure-sig{
+  margin: 16px 0 0;
+  padding: 12px;
+  border: 1px solid #efefef;
+  border-radius: 14px;
+  background: #fafafa;
+}
+
+.workspace.is-shift-audit .sc-closure-sig img{
+  display: block;
+  width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.workspace.is-shift-audit .shift-audit-pill{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 24px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  background: #f2f2f7;
+  color: #636366;
+  vertical-align: middle;
+}
+
+.workspace.is-shift-audit .shift-audit-pill--status{
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  padding: 0;
+  text-align: center;
+}
+
+.workspace.is-shift-audit .shift-audit-pill--cash{
+  min-width: 72px;
+  padding: 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.workspace.is-shift-audit .shift-audit-pill.is-ok{
+  background-color: rgba(16, 185, 129, 0.06);
+  color: #065f46;
+}
+
+.workspace.is-shift-audit .shift-audit-pill.is-warn{
+  background-color: rgba(245, 158, 11, 0.06);
+  color: #b45309;
+}
+
+.workspace.is-shift-audit .shift-audit-pill.is-bad{
+  background-color: rgba(198, 40, 40, 0.06);
+  color: #9f1239;
+}
+
+.workspace.is-shift-audit .shift-audit-empty{
+  margin: 8px 0;
+  font-size: 13px;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-history-empty{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.workspace.is-shift-audit .sc-history-empty__title{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+}
+
+.workspace.is-shift-audit .sc-history-empty__lead{
+  margin: 0;
+  max-width: 240px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-history-table:has(.sc-history-empty) thead{
+  display: none;
+}
+
+/* Submit — nero pieno solo con firma; disattivo grigio soft */
+.workspace.is-shift-audit .sc-submit{
+  appearance: none;
+  width: 100%;
+  max-width: none;
+  min-height: 52px;
+  margin: 0;
+  display: block;
+  border: 0;
+  border-radius: 14px;
+  background: #262626;
+  color: #fff;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0ms linear, color 0ms linear, opacity 0ms linear, transform 120ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.workspace.is-shift-audit .sc-submit:disabled,
+.workspace.is-shift-audit .sc-submit.is-disabled{
+  background: #f2f2f7 !important;
+  color: #c7c7cc !important;
+  opacity: 1 !important;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.workspace.is-shift-audit .sc-submit:active:not(:disabled){
+  transform: scale(0.99);
+}
+
+.workspace.is-shift-audit .sc-submit.is-loading{
+  pointer-events: none;
+  color: transparent !important;
+  position: relative;
+  background: #262626 !important;
+}
+
+.workspace.is-shift-audit .sc-submit.is-loading::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 12px 0 0 #fff, 24px 0 0 #fff;
+  animation: scDots 0.9s ease-in-out infinite;
+}
+
+@keyframes scDots {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.workspace.is-shift-audit .sc-sticky-wrap{
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  margin-top: 2px;
+  padding-top: 10px;
+  padding-bottom: 2px;
+  background: linear-gradient(180deg, rgba(250, 250, 250, 0) 0%, #fafafa 32%);
+}
+
+.workspace.is-shift-audit .sc-side{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.workspace.is-shift-audit .sc-main-col{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.workspace.is-shift-audit .sc-fade-in{
+  animation: scFadeIn 0.2s ease-out both;
+}
+
+.workspace.is-shift-audit .sc-fade-in-premium{
+  animation: scFadeInPremium 220ms cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+@keyframes scFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes scFadeInPremium {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Skeleton shapes — match final geometry, cascade via --sc-skel-i */
+.workspace.is-shift-audit .sc-skel,
+#auditKeysSheet .sc-skel,
+#auditKeysSheet .sc-key-tile.is-skeleton{
+  position: relative;
+  overflow: hidden;
+  background-color: #f0f0f2;
+  transform: translateZ(0);
+}
+
+.workspace.is-shift-audit .sc-skel--dot{
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+}
+
+.workspace.is-shift-audit .sc-skel--line,
+#auditKeysSheet .sc-skel--line{
+  display: inline-block;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.workspace.is-shift-audit .sc-skel--pill{
+  display: inline-block;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.workspace.is-shift-audit .sc-keys-cta.is-skeleton{
+  background: #f0f0f2 !important;
+  color: transparent !important;
+  pointer-events: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.workspace.is-shift-audit .sc-keys-cta.is-skeleton::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: riva-shimmer 1.6s infinite ease-in-out;
+  animation-delay: 300ms;
+}
+
+.workspace.is-shift-audit .sc-cash-field .field.is-skeleton-field{
+  background: #f7f7f8;
+  border-color: #efefef;
+  color: transparent;
+  pointer-events: none;
+}
+
+.workspace.is-shift-audit .sc-card--cash.is-skeleton .sc-cash-row strong{
+  min-height: 14px;
+}
+
+/* Active scale — feedback tattile IG */
+.workspace.is-shift-audit .sc-shift-bar__btn,
+.workspace.is-shift-audit .sc-keys-cta,
+.workspace.is-shift-audit .sc-submit,
+.workspace.is-shift-audit .sc-sign-now,
+.workspace.is-shift-audit .sc-link-btn,
+.workspace.is-shift-audit .sc-keys-status__row,
+#auditKeysSheet .sc-keys-mark-all,
+#auditKeysSheet .sc-key-tile,
+#auditConfirmSheet .btn-primary,
+#auditConfirmSheet .btn-exit{
+  transition: transform 100ms ease-out, background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.workspace.is-shift-audit .sc-shift-bar__btn:active:not(:disabled):not(.is-closed),
+.workspace.is-shift-audit .sc-keys-cta:active:not(:disabled),
+.workspace.is-shift-audit .sc-submit:active:not(:disabled),
+.workspace.is-shift-audit .sc-sign-now:active,
+.workspace.is-shift-audit .sc-link-btn:active,
+#auditKeysSheet .sc-keys-mark-all:active,
+#auditKeysSheet .sc-key-tile:active,
+#auditConfirmSheet .btn-primary:active,
+#auditConfirmSheet .btn-exit:active{
+  transform: scale(0.98);
+}
+
+#auditKeysSheet .sc-key-tile:active{
+  transform: scale(0.98);
+}
+
+.workspace.is-shift-audit .shift-audit-panel .footer-summary, .workspace.is-shift-audit .shift-audit-panel .footer-summary{
+  display: none !important;
+}
+
+/* —— Responsive layout —— */
+
+/* Phone / tablet portrait / short screens: UNA colonna, scroll pagina */
+@media (max-width: 1099px), (orientation: portrait), (max-height: 719px) {
+  .workspace.is-shift-audit .sc-scroll{
+    overflow: auto !important;
+    display: block !important;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .workspace.is-shift-audit .sc-cockpit{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    height: auto !important;
+    max-height: none !important;
+    max-width: 720px !important;
+  }
+
+  .workspace.is-shift-audit .sc-main-col,
+  .workspace.is-shift-audit .sc-side{
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .workspace.is-shift-audit .sc-history-col--anom,
+  .workspace.is-shift-audit .sc-history-table th.sc-history-col--anom,
+  .workspace.is-shift-audit .sc-history-table td:nth-child(5){
+    display: none;
+  }
+
+  .workspace.is-shift-audit .sc-sign-row{
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 10px 12px;
+  }
+
+  .workspace.is-shift-audit .sc-sign-now{
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+/* Legacy 2-col cockpit disabilitato: flat usa scroll pagina unico (vedi sotto). */
+@media (min-width: 1100px) and (orientation: landscape) and (min-height: 720px) {
+  .workspace.is-shift-audit .sc-scroll{
+    overflow: auto;
+    padding-bottom: 20px;
+  }
+
+  .workspace.is-shift-audit .sc-sticky-wrap{
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(250, 250, 250, 0) 0%, #fafafa 40%);
+    padding-top: 12px;
+    padding-bottom: 4px;
+  }
+}
+
+@media (min-width: 1100px) {
+  #auditKeysSheet .sc-keys-grid{
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.workspace.is-shift-audit .sc-shift-bar__btn .sc-shift-bar__short {
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-shift-bar__btn .sc-shift-bar__full {
+  display: inline;
+}
+
+@media (max-width: 767px) {
+  .workspace.is-shift-audit .sc-shift-bar,
+  .workspace.is-shift-audit .sc-shift-bar__btn {
+    display: none !important;
+  }
+
+  .workspace.is-shift-audit .sc-scroll{
+    padding: 12px 12px calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .workspace.is-shift-audit .sc-card{
+    padding: 16px 14px 14px;
+    border-radius: 14px;
+  }
+
+  .workspace.is-shift-audit .sc-card__title{
+    font-size: 17px;
+  }
+
+  .workspace.is-shift-audit .sc-key-tile{
+    min-height: 52px;
+    height: 52px;
+  }
+
+  .workspace.is-shift-audit .sc-key-tile__num{
+    font-size: 13px;
+  }
+
+  .workspace.is-shift-audit .sc-key-tile.is-named .sc-key-tile__num{
+    font-size: 10px;
+  }
+
+  .workspace.is-shift-audit .sc-key-tile.is-named.is-named-sm .sc-key-tile__num{
+    font-size: 11px;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Flat single-column cockpit (Contabilità / handoff / storico)
+   ═══════════════════════════════════════════════ */
+
+.workspace.is-shift-audit .sc-cockpit--flat{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  max-width: 880px !important;
+  width: 100%;
+  margin: 0 auto;
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* Portrait / stretto: le colonne non esistono — i figli restano in flusso verticale */
+.workspace.is-shift-audit .sc-flat-col{
+  display: contents;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 2px 4px;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__eyebrow{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__title{
+  margin: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  color: #0a0a0a;
+  line-height: 1.15;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__copy{
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 36rem;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__lead{
+  margin: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: #636366;
+  line-height: 1.45;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__sub{
+  margin: 4px 0 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8e8e93;
+  line-height: 1.35;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__date{
+  flex: 0 0 auto;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f2f2f7;
+  font-size: 12px;
+  font-weight: 650;
+  color: #636366;
+  white-space: nowrap;
+}
+
+.workspace.is-shift-audit .sc-flat-block{
+  border: 0;
+  border-bottom: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 20px 2px 22px;
+  box-sizing: border-box;
+}
+
+/* Card IG — coerenti con Clienti / Note / Prenotazioni */
+.workspace.is-shift-audit .sc-flat-block.sc-ig-card{
+  border: 1px solid #efefef;
+  border-radius: 16px;
+  background: #fff;
+  padding: 18px 16px 16px;
+  box-shadow: none;
+}
+
+.workspace.is-shift-audit .sc-flat-block:last-child{
+  border-bottom: 0;
+}
+
+.workspace.is-shift-audit .sc-flat-block__head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 0;
+}
+
+/* Performance personali — cruscotto receptionist */
+.workspace.is-shift-audit .sc-flat-block--perf .sc-flat-block__sub{
+  margin-top: 2px;
+}
+
+.workspace.is-shift-audit .sc-flat-step--ghost{
+  background: #f2f2f7 !important;
+  color: #8e8e93 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.workspace.is-shift-audit .sc-perf-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.workspace.is-shift-audit .sc-perf-stat{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  border: 1px solid #efefef;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-perf-stat--primary{
+  background: #0a0a0a;
+  border-color: #0a0a0a;
+}
+
+.workspace.is-shift-audit .sc-perf-stat__label{
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+  line-height: 1.2;
+}
+
+.workspace.is-shift-audit .sc-perf-stat--primary .sc-perf-stat__label{
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.workspace.is-shift-audit .sc-perf-stat__value{
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #0a0a0a;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.workspace.is-shift-audit .sc-perf-stat--primary .sc-perf-stat__value{
+  color: #fff;
+}
+
+.workspace.is-shift-audit .sc-perf-stat__hint{
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #8e8e93;
+  line-height: 1.2;
+}
+
+.workspace.is-shift-audit .sc-perf-stat--primary .sc-perf-stat__hint{
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.workspace.is-shift-audit .sc-flat-step{
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.workspace.is-shift-audit .sc-flat-block__copy{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.workspace.is-shift-audit .sc-flat-block__title{
+  margin: 0 0 4px;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #0a0a0a;
+  line-height: 1.25;
+}
+
+.workspace.is-shift-audit .sc-flat-block__sub{
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-flat-block__meta{
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: #636366;
+  padding-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hairline sotto il titolo — separa header dal corpo della sezione */
+.workspace.is-shift-audit .sc-flat-block__rule{
+  height: 0;
+  margin: 14px 0 16px;
+  border: 0;
+  border-top: 1px solid #efefef;
+}
+
+.workspace.is-shift-audit .sc-flat-block.sc-ig-card + .sc-flat-block.sc-ig-card{
+  margin-top: 0;
+}
+
+.workspace.is-shift-audit .sc-cash-flat-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 720px) {
+  .workspace.is-shift-audit .sc-cash-flat-grid{
+    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-areas:
+      "hero input"
+      "rows input";
+    align-items: start;
+    gap: 14px 16px;
+  }
+
+  .workspace.is-shift-audit .sc-cash-flat-grid > .sc-cash-hero{
+    grid-area: hero;
+  }
+
+  .workspace.is-shift-audit .sc-cash-flat-grid > .sc-cash-live{
+    grid-area: rows;
+  }
+
+  .workspace.is-shift-audit .sc-cash-flat-grid > .sc-cash-field{
+    grid-area: input;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px;
+    border: 1px solid #efefef;
+    border-radius: 14px;
+    background: #fafafa;
+  }
+}
+
+.workspace.is-shift-audit .sc-cash-live{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #efefef;
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.workspace.is-shift-audit .sc-flat-block--cash .sc-cash-rows,
+.workspace.is-shift-audit .sc-flat-block--cash .sc-cash-live{
+  margin-bottom: 0;
+}
+
+.workspace.is-shift-audit .sc-flat-block--cash .sc-cash-hero{
+  margin-bottom: 0;
+}
+
+/* Firma a mano libera — Apple Drawing pad */
+.workspace.is-shift-audit .sc-flat-block--seal{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.workspace.is-shift-audit .sc-seal-kicker{
+  margin: 0 0 6px;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-seal-footnote{
+  margin: 0 0 16px;
+  text-align: center;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #8e8e93;
+  max-width: none;
+  width: 100%;
+  align-self: stretch;
+}
+
+.workspace.is-shift-audit .sc-seal-footnote strong{
+  color: #262626;
+  font-weight: 700;
+}
+
+.workspace.is-shift-audit .sc-hand-sign{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__meta{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__label,
+.workspace.is-shift-audit .sc-hand-sign__meta strong{
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__clear{
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ef4444;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__clear[hidden]{
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__clear:active{
+  color: #b91c1c;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__pad-wrap,
+.workspace.is-shift-audit .sc-hand-sign__pad-wrap--apple{
+  position: relative;
+  width: 100%;
+  margin: 0;
+  border: 1px solid #efefef;
+  border-radius: 14px;
+  background-color: #fafafa;
+  background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+  background-position: 8px 8px;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  box-shadow: none;
+  transition: border-color 160ms ease;
+  min-height: 180px;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__pad-wrap:active,
+.workspace.is-shift-audit .sc-hand-sign.is-drawing .sc-hand-sign__pad-wrap{
+  border-color: #d4d4d8;
+}
+
+.workspace.is-shift-audit .sc-hand-sign.is-signed .sc-hand-sign__pad-wrap{
+  border-color: #efefef;
+  background-color: #fafafa;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.workspace.is-shift-audit .sc-hand-sign.is-invalid .sc-hand-sign__pad-wrap{
+  border-color: #c62828;
+}
+
+/* Linea guida soft sotto i puntini */
+.workspace.is-shift-audit .sc-hand-sign__guide{
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 68%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 212, 216, 0.85) 18%,
+    rgba(212, 212, 216, 0.85) 82%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.75;
+  transition: opacity 160ms ease;
+}
+
+.workspace.is-shift-audit .sc-hand-sign.is-signed .sc-hand-sign__guide,
+.workspace.is-shift-audit .sc-hand-sign.is-drawing .sc-hand-sign__guide{
+  opacity: 0.22;
+}
+
+.workspace.is-shift-audit .sc-hand-sign__pad{
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 200px;
+  min-height: 200px;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+@media (min-width: 720px) {
+  .workspace.is-shift-audit .sc-hand-sign__pad,
+  .workspace.is-shift-audit .sc-hand-sign__pad-wrap--apple{
+    height: 240px;
+    min-height: 240px;
+  }
+}
+
+.workspace.is-shift-audit .sc-hand-sign__hint{
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0.01em;
+  color: #a1a1aa;
+  transition: opacity 140ms ease;
+  white-space: nowrap;
+}
+
+.workspace.is-shift-audit .sc-hand-sign.is-signed .sc-hand-sign__hint,
+.workspace.is-shift-audit .sc-hand-sign.is-drawing .sc-hand-sign__hint{
+  opacity: 0;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-submit{
+  margin-top: 0;
+}
+
+/* Legacy checkbox sign — mai mostrare */
+.workspace.is-shift-audit .sc-digital-sign{
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-flat-block--history .sc-history-scroll{
+  max-height: min(52vh, 420px);
+}
+
+.workspace.is-shift-audit .sc-keys-grid--flat{
+  margin-top: 12px;
+  padding: 12px !important;
+  border: 1px solid #efefef;
+  border-radius: 14px;
+  background: #fafafa;
+}
+
+.workspace.is-shift-audit .sc-key-cell{
+  display: block;
+  min-width: 0;
+}
+
+.workspace.is-shift-audit .sc-hand-sign.is-invalid .sc-hand-sign__meta strong{
+  color: #C62828;
+}
+
+.workspace.is-shift-audit .sc-digital-sign.is-invalid{
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-digital-sign.is-invalid .sc-digital-sign__copy strong{
+  color: #C62828;
+}
+
+.workspace.is-shift-audit .sc-keys-toolbar{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 0;
+}
+
+.workspace.is-shift-audit .sc-keys-mark-all{
+  appearance: none;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid #efefef;
+  border-radius: 999px;
+  background: #fafafa;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0a0a0a;
+  cursor: pointer;
+}
+
+.workspace.is-shift-audit .sc-keys-search-wrap{
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.workspace.is-shift-audit .sc-keys-search{
+  width: 100%;
+  min-height: 36px !important;
+  height: 36px !important;
+  border-radius: 999px !important;
+  border: 1px solid #efefef !important;
+  background: #fff !important;
+  padding: 0 14px !important;
+  font-size: 13px !important;
+}
+
+/* Flat layout: SEMPRE una colonna + UN solo scroll (come Clienti / Note).
+   Vietato overflow:hidden sullo scroller — spezza l’iPad.
+   Pattern: panel flex column → .sc-scroll flex:1 + min-height:0 + overflow:auto. */
+.workspace.is-shift-audit .sc-scroll:has(.sc-cockpit--flat),
+.workspace.is-shift-audit .sc-scroll{
+  overflow: auto !important;
+  overflow-x: hidden !important;
+  display: block !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+.workspace.is-shift-audit .sc-cockpit--flat{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  max-width: 720px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important; /* cresce col contenuto; scrolla .sc-scroll */
+}
+
+.workspace.is-shift-audit .sc-flat-col,
+.workspace.is-shift-audit .sc-flat-col--main,
+.workspace.is-shift-audit .sc-flat-col--side{
+  display: contents !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.workspace.is-shift-audit .sc-cash-simple{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.workspace.is-shift-audit .sc-flat-block--cash .sc-cash-hero{
+  margin: 0;
+}
+
+.workspace.is-shift-audit .sc-flat-block--history .sc-history-scroll{
+  max-height: min(42vh, 320px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.workspace.is-shift-audit .sc-flat-block--seal .sc-submit{
+  width: 100%;
+  max-width: none;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert{
+  margin: 0;
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  .workspace.is-shift-audit .sc-cockpit--flat{
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: none !important;
+    grid-template-columns: none !important;
+    grid-template-areas: none !important;
+  }
+
+  .workspace.is-shift-audit .sc-flat-col,
+  .workspace.is-shift-audit .sc-flat-col--main,
+  .workspace.is-shift-audit .sc-flat-col--side{
+    display: contents !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+
+@media (min-width: 1100px) and (orientation: landscape) and (min-height: 720px) {
+  .workspace.is-shift-audit .sc-cockpit,
+  .workspace.is-shift-audit .sc-cockpit--flat{
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .workspace.is-shift-audit .sc-main-col,
+  .workspace.is-shift-audit .sc-side{
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
+
+@media (max-width: 767px) {
+  .workspace.is-shift-audit .sc-flat-page-head__title{
+    font-size: 22px;
+  }
+
+  .workspace.is-shift-audit .sc-flat-block{
+    padding: 16px 0 18px;
+    border-radius: 0;
+  }
+
+  .workspace.is-shift-audit .sc-sign-row{
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .workspace.is-shift-audit .sc-sign-now{
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 2px;
+  }
+}
+
+/* —— Tipografia branding (Montserrat / Cinzel come resto app) —— */
+.workspace.is-shift-audit,
+.workspace.is-shift-audit .sc-scroll,
+.workspace.is-shift-audit .sc-cockpit,
+.workspace.is-shift-audit button,
+.workspace.is-shift-audit input,
+.workspace.is-shift-audit textarea,
+.workspace.is-shift-audit .field{
+  font-family: var(--ig-font, "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif) !important;
+}
+
+.workspace.is-shift-audit .sc-flat-page-head__title{
+  font-family: "Cinzel", "Montserrat", serif !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.workspace.is-shift-audit .sc-cash-hero__value,
+.workspace.is-shift-audit .sc-flat-block__meta,
+.workspace.is-shift-audit .sc-cash-euro{
+  font-family: var(--ig-font, "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Passaggio consegne */
+.workspace.is-shift-audit .sc-handoff-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.workspace.is-shift-audit .sc-handoff-item{
+  display: block;
+  margin: 0;
+}
+
+.workspace.is-shift-audit .sc-handoff-item.fade-in-premium{
+  animation: scFadeInPremium 220ms ease-out both;
+}
+
+@keyframes scFadeInPremium{
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.workspace.is-shift-audit .sc-handoff-field{
+  width: 100%;
+  min-height: 56px;
+  resize: vertical;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+  background: #fff;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a0a0a;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-handoff-field:focus{
+  outline: none;
+  border-color: #262626;
+  background: #fff;
+}
+
+.workspace.is-shift-audit .sc-handoff-add{
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  align-self: flex-start;
+  margin-top: 10px;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #262626;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.workspace.is-shift-audit .sc-handoff-add[hidden]{
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-handoff-add span{
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.workspace.is-shift-audit .sc-handoff-add:active{
+  opacity: 0.55;
+  transform: none;
+  background: transparent;
+}
+
+/* Schedine alloggiati — sezione 4 sequenziale (stile in chiusura-turno.css) */
+.workspace.is-shift-audit .sc-alloggiati-alert{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 1.35rem 1.25rem 1.25rem;
+  border-radius: 16px;
+  border: 1px solid #efefef;
+  background: #ffffff;
+  color: #262626;
+  box-sizing: border-box;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert[hidden]{
+  display: none !important;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  min-width: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #b45309;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__num{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__head{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__head-copy{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__title{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__sub{
+  display: none;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__list{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: none;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__row{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #fafafa;
+  min-width: 0;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__row:last-child{
+  border-bottom: 0;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__room{
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid #efefef;
+  background: #ffffff;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #262626;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__body{
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__guest{
+  margin: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #262626;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace.is-shift-audit .sc-alloggiati-alert__doc,
+.workspace.is-shift-audit .sc-alloggiati-alert__contact{
+  margin: 3px 0 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: #d97706;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace.is-shift-audit .sc-keys-cta{
+  margin-top: 1rem;
+}
+
+/* Dettaglio report (sheet fuori workspace) — override legacy, stile in chiusura-turno.css */
+#closureDetailSheet .sc-closure-sig{
+  margin: 0;
+  padding: 20px 16px;
+  border: 1px solid #efefef;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+#closureDetailSheet .sc-closure-sig img{
+  display: block;
+  width: 100%;
+  max-height: 148px;
+  object-fit: contain;
+  object-position: center;
+}

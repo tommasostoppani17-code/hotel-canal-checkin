@@ -1,0 +1,146 @@
+/**
+ * Riva OS — Topbar brand = stesso comportamento di staff.html
+ * Caricare dopo riva-ig-chrome, prima di riva-pwa-safe-area.
+ * Contiene SOLO chrome topbar (hamburger · Riva centrato · campanella).
+ */
+
+.dash-topbar {
+  position: relative !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  border-bottom: 1px solid #e5e5ea !important;
+  box-shadow: none !important;
+}
+
+/* Head non crea containing block: Riva si centra sulla topbar intera */
+.dash-topbar-head {
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  gap: 0 !important;
+  min-height: 40px;
+}
+
+.dash-topbar-actions {
+  position: relative !important;
+  z-index: 2 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex: 0 0 auto !important;
+  flex-wrap: nowrap !important;
+  width: auto !important;
+  max-width: none !important;
+  margin-left: auto !important;
+  min-height: 40px;
+  gap: 6px;
+}
+
+.dash-topbar .m-brand-bar {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  max-width: calc(100% - 96px) !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+.dash-topbar .m-brand-text {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  text-align: center !important;
+}
+
+.dash-topbar .m-brand-kicker,
+.dash-topbar .m-brand-kicker.riva-wordmark {
+  display: inline-flex !important;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 0.28em !important;
+  font-family: "Great Vibes", "Cormorant Garamond", cursive !important;
+  font-size: 28px !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  color: #262626 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.dash-topbar .m-brand-kicker .riva-shell {
+  width: 0.52em !important;
+  height: 0.52em !important;
+}
+
+.dash-topbar .m-brand-title,
+.dash-topbar .dash-topbar-titles {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.dash-menu-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  width: 36px !important;
+  height: 36px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: #262626 !important;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.dash-topbar .btn-notify {
+  width: 40px !important;
+  height: 40px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: #262626 !important;
+}
+
+@media (max-width: 1380px) {
+  :root {
+    --m-topbar: 56px;
+  }
+
+  .dash-topbar {
+    min-height: calc(var(--m-topbar) + env(safe-area-inset-top, 0px)) !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: env(safe-area-inset-top, 0px) 12px 0 !important;
+  }
+}
+
+@media (min-width: 1381px) {
+  .dash-menu-btn {
+    display: none !important;
+  }
+}

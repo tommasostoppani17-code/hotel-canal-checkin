@@ -1,0 +1,176 @@
+/**
+ * Riva OS — Housekeeping skeleton (speculare alle card .ops-room)
+ * Griglia fantasma: bordino top · numero · stato · 3 pallini
+ */
+
+@keyframes hk-shimmer-wave {
+  100% { transform: translateX(100%); }
+}
+
+.hk-skeleton-element {
+  position: relative;
+  overflow: hidden;
+  background-color: #f4f4f4;
+  border-radius: 4px;
+  transform: translateZ(0);
+}
+
+.hk-skeleton-element::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 20%,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: hk-shimmer-wave 1.6s infinite ease-in-out;
+  animation-delay: inherit;
+  pointer-events: none;
+}
+
+/* Card fantasma = stessa geometria delle card reali */
+.hk-card-skeleton,
+.ops-room.hk-card-skeleton {
+  background-color: #ffffff;
+  border: 1px solid #efefef;
+  border-radius: 12px;
+  min-height: 118px;
+  height: auto;
+  padding: 12px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  pointer-events: none;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  cursor: default;
+}
+
+.hk-card-skeleton::before,
+.ops-room.hk-card-skeleton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #e5e5ea;
+  border-radius: 0;
+}
+
+.hk-card-skeleton__num {
+  width: 48px;
+  height: 22px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.hk-card-skeleton__status {
+  width: 64px;
+  height: 10px;
+  border-radius: 4px;
+}
+
+.hk-card-skeleton__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 2px;
+  min-height: 8px;
+}
+
+.hk-card-skeleton__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+/* Micro-didascalia contatori (0 pronte · N da rifare · …) */
+.hk-skeleton-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 2px 0 4px;
+  min-height: 18px;
+}
+
+.hk-skeleton-stats__bar {
+  width: 196px;
+  max-width: 70%;
+  height: 12px;
+  border-radius: 999px;
+}
+
+/* Capsule hotel fantasma (solo primo load, prima che arrivino le sezioni) */
+.ops-sec-tabs--skel {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.hk-skel-capsule {
+  height: 36px;
+  border-radius: 9999px;
+  flex: 0 0 auto;
+}
+
+.hk-skel-capsule--sm { width: 72px; }
+.hk-skel-capsule--md { width: 88px; }
+.hk-skel-capsule--lg { width: 110px; }
+.hk-skel-capsule--on {
+  background-color: #ebebed;
+  opacity: 0.95;
+}
+
+/* Griglia: riusa .ops-rooms-grid reale; fallback 3 col su tablet */
+.ops-skeleton-grid.ops-rooms-grid,
+.ops-rooms-grid.ops-skeleton-grid {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 0 8px;
+}
+
+@media (min-width: 768px) and (max-width: 1379px) {
+  .ops-skeleton-grid.ops-rooms-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .ops-skeleton-grid.ops-rooms-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .ops-skeleton-grid .hk-card-skeleton {
+    flex: 0 0 calc(50% - 8px);
+    max-width: 180px;
+    min-width: 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hk-skeleton-element::after {
+    animation: none !important;
+    opacity: 0;
+  }
+}

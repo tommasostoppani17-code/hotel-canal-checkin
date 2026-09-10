@@ -1,0 +1,185 @@
+/**
+ * Staff Ops · Colazioni — SOLO telefono stretto/piccolo (≤767px).
+ * Tablet verticale (768–1023 portrait) e desktop: non toccati
+ * (restano in colazioni-premium.css / colazioni-grid.css).
+ */
+
+@media (max-width: 767px) {
+  .workspace.is-ops-colazioni .ops-bf-shell,
+  .workspace.is-ops-colazioni .colazioni-page-wrapper {
+    min-height: 0 !important;
+  }
+
+  .workspace.is-ops-colazioni .ops-bf-page {
+    padding-bottom: 0 !important;
+  }
+
+  .workspace.is-ops-colazioni .ops-bf-board {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Card: meno margine, più area utile */
+  .workspace.is-ops-colazioni .bf-table-card,
+  .workspace.is-ops-colazioni .colazioni-card-container,
+  .workspace.is-ops-colazioni .ops-skeleton-bf-card {
+    margin: 12px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-empty {
+    margin: 1.25rem 12px;
+    font-size: 12px;
+  }
+
+  /* Tabella: niente thead, righe più alte per il dito */
+  .workspace.is-ops-colazioni .bf-table thead {
+    display: none !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-table tbody td {
+    height: auto !important;
+    min-height: 68px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-table tbody td:first-child {
+    padding-left: 12px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-table tbody td:last-child {
+    padding-right: 10px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-table th.bf-th-pax,
+  .workspace.is-ops-colazioni .bf-table td.bf-td-pax {
+    width: 30% !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-table th.bf-th-status,
+  .workspace.is-ops-colazioni .bf-table td.bf-td-status {
+    width: 36% !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-room__num {
+    font-size: 15px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-room__hotel {
+    font-size: 11px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-room__hint {
+    max-width: min(48vw, 160px) !important;
+    font-size: 9px !important;
+  }
+
+  /* Controlli touch */
+  .workspace.is-ops-colazioni .bf-stepper {
+    gap: 4px !important;
+    padding: 2px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-stepper__btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 10px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-stepper__val {
+    min-width: 22px;
+    font-size: 14px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-toggle__btn {
+    min-height: 36px !important;
+    padding: 0 10px !important;
+    font-size: 10px !important;
+  }
+
+  /* Command bar fondo */
+  .bf-command-bar--top {
+    display: none !important;
+  }
+
+  .bf-command-bar--bottom {
+    display: flex !important;
+    gap: 8px !important;
+    min-height: 3.75rem !important;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .bf-command-bar--bottom .bf-search-pill {
+    flex: 1 1 auto;
+    max-width: none !important;
+    height: 40px;
+    font-size: 14px;
+    padding: 0 14px;
+  }
+
+  .bf-command-bar--bottom .bf-pax-badge {
+    min-height: 40px;
+    padding: 4px 6px 4px 4px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+
+  .bf-pax-badge__n {
+    min-width: 36px;
+    height: 30px;
+    font-size: 15px;
+    border-radius: 9px;
+  }
+
+  .bf-pax-badge__lbl {
+    font-size: 10px;
+  }
+
+  .bf-pax-badge__day {
+    font-size: 9px;
+  }
+
+  .bf-pax-badge__sub {
+    padding: 3px 7px;
+    font-size: 9px;
+  }
+
+  /* Tabs strutture nella toolbar */
+  .workspace.is-ops.is-ops-colazioni #opsHkToolbarSlot .bf-structures.ops-sec-tabs,
+  .workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .bf-structures.ops-sec-tabs {
+    justify-content: flex-start !important;
+    padding: 0 6px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .workspace.is-ops.is-ops-colazioni #opsHkToolbarSlot .bf-structures .ops-sec-tab,
+  .workspace.is-ops.is-ops-colazioni .ops-bf-toolbar-slot .bf-structures .ops-sec-tab {
+    flex: 0 0 auto !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .workspace.is-ops-colazioni .bf-table-card,
+  .workspace.is-ops-colazioni .colazioni-card-container,
+  .workspace.is-ops-colazioni .ops-skeleton-bf-card {
+    margin: 8px !important;
+    border-radius: 10px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-room__hotel {
+    display: none !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-toggle__btn {
+    padding: 0 8px !important;
+  }
+
+  .workspace.is-ops-colazioni .bf-stepper__btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}

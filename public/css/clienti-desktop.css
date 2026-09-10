@@ -1,0 +1,206 @@
+/* Clienti — split screen desktop/tablet (Instagram-level)
+   Lista sx · dettaglio centrato dx · riga intera cliccabile · .is-selected premium */
+
+@media screen and (min-width: 900px) {
+  .workspace.is-clients #checkinsPanel.clients-matrix,
+  #checkinsPanel.clients-matrix {
+    overflow: hidden !important;
+    background: #fafafa !important;
+  }
+
+  /* Grid 5 / 7 + gap — niente voragine */
+  .workspace.is-clients #checkinsPanel .riva-main-layout,
+  #checkinsPanel .riva-main-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr) !important;
+    gap: 24px !important;
+    align-items: stretch !important;
+    overflow: hidden !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    background: #fafafa !important;
+    padding: 0 20px 16px 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column,
+  #checkinsPanel .riva-master-column {
+    grid-column: 1;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: #fff !important;
+    border-right: 0 !important;
+    border-radius: 16px !important;
+    border: 1px solid #efefef !important;
+    box-shadow: none !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll,
+  #checkinsPanel .riva-master-column .table-scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .footer-summary,
+  #checkinsPanel .riva-master-column .footer-summary {
+    flex-shrink: 0 !important;
+    border-top: 1px solid #efefef !important;
+    background: #fff !important;
+  }
+
+  /* Colonna dettaglio: centro geometrico verticale + orizzontale */
+  .workspace.is-clients #checkinsPanel .riva-detail-column,
+  #checkinsPanel .riva-detail-column {
+    grid-column: 2;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: transparent !important;
+    padding: 12px 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  #checkinsPanel .riva-detail-placeholder {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    flex: 0 1 auto !important;
+    margin: auto !important;
+    max-width: 320px !important;
+    text-align: center !important;
+    color: #8e8e8e !important;
+  }
+
+  #checkinsPanel .riva-detail-placeholder[hidden] {
+    display: none !important;
+  }
+
+  #checkinsPanel .riva-detail-card {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    width: min(100%, 480px) !important;
+    max-width: 480px !important;
+    margin: auto !important;
+    flex: 0 1 auto !important;
+    min-height: 0 !important;
+    max-height: calc(100% - 24px) !important;
+    background: #fff !important;
+    border: 1px solid #efefef !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.06) !important;
+    overflow: hidden !important;
+    animation: clientiDetailIn 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  #checkinsPanel .riva-detail-card[hidden] {
+    display: none !important;
+  }
+
+  @keyframes clientiDetailIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.985); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* —— Riga lista: macro-area cliccabile —— */
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.nv-guest-card-mobile,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.clienti-row-card,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id] {
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    transition:
+      background-color 150ms ease,
+      box-shadow 150ms ease,
+      transform 150ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    background: #fff !important;
+    border-bottom: 1px solid #efefef !important;
+    box-shadow: none !important;
+  }
+
+  #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id]:active {
+    transform: scale(0.99);
+  }
+
+  #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id]:hover {
+    background: #fafafa !important;
+  }
+
+  /* Contatti: click/copia ok; status/zone non bloccano la riga */
+  #checkinsPanel .riva-master-column .nv-guest-status,
+  #checkinsPanel .riva-master-column .nv-mobile-info-zone,
+  #checkinsPanel .riva-master-column .nv-mobile-room-zone {
+    pointer-events: none !important;
+  }
+
+  #checkinsPanel .riva-master-column .nv-guest-contacts,
+  #checkinsPanel .riva-master-column .nv-guest-contacts.cell-contacts,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .contact-copy-target,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .secure-cell-wrapper {
+    pointer-events: auto !important;
+  }
+
+  /* Solo i controlli reali restano cliccabili — stopPropagation sul blocco azioni */
+  #checkinsPanel .riva-master-column .btn-reveal,
+  #checkinsPanel .riva-master-column .btn-row-menu,
+  #checkinsPanel .riva-master-column [data-row-menu],
+  #checkinsPanel .riva-master-column .nv-mobile-action-zone,
+  #checkinsPanel .riva-master-column .guest-right-block {
+    pointer-events: auto !important;
+  }
+
+  /* —— .is-selected: nero-su-bianco premium —— */
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.is-selected,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.clienti-row-card.is-selected,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id].is-selected {
+    background-color: #fafafa !important;
+    border-left: 3px solid #262626 !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    box-shadow: none !important;
+    padding-left: 13px !important; /* 16 - 3 border */
+  }
+
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.is-selected .nv-guest-name {
+    font-weight: 800 !important;
+    color: #0a0a0a !important;
+  }
+
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.is-selected:hover {
+    background-color: #fafafa !important;
+  }
+
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.is-checkout-due.is-selected,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.is-checkout-due.is-selected td {
+    background-color: #fafafa !important;
+  }
+}
+
+/* Tablet landscape stretto: gap un filo più stretto */
+@media screen and (min-width: 900px) and (max-width: 1100px) {
+  .workspace.is-clients #checkinsPanel .riva-main-layout,
+  #checkinsPanel .riva-main-layout {
+    gap: 16px !important;
+    padding: 0 12px 12px 0 !important;
+  }
+
+  #checkinsPanel .riva-detail-card {
+    width: min(100%, 420px) !important;
+  }
+}

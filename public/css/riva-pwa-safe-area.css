@@ -1,0 +1,171 @@
+/**
+ * Riva OS — Apple PWA standalone safe-area (status bar / notch)
+ * Load LAST so it wins over chrome resets that zero padding-top.
+ * env(safe-area-inset-*) is 0 in Safari browser; non-zero with
+ * viewport-fit=cover + apple-mobile-web-app-status-bar-style=black-translucent.
+ */
+
+:root {
+  --riva-safe-top: env(safe-area-inset-top, 0px);
+  --riva-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --riva-safe-left: env(safe-area-inset-left, 0px);
+  --riva-safe-right: env(safe-area-inset-right, 0px);
+  --riva-topbar-content-h: 52px;
+  --riva-topbar-h: calc(var(--riva-topbar-content-h) + var(--riva-safe-top));
+}
+
+/* Tier-1 brand topbar (reception + HK) — shield under clock / battery */
+.dash-topbar {
+  box-sizing: border-box !important;
+  min-height: var(--riva-topbar-h) !important;
+  height: auto !important;
+  max-height: none !important;
+  padding-top: var(--riva-safe-top) !important;
+  padding-bottom: 0 !important;
+}
+
+/* Absolute-centered Riva wordmark: center in content band, not under status bar */
+.dash-topbar .m-brand-bar {
+  top: calc(50% + var(--riva-safe-top) / 2) !important;
+}
+
+/* Drawer sidebar brand under status bar when open */
+@media (max-width: 1380px) {
+  .dash-sidebar {
+    padding-top: var(--riva-safe-top);
+  }
+}
+
+/* Sticky secondary chrome under the topbar */
+.closure-shift-sticky,
+.sticky.top-12 {
+  top: var(--riva-topbar-h) !important;
+}
+
+/* Bottom tabbar home-indicator (solo reception: HK non ha tabbar) */
+body:not(.hk-app) .m-tabbar {
+  padding-bottom: max(0px, var(--riva-safe-bottom));
+  padding-left: max(0px, var(--riva-safe-left));
+  padding-right: max(0px, var(--riva-safe-right));
+}
+
+body.hk-app .m-tabbar {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+
+/* Feed scroll: padding trasparente sotto (Home Indicator) — niente banda grigia opaca */
+body.is-dashboard,
+body.is-board,
+body.hk-app.is-dashboard,
+body.hk-app.is-board {
+  background: #fafafa !important;
+}
+
+body.is-dashboard .dash-main,
+body.is-dashboard .dash-content,
+body.is-dashboard .workspace,
+body.is-dashboard .workspace-body,
+body.hk-app .dash-main,
+body.hk-app .dash-content,
+body.hk-app .workspace,
+body.hk-app .workspace-body.content-card {
+  background: #fafafa !important;
+}
+
+/* Sheet che salgono dal basso */
+.sheet.sheet--ig .sheet-panel--ig-report,
+.sheet.sheet--ig .sheet-panel--ops,
+#opsIgSheet .sheet-panel {
+  padding-bottom: max(12px, var(--riva-safe-bottom)) !important;
+  box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   HK iOS: niente banda morta in basso (ex-tabbar)
+   ========================================================================== */
+html:has(body.hk-app) {
+  height: 100% !important;
+  height: 100dvh !important;
+  background-color: #fafafa !important;
+  background: #fafafa !important;
+}
+
+body.hk-app,
+body.hk-app.is-dashboard,
+body.hk-app.is-board {
+  min-height: 100dvh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  background-color: #fafafa !important;
+  background: #fafafa !important;
+  padding-bottom: 0 !important;
+  margin: 0 !important;
+}
+
+body.hk-app .staff-shell,
+body.hk-app.is-dashboard .staff-shell,
+body.hk-app.is-board .staff-shell {
+  min-height: 100dvh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  background: #fafafa !important;
+}
+
+body.hk-app .dash-view,
+body.hk-app .dash-main,
+body.hk-app .dash-content,
+body.hk-app .workspace,
+body.hk-app .workspace-body,
+body.hk-app .hk-board,
+body.hk-app .ops-panel,
+body.hk-app .ops-native,
+body.hk-app .ops-body,
+body.hk-app .ops-rooms-shell,
+body.hk-app .ops-rooms-content,
+body.hk-app .ops-rooms-pager {
+  background-color: #fafafa !important;
+  background: #fafafa !important;
+}
+
+/* Mai padding-bottom sul contenitore flex/overflow: crea la banda grigia sotto le card */
+body.hk-app .dash-view,
+body.hk-app .dash-main,
+body.hk-app .dash-content,
+body.hk-app .workspace,
+body.hk-app .workspace-body,
+body.hk-app .ops-panel,
+body.hk-app .ops-native,
+body.hk-app .ops-rooms-shell,
+body.hk-app .ops-rooms-content,
+body.hk-app .ops-body,
+body.hk-app .ops-rooms-pager {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Safe-area SOLO dentro le pagine scrollabili */
+body.hk-app .ops-rooms-page {
+  padding-bottom: max(16px, var(--riva-safe-bottom)) !important;
+  box-sizing: border-box !important;
+}
+
+body.hk-app .hk-guests-scroll,
+body.hk-app .hk-wa-thread,
+body.hk-app .hk-comms-scroll,
+body.hk-app .hk-team-report-stage {
+  padding-bottom: max(16px, var(--riva-safe-bottom)) !important;
+  box-sizing: border-box !important;
+}
+
+body.hk-app.is-dashboard::before,
+body.hk-app.is-board::before {
+  content: none !important;
+  display: none !important;
+}

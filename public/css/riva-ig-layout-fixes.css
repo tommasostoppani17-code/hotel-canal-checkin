@@ -1,0 +1,258 @@
+/**
+ * Riva OS — IG layout polish (spacing, z-index, scroll, touch)
+ * Caricare dopo riva-ig-global.css
+ */
+
+:root {
+  --workspace-pad-x: clamp(16px, 2.5vw, 32px);
+  --workspace-pad-y: 12px;
+  --ig-sheet-z: 230;
+  --ig-sheet-backdrop-z: 229;
+}
+
+/* ── Z-index stack ── */
+.sheet.sheet--ig:not(#packSheet) {
+  z-index: var(--ig-sheet-z) !important;
+}
+
+/* Backdrop sotto il pannello (DOM: backdrop → panel). Mai z-index alto sul backdrop. */
+.sheet.sheet--ig .sheet-backdrop--ig {
+  z-index: 0 !important;
+}
+
+.sheet.sheet--ig .sheet-panel--ig-report {
+  position: relative;
+  z-index: 1 !important;
+}
+
+#packSheet.sheet:not([hidden]) {
+  z-index: 250 !important;
+}
+
+/* Action sheet / ⋯ menu — sopra le sheet IG, sotto il pack */
+#rowMenuBackdrop.is-visible {
+  z-index: 255 !important;
+}
+#rowMenu:not(.hidden),
+#rowMenu.is-bottom-sheet {
+  z-index: 256 !important;
+}
+
+/* Dropdown fissi (note / select) fuori dalle sheet transformate */
+.ui-dropdown-menu.is-sheet-fixed,
+.notify-menu.is-sheet-fixed,
+.ui-menu.is-sheet-fixed {
+  z-index: 260 !important;
+  pointer-events: auto !important;
+}
+
+.dash-scrim:not(.hidden) {
+  z-index: 128 !important;
+}
+
+body.is-dashboard .dash-sidebar.is-open,
+body.is-dashboard .dash-sidebar:not(.hidden) {
+  z-index: 129;
+}
+
+/* ── Workspace rhythm (mobile + tablet + desktop) ── */
+.workspace-toolbar,
+.holds-panel .rack-sticky-header > .rack-toolbar-actions {
+  padding: var(--workspace-pad-y) var(--workspace-pad-x) !important;
+}
+
+.holds-panel,
+.notes-panel,
+#checkinsPanel .table-panel,
+.settings-scroll {
+  background: var(--ig-bg-secondary) !important;
+}
+
+.workspace-body.content-card,
+.table-panel {
+  background: var(--ig-bg) !important;
+}
+
+/* ── Hold sheet ── */
+.hold-box.hold-avail-box {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+.sheet-form--hold.is-manual #holdLinkPaymentBox {
+  display: none !important;
+}
+
+#holdSheet .hold-wizard-foot {
+  margin-top: 0 !important;
+}
+
+#holdSheet .hold-sell-summary {
+  margin-top: var(--ig-form-gap-section) !important;
+  margin-bottom: 0 !important;
+  border: 0 !important;
+  background: var(--ig-bg-tertiary) !important;
+  border-radius: var(--ig-radius-md) !important;
+  padding: 12px 14px !important;
+}
+
+#holdSheet .hold-avail-list {
+  max-height: none;
+}
+
+.hold-wizard-dot {
+  min-height: 44px !important;
+  padding: 8px 4px !important;
+  margin: -4px 0 !important;
+}
+
+.hold-chip {
+  min-height: 44px !important;
+}
+
+.hold-box--muted.hold-box--note {
+  background: var(--ig-bg-secondary) !important;
+}
+
+/* ── Pack sheet: no empty flex gap on short steps ── */
+#packSheet .sheet-panel--ig-report {
+  min-height: 0 !important;
+}
+
+#packSheet.is-step-preview:not(.is-rack-magic) .sheet-panel--ig-report {
+  min-height: min(460px, 74dvh) !important;
+}
+
+#packSheet.is-rack-magic .sheet-panel--ig-report {
+  min-height: 0 !important;
+}
+
+#packSheet.is-rack-magic.is-step-preview .pack-preview-list,
+#packSheet.is-rack-magic.is-step-preview .pack-option-list {
+  max-height: min(20vh, 140px) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+#holdSheet .hold-avail-list,
+#packSheet .pack-option-shell .pack-option-list,
+#packSheet .pack-option-shell .pack-preview-list {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#packSheet.is-step-preview .pack-preview-list {
+  max-height: min(38vh, 300px);
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+#packSheet #packStepBusy:not(.hidden):not([hidden]) {
+  justify-content: center;
+  padding: 28px 0;
+  min-height: 120px;
+}
+
+#packSheet.is-rack-magic .sheet-backdrop--ig {
+  pointer-events: none;
+  background: rgba(10, 10, 10, 0.1) !important;
+}
+
+#packSheet.is-rack-magic .sheet-panel--ig-report {
+  pointer-events: auto;
+}
+
+.pack-choice-hint {
+  color: var(--ig-text-secondary) !important;
+}
+
+/* ── Sheet forms: no forced 100% stretch ── */
+.ig-sheet-body > .sheet-form--hold,
+.ig-sheet-body > form.sheet-form--hold {
+  min-height: auto !important;
+}
+
+/* ── Settings mobile full-bleed (solo phone / tablet portrait) ── */
+@media (max-width: 899px), ((max-width: 1380px) and (orientation: portrait)) {
+  .settings-shell {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+    background: var(--ig-bg) !important;
+  }
+
+  .settings-shell.is-detail {
+    min-height: 100% !important;
+    height: 100%;
+  }
+
+  #settingsPanel .settings-scroll {
+    background: var(--ig-bg-secondary) !important;
+  }
+
+  .settings-rail {
+    background: var(--ig-bg) !important;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1380px) and (orientation: portrait) {
+  #settingsPanel .settings-scroll {
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  .settings-shell.is-detail {
+    min-height: calc(100dvh - var(--dash-topbar-h, 56px)) !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) and (orientation: portrait) {
+  .settings-shell.is-detail .settings-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
+/* ── Rack preview bars above head ── */
+.rack-bar.is-pack-preview {
+  z-index: 35 !important;
+}
+
+.rack-bar.is-pack-flip {
+  z-index: 34 !important;
+}
+
+/* Single hairline under rack chrome (mobile) */
+@media (max-width: 1380px) {
+  .rack-toolbar-actions {
+    border-bottom: 0 !important;
+  }
+
+  .rack-chrome-top .rack-legend {
+    border-bottom: 1px solid var(--ig-divider) !important;
+  }
+}
+
+/* ── Theme picker: one ring ── */
+.theme-card.is-selected {
+  box-shadow: none !important;
+  border-color: var(--ig-text) !important;
+  border-width: 2px !important;
+}
+
+/* ── Reduced motion: targeted only ── */
+@media (prefers-reduced-motion: reduce) {
+  .motion-workspace-in,
+  .pack-step.is-entering,
+  .pack-step.is-leaving,
+  .sheet--ig.is-opening .sheet-panel--ig-report,
+  .sheet--ig.is-closing .sheet-panel--ig-report {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,173 @@
+/**
+ * Riva OS — Planning Prenotazioni: geometria Instagram
+ * Toolbar gerarchia · colonna camere centrata · pillole fluttuanti
+ * Scope: .workspace.is-holds / .holds-panel
+ */
+
+/* ── 1. Capsule azioni: Vendi dominante, resto secondarie ── */
+.workspace.is-holds .holds-top-actions .rack-toolbar-btn {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  border-radius: 9999px !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.02em !important;
+  box-shadow: none !important;
+}
+
+.workspace.is-holds .holds-top-actions .rack-toolbar-btn--primary,
+.workspace.is-holds .holds-top-actions #rackBtnNewLink {
+  background: #262626 !important;
+  color: #fff !important;
+  border: 1px solid #262626 !important;
+}
+
+.workspace.is-holds .holds-top-actions .rack-toolbar-btn--primary:hover,
+.workspace.is-holds .holds-top-actions #rackBtnNewLink:hover {
+  background: #0a0a0a !important;
+  border-color: #0a0a0a !important;
+}
+
+.workspace.is-holds .holds-top-actions #rackBtnEdit,
+.workspace.is-holds .holds-top-actions #rackBtnOptimize,
+.workspace.is-holds .holds-top-actions #rackBtnSmartSpace,
+.workspace.is-holds .holds-top-actions .rack-toolbar-btn:not(.rack-toolbar-btn--primary):not(#rackBtnNewLink) {
+  background: #fafafa !important;
+  color: #262626 !important;
+  border: 1px solid #efefef !important;
+}
+
+.workspace.is-holds .holds-top-actions #rackBtnEdit:hover,
+.workspace.is-holds .holds-top-actions #rackBtnOptimize:hover,
+.workspace.is-holds .holds-top-actions #rackBtnSmartSpace:hover {
+  background: #f3f4f6 !important;
+}
+
+.workspace.is-holds .holds-top-actions .rack-toolbar-btn.is-edit-on {
+  background: #262626 !important;
+  color: #fff !important;
+  border-color: #262626 !important;
+}
+
+/* ── 2. Colonna camere sticky: centrata, senza pallini ── */
+.holds-panel .rack-room-label__dot,
+.workspace.is-holds .rack-room-label__dot {
+  display: none !important;
+}
+
+.holds-panel .rack-room-label,
+.workspace.is-holds .rack-room-label {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  padding: 0 6px !important;
+  text-align: center !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.holds-panel .rack-room-label > span:last-child,
+.workspace.is-holds .rack-room-label > span {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+.holds-panel .rack-room-label__num,
+.workspace.is-holds .rack-room-label__num {
+  display: block !important;
+  width: 100% !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  letter-spacing: -0.03em !important;
+  color: #0a0a0a !important;
+  text-align: center !important;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.holds-panel .rack-room-label__abbr,
+.workspace.is-holds .rack-room-label__abbr {
+  display: block !important;
+  width: 100% !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  color: #6b7280 !important;
+  text-align: center !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Suite / label testuali lunghe (solo nome, senza num corto) */
+.holds-panel .rack-room-label:not(:has(.rack-room-label__abbr)) .rack-room-label__num,
+.workspace.is-holds .rack-room-label.is-long .rack-room-label__num {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+.holds-panel .rack-room-label.is-arriving-today {
+  background: #fafafa !important;
+  box-shadow: inset 3px 0 0 #262626;
+}
+
+/* ── 3. Pillole prenotazione fluttuanti (iOS) ── */
+.holds-panel .rack-bar,
+.workspace.is-holds .rack-bar {
+  border-radius: 9999px !important;
+  border: 0 !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  /* Geometria verticale flottante — inset orizzontale via left/width calc in JS */
+  top: calc(3px + (var(--lane, 0) * ((var(--rack-row-h) - 6px) / var(--rack-lanes, 1)))) !important;
+  height: calc(((var(--rack-row-h) - 6px) / var(--rack-lanes, 1)) - 0px) !important;
+  max-height: calc(var(--rack-row-h) - 6px) !important;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.holds-panel .rack-bar.is-micro {
+  padding-left: 4px !important;
+  padding-right: 8px !important;
+}
+
+@media (max-width: 1380px) {
+  .holds-panel .rack-bar,
+  .workspace.is-holds .rack-bar {
+    top: calc(3px + (var(--lane, 0) * ((var(--rack-row-h) - 6px) / var(--rack-lanes, 1)))) !important;
+    height: calc(((var(--rack-row-h) - 6px) / var(--rack-lanes, 1))) !important;
+    border-radius: 9999px !important;
+  }
+
+  .holds-panel .rack-room-label,
+  .workspace.is-holds .rack-room-label {
+    padding: 0 4px !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .holds-panel .rack-room-label__num {
+    font-size: 12px !important;
+  }
+
+  .holds-panel .rack-room-label__abbr {
+    font-size: 10px !important;
+  }
+}

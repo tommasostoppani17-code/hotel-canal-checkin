@@ -1,0 +1,225 @@
+/**
+ * Riva OS — Tap stabile (anti-flicker) su TUTTE le schermate
+ * Isolamento GPU + press IG + no flash nativo. Caricare PER ULTIMO.
+ */
+
+:root {
+  --riva-tap-press: 80ms;
+  --riva-tap-ease: ease-out;
+}
+
+/* Flash blu nativo tablet — spegni su TUTTI i controlli */
+button,
+input,
+select,
+textarea,
+a,
+.status-pill,
+.status-pill-box,
+.pax-btn,
+.bf-stepper__btn,
+.bf-toggle__btn,
+.ops-bf-choice__btn,
+.date-pill,
+.sc-key-tile {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+.pax-btn:focus:not(:focus-visible),
+.status-pill:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+.bf-stepper__val,
+.bf-toggle__btn,
+.pax-btn,
+.status-pill,
+.ops-semaforo {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Controlli interattivi comuni (dashboard + ops + sheets) */
+.btn-action,
+.btn-canal,
+.btn-primary,
+.btn-exit,
+.btn-ig,
+.btn-settings-primary,
+.btn-settings-secondary,
+.rack-toolbar-btn,
+.rack-view-btn,
+.rack-nav-btn,
+.m-date-btn,
+.m-add-checkin,
+.notes-filter-pill,
+.notes-done-toggle,
+.notes-check-hit,
+.notes-add-btn,
+.pack-choice-btn,
+.pack-stepper__btn,
+.pack-option,
+.pack-move-check,
+.ops-sec-tab,
+.ops-semaforo,
+.ops-room,
+.ops-room__body,
+.ops-bf-choice__btn,
+.bf-stepper__btn,
+.bf-toggle__btn,
+.bf-room,
+.ops-note,
+.feed-row,
+.blacklist-list .feed-row,
+.ui-menu-item,
+.row-menu-item,
+.hold-chip,
+.ig-seg-btn,
+.date-segment button,
+.dash-nav-item,
+.settings-rail-item,
+.settings-back,
+.sys-settings-add-btn,
+.pax-btn,
+.status-pill,
+.status-pill-box,
+.breakfast-row-premium {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Layer fisso su righe/carte che non devono lampeggiare coi vicini */
+.ops-room,
+.bf-table tbody tr[data-bf-row],
+.notes-list .feed-row,
+.blacklist-list .feed-row,
+.ops-note,
+.pack-option,
+.pack-preview-item--check {
+  will-change: transform, opacity;
+  contain: layout style;
+}
+
+/* Feedback press Instagram — solo scale, niente reflow dei vicini */
+.btn-action:active:not(:disabled),
+.btn-canal:active:not(:disabled),
+.btn-primary:active:not(:disabled),
+.btn-exit:active:not(:disabled),
+.btn-ig:active:not(:disabled),
+.rack-toolbar-btn:active:not(:disabled),
+.rack-view-btn:active,
+.ops-sec-tab:active,
+.ops-semaforo[data-ops-toggle]:active,
+.ops-bf-choice__btn:active,
+.bf-stepper__btn:active,
+.bf-toggle__btn:active,
+.notes-filter-pill:active,
+.notes-done-toggle:active,
+.notes-check-hit:active,
+.pack-choice-btn:active,
+.pack-stepper__btn:active,
+.pack-option:active,
+.pax-btn:active,
+.status-pill:active {
+  transform: scale(0.96) translateZ(0) !important;
+  transition: transform var(--riva-tap-press) var(--riva-tap-ease);
+}
+
+.ops-room__body:active,
+.bf-room:active,
+.feed-row:active,
+.ops-note:active {
+  transform: scale(0.985) translateZ(0);
+  transition: transform var(--riva-tap-press) var(--riva-tap-ease);
+}
+
+/* Nessun fade-in residuo su liste già montate */
+.bf-rows .fade-in-premium,
+.ops-rooms-grid .fade-in-premium,
+.notes-list .fade-in-premium,
+.feed-row.fade-in-premium {
+  animation: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dashboard reception — chrome e liste FERME al tap (no scale / no slide)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.is-dashboard .motion-workspace-in,
+body.is-dashboard .workspace-body.motion-workspace-in {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Toolbar, pill, bottoni: feedback solo opacità — mai scale */
+body.is-dashboard .date-pill:active,
+body.is-dashboard .date-segment button:active,
+body.is-dashboard .btn-action:active:not(:disabled),
+body.is-dashboard .btn-canal:active:not(:disabled),
+body.is-dashboard .btn-primary:active:not(:disabled),
+body.is-dashboard .btn-exit:active:not(:disabled),
+body.is-dashboard .btn-ig:active:not(:disabled),
+body.is-dashboard .rack-toolbar-btn:active:not(:disabled),
+body.is-dashboard .rack-view-btn:active,
+body.is-dashboard .notes-filter-pill:active,
+body.is-dashboard .notes-done-toggle:active,
+body.is-dashboard .notes-add-btn:active,
+body.is-dashboard .m-add-checkin:active,
+body.is-dashboard .clients-fab-checkin:active,
+body.is-dashboard .dash-nav-item:active,
+body.is-dashboard .dash-menu-btn:active,
+body.is-dashboard .btn-notify:active,
+body.is-dashboard .btn-row-menu:active,
+body.is-dashboard .hold-chip:active,
+body.is-dashboard .ig-seg-btn:active {
+  transform: none !important;
+  opacity: 0.82;
+  transition: opacity var(--riva-tap-press) var(--riva-tap-ease), background-color 120ms ease !important;
+}
+
+/* Search: anello inset sempre 2px — focus non “salta” */
+body.is-dashboard .search-wrapper {
+  box-shadow: inset 0 0 0 2px transparent !important;
+  transition: box-shadow 0s, background-color 120ms ease !important;
+}
+
+body.is-dashboard .search-wrapper:focus-within {
+  box-shadow: inset 0 0 0 2px rgba(10, 10, 10, 0.14) !important;
+}
+
+/* Righe Clienti / feed: solo sfondo, zero transform */
+body.is-dashboard .clients-matrix .matrix-table tbody tr,
+body.is-dashboard .clients-matrix .matrix-table tbody tr td,
+body.is-dashboard .feed-row,
+body.is-dashboard .notes-list .feed-row,
+body.is-dashboard .blacklist-list .feed-row,
+body.is-dashboard .ops-note {
+  transform: none !important;
+  transition: background-color 120ms ease !important;
+}
+
+body.is-dashboard .clients-matrix .matrix-table tbody tr:active,
+body.is-dashboard .feed-row:active,
+body.is-dashboard .notes-list .feed-row:active,
+body.is-dashboard .blacklist-list .feed-row:active,
+body.is-dashboard .ops-note:active,
+body.is-dashboard .ops-room__body:active,
+body.is-dashboard .bf-room:active {
+  transform: none !important;
+}
+
+/* Filtri periodo Clienti: niente fade pill off durante switch */
+body.is-dashboard .workspace.is-clients .date-segment.is-switching .date-pill:not(.is-on) {
+  opacity: 1 !important;
+}

@@ -1,0 +1,152 @@
+/**
+ * Riva OS — coerenza visiva (CSS condiviso, reversibile)
+ * Caricare DOPO gli <style> inline di ogni pagina.
+ *
+ * NOTA: Colazioni (ops-bf-*) resta sui CSS nativi di staff.html — non toccare qui.
+ */
+:root {
+  --riva-ink: #0a0a0a;
+  --riva-muted: #636366;
+  --riva-border: rgba(10, 10, 10, 0.1);
+  --riva-surface: #f5f3f0;
+  --riva-panel: #ffffff;
+  --riva-hairline: #e5e7eb;
+  --riva-seg-bg: #f3f4f6;
+
+  --riva-font: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --riva-text-title: 17px;
+  --riva-text-section: 15px;
+  --riva-text-body: 14px;
+  --riva-text-meta: 12px;
+  --riva-text-kicker: 10px;
+  --riva-text-brand-ui: 20px;
+
+  --riva-max-w: 48rem;
+  --riva-sheet-radius: 14px;
+  --riva-sheet-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --riva-list-border: #f0f0f0;
+  --riva-list-press: #fafafa;
+  --riva-radius-ui: 14px;
+  --riva-radius-pill: 12px;
+}
+
+/* ── Niente pull-to-refresh (nativo browser + spinner custom) ── */
+html,
+body {
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+}
+
+.ptr-ig,
+.ptr-slot {
+  display: none !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+.workspace.is-ptr-live,
+.workspace.is-ptr-snap {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* ── Titoli pagina staff / guest (escluso Colazioni) ── */
+.dash-topbar h1,
+.dash-topbar h1#pageTitle,
+#pageTitle,
+.dining-book-title,
+.concierge-header-title,
+.header h1,
+#lbl-title-2,
+#lbl-book-title {
+  font-family: var(--riva-font) !important;
+  font-size: var(--riva-text-title) !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.15 !important;
+}
+
+#step1 .gate-header h1,
+#step1 .gate-header #lbl-title,
+#step3 .gate-header h1,
+#step3 .gate-header #lbl-book-title,
+.gate-header h1 {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-weight: 300 !important;
+  font-style: normal !important;
+  letter-spacing: -0.035em !important;
+}
+
+/* ── Sheet / modali (guest + staff) ── */
+.sheet-backdrop,
+.sheet-backdrop--ig {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* ── Liste / card (guest index, staff) ── */
+.feed-row,
+.note-shift-row,
+.blacklist-row,
+.matrix-table tbody tr {
+  border-color: var(--riva-list-border) !important;
+}
+
+.feed-row:active,
+.note-shift-row:active,
+.blacklist-row:active {
+  background: var(--riva-list-press) !important;
+}
+
+/* ── Bottoni pill / chip ── */
+.btn-pill,
+.chip,
+.hold-chip {
+  border-radius: var(--riva-radius-pill) !important;
+}
+
+/* ── Input / field ── */
+.field,
+.apple-input,
+.gate-form .field {
+  border-radius: var(--riva-radius-ui) !important;
+}
+
+/* ── Segmented control ── */
+.seg-control,
+.sys-seg {
+  background: var(--riva-seg-bg) !important;
+  border-radius: var(--riva-radius-ui) !important;
+}
+
+.seg-control button.is-on,
+.sys-seg button.is-on {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ── HK / ops card ── */
+.ops-room-card,
+.room-tile {
+  border-radius: var(--riva-radius-ui) !important;
+  border-color: var(--riva-hairline) !important;
+}
+
+/* ── Toast / alert ── */
+.staff-alert,
+#error,
+.toast {
+  border-radius: var(--riva-radius-ui) !important;
+  font-family: var(--riva-font) !important;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

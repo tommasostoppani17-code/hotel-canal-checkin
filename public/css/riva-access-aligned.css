@@ -1,0 +1,478 @@
+/**
+ * Login Staff / HK — allineato al check-in guest (#guestGate)
+ * Mobile: top bar 48px #0b1325 + form bianco
+ * Expanded (≥840): Supporting Pane brand | form
+ * Campi IG: #fafafa · bordo 1px #efefef · radius 12 · 48px · ink #0b1325
+ * Font: stessi token di checkin-fonts.css (Montserrat UI · Great Vibes · Sora)
+ *
+ * Caricare PER ULTIMO su staff.html e hk.html (solo finché è login).
+ */
+
+body:not(.is-dashboard):not(.is-board) {
+  --gate-ink: #0b1325;
+  --gate-muted: #4a5568;
+  --gate-muted-soft: #86868b;
+  --gate-navy: #0b1325;
+  --gate-navy-hover: #060a14;
+  --gate-border: #efefef;
+  --gate-border-focus: #0b1325;
+  --gate-input-bg: #fafafa;
+  --gate-cream: #f5f7fb;
+  --gate-radius: 12px;
+  --gate-input-h: 48px;
+  --gate-form-max: 420px;
+  --gate-bar-core: 48px;
+  --gate-bar-h: calc(var(--gate-bar-core) + env(safe-area-inset-top, 0px));
+  --gate-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --gate-font-script: var(--ck-font-script, "Great Vibes", cursive);
+  --gate-font-display: var(--ck-font-display, "Sora", "Montserrat", sans-serif);
+  background-color: #0b1325 !important;
+  font-family: var(--gate-font-ui) !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .bg-inertia--gate,
+body:not(.is-dashboard):not(.is-board) .background-overlay .bg-inertia {
+  background-color: #0b1325 !important;
+  background-image: none !important;
+  filter: none !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .background-overlay::after {
+  display: none !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .login-view,
+body:not(.is-dashboard):not(.is-board) .login-view.hk-login,
+body:not(.is-dashboard):not(.is-board) .admin-gate {
+  background: #0b1325 !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-stage,
+body:not(.is-dashboard):not(.is-board) .login-screen-wrapper {
+  background: #ffffff !important;
+  min-height: 100svh !important;
+  height: 100svh !important;
+  max-height: 100svh !important;
+  overflow: hidden !important;
+}
+
+/* —— Compact / Medium: barra top come check-in —— */
+@media (max-width: 839px) {
+  body:not(.is-dashboard):not(.is-board) .gate-stage,
+  body:not(.is-dashboard):not(.is-board) .login-screen-wrapper {
+    flex-direction: column !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    flex: none !important;
+    width: 100% !important;
+    height: var(--gate-bar-h) !important;
+    min-height: var(--gate-bar-h) !important;
+    max-height: var(--gate-bar-h) !important;
+    padding: env(safe-area-inset-top, 0px) 16px 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    background: #0b1325 !important;
+    color: #f5f7fb !important;
+    overflow: hidden !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    isolation: auto !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero::before,
+  body:not(.is-dashboard):not(.is-board) .gate-hero::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero__brand,
+  body:not(.is-dashboard):not(.is-board) .brand-logo-pure-wrapper {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    height: var(--gate-bar-core) !important;
+    max-width: none !important;
+    animation: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero .hotel-title.riva-wordmark,
+  body:not(.is-dashboard):not(.is-board) .gate-hero .riva-wordmark {
+    font-family: var(--gate-font-script) !important;
+    font-size: 26px !important;
+    line-height: 1 !important;
+    color: #f5f7fb !important;
+    text-shadow: none !important;
+    padding: 0 !important;
+    align-items: center !important;
+    gap: 0.22em !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero .riva-shell {
+    width: 0.52em !important;
+    height: 0.52em !important;
+    filter: none !important;
+    opacity: 0.92 !important;
+    transform: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero__os,
+  body:not(.is-dashboard):not(.is-board) .gate-hero__hotel,
+  body:not(.is-dashboard):not(.is-board) .gate-hero__tag,
+  body:not(.is-dashboard):not(.is-board) .gate-hero__section {
+    display: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-card,
+  body:not(.is-dashboard):not(.is-board) .admin-gate .gate-card {
+    position: relative !important;
+    z-index: 1 !important;
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding:
+      calc(var(--gate-bar-h) + 16px)
+      max(16px, env(safe-area-inset-left, 0px))
+      calc(24px + env(safe-area-inset-bottom, 0px))
+      max(16px, env(safe-area-inset-right, 0px)) !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    justify-content: center !important;
+    justify-content: safe center !important;
+    align-items: center !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-card__inner {
+    width: 100% !important;
+    max-width: min(var(--gate-form-max), 100%) !important;
+    margin: auto 0 !important;
+    padding: 0 !important;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 839px) {
+  body:not(.is-dashboard):not(.is-board) {
+    --gate-form-max: 480px;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-card {
+    padding-left: max(24px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(24px, env(safe-area-inset-right, 0px)) !important;
+  }
+}
+
+/* —— Expanded: Supporting Pane come check-in —— */
+@media (min-width: 840px) {
+  body:not(.is-dashboard):not(.is-board) .gate-stage,
+  body:not(.is-dashboard):not(.is-board) .login-screen-wrapper {
+    flex-direction: row !important;
+    background: #0b1325 !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    flex: 1 1 50% !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    padding: clamp(24px, 4vh, 48px) clamp(20px, 3vw, 40px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #0b1325 !important;
+    color: #f5f7fb !important;
+    overflow: visible !important;
+    border: 0 !important;
+    isolation: auto !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero::before,
+  body:not(.is-dashboard):not(.is-board) .gate-hero::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero__brand {
+    flex-direction: column !important;
+    align-items: center !important;
+    height: auto !important;
+    animation: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero .hotel-title.riva-wordmark,
+  body:not(.is-dashboard):not(.is-board) .gate-hero .riva-wordmark {
+    font-family: var(--gate-font-script) !important;
+    font-size: clamp(64px, 6vw, 110px) !important;
+    color: #f5f7fb !important;
+    text-shadow: none !important;
+    align-items: center !important;
+    gap: 0.22em !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero .riva-shell {
+    width: 0.52em !important;
+    height: 0.52em !important;
+    filter: none !important;
+    opacity: 0.92 !important;
+    transform: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero__os {
+    display: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero__hotel {
+    display: none !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-card,
+  body:not(.is-dashboard):not(.is-board) .admin-gate .gate-card {
+    flex: 1 1 50% !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    min-width: 0 !important;
+    min-height: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: clamp(28px, 5vh, 72px) clamp(24px, 4vw, 64px) !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    justify-content: center !important;
+    justify-content: safe center !important;
+    align-items: center !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-card__inner {
+    width: 100% !important;
+    max-width: min(var(--gate-form-max), 100%) !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+}
+
+@media (min-width: 840px) and (max-width: 1199px) {
+  body:not(.is-dashboard):not(.is-board) {
+    --gate-form-max: 400px;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero {
+    flex: 0 0 42% !important;
+    width: 42% !important;
+    max-width: 42% !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-card {
+    flex: 1 1 58% !important;
+    width: 58% !important;
+    max-width: 58% !important;
+  }
+
+  body:not(.is-dashboard):not(.is-board) .gate-hero .riva-wordmark {
+    font-size: clamp(56px, 6.5vw, 96px) !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  body:not(.is-dashboard):not(.is-board) {
+    --gate-form-max: 440px;
+  }
+}
+
+/* —— Tipografia form (come check-in) —— */
+body:not(.is-dashboard):not(.is-board) .gate-header {
+  margin: 0 0 16px !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-kicker {
+  display: none !important;
+}
+
+/* —— Accedi / lead = IDENTICI al titolo Check-in (misurato live) ——
+   Check-in: Montserrat 26px / 300 / -0.035em
+   Lead:     Montserrat 14px / 500
+*/
+body:not(.is-dashboard):not(.is-board) .gate-header h1,
+#loginCard .gate-header h1,
+#hkLogin .gate-header h1,
+#loginCard .ck-title,
+#hkLogin .ck-title {
+  margin: 0 0 6px !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 300 !important;
+  font-style: normal !important;
+  letter-spacing: -0.035em !important;
+  line-height: 1.15 !important;
+  color: #0b1325 !important;
+  text-align: left !important;
+  animation: none !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-lead,
+#loginCard .gate-lead,
+#hkLogin .gate-lead,
+#loginCard .ck-lead,
+#hkLogin .ck-lead {
+  margin: 0 0 8px !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  letter-spacing: normal !important;
+  color: #64748b !important;
+  text-align: left !important;
+  animation: none !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form {
+  gap: 0 !important;
+  width: 100% !important;
+  margin-top: 16px !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .form-group {
+  margin: 0 0 14px !important;
+  position: relative !important;
+  text-align: left !important;
+}
+
+/* Label sopra il campo — come check-in guest (no floating dentro la barra) */
+body:not(.is-dashboard):not(.is-board) .gate-form .form-group > label,
+body:not(.is-dashboard):not(.is-board) .gate-form .input-with-icon > label {
+  position: static !important;
+  display: block !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+  margin: 0 0 6px !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+  z-index: auto !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  line-height: 1.2 !important;
+  color: #0b1325 !important;
+  transition: color 0.15s ease !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .form-group:focus-within > label:not(.label-error-state),
+body:not(.is-dashboard):not(.is-board) .gate-form .input-with-icon:focus-within > label:not(.label-error-state),
+body:not(.is-dashboard):not(.is-board) .gate-form .input-with-icon:has(input:not(:placeholder-shown)) > label:not(.label-error-state),
+body:not(.is-dashboard):not(.is-board) .gate-form .form-group:has(input:focus) > label:not(.label-error-state),
+body:not(.is-dashboard):not(.is-board) .gate-form .form-group:has(input:not(:placeholder-shown)) > label:not(.label-error-state) {
+  top: auto !important;
+  transform: none !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  color: #0b1325 !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .form-group > label.label-error-state,
+body:not(.is-dashboard):not(.is-board) .gate-form .input-with-icon > label.label-error-state {
+  color: #c62828 !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .apple-input,
+body:not(.is-dashboard):not(.is-board) .gate-form .apple-input.field,
+body:not(.is-dashboard):not(.is-board) .gate-form input.field,
+body:not(.is-dashboard):not(.is-board) .gate-form select.apple-input,
+body:not(.is-dashboard):not(.is-board) .admin-gate .apple-input {
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  padding: 0 14px 0 42px !important;
+  border: 1px solid #efefef !important;
+  border-radius: 12px !important;
+  background: #fafafa !important;
+  color: #0b1325 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+  box-shadow: none !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .apple-input::placeholder,
+body:not(.is-dashboard):not(.is-board) .gate-form .apple-input.field::placeholder,
+body:not(.is-dashboard):not(.is-board) .admin-gate .apple-input::placeholder {
+  color: #86868b !important;
+  opacity: 1 !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .apple-input:focus,
+body:not(.is-dashboard):not(.is-board) .gate-form .apple-input.field:focus,
+body:not(.is-dashboard):not(.is-board) .admin-gate .apple-input:focus {
+  background: #ffffff !important;
+  border-color: #0b1325 !important;
+  box-shadow: 0 0 0 1px #0b1325 !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .btn-canal,
+body:not(.is-dashboard):not(.is-board) #btnLogin,
+body:not(.is-dashboard):not(.is-board) #hkBtnLogin {
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  margin-top: 8px !important;
+  border-radius: 12px !important;
+  background: #0b1325 !important;
+  background-color: #0b1325 !important;
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .gate-form .btn-canal:hover,
+body:not(.is-dashboard):not(.is-board) #btnLogin:hover {
+  background: #060a14 !important;
+}
+
+body:not(.is-dashboard):not(.is-board) .card-sheen {
+  display: none !important;
+}
+
+/* Altezza corta: scroll, non squash */
+@media (max-height: 640px) {
+  body:not(.is-dashboard):not(.is-board) .gate-card {
+    justify-content: flex-start !important;
+  }
+}

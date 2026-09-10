@@ -1,0 +1,131 @@
+/**
+ * Riva OS — Notify / segnalazioni popover: zero-flicker open
+ * Paint DOM first (opacity 0) → then .is-visible fade-in.
+ */
+
+#notifyMenu.notify-menu,
+#hkNotifyMenu.notify-menu,
+.segnalazioni-popover-panel {
+  position: fixed !important;
+  z-index: 99999 !important;
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid #efefef !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  transform: translateZ(0) scale(0.98);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Compilato e posizionato: emerge senza FOUC */
+#notifyMenu.notify-menu.is-visible,
+#hkNotifyMenu.notify-menu.is-visible,
+.segnalazioni-popover-panel.is-visible {
+  opacity: 1 !important;
+  transform: translateZ(0) scale(1) !important;
+  pointer-events: auto !important;
+  transition:
+    opacity 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* Chiudi: dissolve prima di [hidden] */
+#notifyMenu.notify-menu.is-closing,
+#hkNotifyMenu.notify-menu.is-closing {
+  opacity: 0 !important;
+  transform: translateZ(0) scale(0.98) !important;
+  pointer-events: none !important;
+  transition:
+    opacity 120ms cubic-bezier(0.4, 0, 0.92, 0.55),
+    transform 120ms cubic-bezier(0.4, 0, 0.92, 0.55) !important;
+}
+
+/* Disattiva keyframe legacy che ripartono da opacity 0 a menu già a schermo */
+#notifyMenu.notify-menu.is-opening,
+#hkNotifyMenu.notify-menu.is-opening {
+  animation: none !important;
+}
+
+#notifyMenu .notify-list,
+#hkNotifyMenu .notify-list {
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Riga ospite: altezza fluida sul testo (niente taglio forzato) */
+#notifyMenu .notify-item,
+#hkNotifyMenu .notify-item,
+.segnalazione-row-item {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 64px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  padding: 12px 14px !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+#notifyMenu .notify-item-name,
+#hkNotifyMenu .notify-item-name {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100%;
+}
+
+#notifyMenu .notify-item-meta,
+#hkNotifyMenu .notify-item-meta {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100%;
+}
+
+#notifyMenu .notify-item-text,
+#hkNotifyMenu .notify-item-text {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  max-height: none !important;
+  white-space: normal !important;
+  word-break: break-word;
+  line-height: 1.4 !important;
+}
+
+#notifyMenu .notify-empty,
+#hkNotifyMenu .notify-empty {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+#notifyMenu .notify-item,
+#hkNotifyMenu .notify-item,
+#notifyMenu .notify-add,
+#hkNotifyMenu .notify-add,
+#notifyMenu button,
+#hkNotifyMenu button {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #notifyMenu.notify-menu.is-visible,
+  #hkNotifyMenu.notify-menu.is-visible,
+  #notifyMenu.notify-menu.is-closing,
+  #hkNotifyMenu.notify-menu.is-closing {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,188 @@
+/**
+ * Prenotazioni — SOLO telefono (≤767px).
+ * Tablet verticale (768–1100 portrait): vedi riva-capsule-toolbars.css
+ * - Niente Settimana / Mese
+ * - Niente legenda colori sopra la griglia
+ * - Frecce giorno subito sotto la tabella
+ */
+
+@media (max-width: 767px) {
+  /* Settimana/Mese in riga con le azioni (non nascosti) */
+  .workspace.is-holds .holds-top-actions .rack-view-modes,
+  .workspace.is-holds .rack-view-modes {
+    display: inline-flex !important;
+  }
+
+  .workspace.is-holds .holds-top-actions__btns {
+    margin-left: 0 !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    flex-wrap: nowrap !important;
+  }
+
+  /* Legenda colori: via — occupa solo spazio */
+  .workspace.is-holds .holds-panel .rack-legend,
+  .workspace.is-holds .holds-panel .rack-chrome-top .rack-legend,
+  .workspace.is-holds .holds-panel #rackStatusLegend,
+  .holds-panel .rack-legend,
+  .holds-panel #rackStatusLegend {
+    display: none !important;
+  }
+
+  .workspace.is-holds .holds-panel .rack-chrome-top,
+  .workspace.is-holds .holds-panel .rack-sticky-header {
+    display: none !important;
+  }
+
+  /* Pannello: colonna — griglia, poi frecce, poi footer */
+  .workspace.is-holds .holds-panel {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .workspace.is-holds .holds-panel .rack-frame {
+    order: 1 !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Frecce giorno: subito sotto la tabella (override display:contents / display:none legacy) */
+  .workspace.is-holds .holds-panel .rack-bottom-bar,
+  .workspace.is-holds .holds-panel .rack-bottom-bar#rackBottomBar,
+  .holds-panel:not(.hidden):not([hidden]) .rack-bottom-bar#rackBottomBar {
+    order: 2 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+    flex: 0 0 auto !important;
+    flex-shrink: 0 !important;
+    gap: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 8px 12px !important;
+    box-sizing: border-box !important;
+    background: #fff !important;
+    border: 0 !important;
+    border-top: 1px solid #efefef !important;
+    border-radius: 0 !important;
+    z-index: 24 !important;
+  }
+
+  .workspace.is-holds .holds-panel .footer-summary {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+    padding-top: 8px !important;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Periodo nav: VISIBILE solo nella bottom bar (override staff.html display:none) */
+  .workspace.is-holds .holds-panel .rack-bottom-bar .rack-toolbar-period,
+  .workspace.is-holds .holds-panel #rackDayNav,
+  .holds-panel .rack-bottom-bar #rackDayNav {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  .workspace.is-holds .holds-panel #rackDayNav .rack-nav-btn {
+    appearance: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #efefef !important;
+    border-radius: 9999px !important;
+    background: #fafafa !important;
+    color: #0a0a0a !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .workspace.is-holds .holds-panel #rackDayNav .rack-nav-btn:active {
+    background: #f2f2f2 !important;
+    opacity: 0.88 !important;
+    transform: none !important;
+  }
+
+  .workspace.is-holds .holds-panel #rackDayNav .rack-nav-btn__full {
+    display: none !important;
+  }
+
+  .workspace.is-holds .holds-panel #rackDayNav .rack-nav-btn__icon {
+    display: block !important;
+  }
+
+  .workspace.is-holds .holds-panel #rackDayNav .rack-toolbar-heading {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 6px !important;
+    height: 44px !important;
+    overflow: hidden !important;
+  }
+
+  .workspace.is-holds .holds-panel #rackDayNav .rack-period-label {
+    appearance: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 44px !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #0a0a0a !important;
+    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 44px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .workspace.is-holds .holds-panel #rackDayNav .rack-period-label:active {
+    opacity: 0.65;
+  }
+}
+
+@media (min-width: 1025px) {
+  .holds-panel #rackDayNav .rack-nav-btn__icon {
+    display: none !important;
+  }
+
+  .holds-panel #rackDayNav .rack-nav-btn__full {
+    display: inline !important;
+  }
+}

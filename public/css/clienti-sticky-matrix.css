@@ -1,0 +1,327 @@
+/* Clienti lista — Instagram Direct (righe 72px, niente schedone / niente foglio Excel) */
+
+@media screen and (min-width: 900px) {
+  /* Nascondi thead foglio */
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table--clients thead,
+  #checkinsPanel .riva-master-column .matrix-table--clients thead,
+  #inHousePanel.clients-matrix .matrix-table--clients thead,
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table--clients colgroup,
+  #checkinsPanel .riva-master-column .matrix-table--clients colgroup,
+  #inHousePanel.clients-matrix .matrix-table--clients colgroup {
+    display: none !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll,
+  #checkinsPanel .riva-master-column .table-scroll,
+  #inHousePanel.clients-matrix .table-scroll {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table--clients,
+  #checkinsPanel .riva-master-column .matrix-table--clients,
+  #inHousePanel.clients-matrix .matrix-table--clients,
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table--clients tbody,
+  #checkinsPanel .riva-master-column .matrix-table--clients tbody,
+  #inHousePanel.clients-matrix .matrix-table--clients tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    table-layout: auto !important;
+    background: #fff !important;
+  }
+
+  /* Riga IG Direct: avatar | nome+meta+contatti | azioni */
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id],
+  #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id],
+  #inHousePanel.clients-matrix .matrix-table tbody tr[data-id],
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody tr.ig-direct-row,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.ig-direct-row,
+  #inHousePanel.clients-matrix .matrix-table tbody tr.ig-direct-row,
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody tr.nv-guest-card-mobile,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.nv-guest-card-mobile,
+  #inHousePanel.clients-matrix .matrix-table tbody tr.nv-guest-card-mobile,
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody tr.nv-guest-card-desktop,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.nv-guest-card-desktop {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    grid-template-columns: none !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 96px !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 10px 14px 10px 16px !important;
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-bottom: 1px solid #f2f2f2 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    overflow: visible !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id]:last-child,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id]:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id]:hover,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id]:hover {
+    background: #fafafa !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody tr.is-selected,
+  #checkinsPanel .riva-master-column .matrix-table tbody tr.is-selected {
+    background: #fafafa !important;
+    border-left: 3px solid #262626 !important;
+    padding-left: 13px !important;
+    box-shadow: none !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-table tbody td,
+  #checkinsPanel .riva-master-column .matrix-table tbody td,
+  #inHousePanel.clients-matrix .matrix-table tbody td {
+    display: block !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+    vertical-align: middle !important;
+    white-space: normal !important;
+  }
+
+  /* Nascondi colonne foglio (contatti restano sotto il nome) */
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-phone,
+  #checkinsPanel .riva-master-column .col-phone,
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-email,
+  #checkinsPanel .riva-master-column .col-email,
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-stay,
+  #checkinsPanel .riva-master-column .col-stay,
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-checkout,
+  #checkinsPanel .riva-master-column .col-checkout,
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-receptionist,
+  #checkinsPanel .riva-master-column .col-receptionist,
+  #inHousePanel.clients-matrix .col-phone,
+  #inHousePanel.clients-matrix .col-email,
+  #inHousePanel.clients-matrix .col-stay,
+  #inHousePanel.clients-matrix .col-checkout,
+  #inHousePanel.clients-matrix .col-receptionist {
+    display: none !important;
+  }
+
+  /* Telefono + email sotto nome — sempre visibili */
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts,
+  #checkinsPanel .riva-master-column .nv-guest-contacts,
+  #inHousePanel.clients-matrix .nv-guest-contacts {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1px !important;
+    margin-top: 2px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    pointer-events: auto !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .contact-ios-label,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .contact-ios-label,
+  #inHousePanel.clients-matrix .nv-guest-contacts .contact-ios-label {
+    display: none !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .phone-text,
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .email-text,
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .data-empty,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .phone-text,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .email-text,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .data-empty,
+  #inHousePanel.clients-matrix .nv-guest-contacts .phone-text,
+  #inHousePanel.clients-matrix .nv-guest-contacts .email-text,
+  #inHousePanel.clients-matrix .nv-guest-contacts .data-empty {
+    display: block !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    color: #6b7280 !important;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .data-empty,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .data-empty,
+  #inHousePanel.clients-matrix .nv-guest-contacts .data-empty {
+    color: #c7c7cc !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .secure-cell-wrapper,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .secure-cell-wrapper,
+  #inHousePanel.clients-matrix .nv-guest-contacts .secure-cell-wrapper {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .btn-reveal,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .btn-reveal {
+    display: none !important;
+  }
+
+  /* Avatar nero circolare (iniziali) */
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-room.nv-mobile-room-zone,
+  #checkinsPanel .riva-master-column .col-room.nv-mobile-room-zone,
+  #inHousePanel.clients-matrix .col-room.nv-mobile-room-zone {
+    display: flex !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    grid-column: auto !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .ig-direct-avatar,
+  #checkinsPanel .riva-master-column .ig-direct-avatar,
+  #inHousePanel.clients-matrix .ig-direct-avatar,
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-avatar--room.ig-direct-avatar,
+  #checkinsPanel .riva-master-column .nv-guest-avatar--room.ig-direct-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    border-radius: 50% !important;
+    background: #0a0a0a !important;
+    color: #fff !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  /* Info: nome + meta sintetica */
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-guest.nv-mobile-info-zone,
+  #checkinsPanel .riva-master-column .col-guest.nv-mobile-info-zone,
+  #inHousePanel.clients-matrix .col-guest.nv-mobile-info-zone {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    grid-column: auto !important;
+    pointer-events: none !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts,
+  #checkinsPanel .riva-master-column .nv-guest-contacts,
+  #inHousePanel.clients-matrix .nv-guest-contacts,
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-contacts .contact-copy-target,
+  #checkinsPanel .riva-master-column .nv-guest-contacts .contact-copy-target {
+    pointer-events: auto !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-name,
+  #checkinsPanel .riva-master-column .nv-guest-name,
+  #inHousePanel.clients-matrix .nv-guest-name {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    color: #262626 !important;
+    margin: 0 !important;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-status,
+  #checkinsPanel .riva-master-column .nv-guest-status,
+  #inHousePanel.clients-matrix .nv-guest-status {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.25 !important;
+    color: #8e8e93 !important;
+    margin: 0 !important;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column tr.is-selected .nv-guest-name,
+  #checkinsPanel .riva-master-column tr.is-selected .nv-guest-name {
+    font-weight: 700 !important;
+    color: #0a0a0a !important;
+  }
+
+  /* Azioni: 40×40 ancorate a destra, centro verticale */
+  .workspace.is-clients #checkinsPanel .riva-master-column .col-actions.nv-mobile-action-zone,
+  #checkinsPanel .riva-master-column .col-actions.nv-mobile-action-zone,
+  #inHousePanel.clients-matrix .col-actions.nv-mobile-action-zone {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 4px !important;
+    width: auto !important;
+    grid-column: auto !important;
+    pointer-events: auto !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .btn-row-menu,
+  #checkinsPanel .riva-master-column .btn-row-menu,
+  .workspace.is-clients #checkinsPanel .riva-master-column .btn-reveal,
+  #checkinsPanel .riva-master-column .btn-reveal,
+  #inHousePanel.clients-matrix .btn-row-menu,
+  #inHousePanel.clients-matrix .btn-reveal {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #8e8e93 !important;
+    background: transparent !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .btn-row-menu:hover,
+  #checkinsPanel .riva-master-column .btn-row-menu:hover,
+  .workspace.is-clients #checkinsPanel .riva-master-column .btn-reveal:hover,
+  #checkinsPanel .riva-master-column .btn-reveal:hover {
+    background: #efefef !important;
+    color: #262626 !important;
+  }
+
+  /* Sezioni in-house: compatte */
+  .workspace.is-clients #checkinsPanel .riva-master-column .matrix-section-row,
+  #checkinsPanel .riva-master-column .matrix-section-row {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 10px 16px !important;
+    background: #fafafa !important;
+  }
+}

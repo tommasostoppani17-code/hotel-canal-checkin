@@ -1,0 +1,407 @@
+/**
+ * Riva OS — Planning Prenotazioni sticky scroll (ISOLATO)
+ * Tutte le regole: SOLO .holds-panel / .workspace.is-holds
+ *
+ * Ancoraggio: un solo scroller (#rackScroll). Niente rubber-band sugli antenati.
+ * Niente transform sullo scroller (rompe sticky WebKit).
+ * Sticky: CAM. (left+top) · head giorni (top) · room labels (left).
+ */
+
+/* Shell: niente scroll di pagina / body che trascina via la griglia */
+.workspace.is-holds,
+.workspace.is-holds .workspace-body,
+.workspace.is-holds .workspace-body.content-card {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+.workspace.is-holds .holds-panel:not(.hidden):not([hidden]) {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  position: relative;
+}
+
+.holds-panel .rack-frame {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  background: #fff;
+  transform: none !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+.holds-panel .rack-scroll,
+.holds-panel #rackScroll.rack-scroll {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: auto !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior: none !important;
+  overflow-anchor: none !important;
+  -webkit-overflow-scrolling: auto !important;
+  touch-action: pan-x pan-y;
+  scroll-behavior: auto !important;
+  /* Excel: la vista si ferma sempre sul bordo cella */
+  scroll-snap-type: both mandatory !important;
+  scroll-padding-top: var(--rack-head-h, 48px) !important;
+  scroll-padding-left: var(--rack-room-w, 108px) !important;
+  scroll-padding-right: 0 !important;
+  scroll-padding-bottom: 0 !important;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: #a8a8a8 #ececec;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  transform: none !important;
+  filter: none !important;
+  perspective: none !important;
+  will-change: auto !important;
+  isolation: auto !important;
+}
+
+.holds-panel .rack-scroll.is-panning {
+  cursor: grabbing !important;
+  /* Durante il drag a scatti: niente snap CSS che combatte il JS */
+  scroll-snap-type: none !important;
+}
+
+.holds-panel .rack-scroll.is-panning .rack-bar,
+.holds-panel .rack-scroll.is-scrolling.is-panning .rack-bar {
+  pointer-events: none !important;
+}
+
+/* Scrollbar stile foglio (traccia sempre visibile) */
+.holds-panel .rack-scroll::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+  background: #ececec;
+}
+
+.holds-panel .rack-scroll::-webkit-scrollbar-track {
+  background: #ececec;
+  border: 0;
+}
+
+.holds-panel .rack-scroll::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+  border: 3px solid #ececec;
+  border-radius: 8px;
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.holds-panel .rack-scroll::-webkit-scrollbar-thumb:hover {
+  background: #8e8e8e;
+}
+
+.holds-panel .rack-scroll::-webkit-scrollbar-corner {
+  background: #ececec;
+}
+
+/* Snap X: ogni giorno (come colonna Excel). Stop always = un giorno per gesto. */
+.holds-panel .rack-date-cell {
+  scroll-snap-align: start !important;
+  scroll-snap-stop: always !important;
+}
+
+/* Snap Y: ogni riga stanza */
+.holds-panel .rack-rows > .rack-row {
+  scroll-snap-align: start !important;
+  scroll-snap-stop: always !important;
+}
+
+.holds-panel .rack-head,
+.holds-panel .rack-corner,
+.holds-panel .rack-room-label {
+  scroll-snap-align: none !important;
+  scroll-snap-stop: normal !important;
+}
+
+.holds-panel .rack-row,
+.holds-panel .rack-rows,
+.holds-panel .rack-row-track,
+.holds-panel .rack-head,
+.holds-panel .rack-dates,
+.holds-panel .rack-corner,
+.holds-panel .rack-room-label,
+.holds-panel .rack-date-cell {
+  contain: none !important;
+  transform: none !important;
+  filter: none !important;
+  perspective: none !important;
+  isolation: auto !important;
+  will-change: auto !important;
+  -webkit-backface-visibility: visible !important;
+  backface-visibility: visible !important;
+}
+
+.holds-panel .rack-frame,
+.holds-panel .rack-head,
+.holds-panel .rack-rows,
+.holds-panel .rack-row,
+.holds-panel .rack-date-cell,
+.holds-panel .rack-room-label,
+.holds-panel .rack-day-slot,
+.holds-panel .rack-bar {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none;
+}
+
+.holds-panel .rack-head,
+.holds-panel .rack-row {
+  box-sizing: border-box;
+}
+
+.holds-panel .rack-frame.is-wide .rack-head,
+.holds-panel .rack-frame.is-wide .rack-row {
+  width: max(
+    100%,
+    calc(var(--rack-room-w) + (var(--rack-day-count) * var(--rack-day-w)))
+  ) !important;
+  min-width: calc(var(--rack-room-w) + (var(--rack-day-count) * var(--rack-day-w))) !important;
+}
+
+.holds-panel .rack-frame.is-wide .rack-dates,
+.holds-panel .rack-frame.is-wide .rack-row-track {
+  width: calc(var(--rack-day-count) * var(--rack-day-w)) !important;
+  min-width: calc(var(--rack-day-count) * var(--rack-day-w)) !important;
+  grid-template-columns: repeat(var(--rack-day-count), var(--rack-day-w)) !important;
+}
+
+/*
+ * Freeze panes (Excel):
+ *   CAM. corner  200  — mai coperto (X+Y)
+ *   head giorni  100  — sticky top
+ *   room labels   40  — sticky left, SEMPRE sotto head/corner
+ *   barre         10
+ * Non alzare mai le room-label durante is-scrolling: altrimenti
+ * le righe successive dipingono sopra l'angolo CAM.
+ */
+.holds-panel .rack-head,
+.holds-panel #rackHead.rack-head {
+  position: sticky !important;
+  top: 0 !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 100 !important;
+  scroll-snap-align: none !important;
+  background-color: #ffffff !important;
+  background-clip: padding-box;
+  border-bottom: 1px solid #dbdbdb !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  isolation: isolate;
+}
+
+/* CAM.: angolo fisso top+left — sopra header giorni, stanze e barre */
+.holds-panel .rack-corner,
+.holds-panel .rack-scroll .rack-corner,
+.holds-panel .rack-scroll.is-scrolling .rack-corner,
+.holds-panel #rackHead .rack-corner {
+  position: sticky !important;
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 200 !important;
+  width: var(--rack-room-w) !important;
+  min-width: var(--rack-room-w) !important;
+  max-width: var(--rack-room-w) !important;
+  background-color: #f4f4f4 !important;
+  background-clip: padding-box;
+  box-shadow:
+    6px 0 14px -6px rgba(10, 10, 10, 0.22),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  justify-content: center;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8e8e93;
+  border-right: 1px solid #dbdbdb !important;
+  pointer-events: auto !important;
+}
+
+/* Track sotto la colonna Cam. (stacking context basso) */
+.holds-panel .rack-row-track {
+  position: relative !important;
+  z-index: 1 !important;
+  overflow: hidden !important;
+}
+
+/* Camere: colonna fissa a sinistra — sopra le barre, sotto head/CAM. */
+.holds-panel .rack-room-label,
+.holds-panel .rack-scroll .rack-room-label,
+.holds-panel .rack-scroll.is-scrolling .rack-room-label {
+  position: sticky !important;
+  left: 0 !important;
+  top: auto !important;
+  z-index: 40 !important;
+  background-color: #ffffff !important;
+  background-clip: padding-box;
+  box-shadow: 6px 0 12px -6px rgba(10, 10, 10, 0.16);
+  pointer-events: auto !important;
+}
+
+.holds-panel .rack-row:nth-child(even) .rack-room-label {
+  background-color: #f2f2f2 !important;
+}
+
+.holds-panel .rack-row.is-empty .rack-room-label {
+  background-color: #fafafa !important;
+}
+
+.holds-panel .rack-scroll .rack-head,
+.holds-panel .rack-scroll.is-scrolling .rack-head {
+  z-index: 100 !important;
+}
+
+.holds-panel .rack-scroll.is-scrolling .rack-bar {
+  pointer-events: none !important;
+  transition: none !important;
+}
+
+.holds-panel .rack-bar {
+  z-index: 10 !important;
+  transform: none;
+  cursor: pointer !important;
+  padding-left: 2px !important;
+  gap: 0 !important;
+}
+
+.holds-panel .rack-bar.is-dragging,
+.holds-panel .rack-bar.is-pack-slide,
+.holds-panel .rack-bar.is-pack-flip {
+  will-change: transform;
+  z-index: 12 !important;
+}
+
+.holds-panel .rack-frame.is-panning .rack-dates,
+.holds-panel .rack-frame.is-panning .rack-row-track {
+  transform: none !important;
+  will-change: auto !important;
+  transition: none !important;
+}
+
+.holds-panel .rack-day-slot {
+  position: relative;
+  z-index: 0;
+  min-height: 100%;
+}
+
+.holds-panel .rack-day-slot.is-focused-day,
+#rackFrame .rack-day-slot.is-focused-day,
+.rack-table td.is-focused-day {
+  position: relative;
+  background-color: rgba(38, 38, 38, 0.02) !important;
+  box-shadow: inset 0 0 0 2px #262626 !important;
+  z-index: 10;
+}
+
+.holds-panel .rack-day-slot.is-focused-day.is-today {
+  background: rgba(192, 57, 43, 0.08) !important;
+  box-shadow: inset 0 0 0 2px #262626 !important;
+}
+
+.holds-panel .rack-day-slot.is-today {
+  background: rgba(192, 57, 43, 0.06) !important;
+  box-shadow: none !important;
+}
+
+.holds-panel .rack-date-cell.is-today {
+  background: rgba(192, 57, 43, 0.07) !important;
+  box-shadow: inset 0 -2px 0 var(--rack-today-line, #c0392b) !important;
+}
+
+.holds-panel .rack-bar-channel {
+  margin-left: 4px !important;
+  margin-right: 6px !important;
+}
+
+.holds-panel .rack-sticky-header {
+  flex: 0 0 auto;
+  min-height: 0 !important;
+}
+
+.holds-panel .rack-toolbar-period {
+  display: none !important;
+}
+
+.holds-panel .rack-chrome-top {
+  padding: 4px 12px 6px !important;
+  gap: 4px 10px !important;
+}
+
+.holds-panel .rack-legend {
+  gap: 6px 10px !important;
+}
+
+.holds-panel .rack-frame {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+/* Desktop: card ancorata, più alta (niente barra periodo) */
+@media (min-width: 1381px) {
+  .holds-panel .rack-frame {
+    margin: 4px clamp(12px, 1.6vw, 20px) 12px !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 3px rgba(10, 10, 10, 0.04) !important;
+  }
+
+  .holds-panel .rack-chrome-top {
+    padding: 4px clamp(16px, 2vw, 28px) 6px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .holds-panel .rack-scroll {
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 1380px) {
+  .holds-panel .rack-scroll,
+  .holds-panel #rackScroll.rack-scroll {
+    overflow: auto !important;
+    -webkit-overflow-scrolling: auto !important;
+    scroll-snap-type: both mandatory !important;
+    overscroll-behavior: none !important;
+  }
+
+  .holds-panel .rack-frame {
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .holds-panel .rack-chrome-top {
+    padding: 4px 10px !important;
+  }
+
+  .holds-panel .rack-sticky-header {
+    padding: 0 !important;
+  }
+}

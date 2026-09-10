@@ -150,7 +150,6 @@ import {
   toggleBreakfastEaten,
 } from './breakfast.js';
 import { monitorWebhookConfigured, notifyMonitor } from './monitor.js';
-import { mountLab, hasLabAccess } from './lab.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -508,21 +507,15 @@ app.get(['/staff.html', '/staff', '/staff/'], (_req, res) => {
   return res.sendFile(path.join(rootDir, 'public', 'staff.html'));
 });
 
-/**
- * Lab Riva OS — hub /lab + gate su /hk /colazione /ospiti.
- * hasStaffSession risolto a runtime (parseStaffSession definito più sotto).
- */
-mountLab(app, {
-  hasStaffSession(req) {
-    try {
-      return Boolean(parseStaffSession(readCookie(req, STAFF_COOKIE)));
-    } catch {
-      return false;
-    }
-  },
+/** Riva OS UI nuova — alias interno ( /staff resta produzione Canal ). */
+app.get(['/staff124', '/staff124/', '/staff124.html'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'staff124.html'));
 });
 
-/** Housekeeping — Riva OS (stesso login staff). */
+/** Housekeeping — stesso login staff. */
 app.get(['/hk.html', '/hk', '/hk/'], (_req, res) => {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   res.setHeader('Cache-Control', 'no-store');
@@ -1087,10 +1080,7 @@ function requireStaff(req, res, next) {
 
 function sendStaffOnlyHtml(req, res, relativePath) {
   const session = parseStaffSession(readCookie(req, STAFF_COOKIE));
-  const labOk = hasLabAccess(req, {
-    hasStaffSession: () => Boolean(session),
-  });
-  if (!session && !labOk) {
+  if (!session) {
     res.setHeader('Cache-Control', 'no-store');
     return res.status(404).end();
   }

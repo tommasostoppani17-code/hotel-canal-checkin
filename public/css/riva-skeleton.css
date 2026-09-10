@@ -1,0 +1,613 @@
+/**
+ * Riva OS — Skeleton shimmer (Instagram-level)
+ * Caricare prima di staff.html inline overrides.
+ */
+
+@keyframes riva-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes riva-content-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+:root {
+  --skel-base: #ebebed;
+  --skel-base-dark: rgba(255, 255, 255, 0.08);
+  --skel-highlight: rgba(255, 255, 255, 0.72);
+  --skel-highlight-dark: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Base shimmer (hardware-accelerated ::after) ── */
+.skeleton-shimmer,
+.skel-block,
+.skel-text,
+.skel-circle,
+.ig-skel,
+.shift-audit-key-tile.is-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--skel-base);
+  transform: translateZ(0);
+}
+
+.skeleton-shimmer::after,
+.skel-block::after,
+.skel-text::after,
+.skel-circle::after,
+.ig-skel::after,
+.shift-audit-key-tile.is-skeleton::after {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 25%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.35) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: riva-shimmer 1.35s infinite ease-in-out;
+  animation-delay: calc(var(--sc-skel-i, var(--skel-i, 0)) * 60ms);
+  content: '';
+  pointer-events: none;
+}
+
+/* Dark surfaces (clienti matrix, feed) */
+.matrix-table .ig-skel,
+.feed-row--skeleton .ig-skel,
+.dark-surface .skel-block,
+.dark-surface .skel-text {
+  background-color: var(--skel-base-dark);
+}
+
+.matrix-table .ig-skel::after,
+.feed-row--skeleton .ig-skel::after,
+.dark-surface .skel-block::after,
+.dark-surface .skel-text::after {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(255, 255, 255, 0.14) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+/* ── Utility shapes (fixed geometry → no layout shift) ── */
+.skel-text {
+  display: block;
+  height: 12px;
+  margin: 4px 0;
+  border-radius: 8px;
+}
+
+.skel-text--sm { height: 10px; border-radius: 6px; }
+.skel-text--md { height: 14px; border-radius: 8px; }
+.skel-text--lg { height: 18px; border-radius: 10px; margin: 6px 0; }
+
+.skel-block {
+  display: block;
+  border-radius: 14px;
+}
+
+.skel-circle {
+  display: block;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skel-w25 { width: 25%; }
+.skel-w40 { width: 40%; }
+.skel-w55 { width: 55%; }
+.skel-w70 { width: 70%; }
+.skel-w100 { width: 100%; }
+
+.ig-skel--w25 { width: 25%; }
+.ig-skel--w40 { width: 40%; }
+.ig-skel--w55 { width: 55%; }
+.ig-skel--w70 { width: 70%; }
+
+/* ── Row / list skeleton hosts ── */
+.matrix-row--skeleton td { padding: 14px 12px; vertical-align: middle; }
+.feed-row--skeleton { pointer-events: none; padding: 16px 18px; }
+
+/* Clienti card skeleton — geometria IDENTICA alle righe reali
+   grid 56 | 1fr | 40 · padding 16 · avatar 44 · gap testi 4 · actions 32 */
+.clients-matrix .matrix-table tbody tr.nv-guest-card-skeleton,
+.clients-matrix .matrix-table tbody tr.matrix-row--skeleton.nv-guest-card-mobile,
+.clients-matrix .matrix-table tbody tr.clienti-row-skeleton {
+  display: grid !important;
+  grid-template-columns: 56px minmax(0, 1fr) 40px !important;
+  align-items: start !important;
+  column-gap: 0 !important;
+  gap: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 16px 16px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  border: 0 !important;
+  border-bottom: 1px solid #efefef !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  cursor: default !important;
+  animation: none !important;
+}
+
+.clients-matrix .nv-guest-card-skeleton td,
+.clients-matrix .matrix-row--skeleton.nv-guest-card-mobile td,
+.clients-matrix .clienti-row-skeleton td {
+  display: block !important;
+  border: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.clients-matrix .nv-guest-card-skeleton .col-phone,
+.clients-matrix .nv-guest-card-skeleton .col-email,
+.clients-matrix .nv-guest-card-skeleton .col-receptionist,
+.clients-matrix .matrix-row--skeleton.nv-guest-card-mobile .col-phone,
+.clients-matrix .matrix-row--skeleton.nv-guest-card-mobile .col-email,
+.clients-matrix .matrix-row--skeleton.nv-guest-card-mobile .col-receptionist,
+.clients-matrix .clienti-row-skeleton .col-phone,
+.clients-matrix .clienti-row-skeleton .col-email,
+.clients-matrix .clienti-row-skeleton .col-receptionist {
+  display: none !important;
+}
+
+.clients-matrix .nv-guest-card-skeleton .col-room.nv-mobile-room-zone,
+.clients-matrix .matrix-row--skeleton.nv-guest-card-mobile .col-room.nv-mobile-room-zone,
+.clients-matrix .clienti-row-skeleton .col-room.nv-mobile-room-zone {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  grid-column: 1 !important;
+  width: 56px !important;
+  min-width: 56px !important;
+  max-width: 56px !important;
+  padding: 2px 0 0 !important;
+}
+
+.clients-matrix .nv-guest-avatar--skel {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  background-color: var(--skel-base) !important;
+  color: transparent !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.clients-matrix .nv-guest-card-skeleton .col-guest.nv-mobile-info-zone,
+.clients-matrix .matrix-row--skeleton.nv-guest-card-mobile .col-guest.nv-mobile-info-zone,
+.clients-matrix .clienti-row-skeleton .col-guest.nv-mobile-info-zone {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  gap: 4px !important;
+  grid-column: 2 !important;
+  min-width: 0 !important;
+  padding: 0 10px 0 4px !important;
+  overflow: visible !important;
+}
+
+.clients-matrix .nv-guest-card-skeleton .col-actions.nv-mobile-action-zone,
+.clients-matrix .matrix-row--skeleton.nv-guest-card-mobile .col-actions.nv-mobile-action-zone,
+.clients-matrix .clienti-row-skeleton .col-actions.nv-mobile-action-zone {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  grid-column: 3 !important;
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  padding: 2px 0 0 !important;
+  align-self: start !important;
+}
+
+/* Barre testo = altezze tipografiche reali (15 / 12 / 12 / 12) */
+.clients-matrix .clienti-skel-name,
+.clients-matrix .clienti-skel-dates,
+.clients-matrix .clienti-skel-phone,
+.clients-matrix .clienti-skel-email {
+  display: block !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  max-width: 100% !important;
+  border-radius: 4px !important;
+}
+
+.clients-matrix .clienti-skel-name {
+  width: 55% !important;
+  max-width: 180px !important;
+  height: 19px !important; /* ~15px × 1.25 */
+  background-color: #d8d8dc !important;
+}
+
+.clients-matrix .clienti-skel-dates {
+  width: 78% !important;
+  max-width: 240px !important;
+  height: 16px !important; /* ~12px × 1.3 */
+  background-color: #ebebed !important;
+}
+
+.clients-matrix .clienti-skel-contacts {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  margin-top: 2px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.clients-matrix .clienti-skel-phone,
+.clients-matrix .clienti-skel-email {
+  height: 16px !important;
+  background-color: #ebebed !important;
+}
+
+.clients-matrix .clienti-skel-phone {
+  width: 48% !important;
+  max-width: 140px !important;
+}
+
+.clients-matrix .clienti-skel-email {
+  width: 58% !important;
+  max-width: 168px !important;
+}
+
+.clients-matrix .clienti-skel-icon {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  background-color: #ebebed !important;
+}
+
+/* Toolbar Clienti — skeleton: capsule sx, ricerca compatta a dx */
+.workspace.is-clients .date-pill.date-pill--skel {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  box-sizing: border-box !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  border: 0 !important;
+  border-radius: 9999px !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  background: #d8d8dc !important;
+  margin: 0;
+  flex: 0 0 auto !important;
+}
+
+.workspace.is-clients .date-pill.date-pill--skel-light {
+  background: #e8e8ec !important;
+  box-shadow: inset 0 0 0 1px #efefef !important;
+}
+
+.workspace.is-clients #days:empty,
+.workspace.is-clients #days:has(.date-pill--skel) {
+  display: flex !important;
+  align-items: center;
+  gap: 8px !important;
+  min-width: 200px;
+  flex: 0 0 auto !important;
+}
+
+/* Skeleton / boot = stesso look: tasti a sx, search compatta a destra */
+.workspace.is-clients:has(#checkinsPanel.panel-skeleton) .dash-toolbar,
+.workspace.is-clients:has(#checkinsPanel.panel-busy) .dash-toolbar,
+body.is-session-boot .workspace.is-clients .dash-toolbar {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.workspace.is-clients:has(#checkinsPanel.panel-skeleton) .toolbar-field:first-child,
+.workspace.is-clients:has(#checkinsPanel.panel-busy) .toolbar-field:first-child,
+body.is-session-boot .workspace.is-clients .toolbar-field:first-child {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.workspace.is-clients:has(#checkinsPanel.panel-skeleton) .toolbar-field--search,
+.workspace.is-clients:has(#checkinsPanel.panel-busy) .toolbar-field--search,
+body.is-session-boot .workspace.is-clients .toolbar-field--search {
+  flex: 0 1 240px !important;
+  max-width: 280px !important;
+  min-width: 140px !important;
+  width: auto !important;
+  margin-left: auto !important;
+}
+
+.workspace.is-clients #checkinsPanel.panel-busy,
+.workspace.is-clients #checkinsPanel.panel-skeleton,
+.workspace.is-clients #checkinsPanel.panel-revalidating {
+  opacity: 1 !important;
+}
+
+.workspace.is-clients #checkinsPanel.panel-busy::before,
+.workspace.is-clients #checkinsPanel.panel-busy::after,
+.workspace.is-clients #checkinsPanel.panel-revalidating::before,
+.workspace.is-clients #checkinsPanel.panel-revalidating::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Fade-in dati reali (200ms) — non resetta scroll del parent */
+.fade-in-premium {
+  animation: riva-content-in 200ms ease-out both;
+}
+
+@media (min-width: 1025px) {
+  /* Desktop = stessa geometria (già allineata al feed lista) */
+  .clients-matrix .nv-guest-avatar--skel {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .clients-matrix .matrix-table tbody tr.nv-guest-card-skeleton,
+  .clients-matrix .matrix-table tbody tr.clienti-row-skeleton,
+  .clients-matrix .matrix-table tbody tr.matrix-row--skeleton.nv-guest-card-mobile {
+    grid-template-columns: 56px minmax(0, 1fr) 40px !important;
+    padding: 16px 16px !important;
+  }
+
+  .clients-matrix .nv-guest-card-skeleton .col-room.nv-mobile-room-zone,
+  .clients-matrix .clienti-row-skeleton .col-room.nv-mobile-room-zone {
+    width: 56px !important;
+    min-width: 56px !important;
+    max-width: 56px !important;
+    justify-content: center !important;
+  }
+
+  .clients-matrix .nv-guest-card-skeleton .col-actions.nv-mobile-action-zone,
+  .clients-matrix .clienti-row-skeleton .col-actions.nv-mobile-action-zone {
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+  }
+}
+
+.shift-audit-key-tile.is-skeleton {
+  pointer-events: none;
+  border-color: transparent;
+  min-height: 48px;
+  animation: none;
+}
+
+.shift-audit-table tbody.is-skeleton-host tr.skel-row td {
+  padding: 13px 12px;
+  vertical-align: middle;
+}
+
+.shift-audit-table tbody.is-skeleton-host .skel-text {
+  height: 13px;
+  margin: 0;
+}
+
+/* ── Rack skeleton ── */
+.rack-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px 16px;
+}
+
+.rack-skeleton__row {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+}
+
+.rack-skeleton__label {
+  height: 14px;
+  border-radius: 7px;
+  width: 36px;
+}
+
+.rack-skeleton__track {
+  height: 28px;
+  border-radius: 999px;
+}
+
+/* ── Ops HK room grid skeleton (legacy hooks; geometry in housekeeping-skeleton.css) ── */
+.ops-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 10px;
+  padding: 0 0 8px;
+}
+
+.ops-skeleton-tile {
+  min-height: 118px;
+  border-radius: 12px;
+}
+
+/* ── Settings skeleton ── */
+.settings-skeleton {
+  padding: 20px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-skeleton__card {
+  height: 72px;
+  border-radius: 16px;
+}
+
+.settings-skeleton__row {
+  height: 48px;
+  border-radius: 14px;
+}
+
+/* ── Notify dropdown skeleton ── */
+.notify-item--skeleton {
+  pointer-events: none;
+  padding: 10px 14px;
+  gap: 6px;
+}
+
+.notify-item--skeleton .skel-text {
+  margin: 0;
+}
+
+/* ── Row menu history skeleton ── */
+.row-menu-history-row--skeleton {
+  pointer-events: none;
+  padding: 6px 10px;
+}
+
+.row-menu-history-row--skeleton .skel-text {
+  margin: 3px 0;
+}
+
+/* ── Report sheet skeleton ── */
+.report-skeleton {
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.report-skeleton .skel-text {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.report-skeleton__channels {
+  margin: 20px 0 16px;
+  border-top: 1px solid #dbdbdb;
+  text-align: left;
+}
+
+.report-skeleton__channel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.report-skeleton__channel .skel-text:last-child {
+  flex-shrink: 0;
+  width: 52px;
+}
+
+.skel-button {
+  display: inline-block;
+  height: 36px;
+  border-radius: 10px;
+  margin: 8px auto 0;
+}
+
+.report-skeleton__btn {
+  width: 88px;
+}
+
+.settings-kpi-skeleton .skel-text {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+/* ── Fade-in when real content replaces skeleton ── */
+.content-fade-in,
+.shift-audit-fade-in,
+.panel-content-in {
+  animation: riva-content-in 0.22s ease-in-out both;
+}
+
+/* ── Panel states (SWR revalidate: no full skeleton) ── */
+.table-panel.panel-revalidating {
+  opacity: 1;
+}
+
+.table-panel.panel-skeleton .table-scroll,
+.table-panel.panel-skeleton .rack-scroll,
+.table-panel.panel-skeleton .notes-scroll,
+.table-panel.panel-skeleton .settings-scroll {
+  pointer-events: none;
+}
+
+/* Hide ALL generic spinners in dashboard — skeleton only (Instagram) */
+body.is-dashboard .ops-panel__loading,
+body.is-dashboard .ops-panel__loading-spinner,
+body.is-dashboard #opsLoading,
+body.is-dashboard .report-result-spinner,
+body.is-dashboard .ptr-ig__spinner,
+body.is-dashboard .ptr-spinner,
+body.is-dashboard .ops-rooms-content.is-loading::after,
+body.is-dashboard .ops-rooms-content.is-loading::before,
+body.has-riva-skeleton .ops-panel__loading,
+body.has-riva-skeleton .ops-panel__loading-spinner,
+body.has-riva-skeleton #opsLoading:not(.hidden),
+body.has-riva-skeleton #opsLoading:not(.hidden) span,
+body.has-riva-skeleton .report-result-spinner,
+body.has-riva-skeleton .ptr-ig__spinner {
+  display: none !important;
+}
+
+body.is-dashboard .table-panel.panel-revalidating,
+body.is-dashboard .table-panel.panel-busy {
+  opacity: 1 !important;
+}
+
+body.is-dashboard .table-panel.panel-busy::before,
+body.is-dashboard .table-panel.panel-busy::after,
+body.is-dashboard .table-panel.panel-revalidating::before,
+body.is-dashboard .table-panel.panel-revalidating::after,
+body.is-dashboard .table-panel.panel-busy .table-scroll::after,
+body.is-dashboard .table-panel.panel-busy .table-scroll::before,
+body.is-dashboard .table-panel.panel-busy .rack-scroll::after,
+body.is-dashboard .table-panel.panel-busy .rack-scroll::before,
+body.is-dashboard .table-panel.panel-busy .notes-scroll::after,
+body.is-dashboard .table-panel.panel-busy .notes-scroll::before {
+  display: none !important;
+  content: none !important;
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after,
+  .skel-block::after,
+  .skel-text::after,
+  .skel-circle::after,
+  .ig-skel::after,
+  .shift-audit-key-tile.is-skeleton::after {
+    animation: none;
+  }
+
+  .content-fade-in,
+  .shift-audit-fade-in,
+  .panel-content-in,
+  .fade-in-premium {
+    animation: none;
+  }
+}

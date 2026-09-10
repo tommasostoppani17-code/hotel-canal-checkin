@@ -1,0 +1,899 @@
+/**
+ * forms-ig.css — moduli anti-taglio (sheet IG)
+ * Caricare PER ULTIMO nella cascade di staff.html.
+ *
+ * Regole ferree:
+ * 1) Nessuna altezza fissa sul pannello → solo max-height viewport-safe
+ * 2) overflow SOLO sul body interno — overlay overflow:hidden (no menu fluttuanti)
+ * 3) CTA in footer sticky FUORI dallo scroll, pannello ancorato in basso
+ * 4) z-index sheet/calendar sopra rack sticky / sidebar
+ */
+
+:root {
+  --ig-form-sheet-z: 99999;
+  --ig-form-overlay-pad: 16px;
+  --ig-form-panel-max: 460px;
+  --ig-form-radius: 28px;
+  /* Ritmo Instagram — standard condiviso sheet / menu modali */
+  --ig-form-pad-x: 20px;
+  --ig-form-pad-y: 20px;
+  --ig-form-gap-field: 16px;
+  --ig-form-gap-row: 12px;
+  --ig-form-gap-section: 16px;
+  --ig-form-section-pad: 16px;
+  --ig-form-label-gap: 8px;
+  --ig-form-section-title-gap: 12px;
+  --ig-form-wizard-gap: 20px;
+  --ig-form-radius-field: 12px;
+  --ig-form-radius-section: 16px;
+}
+
+/* ── Stack globale: sheet form / calendari / menu fissi ── */
+.sheet.sheet--ig:not([hidden]),
+.sheet.sheet--ig:not([hidden]).is-opening,
+.sheet.sheet--ig:not([hidden]).is-closing {
+  z-index: var(--ig-form-sheet-z) !important;
+}
+
+.brand-calendar:not([hidden]),
+.ui-dropdown-menu.is-sheet-fixed,
+.notify-menu.is-sheet-fixed,
+.ui-menu.is-sheet-fixed {
+  z-index: calc(var(--ig-form-sheet-z) + 2) !important;
+}
+
+#rowMenuBackdrop.is-visible {
+  z-index: calc(var(--ig-form-sheet-z) + 3) !important;
+}
+
+#rowMenu:not(.hidden),
+#rowMenu.is-bottom-sheet {
+  z-index: calc(var(--ig-form-sheet-z) + 4) !important;
+}
+
+/* Overlay: ancorato in basso — MAI overflow esterno (evita menu fluttuanti) */
+.sheet.sheet--ig {
+  align-items: flex-end !important;
+  justify-content: center !important;
+  padding: env(safe-area-inset-top, 0px) var(--ig-form-overlay-pad) 0 !important;
+  box-sizing: border-box;
+  overflow: hidden !important; /* scroll solo in .ig-sheet-body */
+  overscroll-behavior: none;
+}
+
+/* Pannello: flex column, max-height viewport-safe, piede a terra */
+.sheet.sheet--ig .sheet-panel--ig-report {
+  height: auto !important;
+  max-height: calc(
+    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+      var(--ig-form-overlay-pad)
+  ) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  flex-shrink: 0;
+  margin-top: auto;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Body: unico asse di scroll (iPad / tastiera virtuale) */
+.sheet.sheet--ig .ig-sheet-body,
+.ig-sheet-scrollable-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain;
+}
+
+/* Niente min-height:100% sui form — causa collasso e taglio footer */
+.ig-sheet-body > .sheet-form--flat,
+.ig-sheet-body > form.sheet-form,
+.ig-sheet-body > .sheet-form,
+.ig-sheet-body > .pack-step {
+  min-height: 0 !important;
+  flex: 0 1 auto !important;
+}
+
+/* Footer dentro body: disattiva sticky se c'è footer esterno */
+.sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .sheet-foot,
+.sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .sheet-hold-foot,
+.sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .hold-share-foot,
+.sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .hold-wizard-foot {
+  display: none !important;
+}
+
+/* Footer sticky FUORI dallo scroll — CTA sempre raggiungibile, mai sopra i campi */
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body > form,
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body > .sheet-form {
+  padding-bottom: 4px !important;
+}
+
+.ig-sheet-footer-sticky {
+  flex: 0 0 auto !important;
+  position: relative !important;
+  z-index: 2;
+  margin-top: auto !important; /* CTA sempre sotto il body, attaccata al fondo pannello */
+  padding: 12px 20px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  border-top: 1px solid #ebebeb !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* Annulla sticky/shadow ereditati dal body inline (evita accavallamento) */
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .sheet-foot,
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .sheet-foot--minimal,
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .sheet-hold-foot,
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .hold-share-foot,
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body .hold-wizard-foot {
+  display: none !important;
+  position: static !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.ig-sheet-footer-sticky .sheet-foot,
+.ig-sheet-footer-sticky .mc-foot,
+.ig-sheet-footer-sticky .sheet-hold-foot,
+.ig-sheet-footer-sticky .hold-wizard-foot,
+.ig-sheet-footer-sticky .hold-share-foot {
+  position: static !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.ig-sheet-footer-sticky .btn-primary {
+  width: 100%;
+  min-height: 48px;
+  height: 48px;
+  border-radius: 14px;
+  margin: 0;
+}
+
+.ig-sheet-footer-sticky .sheet-foot--split,
+.ig-sheet-footer-sticky .hold-wizard-foot,
+.ig-sheet-footer-sticky .hold-share-foot {
+  display: grid;
+  gap: 10px;
+}
+
+.ig-sheet-footer-sticky .sheet-foot--split {
+  grid-template-columns: 1fr 1.4fr;
+}
+
+.ig-sheet-footer-sticky .hold-wizard-foot {
+  grid-template-columns: 1fr;
+}
+
+.ig-sheet-footer-sticky .hold-wizard-foot:has(#holdStepBack:not([hidden])) {
+  grid-template-columns: 1fr 1.4fr;
+}
+
+.ig-sheet-footer-sticky .hold-share-foot {
+  grid-template-columns: 1fr;
+}
+
+.ig-sheet-footer-sticky .sheet-foot--split .btn-exit,
+.ig-sheet-footer-sticky .sheet-foot--split .btn-primary,
+.ig-sheet-footer-sticky .hold-wizard-foot .btn-primary,
+.ig-sheet-footer-sticky .hold-wizard-foot .btn-settings-secondary,
+.ig-sheet-footer-sticky .hold-share-foot .btn-primary {
+  width: 100%;
+  min-height: 48px;
+}
+
+.ig-sheet-footer-sticky [data-mc-foot][hidden],
+.ig-sheet-footer-sticky [data-team-foot][hidden] {
+  display: none !important;
+}
+
+/* ── Ritmo Instagram — standard condiviso per tutti i menu sheet ── */
+.sheet.sheet--ig .ig-sheet-body {
+  padding: var(--ig-form-pad-y) var(--ig-form-pad-x) 0 !important;
+}
+
+.sheet.sheet--ig .sheet-panel--ig-report:not(:has(> .ig-sheet-footer-sticky)) .ig-sheet-body {
+  padding-bottom: calc(var(--ig-form-pad-y) + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.sheet.sheet--ig .sheet-panel--ig-report:has(> .ig-sheet-footer-sticky) .ig-sheet-body {
+  padding: var(--ig-form-pad-y) var(--ig-form-pad-x) 12px !important;
+}
+
+.sheet.sheet--ig .ig-sheet-body > .sheet-form--flat,
+.sheet.sheet--ig .ig-sheet-body > form.sheet-form,
+.sheet.sheet--ig .ig-sheet-body > .sheet-form {
+  padding: 0 !important;
+}
+
+.sheet.sheet--ig .sheet-form--flat .sheet-field,
+.sheet.sheet--ig .ig-sheet-body .sheet-field {
+  margin-bottom: var(--ig-form-gap-field) !important;
+}
+
+.sheet.sheet--ig .sheet-form--flat .sheet-field:last-child,
+.sheet.sheet--ig .ig-sheet-body .sheet-field:last-child {
+  margin-bottom: 0 !important;
+}
+
+.sheet.sheet--ig .sheet-label {
+  display: block;
+  margin-bottom: var(--ig-form-label-gap) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: #86868b !important;
+}
+
+.sheet.sheet--ig .sheet-row-2,
+.sheet.sheet--ig .sheet-grid-2,
+.sheet.sheet--ig .sheet-grid-2--schedule,
+.sheet.sheet--ig .sheet-inline-2 {
+  gap: var(--ig-form-gap-row) !important;
+  margin-bottom: var(--ig-form-gap-field) !important;
+}
+
+.sheet.sheet--ig .sheet-row-2:last-child,
+.sheet.sheet--ig .sheet-grid-2:last-child,
+.sheet.sheet--ig .sheet-grid-2--schedule:last-child,
+.sheet.sheet--ig .sheet-inline-2:last-child {
+  margin-bottom: 0 !important;
+}
+
+.sheet.sheet--ig .sheet-row-2 .sheet-field,
+.sheet.sheet--ig .sheet-grid-2 .sheet-field,
+.sheet.sheet--ig .sheet-grid-2--schedule .sheet-field,
+.sheet.sheet--ig .sheet-inline-2 .sheet-field {
+  margin-bottom: 0 !important;
+}
+
+/* Sezioni a card (hold-box → ig-form-section) */
+.sheet.sheet--ig .hold-box,
+.sheet.sheet--ig .ig-form-section {
+  margin: 0 0 var(--ig-form-gap-section) !important;
+  padding: var(--ig-form-section-pad) !important;
+  border: 1px solid rgba(10, 10, 10, 0.08) !important;
+  border-radius: var(--ig-form-radius-section) !important;
+  background: #fff !important;
+}
+
+.sheet.sheet--ig .hold-box--muted,
+.sheet.sheet--ig .ig-form-section--muted {
+  background: #fafafa !important;
+}
+
+.sheet.sheet--ig .hold-box:last-child,
+.sheet.sheet--ig .ig-form-section:last-child {
+  margin-bottom: 0 !important;
+}
+
+.sheet.sheet--ig .hold-box__title,
+.sheet.sheet--ig .ig-form-section__title {
+  margin: 0 0 var(--ig-form-section-title-gap) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: #737373 !important;
+}
+
+.sheet.sheet--ig .hold-box .sheet-field:last-child,
+.sheet.sheet--ig .ig-form-section .sheet-field:last-child {
+  margin-bottom: 0 !important;
+}
+
+.sheet.sheet--ig .hold-box.hold-avail-box {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sheet.sheet--ig .hold-wizard-nav {
+  margin: 0 0 var(--ig-form-wizard-gap) !important;
+  gap: 12px !important;
+}
+
+.sheet.sheet--ig .field,
+.sheet.sheet--ig select.field,
+.sheet.sheet--ig .ui-dropdown-trigger.field,
+.sheet.sheet--ig textarea.field,
+.sheet.sheet--ig .field--textarea {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-height: 48px !important;
+  padding: 0 14px !important;
+  border: 1px solid #efefef !important;
+  border-radius: var(--ig-form-radius-field, 12px) !important;
+  background: #ffffff !important;
+  color: #0a0a0a !important;
+  -webkit-text-fill-color: #0a0a0a;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 550 !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1.25 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.sheet.sheet--ig textarea.field,
+.sheet.sheet--ig .field--textarea {
+  min-height: 88px !important;
+  height: auto !important;
+  padding: 12px 14px !important;
+  resize: vertical;
+}
+
+.sheet.sheet--ig .field::placeholder,
+.sheet.sheet--ig textarea.field::placeholder {
+  color: #c7c7cc !important;
+  -webkit-text-fill-color: #c7c7cc !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+.sheet.sheet--ig .field:hover:not(:focus):not(.is-invalid),
+.sheet.sheet--ig .ui-dropdown-trigger.field:hover:not(:focus):not(.is-invalid) {
+  border-color: #dbdbdb !important;
+}
+
+.sheet.sheet--ig .field:focus,
+.sheet.sheet--ig select.field:focus,
+.sheet.sheet--ig .ui-dropdown-trigger.field:focus,
+.sheet.sheet--ig textarea.field:focus {
+  outline: none !important;
+  border-color: #0a0a0a !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08) !important;
+}
+
+.sheet.sheet--ig .field.is-invalid,
+.sheet.sheet--ig select.field.is-invalid,
+.sheet.sheet--ig .ui-dropdown-trigger.field.is-invalid,
+.sheet.sheet--ig textarea.field.is-invalid {
+  border-color: #c62828 !important;
+  background: #fff9f9 !important;
+  box-shadow: inset 0 0 0 1px rgba(198, 40, 40, 0.14) !important;
+}
+
+/* Manual check-in — campi coerenti (niente hero tipografico sulla camera) */
+#manualCheckinSheet .field--mc-room {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 56px !important;
+  min-height: 56px !important;
+  max-height: 56px !important;
+  padding: 0 16px !important;
+  border: 1px solid #dbdbdb !important;
+  border-radius: 12px !important;
+  background: #fafafa !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 20px !important;
+  text-align: left !important;
+  color: #0a0a0a !important;
+  -webkit-text-fill-color: #0a0a0a !important;
+  caret-color: #0a0a0a !important;
+  font-variant-numeric: tabular-nums;
+}
+
+#manualCheckinSheet .field--mc-room::placeholder {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em !important;
+  color: #8e8e93 !important;
+  -webkit-text-fill-color: #8e8e93 !important;
+  opacity: 1 !important;
+}
+
+#manualCheckinSheet .field--mc-room:focus {
+  border-color: #0a0a0a !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Nasconde icone autofill Safari/Chrome che sbucano sotto/fuori dal campo */
+#manualCheckinSheet .field--mc-room::-webkit-contacts-auto-fill-button,
+#manualCheckinSheet .field--mc-room::-webkit-credentials-auto-fill-button,
+#manualCheckinSheet .field--mc-room::-webkit-caps-lock-indicator {
+  visibility: hidden !important;
+  display: none !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  right: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#manualCheckinSheet .sheet-label,
+#manualCheckinSheet .mc-box__title {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+#manualCheckinSheet .sheet-label {
+  display: block !important;
+  margin: 0 0 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+  color: #8e8e93 !important;
+  line-height: 1.4 !important;
+}
+
+#manualCheckinSheet .mc-box {
+  margin: 0 !important;
+  padding: 16px !important;
+  border: 1px solid #efefef !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+}
+
+#manualCheckinSheet .mc-box:last-child,
+#manualCheckinSheet .mc-box.mc-box--last {
+  margin-bottom: 0 !important;
+}
+
+#manualCheckinSheet .mc-box__title {
+  margin: 0 0 16px !important;
+  text-transform: none !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
+  color: #0a0a0a !important;
+}
+
+#manualCheckinSheet .mc-box__lead {
+  margin: -8px 0 16px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  color: #8e8e93 !important;
+}
+
+#manualCheckinSheet .sheet-form--mc .sheet-field {
+  margin-bottom: 16px !important;
+}
+
+#manualCheckinSheet .sheet-form--mc .mc-field--last,
+#manualCheckinSheet .sheet-form--mc .mc-stay .sheet-field {
+  margin-bottom: 0 !important;
+}
+
+#manualCheckinSheet .sheet-form--mc .field,
+#manualCheckinSheet .sheet-form--mc .ui-dropdown-trigger,
+#manualCheckinSheet .sheet-form--mc select.field {
+  box-sizing: border-box !important;
+  height: 56px !important;
+  min-height: 56px !important;
+  border-radius: 12px !important;
+  border: 1px solid #dbdbdb !important;
+  background: #fafafa !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: #0a0a0a !important;
+  -webkit-text-fill-color: #0a0a0a !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+#manualCheckinSheet .sheet-form--mc .field::placeholder {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: #8e8e93 !important;
+  -webkit-text-fill-color: #8e8e93 !important;
+}
+
+#manualCheckinSheet .sheet-form--mc textarea.field,
+#manualCheckinSheet .sheet-form--mc textarea.field--textarea {
+  height: auto !important;
+  min-height: 80px !important;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+  line-height: 1.45 !important;
+}
+
+#manualCheckinSheet .mc-row--2 {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+}
+
+#manualCheckinSheet .mc-phone-row {
+  gap: 16px !important;
+}
+
+#manualCheckinSheet .ig-sheet-footer-sticky {
+  padding-top: 16px !important;
+}
+
+#manualCheckinSheet .ig-sheet-footer-sticky .mc-foot .btn-primary,
+#manualCheckinSheet .ig-sheet-footer-sticky .mc-foot .btn-exit {
+  height: 56px !important;
+  min-height: 56px !important;
+  border-radius: 12px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+#manualCheckinSheet .ig-sheet-footer-sticky .mc-foot[data-mc-foot="1"] {
+  margin-top: 8px !important;
+}
+
+.sheet.sheet--ig .ig-sheet-footer-sticky {
+  padding: 14px var(--ig-form-pad-x) calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.sheet.sheet--ig .ig-sheet-footer-sticky .hold-wizard-foot,
+.sheet.sheet--ig .ig-sheet-footer-sticky .sheet-hold-foot {
+  gap: 12px !important;
+  margin-top: 0 !important;
+}
+
+.sheet.sheet--ig .ig-sheet-footer-sticky .sheet-foot--split,
+.sheet.sheet--ig .ig-sheet-footer-sticky .hold-wizard-foot,
+.sheet.sheet--ig .ig-sheet-footer-sticky .hold-share-foot {
+  gap: 12px !important;
+}
+
+/* Sezioni form */
+.ig-form-section-divider {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed #f1f1f1;
+}
+
+.ig-section-subtitle-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a1a1aa;
+  margin-bottom: 14px;
+  display: block;
+}
+
+/* Desktop / tablet: sheet form centrati, non tagliati */
+@media (min-width: 721px) {
+  .sheet.sheet--ig:not(#opsIgSheet):not(.is-rack-magic) {
+    align-items: center;
+    justify-content: center;
+    padding: max(24px, var(--ig-form-overlay-pad))
+      max(24px, var(--ig-form-overlay-pad))
+      max(24px, calc(var(--ig-form-overlay-pad) + env(safe-area-inset-bottom, 0px)));
+  }
+
+  .sheet.sheet--ig:not(#opsIgSheet):not(.is-rack-magic) .sheet-panel--ig-report {
+    width: min(var(--ig-form-panel-max), calc(100vw - 48px)) !important;
+    max-width: var(--ig-form-panel-max) !important;
+    border-radius: var(--ig-form-radius) !important;
+    max-height: calc(
+      100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 48px
+    ) !important;
+  }
+
+  .sheet.sheet--ig:not(#opsIgSheet):not(.is-rack-magic) .ig-sheet-handle {
+    display: none;
+  }
+
+  /* Dettaglio segnalazione / sheet ops: centrato su tablet, footer sticky */
+  #opsIgSheet.sheet.sheet--ig {
+    align-items: center;
+    justify-content: center;
+    padding: max(24px, var(--ig-form-overlay-pad))
+      max(24px, var(--ig-form-overlay-pad))
+      max(24px, calc(var(--ig-form-overlay-pad) + env(safe-area-inset-bottom, 0px)));
+  }
+
+  #opsIgSheet.sheet.sheet--ig .sheet-panel--ig-report {
+    width: min(420px, calc(100vw - 48px)) !important;
+    max-width: 420px !important;
+    border-radius: var(--ig-form-radius) !important;
+    max-height: calc(
+      100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 48px
+    ) !important;
+  }
+
+  #opsIgSheet .ig-sheet-handle {
+    display: none;
+  }
+
+  #holdSheet.sheet.sheet--ig .sheet-panel--hold,
+  #holdSheet.sheet.sheet--ig .sheet-panel--ig-report {
+    max-width: 520px !important;
+    width: min(520px, calc(100vw - 48px)) !important;
+  }
+
+  #guestSheet.sheet.sheet--ig .sheet-panel--ig-report {
+    max-width: 420px !important;
+  }
+}
+
+@media (min-width: 1100px) {
+  #manualCheckinSheet.sheet.sheet--ig,
+  #holdSheet.sheet.sheet--ig,
+  #noteSheet.sheet.sheet--ig {
+    justify-content: flex-end;
+    padding-right: 28px;
+  }
+}
+
+/* Pack sheet: non forzare larghezza social (serve preview larga) */
+#packSheet.sheet.sheet--ig .sheet-panel--ig-report {
+  max-width: min(560px, calc(100vw - 32px)) !important;
+}
+
+@media (min-width: 721px) {
+  #packSheet.sheet.sheet--ig:not(.is-rack-magic) .sheet-panel--ig-report {
+    width: min(560px, calc(100vw - 48px)) !important;
+    max-width: 560px !important;
+  }
+}
+
+#packSheet .ig-sheet-body {
+  padding-bottom: 8px !important;
+}
+
+#packSheet .ig-sheet-footer-sticky .sheet-foot.hidden,
+#packSheet .ig-sheet-footer-sticky .sheet-foot[hidden] {
+  display: none !important;
+}
+
+/* Ops / segnalazione detail — CTA nel footer sticky (mai tagliate) */
+#opsIgSheet .ig-sheet-footer-sticky .note-detail__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+#opsIgSheet .ig-sheet-footer-sticky .note-detail__actions .btn-primary,
+#opsIgSheet .ig-sheet-footer-sticky .note-detail__actions .btn-exit,
+#opsIgSheet .ig-sheet-footer-sticky .note-detail__actions .btn-action {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 14px;
+  margin: 0;
+}
+
+#opsIgSheet .ig-sheet-footer-sticky .note-detail__actions .btn-action-ghost {
+  border: 0;
+  background: transparent;
+  color: #ed4956;
+  font-weight: 650;
+}
+
+#opsIgSheet .ig-sheet-footer-sticky.is-note-detail-foot {
+  padding-top: 10px;
+}
+
+/* Anteprima Compatta: sheet basso, tabellone visibile — footer Approva/Rifiuta sempre raggiungibile */
+#packSheet.is-rack-magic.sheet.sheet--ig {
+  padding: 0;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  overflow: hidden;
+}
+
+#packSheet.is-rack-magic .sheet-panel--ig-report {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 0 !important;
+  max-height: min(48vh, 380px) !important;
+  margin-top: auto;
+  border-radius: var(--ig-radius-sheet, 28px) var(--ig-radius-sheet, 28px) 0 0 !important;
+  box-shadow: 0 -12px 40px rgba(10, 10, 10, 0.12);
+}
+
+#packSheet.is-rack-magic .ig-sheet-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  padding-bottom: 4px !important;
+}
+
+#packSheet.is-rack-magic .ig-sheet-footer-sticky {
+  flex-shrink: 0;
+  padding-top: 8px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Check-in reception: tendina ancorata in basso (mai card fluttuante) ── */
+#manualCheckinSheet.sheet.sheet--ig {
+  align-items: flex-end !important;
+  justify-content: center !important;
+  background: transparent;
+  overflow: hidden !important;
+}
+
+#manualCheckinSheet .sheet-backdrop--ig {
+  background: rgba(0, 0, 0, 0.4) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+#manualCheckinSheet .sheet-panel--mc,
+#manualCheckinSheet .sheet-panel--ig-report.sheet-panel--mc {
+  width: 100% !important;
+  max-width: 500px !important;
+  border-radius: var(--ig-form-radius) var(--ig-form-radius) 0 0 !important;
+  background: #ffffff !important;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.12) !important;
+  margin-top: auto !important;
+}
+
+#manualCheckinSheet .ig-sheet-bar {
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+#manualCheckinSheet .ig-sheet-bar-title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.35px;
+  color: #000;
+  text-align: left;
+  padding-left: 8px;
+}
+
+#manualCheckinSheet .ig-sheet-body {
+  padding: 18px 20px 8px !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+}
+
+#manualCheckinSheet .sheet-form--mc {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+#manualCheckinSheet .mc-pane {
+  gap: 24px !important;
+}
+
+#manualCheckinSheet .ig-sheet-footer-sticky {
+  flex: 0 0 auto !important;
+  margin-top: auto !important;
+}
+
+@media (min-width: 768px) {
+  #manualCheckinSheet.sheet.sheet--ig {
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: env(safe-area-inset-top, 0px) 24px 0 !important;
+  }
+
+  #manualCheckinSheet .sheet-panel--mc,
+  #manualCheckinSheet .sheet-panel--ig-report.sheet-panel--mc {
+    width: min(500px, calc(100vw - 48px)) !important;
+    max-width: 500px !important;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 12px) !important;
+    /* Solo raggio alto: resta tendina a terra, non card fluttuante */
+    border-radius: var(--ig-form-radius) var(--ig-form-radius) 0 0 !important;
+  }
+
+  #manualCheckinSheet.is-opening .sheet-panel--mc {
+    animation: igSheetIn 380ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+
+  #manualCheckinSheet.is-closing .sheet-panel--mc {
+    animation: igSheetOut 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+}
+
+@keyframes igFormSheetIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes igFormSheetOut {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.98);
+  }
+}
+
+@supports (height: 100dvh) {
+  .sheet.sheet--ig .sheet-panel--ig-report {
+    max-height: calc(
+      100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+        var(--ig-form-overlay-pad)
+    ) !important;
+  }
+}
+
+/* Desktop: override staff.html align-items:center → tendine a terra */
+@media (min-width: 721px) {
+  .sheet.sheet--ig {
+    align-items: flex-end !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    padding: env(safe-area-inset-top, 0px) 24px 0 !important;
+  }
+
+  .sheet.sheet--ig .sheet-panel--ig-report {
+    border-radius: var(--ig-form-radius, 28px) var(--ig-form-radius, 28px) 0 0 !important;
+    margin-top: auto !important;
+  }
+}
+
+/* ── Blindatura universale: ogni sheet, anche senza footer sticky esterno ── */
+#guestSheet .ig-sheet-body,
+#reportSheet .ig-sheet-body,
+#closureDetailSheet .ig-sheet-body,
+#opsIgSheet .ig-sheet-body,
+#packSheet .ig-sheet-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Override inline staff.css che mette flex:0 0 auto sul guest body (taglia su iPad) */
+#guestSheet .sheet-panel--ig-report {
+  height: auto !important;
+  max-height: calc(
+    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+      var(--ig-form-overlay-pad) * 2
+  ) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Feet ancora dentro il body (legacy): sticky in fondo allo scroll, non tagliati */
+.sheet.sheet--ig .sheet-panel--ig-report:not(:has(> .ig-sheet-footer-sticky)) .ig-sheet-body .sheet-foot,
+.sheet.sheet--ig .sheet-panel--ig-report:not(:has(> .ig-sheet-footer-sticky)) .ig-sheet-body .sheet-hold-foot,
+.sheet.sheet--ig .sheet-panel--ig-report:not(:has(> .ig-sheet-footer-sticky)) .ig-sheet-body .hold-share-foot,
+.sheet.sheet--ig .sheet-panel--ig-report:not(:has(> .ig-sheet-footer-sticky)) .ig-sheet-body .hold-wizard-foot {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 6 !important;
+  margin-top: 12px !important;
+  flex-shrink: 0 !important;
+  background: #fff !important;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  box-shadow: 0 -8px 16px rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Pack: footer step sempre fuori dallo scroll */
+#packSheet .ig-sheet-footer-sticky [data-pack-foot][hidden],
+#packSheet .ig-sheet-footer-sticky .hidden {
+  display: none !important;
+}
+
+#packSheet .sheet-panel--ig-report {
+  max-width: min(520px, calc(100vw - 32px)) !important;
+}
+
+/* Dropdown / calendar mai sotto il pannello */
+.brand-calendar:not([hidden]) {
+  z-index: calc(var(--ig-form-sheet-z) + 5) !important;
+}

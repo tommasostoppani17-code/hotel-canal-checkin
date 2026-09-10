@@ -1,0 +1,831 @@
+/* Impostazioni — profilo IG / iOS Settings (Riva OS)
+ * List→detail: telefono + tablet portrait
+ * Master–detail (rail + stage): desktop PC + tablet landscape
+ */
+
+/* —— Isolamento ferreo: mai inquinare le altre sezioni —— */
+#settingsPanel.hidden,
+#settingsPanel[hidden],
+.workspace:not(.is-settings-page) #settingsPanel,
+.workspace:not(.is-settings-page) .settings-panel {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* —— Componenti IG (sempre) —— */
+
+.ig-settings-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 28px 20px 36px;
+  box-sizing: border-box;
+}
+
+.ig-settings-head {
+  margin-bottom: 24px;
+  padding-left: 4px;
+}
+
+.ig-settings-head__brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.22em;
+  margin: 0 0 6px;
+  color: #0a0a0a;
+  line-height: 0.9;
+}
+
+.ig-settings-head__brand .riva-wordmark__text {
+  font-family: "Great Vibes", "Cormorant Garamond", cursive !important;
+  font-size: 36px;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
+  color: #0a0a0a;
+}
+
+.ig-settings-head__brand .riva-shell {
+  width: 0.5em;
+  height: 0.5em;
+  color: #0a0a0a;
+  opacity: 0.88;
+  transform: translateY(0.02em);
+}
+
+.ig-settings-head__title {
+  margin: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: #000;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+.ig-settings-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  background: #f9f9f9;
+  border: 1px solid #f1f1f1;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+
+.ig-avatar-badge,
+.settings-rail-avatar.ig-avatar-badge {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  background: #000;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+
+.ig-settings-profile-card__body {
+  min-width: 0;
+}
+
+.ig-settings-profile-card__name {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ig-settings-profile-card__meta {
+  margin: 1px 0 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px;
+  color: #737373;
+  font-weight: 500;
+}
+
+.ig-settings-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin: 0 0 28px;
+  padding: 12px 0;
+  background: #fff;
+  border: 1px solid #efefef;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ig-settings-kpi {
+  text-align: center;
+  padding: 2px 8px;
+  border-right: 1px solid #f1f1f1;
+}
+
+.ig-settings-kpi:last-child {
+  border-right: 0;
+}
+
+.ig-settings-kpi__value {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #000;
+  font-variant-numeric: tabular-nums;
+}
+
+.ig-settings-kpi__label {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #a1a1aa;
+}
+
+.ig-settings-section {
+  margin-bottom: 24px;
+}
+
+.ig-settings-section-title,
+.ig-settings-section-title.settings-rail-section {
+  display: block !important;
+  font-family: "Montserrat", sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a1a1aa;
+  margin: 0 0 10px 12px;
+}
+
+.ig-settings-box,
+.ig-settings-box.settings-rail-group {
+  display: block !important;
+  background: #fff;
+  border: 1px solid #efefef;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.ig-settings-row,
+button.ig-settings-row.settings-rail-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid #f9f9f9;
+  border-radius: 0;
+  cursor: pointer;
+  background: #fff !important;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.1s ease;
+}
+
+.ig-settings-box > .ig-settings-row:last-child,
+.ig-settings-box > .settings-rail-item:last-child {
+  border-bottom: none;
+}
+
+.ig-settings-row:active,
+.ig-settings-row.settings-rail-item:active {
+  background: #f9f9f9 !important;
+}
+
+.ig-settings-row.is-on,
+.ig-settings-row.settings-rail-item.is-on {
+  background: #fff !important;
+}
+
+.ig-settings-row.is-on:active {
+  background: #f9f9f9 !important;
+}
+
+.ig-row-left-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ig-row-icon-wrapper {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background: #f4f4f5;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a0a0a;
+}
+
+.ig-row-icon-wrapper svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.ig-row-text-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ig-row-text-block h4,
+.ig-row-text-block .settings-rail-item__label {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+
+.ig-row-text-block p,
+.ig-row-text-block .settings-rail-item__sub {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px;
+  color: #737373;
+  font-weight: 500;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ig-row-chevron {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  margin-right: 4px;
+  border-top: 2px solid #d4d4d8;
+  border-right: 2px solid #d4d4d8;
+  transform: rotate(45deg);
+}
+
+.ig-settings-version {
+  margin: 8px 4px 0;
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a1a1aa;
+  letter-spacing: 0.02em;
+}
+
+.settings-rail-item__arrow,
+.settings-rail .settings-rail-item__icon:not(.ig-row-icon-wrapper) {
+  display: none !important;
+}
+
+.workspace.is-settings-page .settings-pane-head h2 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.ig-settings-box:not(:has(.ig-settings-row:not(.hidden):not([hidden]))) {
+  display: none;
+}
+
+.ig-settings-section:not(:has(.ig-settings-row:not(.hidden):not([hidden]))) {
+  display: none;
+}
+
+/* —— List → detail: telefono + tablet portrait ——
+   Landscape ≥900: master–detail fluttuante (blocco sotto), non queste regole. */
+@media (max-width: 899px), ((max-width: 1380px) and (orientation: portrait)) {
+  .workspace.is-settings-page .settings-scroll {
+    background: #fafafa !important;
+    padding: 0 0 calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .workspace.is-settings-page .settings-shell {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .workspace.is-settings-page .settings-rail {
+    width: 100% !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    gap: 0 !important;
+  }
+
+  .workspace.is-settings-page .settings-rail-nav.ig-settings-nav {
+    display: block !important;
+    overflow: visible !important;
+    flex: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    gap: 0 !important;
+  }
+
+  .workspace.is-settings-page .settings-stage {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .workspace.is-settings-page .settings-shell.is-detail .settings-rail {
+    display: none !important;
+  }
+
+  .workspace.is-settings-page .settings-shell:not(.is-detail) .settings-stage {
+    display: none !important;
+  }
+
+  .workspace.is-settings-page .settings-shell.is-detail .settings-stage {
+    display: flex !important;
+    flex-direction: column;
+    min-height: min(100%, calc(100vh - 80px));
+    background: #fff;
+  }
+
+  .workspace.is-settings-page .settings-topbar {
+    border-bottom: 1px solid #efefef;
+    background: #fff;
+  }
+}
+
+@media (max-width: 480px) {
+  .ig-settings-container {
+    padding: 20px 14px 28px;
+  }
+
+  .ig-settings-head__title {
+    font-size: 22px;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1380px) and (orientation: portrait) {
+  .ig-settings-container {
+    max-width: min(720px, calc(100% - 40px));
+    padding: 32px 24px 40px;
+  }
+
+  .workspace.is-settings-page .settings-shell {
+    max-width: min(720px, 100%) !important;
+  }
+
+  .workspace.is-settings-page .settings-rail {
+    max-width: min(720px, calc(100% - 40px)) !important;
+  }
+
+  .workspace.is-settings-page .settings-stage {
+    max-width: min(720px, 100%);
+  }
+
+  .workspace.is-settings-page .settings-shell.is-detail .settings-stage {
+    min-height: min(100%, calc(100dvh - 56px));
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) and (orientation: portrait) {
+  .ig-settings-container {
+    max-width: min(680px, calc(100% - 48px));
+    padding-left: max(24px, env(safe-area-inset-left, 0px));
+    padding-right: max(24px, env(safe-area-inset-right, 0px));
+  }
+
+  .workspace.is-settings-page .settings-rail {
+    max-width: min(680px, calc(100% - 48px)) !important;
+  }
+}
+
+/* —— Master–detail: riquadro compatto (PC + tablet landscape) —— */
+@media (min-width: 900px) and (orientation: landscape), (min-width: 1381px) {
+  .workspace.is-settings-page .workspace-body {
+    background: #f3f1ed !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .workspace.is-settings-page .settings-panel.table-panel:not(.hidden):not([hidden]),
+  .workspace.is-settings-page #settingsPanel.settings-panel:not(.hidden):not([hidden]) {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .workspace.is-settings-page #settingsPanel:not(.hidden):not([hidden]) .settings-scroll {
+    background: #f3f1ed !important;
+    padding: 20px clamp(20px, 3vw, 40px) 24px !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Riquadro più contenuto — non a tutta area */
+  .workspace.is-settings-page #settingsPanel:not(.hidden):not([hidden]) .settings-shell,
+  .workspace.is-settings-page .settings-shell {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 920px !important;
+    margin: 0 auto !important;
+    flex: 0 1 auto !important;
+    min-height: 0 !important;
+    height: min(640px, calc(100% - 8px)) !important;
+    max-height: min(640px, calc(100dvh - 140px)) !important;
+    background: #ffffff !important;
+    border: 1px solid #ebe8e4 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 36px rgba(10, 10, 10, 0.06) !important;
+    overflow: hidden !important;
+  }
+
+  /* —— Sinistra: nav pulita in box IG —— */
+  .workspace.is-settings-page #settingsPanel:not(.hidden):not([hidden]) .settings-rail,
+  .workspace.is-settings-page .settings-rail {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 248px !important;
+    max-width: 248px !important;
+    flex: 0 0 248px !important;
+    margin: 0 !important;
+    padding: 18px 12px 14px !important;
+    background: #faf9f7 !important;
+    border: 0 !important;
+    border-right: 1px solid #ebe8e4 !important;
+    overflow: auto !important;
+    height: 100% !important;
+  }
+
+  .workspace.is-settings-page .settings-rail .ig-settings-container {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-head {
+    margin-bottom: 12px !important;
+    padding-left: 4px !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-head__brand .riva-wordmark__text {
+    font-size: 28px !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-head__title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-profile-card {
+    padding: 10px 12px !important;
+    margin-bottom: 12px !important;
+    border-radius: 14px !important;
+    gap: 10px !important;
+  }
+
+  .workspace.is-settings-page .ig-avatar-badge {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 12px !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-profile-card__name {
+    font-size: 13px !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-profile-card__meta {
+    font-size: 10px !important;
+  }
+
+  /* KPI fuori dalla rail master–detail: troppo rumore */
+  .workspace.is-settings-page .settings-rail-kpis,
+  .workspace.is-settings-page .ig-settings-kpis {
+    display: none !important;
+  }
+
+  .workspace.is-settings-page .settings-rail-nav.ig-settings-nav {
+    display: block !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-section {
+    margin-bottom: 14px !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-section-title,
+  .workspace.is-settings-page .settings-rail-section {
+    margin: 0 0 6px 10px !important;
+    font-size: 10px !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-box.settings-rail-group {
+    display: block !important;
+    border-radius: 14px !important;
+    border: 1px solid #ebe8e4 !important;
+    overflow: hidden !important;
+    background: #fff !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-section-title.settings-rail-section,
+  .workspace.is-settings-page .settings-rail-section {
+    display: block !important;
+  }
+
+  /* Voci nella box, non pillole staccate */
+  .workspace.is-settings-page .ig-settings-row.settings-rail-item {
+    min-height: 0 !important;
+    padding: 11px 12px !important;
+    border-radius: 0 !important;
+    border-bottom: 1px solid #f3f1ed !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-box > .ig-settings-row.settings-rail-item:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-row.settings-rail-item.is-on {
+    background: #f3f1ed !important;
+    box-shadow: none !important;
+  }
+
+  .workspace.is-settings-page .settings-rail-item__sub {
+    display: none !important;
+  }
+
+  .workspace.is-settings-page .settings-rail-item__label {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .workspace.is-settings-page .ig-row-icon-wrapper.settings-rail-item__icon,
+  .workspace.is-settings-page .settings-rail-item__icon {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+  }
+
+  .workspace.is-settings-page .ig-row-chevron {
+    display: none !important;
+  }
+
+  /* —— Destra: campi classici (box IG + input 14px) —— */
+  .workspace.is-settings-page #settingsPanel:not(.hidden):not([hidden]) .settings-stage,
+  .workspace.is-settings-page .settings-stage {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 22px 28px 20px !important;
+    background: #fff !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .workspace.is-settings-page .settings-shell.is-detail .settings-rail,
+  .workspace.is-settings-page .settings-shell:not(.is-detail) .settings-rail,
+  .workspace.is-settings-page .settings-shell.is-detail .settings-stage,
+  .workspace.is-settings-page .settings-shell:not(.is-detail) .settings-stage {
+    display: flex !important;
+  }
+
+  .workspace.is-settings-page .settings-topbar,
+  .workspace.is-settings-page .settings-back,
+  .workspace.is-settings-page #settingsPanel .settings-topbar {
+    display: none !important;
+  }
+
+  .workspace.is-settings-page .settings-pane-head {
+    display: block !important;
+    margin-bottom: 6px !important;
+    padding-bottom: 14px !important;
+    border-bottom: 1px solid #f0eeea !important;
+  }
+
+  .workspace.is-settings-page .settings-pane-head h2 {
+    font-family: "Cormorant Garamond", "Times New Roman", serif !important;
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.005em !important;
+    color: #0a0a0a !important;
+  }
+
+  .workspace.is-settings-page .settings-pane-head p {
+    font-size: 13px !important;
+    color: #86868b !important;
+  }
+
+  .workspace.is-settings-page .settings-pane-body--stack,
+  .workspace.is-settings-page .settings-ig-pane,
+  .workspace.is-settings-page .settings-hotel,
+  .workspace.is-settings-page .settings-staff,
+  .workspace.is-settings-page .settings-security,
+  .workspace.is-settings-page .settings-iban {
+    max-width: 520px !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .workspace.is-settings-page .ig-settings-section {
+    margin-bottom: 18px !important;
+  }
+
+  .workspace.is-settings-page .settings-stage .ig-settings-box,
+  .workspace.is-settings-page .settings-stage .ig-settings-box--form,
+  .workspace.is-settings-page .settings-stage .ig-settings-box--list {
+    background: #fff !important;
+    border: 1px solid #efefef !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+  }
+
+  .workspace.is-settings-page .settings-stage .ig-settings-box--form {
+    padding: 16px !important;
+  }
+
+  .workspace.is-settings-page .settings-stage .ig-settings-box--form .sys-settings-fields {
+    padding: 0 !important;
+    gap: 14px !important;
+  }
+
+  /* Righe toggle/select: orizzontali, controllo compatto a destra */
+  .workspace.is-settings-page .settings-pane-body .sys-settings-row,
+  .workspace.is-settings-page .sys-settings-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    flex-wrap: nowrap !important;
+    padding: 14px 16px !important;
+    border-bottom: 1px solid rgba(10, 10, 10, 0.05) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .workspace.is-settings-page .settings-pane-body .sys-settings-row:last-child,
+  .workspace.is-settings-page .sys-settings-row:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .workspace.is-settings-page .sys-settings-row-title {
+    font-size: 15px !important;
+    font-weight: 650 !important;
+    color: #0a0a0a !important;
+  }
+
+  .workspace.is-settings-page .sys-settings-row-desc {
+    font-size: 13px !important;
+    color: #86868b !important;
+  }
+
+  .workspace.is-settings-page .sys-field__label {
+    display: block !important;
+    margin-bottom: 6px !important;
+    font-size: 12px !important;
+    font-weight: 650 !important;
+    color: #86868b !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  /* Input/select come ~1h30 fa */
+  .workspace.is-settings-page .settings-pane-body .field,
+  .workspace.is-settings-page .settings-pane-body .sys-settings-select,
+  .workspace.is-settings-page .settings-pane-body .sys-settings-input,
+  .workspace.is-settings-page .sys-settings-select,
+  .workspace.is-settings-page .sys-settings-input {
+    box-sizing: border-box !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 14px !important;
+    border: 1px solid #ebe8e4 !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #0a0a0a !important;
+    font-family: inherit !important;
+  }
+
+  .workspace.is-settings-page .sys-field .sys-settings-input,
+  .workspace.is-settings-page .sys-settings-fields .sys-settings-input,
+  .workspace.is-settings-page .sys-settings-fields .sys-settings-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .workspace.is-settings-page .sys-settings-row:not(.sys-settings-row--stack) .sys-settings-select,
+  .workspace.is-settings-page .sys-settings-row:not(.sys-settings-row--stack) .sys-settings-input--time {
+    width: auto !important;
+    min-width: 120px !important;
+    max-width: 160px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .workspace.is-settings-page .sys-settings-input--area {
+    height: auto !important;
+    min-height: 88px !important;
+    padding: 12px 14px !important;
+  }
+
+  .workspace.is-settings-page .sys-settings-select:focus,
+  .workspace.is-settings-page .sys-settings-input:focus,
+  .workspace.is-settings-page .settings-pane-body .field:focus {
+    border-color: #0a0a0a !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08) !important;
+  }
+
+  .workspace.is-settings-page .sys-settings-row:has(.sys-settings-select),
+  .workspace.is-settings-page .sys-settings-row:has(.sys-settings-input),
+  .workspace.is-settings-page .sys-settings-row:has(.field) {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .workspace.is-settings-page .settings-ig-pane-save,
+  .workspace.is-settings-page .settings-security-save,
+  .workspace.is-settings-page #btnSavePin,
+  .workspace.is-settings-page #btnSaveHotel,
+  .workspace.is-settings-page #btnSaveIban {
+    width: 100% !important;
+    max-width: 520px !important;
+    min-height: 48px !important;
+    border-radius: 14px !important;
+  }
+
+  .workspace.is-settings-page .settings-stage-actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+  }
+}

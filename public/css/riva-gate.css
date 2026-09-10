@@ -1,0 +1,1242 @@
+/**
+ * Riva Gate — login premium (hero notte + card cream)
+ * Colonna form: phone ~400px, tablet login 420px (come check-in),
+ * tipografia Plus Jakarta / system,
+ * input 48px + floating label, CTA deep navy.
+ */
+
+:root {
+  --gate-panel: #ffffff;
+  --gate-panel-deep: #ffffff;
+  --gate-ink: #0a0a0a;
+  --gate-muted: #8e8e93;
+  --gate-muted-soft: #aeaeb2;
+  --gate-form-max: 400px;
+  --gate-form-max-portrait: 420px;
+  --gate-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --gate-press: cubic-bezier(0.32, 0.72, 0, 1);
+  --gate-cream: #fafafa;
+  --gate-border: rgba(10, 10, 10, 0.1);
+  --gate-border-focus: #262626;
+  --gate-input-bg: #fafafa;
+  --gate-navy: #262626;
+  --gate-navy-hover: #0a0a0a;
+  --gate-error: #c62828;
+  --gate-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --gate-radius: 12px;
+  --gate-input-h: 48px;
+}
+
+/* ── Night sky backdrop ── */
+.bg-inertia--gate,
+body:not(.is-dashboard):not(.is-board) .background-overlay .bg-inertia {
+  inset: -12%;
+  background-color: #111625 !important;
+  background-image:
+    radial-gradient(ellipse 78% 52% at 42% 22%, rgba(255, 255, 255, 0.08), transparent 58%),
+    linear-gradient(168deg, #111625 0%, #0a0e18 52%, #050508 100%) !important;
+  background-size: cover;
+  background-position: center;
+  filter: none;
+  animation: none;
+}
+
+body:not(.is-dashboard):not(.is-board) .background-overlay::after {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 5, 0.15) 0%,
+    rgba(5, 5, 5, 0.35) 55%,
+    rgba(5, 5, 5, 0.55) 100%
+  ) !important;
+}
+
+/* Login shell: mai bianco opaco sopra l’hero (era ig-global → tutto bianco) */
+body:not(.is-dashboard) .login-view,
+.login-view {
+  background: transparent !important;
+}
+
+body:not(.is-dashboard):not(.is-board) {
+  background-color: #0a0e18 !important;
+}
+
+/* ── Stage: fluid wrapper (column → row at 1024px) ── */
+.login-view,
+.guest-gate,
+.admin-gate,
+.hk-login {
+  width: 100%;
+  height: 100%;
+  min-height: var(--app-vh, 100svh);
+}
+
+.login-view.is-exiting {
+  opacity: 0;
+  transform: translate3d(0, -28px, 0);
+  transition:
+    opacity 320ms var(--gate-ease),
+    transform 320ms var(--gate-ease);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.login-screen-wrapper,
+.gate-stage,
+.guest-gate,
+.admin-gate .gate-stage {
+  width: 100%;
+  min-height: 100%;
+  min-height: var(--app-vh, 100svh);
+  display: flex !important;
+  flex-direction: column !important;
+  background: #fafafa !important;
+  /* Mai grid che riaccavalla colonne */
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+}
+
+@media (min-width: 1024px) {
+  .login-screen-wrapper,
+  .gate-stage,
+  .guest-gate,
+  .admin-gate .gate-stage {
+    flex-direction: row !important;
+    background-color: transparent;
+  }
+}
+
+/* ── Hero brand plane ── */
+.gate-hero,
+.brand-logo-container {
+  flex-shrink: 0;
+}
+
+.gate-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Mobile default: 40vh brand plane — zero overlap sulla card */
+  flex: 0 0 40vh !important;
+  min-height: 40vh !important;
+  max-height: 40vh !important;
+  height: 40vh !important;
+  padding:
+    calc(16px + env(safe-area-inset-top, 0px))
+    clamp(20px, 4vw, 40px)
+    16px;
+  color: var(--gate-cream);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 70% 55% at 38% 28%, rgba(255, 255, 255, 0.1), transparent 55%),
+    linear-gradient(168deg, #161b2c 0%, #0c101c 48%, #06070c 100%) !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  z-index: 1;
+  gap: 4px;
+}
+
+@media (min-width: 1024px) {
+  .gate-hero {
+    flex: 1 1 50% !important;
+    width: 50% !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    align-items: center;
+    justify-content: center;
+    padding:
+      calc(36px + env(safe-area-inset-top, 0px))
+      clamp(32px, 4.5vw, 56px)
+      calc(32px + env(safe-area-inset-bottom, 0px))
+      clamp(32px, 4.5vw, 56px);
+  }
+}
+
+.gate-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 255, 255, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255, 255, 255, 0.04), transparent 50%);
+}
+
+.gate-hero__section {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 8px;
+  font-family: var(--gate-font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 236, 0.42);
+  text-align: center;
+  animation: gateRise 720ms var(--gate-ease) 40ms both;
+}
+
+.gate-hero__brand,
+.brand-logo-container,
+.brand-logo-pure-wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 4px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: min(560px, 94%);
+  height: auto !important;
+  min-height: 0 !important;
+  animation: gateRise 820ms var(--gate-ease) 80ms both;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .gate-hero__brand,
+  .brand-logo-container,
+  .brand-logo-pure-wrapper {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+.gate-hero .hotel-title.riva-wordmark,
+.gate-hero .riva-wordmark.hotel-title,
+.brand-title-cursive {
+  font-family: "Great Vibes", "Cormorant Garamond", cursive !important;
+  font-size: clamp(40px, 9vw, 56px) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1 !important;
+  color: var(--gate-cream);
+  display: inline-flex !important;
+  align-items: baseline;
+  gap: 0.22em;
+  margin: 0 !important;
+  padding: 0.06em 0 0.14em !important;
+  height: auto !important;
+  max-width: 100%;
+  position: relative !important;
+  top: auto !important;
+  text-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 1024px) {
+  .gate-hero .hotel-title.riva-wordmark,
+  .gate-hero .riva-wordmark.hotel-title {
+    font-size: clamp(76px, 9vw, 128px) !important;
+  }
+}
+
+.gate-hero .riva-wordmark__text {
+  font-family: inherit !important;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+.gate-hero .riva-shell {
+  width: 0.55em;
+  height: 0.55em;
+  color: var(--gate-cream);
+  opacity: 0.92;
+  transform: translateY(0.02em);
+  flex: 0 0 auto;
+  display: block;
+  align-self: center;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25));
+}
+
+.gate-hero__os,
+.brand-subtitle-mono {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: "Montserrat", var(--gate-font), sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  color: rgba(247, 243, 236, 0.55) !important;
+  line-height: 1.2 !important;
+  position: relative !important;
+  z-index: 1;
+  height: auto !important;
+  text-align: center;
+}
+
+.gate-hero__hotel {
+  position: relative;
+  z-index: 1;
+  margin: 6px 0 0 !important;
+  font-family: "Montserrat", var(--gate-font), sans-serif !important;
+  font-size: clamp(11px, 1.1vw, 13px) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: rgba(247, 243, 236, 0.42) !important;
+  max-width: 36ch;
+  line-height: 1.3 !important;
+  text-align: center;
+  animation: gateRise 720ms var(--gate-ease) 140ms both;
+}
+
+.gate-hero__hotel:empty {
+  display: none;
+}
+
+@keyframes gateRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Form panel — blocco centrato nell’area bianca (IG Safe Layout) ── */
+.gate-card,
+.guest-gate > .apple-card,
+.admin-gate .gate-card {
+  position: relative !important;
+  width: 100%;
+  max-width: none;
+  flex: 1 1 60vh !important;
+  min-height: 60vh !important;
+  height: auto !important;
+  display: flex;
+  flex-direction: column;
+  /* Baricentro geometrico: indipendente da quanti campi ci sono */
+  justify-content: center;
+  justify-content: safe center;
+  align-items: center;
+  box-sizing: border-box;
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(10, 10, 10, 0.06) !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  /* ~10% safe zone sopra/sotto + safe-area */
+  padding:
+    max(32px, 8vh, env(safe-area-inset-top, 0px))
+    clamp(20px, 5vw, 40px)
+    max(32px, 8vh, env(safe-area-inset-bottom, 0px)) !important;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  isolation: isolate;
+  box-shadow: none !important;
+  font-family: var(--gate-font);
+  animation: gatePanelInMobile 640ms var(--gate-ease) 80ms both;
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 2;
+}
+
+@media (min-width: 1024px) {
+  .gate-card,
+  .guest-gate > .apple-card,
+  .admin-gate .gate-card {
+    flex: 1 1 50% !important;
+    width: 50% !important;
+    min-height: 100% !important;
+    height: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-top: 0 !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding:
+      40px
+      clamp(28px, 4vw, 48px)
+      40px !important;
+    box-sizing: border-box !important;
+    animation: gatePanelIn 700ms var(--gate-ease) 100ms both;
+  }
+
+  .gate-card__inner,
+  body:not(.is-dashboard) .gate-card__inner,
+  .admin-gate .gate-card__inner {
+    max-width: 420px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+}
+
+@keyframes gatePanelIn {
+  from {
+    opacity: 0;
+    transform: translate3d(18px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes gatePanelInMobile {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.gate-card__inner {
+  width: 100% !important;
+  max-width: var(--gate-form-max) !important;
+  margin: 0 auto !important;
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  gap: 0;
+}
+
+/* Tablet/phone portrait: blocco form più largo e simmetrico */
+@media (max-width: 1023px) {
+  .gate-card__inner,
+  body:not(.is-dashboard) .gate-card__inner {
+    max-width: var(--gate-form-max-portrait) !important;
+    width: 100% !important;
+  }
+
+  .gate-form .btn-canal,
+  .admin-gate .btn-canal {
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
+
+.gate-card > .card-sheen,
+.guest-gate > .apple-card > .card-sheen,
+.admin-gate .card-sheen {
+  display: none !important;
+}
+
+.gate-header {
+  text-align: left;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.gate-kicker {
+  margin: 0 0 10px;
+  font-family: var(--gate-font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gate-muted-soft);
+  animation: gateRise 700ms var(--gate-ease) 120ms both;
+}
+
+.gate-header h1,
+.guest-gate .gate-header h1,
+.guest-gate #step1 .gate-header #lbl-title,
+.guest-gate #step3 .gate-header #lbl-book-title {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.035em !important;
+  margin: 0 0 6px !important;
+  color: var(--gate-ink) !important;
+  line-height: 1.15 !important;
+  animation: none !important;
+}
+
+.gate-lead,
+.guest-gate .gate-lead,
+.guest-gate #lbl-subtitle {
+  margin: 0 0 8px !important;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  line-height: 1.5 !important;
+  animation: none !important;
+}
+
+.gate-form {
+  position: relative;
+  z-index: 6;
+  padding: 0;
+  width: 100%;
+  /* space-y-5: distacco netto titoli → primo campo */
+  margin-top: 20px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: gateRise 700ms var(--gate-ease) 240ms both;
+}
+
+.gate-form .form-group {
+  margin-top: 0;
+  margin-bottom: 14px;
+  text-align: left;
+  width: 100%;
+}
+
+.gate-form .form-group:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Floating label lives inside .input-with-icon */
+.gate-form .input-with-icon {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+.gate-form .input-with-icon > label,
+.gate-form .form-group > label {
+  position: absolute;
+  left: 42px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--gate-font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--gate-muted);
+  pointer-events: none;
+  z-index: 2;
+  transition:
+    top 180ms var(--gate-ease),
+    transform 180ms var(--gate-ease),
+    font-size 180ms var(--gate-ease),
+    color 180ms var(--gate-ease);
+}
+
+.gate-form .input-with-icon:focus-within > label,
+.gate-form .input-with-icon:has(input:not(:placeholder-shown)) > label,
+.gate-form .form-group:has(input:focus) > label,
+.gate-form .form-group:has(input:not(:placeholder-shown)) > label {
+  top: 8px;
+  transform: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gate-muted-soft);
+}
+
+.gate-form .form-group label.label-error-state,
+.gate-form .input-with-icon > label.label-error-state {
+  color: var(--gate-error) !important;
+  display: block;
+}
+
+.gate-form .field-glyph {
+  position: absolute !important;
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: #9a948c !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 1 !important;
+}
+
+.gate-form .field-glyph svg {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.55 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.gate-form .input-with-icon:focus-within .field-glyph {
+  color: var(--gate-border-focus) !important;
+}
+
+.gate-form .apple-input,
+.gate-form .apple-input.field,
+.gate-form input.field,
+.admin-gate .apple-input {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  height: var(--gate-input-h) !important;
+  min-height: var(--gate-input-h) !important;
+  margin: 0 !important;
+  padding: 18px 14px 8px 42px !important;
+  border: 1px solid #efefef !important;
+  border-radius: var(--gate-radius) !important;
+  background: #fafafa !important;
+  color: var(--gate-ink) !important;
+  font-family: var(--gate-font) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1.25 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+  transition:
+    border-color 180ms var(--gate-ease),
+    background 180ms var(--gate-ease);
+}
+
+.gate-form .apple-input::placeholder,
+.gate-form .apple-input.field::placeholder,
+.admin-gate .apple-input::placeholder {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+
+.gate-form .apple-input:focus,
+.gate-form .apple-input.field:focus,
+.admin-gate .apple-input:focus {
+  border-color: #262626 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* Instagram-style: shimmer solo sui campi durante auth (mai dashboard) */
+.gate-form.is-auth-pending .apple-input,
+.gate-form.is-auth-pending .apple-input.field {
+  pointer-events: none;
+  background-image: linear-gradient(
+    90deg,
+    #fafafa 0%,
+    #f0f0f0 42%,
+    #fafafa 84%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: gateFieldShimmer 1.1s ease-in-out infinite;
+}
+
+@keyframes gateFieldShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.gate-form .apple-input.is-invalid,
+.gate-form .apple-input.field.is-invalid {
+  border-color: var(--gate-error) !important;
+  background: #fff9f9 !important;
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1) !important;
+}
+
+.gate-form .btn-canal,
+.admin-gate .btn-canal {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  height: 52px;
+  min-height: 52px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: var(--gate-radius);
+  background: var(--gate-navy);
+  color: #fff;
+  font-family: var(--gate-font);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  overflow: hidden;
+  transition:
+    background 0.2s var(--gate-ease),
+    transform 0.16s var(--gate-press);
+}
+
+.gate-form .btn-canal__label {
+  position: relative;
+  z-index: 1;
+  transition: opacity 160ms var(--gate-ease), transform 160ms var(--gate-ease);
+}
+
+.gate-form .btn-canal__dots {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms var(--gate-ease);
+}
+
+.gate-form .btn-canal__dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.35;
+  animation: gateDotPulse 900ms ease-in-out infinite;
+}
+
+.gate-form .btn-canal__dots i:nth-child(2) {
+  animation-delay: 140ms;
+}
+
+.gate-form .btn-canal__dots i:nth-child(3) {
+  animation-delay: 280ms;
+}
+
+@keyframes gateDotPulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.gate-form .btn-canal.is-loading .btn-canal__label {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.gate-form .btn-canal.is-loading .btn-canal__dots {
+  opacity: 1;
+}
+
+.gate-form .btn-canal:hover:not(:disabled),
+.admin-gate .btn-canal:hover:not(:disabled) {
+  background: var(--gate-navy-hover);
+}
+
+.gate-form .btn-canal:active:not(:disabled),
+.admin-gate .btn-canal:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.gate-form .btn-canal:disabled,
+.admin-gate .btn-canal:disabled {
+  cursor: wait;
+  opacity: 1;
+}
+
+.gate-form .btn-canal.is-loading {
+  pointer-events: none;
+}
+
+.gate-local-hint {
+  margin: 18px 0 0 !important;
+  font-family: var(--gate-font) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  color: #c8c8c8 !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+  letter-spacing: 0.01em;
+}
+
+/* Guest: keep form column aligned to gate max */
+.guest-gate > .apple-card > .step-dots,
+.guest-gate > .apple-card > .error,
+.guest-gate > .apple-card > #sliderViewport {
+  width: 100%;
+  max-width: var(--gate-form-max);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Portrait basso: resta 40/60, tipografia più compatta (niente clip OS) */
+@media (max-width: 1023px) and (max-height: 700px) {
+  .gate-hero {
+    flex: 0 0 40vh !important;
+    min-height: 40vh !important;
+    max-height: 40vh !important;
+    height: 40vh !important;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-bottom: 12px;
+  }
+
+  .gate-hero .hotel-title.riva-wordmark,
+  .gate-hero .riva-wordmark.hotel-title {
+    font-size: clamp(34px, 8vw, 48px) !important;
+    line-height: 1 !important;
+  }
+
+  .gate-hero__os {
+    margin: 0 !important;
+  }
+
+  .gate-header {
+    margin-bottom: 14px;
+  }
+
+  .gate-form {
+    margin-top: 12px;
+  }
+}
+
+/* Tablet portrait — login staff/HK = stessa scala del check-in ospite.
+   Hero più generoso; barre 48px / max 420 (non 56/720). */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --gate-form-max: 420px;
+    --gate-form-max-portrait: 420px;
+    --gate-input-h: 48px;
+  }
+
+  /* Guest check-in: hero compatto, form 640 (invariato sotto) */
+  .guest-gate .gate-hero {
+    flex: 0 0 28vh !important;
+    min-height: 28vh !important;
+    max-height: 28vh !important;
+    height: 28vh !important;
+  }
+
+  /* Staff / HK: hero più alto ed estetico */
+  .login-screen-wrapper .gate-hero,
+  .admin-gate .gate-hero,
+  .hk-login .gate-hero,
+  body:not(.is-dashboard) .login-view .gate-hero {
+    flex: 0 0 38vh !important;
+    min-height: 38vh !important;
+    max-height: 38vh !important;
+    height: 38vh !important;
+    padding:
+      calc(20px + env(safe-area-inset-top, 0px))
+      clamp(24px, 5vw, 40px)
+      20px !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .login-screen-wrapper .gate-hero .hotel-title.riva-wordmark,
+  .login-screen-wrapper .gate-hero .riva-wordmark.hotel-title,
+  .admin-gate .gate-hero .hotel-title.riva-wordmark,
+  .hk-login .gate-hero .hotel-title.riva-wordmark,
+  body:not(.is-dashboard) .login-view .gate-hero .hotel-title.riva-wordmark {
+    font-size: clamp(56px, 11vw, 84px) !important;
+  }
+
+  .login-screen-wrapper .gate-hero .brand-subtitle-mono,
+  .login-screen-wrapper .gate-hero .gate-hero__os,
+  .admin-gate .gate-hero .gate-hero__os,
+  .hk-login .gate-hero .gate-hero__os {
+    font-size: 11px !important;
+    letter-spacing: 0.32em !important;
+    margin-top: 6px !important;
+    opacity: 0.7;
+  }
+
+  /* Form centrato nell’area bianca (stesso baricentro di check-in / HK / staff) */
+  body:not(.is-dashboard) .gate-card,
+  .login-screen-wrapper .gate-card,
+  .admin-gate .gate-card,
+  .hk-login .gate-card {
+    flex: 1 1 62vh !important;
+    min-height: 62vh !important;
+    height: auto !important;
+    justify-content: center !important;
+    justify-content: safe center !important;
+    align-items: center !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain;
+    box-sizing: border-box !important;
+    padding:
+      max(28px, 8vh)
+      clamp(24px, 5vw, 40px)
+      max(28px, 8vh, env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body:not(.is-dashboard) .gate-card__inner,
+  .login-screen-wrapper .gate-card__inner,
+  .admin-gate .gate-card__inner,
+  .hk-login .gate-card__inner {
+    width: 100% !important;
+    max-width: 420px !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  body:not(.is-dashboard) .gate-header,
+  .login-screen-wrapper .gate-header,
+  .admin-gate .gate-header,
+  .hk-login .gate-header {
+    margin: 0 0 24px !important;
+    text-align: left !important;
+  }
+
+  body:not(.is-dashboard) .gate-kicker,
+  .admin-gate .gate-kicker,
+  .hk-login .gate-kicker {
+    margin: 0 0 8px !important;
+    line-height: 1.4 !important;
+  }
+
+  body:not(.is-dashboard) .gate-header h1,
+  .admin-gate .gate-header h1,
+  .hk-login .gate-header h1 {
+    margin: 0 0 6px !important;
+    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 26px !important;
+    font-weight: 300 !important;
+    letter-spacing: -0.035em !important;
+    line-height: 1.15 !important;
+    color: #0b1325 !important;
+  }
+
+  body:not(.is-dashboard) .gate-lead,
+  .admin-gate .gate-lead,
+  .hk-login .gate-lead {
+    margin: 0 0 8px !important;
+    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    color: #64748b !important;
+  }
+
+  body:not(.is-dashboard) .gate-form,
+  .admin-gate .gate-form,
+  .hk-login .gate-form {
+    margin-top: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .form-group,
+  .admin-gate .gate-form .form-group,
+  .hk-login .gate-form .form-group {
+    margin: 0 0 14px !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .form-group:last-of-type,
+  .admin-gate .gate-form .form-group:last-of-type,
+  .hk-login .gate-form .form-group:last-of-type {
+    margin-bottom: 0 !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .apple-input,
+  body:not(.is-dashboard) .gate-form .apple-input.field,
+  body:not(.is-dashboard) .gate-form input.field,
+  .admin-gate .gate-form .apple-input,
+  .admin-gate .gate-form input.field,
+  .hk-login .gate-form .apple-input,
+  .hk-login .gate-form input.field {
+    box-sizing: border-box !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    padding: 18px 14px 8px 42px !important;
+    border: 1px solid #efefef !important;
+    border-radius: 12px !important;
+    background: #fafafa !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.015em !important;
+    caret-color: #262626 !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .apple-input:focus,
+  body:not(.is-dashboard) .gate-form .apple-input.field:focus,
+  body:not(.is-dashboard) .gate-form input.field:focus,
+  .admin-gate .gate-form .apple-input:focus,
+  .admin-gate .gate-form input.field:focus,
+  .hk-login .gate-form .apple-input:focus,
+  .hk-login .gate-form input.field:focus {
+    border-color: #262626 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .field-glyph,
+  .admin-gate .gate-form .field-glyph,
+  .hk-login .gate-form .field-glyph {
+    left: 16px !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .input-with-icon > label,
+  body:not(.is-dashboard) .gate-form .form-group > label,
+  .admin-gate .gate-form .input-with-icon > label,
+  .hk-login .gate-form .input-with-icon > label {
+    left: 44px !important;
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .input-with-icon:focus-within > label,
+  body:not(.is-dashboard) .gate-form .input-with-icon:has(input:not(:placeholder-shown)) > label,
+  .admin-gate .gate-form .input-with-icon:focus-within > label,
+  .admin-gate .gate-form .input-with-icon:has(input:not(:placeholder-shown)) > label,
+  .hk-login .gate-form .input-with-icon:focus-within > label,
+  .hk-login .gate-form .input-with-icon:has(input:not(:placeholder-shown)) > label {
+    top: 8px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .btn-canal,
+  .admin-gate .gate-form .btn-canal,
+  .hk-login .gate-form .btn-canal {
+    width: 100% !important;
+    max-width: none !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    margin-top: 18px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.2 !important;
+  }
+
+  body:not(.is-dashboard) .gate-form .btn-canal:disabled,
+  .admin-gate .gate-form .btn-canal:disabled,
+  .hk-login .gate-form .btn-canal:disabled {
+    opacity: 0.35 !important;
+  }
+
+  body:not(.is-dashboard) .gate-local-hint {
+    margin-top: 24px !important;
+    line-height: 1.45 !important;
+  }
+
+  /* —— GUEST CHECK-IN: barre 640, blocco centrato nell’area bianca —— */
+  .guest-gate > .apple-card {
+    flex: 1 1 74vh !important;
+    min-height: 74vh !important;
+    justify-content: center !important;
+    justify-content: safe center !important;
+    align-items: center !important;
+    padding:
+      max(24px, 6vh)
+      clamp(28px, 6vw, 56px)
+      max(24px, 6vh, env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .guest-gate {
+    --gate-form-max: 640px;
+    --gate-form-max-portrait: 640px;
+  }
+
+  .guest-gate .step-dots,
+  .guest-gate .slider-viewport,
+  .guest-gate .slide-step,
+  .guest-gate #step1 .form-grid-container,
+  .guest-gate .slide-step.is-active .form-grid-container,
+  .guest-gate .btn-canal,
+  .guest-gate #step1Footer,
+  .guest-gate #step2Footer,
+  .guest-gate #step3Footer {
+    max-width: 640px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .guest-gate #step1 .form-grid-container,
+  .guest-gate .slide-step.is-active .form-grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .guest-gate #step1 .form-grid-container .form-group,
+  .guest-gate #step1 .form-grid-container .span-2 {
+    grid-column: 1 / -1 !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .guest-gate .slide-step.is-active .apple-input,
+  .guest-gate .slide-step.is-sliding .apple-input,
+  .guest-gate #step1 .apple-input,
+  .guest-gate .phone-field,
+  .guest-gate .phone-prefix-row {
+    width: 100% !important;
+    max-width: none !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    box-sizing: border-box;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    line-height: 20px !important;
+    caret-color: #262626 !important;
+    border-radius: 12px !important;
+  }
+
+  .guest-gate .phone-field {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .guest-gate .phone-prefix-row {
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .guest-gate .btn-canal {
+    height: 56px !important;
+    min-height: 56px !important;
+    margin-top: 0 !important;
+    font-size: 15px !important;
+    border-radius: 12px !important;
+  }
+
+  .guest-gate #step2Footer .btn-canal,
+  .guest-gate #step3Footer .btn-canal {
+    margin-top: 12px !important;
+  }
+
+  .guest-gate #step1Footer .privacy-box {
+    display: flex !important;
+    visibility: visible !important;
+    margin: 0 0 16px !important;
+  }
+
+  .guest-gate .gate-header {
+    margin-bottom: 32px !important;
+    max-width: 640px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #step1 .gate-header h1,
+  #step1 .gate-header #lbl-title {
+    font-size: 28px !important;
+    line-height: 1.2 !important;
+  }
+
+  #step1 .gate-lead {
+    font-size: 15px;
+    line-height: 1.45 !important;
+    max-width: 48ch;
+  }
+}
+
+/* Tablet large portrait — login resta 420 (niente barre enormi) */
+@media (min-width: 960px) and (max-width: 1023px) {
+  body:not(.is-dashboard) .gate-card__inner,
+  .login-screen-wrapper .gate-card__inner,
+  .admin-gate .gate-card__inner,
+  .hk-login .gate-card__inner {
+    max-width: 420px !important;
+  }
+}
+
+/* Phone: stesso centro geometrico (niente thumb-anchor che “vola”) */
+@media (max-width: 767px) {
+  .gate-card,
+  body:not(.is-dashboard) .gate-card,
+  .login-screen-wrapper .gate-card,
+  .guest-gate > .apple-card {
+    justify-content: center !important;
+    justify-content: safe center !important;
+    align-items: center !important;
+  }
+
+  .gate-card__inner,
+  body:not(.is-dashboard) .gate-card__inner,
+  .login-screen-wrapper .gate-card__inner {
+    margin: 0 auto !important;
+  }
+}
+
+/* Step dots — capsule Instagram (guest check-in) */
+.guest-gate .step-dots {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100%;
+  max-width: var(--gate-form-max);
+  margin: 0 auto 16px !important;
+  padding: 8px 0 4px !important;
+}
+
+.guest-gate .step-dots:not(.ck-stepper) span {
+  display: block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  background: #e5e5ea !important;
+  flex: 0 0 auto !important;
+  transition: width 0.28s var(--gate-ease), background 0.28s ease !important;
+  animation: none !important;
+}
+
+.guest-gate .step-dots:not(.ck-stepper) span.active {
+  width: 16px !important;
+  height: 6px !important;
+  background: #262626 !important;
+  animation: none !important;
+}
+
+@media (max-width: 1023px) {
+  .gate-header h1,
+  .guest-gate .gate-header h1,
+  .guest-gate #step1 .gate-header #lbl-title {
+    font-size: 24px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate-hero__section,
+  .gate-hero__brand,
+  .gate-hero__hotel,
+  .gate-kicker,
+  .gate-header h1,
+  .gate-lead,
+  .gate-form,
+  .gate-card,
+  .guest-gate > .apple-card,
+  .admin-gate .gate-card,
+  .login-view.is-exiting {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .gate-form .btn-canal__dots i {
+    animation: none;
+    opacity: 0.8;
+  }
+}

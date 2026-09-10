@@ -1,0 +1,702 @@
+/**
+ * Riva OS — Instagram visual system (global override layer)
+ * Caricare DOPO staff.html inline CSS e riva-coherence.css.
+ * Applica regole IG su desktop, tablet e mobile.
+ */
+
+:root {
+  --ig-bg: #ffffff;
+  --ig-bg-secondary: #fafafa;
+  --ig-bg-tertiary: #f2f2f7;
+  --ig-text: #262626;
+  --ig-text-secondary: #8e8e93;
+  --ig-text-tertiary: #c7c7cc;
+  --ig-link: #0095f6;
+  --ig-border: #dbdbdb;
+  --ig-divider: #dbdbdb;
+  --ig-font: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ig-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ig-press: cubic-bezier(0.32, 0.72, 0, 1);
+  --ig-control-h: 42px;
+  --ig-control-h-lg: 48px;
+  --ig-radius-sm: 8px;
+  --ig-radius-md: 12px;
+  --ig-radius-lg: 14px;
+  --ig-radius-sheet: 14px;
+
+  /* Remap token legacy → IG neutrals */
+  --card-cream-top: #ffffff;
+  --card-cream-bottom: #fafafa;
+  --card-cream: #fafafa;
+  --sky-50: #fafafa;
+  --sky-100: #f2f2f7;
+  --sky-150: #efefef;
+  --sky-200: #e5e5ea;
+  --sky-border: rgba(0, 0, 0, 0.08);
+  --table-head-bg: #fafafa;
+  --table-row-divider: #efefef;
+  --bg-main: #fafafa;
+  --ig-hairline: #efefef;
+  --ig-row-hover: #fafafa;
+  --riva-hairline: #efefef;
+  --riva-list-border: #efefef;
+  --riva-seg-bg: #f2f2f7;
+}
+
+/* ── Base & typography ── */
+body.is-dashboard,
+.dash-view,
+.dash-main,
+.staff-shell {
+  font-family: var(--ig-font);
+  color: var(--ig-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.dash-nav-section-label,
+.settings-pane-title,
+.settings-pane h2,
+.settings-pane h3,
+.sys-settings-block-title,
+.theme-picker-title {
+  font-family: var(--ig-font) !important;
+  font-style: normal !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* Wordmark Riva: mai Montserrat — solo Great Vibes + conchiglia */
+.riva-wordmark,
+.riva-wordmark__text,
+.dash-brand-name.riva-wordmark,
+.gate-hero .hotel-title,
+.gate-hero .riva-wordmark__text,
+.m-brand-kicker .riva-wordmark__text {
+  font-family: "Great Vibes", "Cormorant Garamond", cursive !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+}
+
+.dash-nav-section-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.dash-topbar h1,
+.dash-topbar h1#pageTitle,
+#pageTitle {
+  font-family: var(--ig-font) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--ig-text) !important;
+}
+
+/* ── Sidebar desktop (IG light nav) ── */
+@media (min-width: 1381px) {
+  body.is-dashboard .dash-sidebar {
+    background: var(--ig-bg) !important;
+    color: var(--ig-text) !important;
+    border-right: 1px solid var(--ig-border) !important;
+    box-shadow: none !important;
+  }
+
+  .dash-sidebar-top,
+  .dash-brand,
+  .dash-nav + .dash-nav,
+  .dash-nav-secondary,
+  .dash-sidebar-foot {
+    border-color: var(--ig-divider) !important;
+  }
+
+  .dash-brand-name {
+    font-size: 28px !important;
+    color: var(--ig-text) !important;
+  }
+
+  .dash-brand-sub {
+    color: var(--ig-text-secondary) !important;
+  }
+
+  .dash-nav-section-label {
+    color: var(--ig-text-secondary) !important;
+  }
+
+  .dash-nav-item {
+    color: var(--ig-text) !important;
+  }
+
+  .dash-nav-item:hover {
+    background: var(--ig-bg-secondary) !important;
+    color: var(--ig-text) !important;
+  }
+
+  .dash-nav-item.is-on {
+    background: var(--ig-bg-secondary) !important;
+    color: var(--ig-text) !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+  }
+
+  .dash-nav-item.is-on .dash-nav-icon svg {
+    color: var(--ig-text) !important;
+  }
+
+  .dash-nav-item.is-on .dash-nav-badge {
+    background: var(--ig-text) !important;
+    color: #fff !important;
+  }
+
+  .dash-nav-item:not(.is-on) .dash-nav-badge {
+    background: var(--ig-bg-tertiary) !important;
+    color: var(--ig-text) !important;
+  }
+
+  .btn-logout {
+    border: 1px solid var(--ig-border) !important;
+    background: var(--ig-bg) !important;
+    color: var(--ig-text) !important;
+  }
+
+  .btn-logout:hover {
+    background: var(--ig-bg-secondary) !important;
+  }
+}
+
+/* ── Topbar & workspace shell (tutti i breakpoint) ── */
+.dash-topbar {
+  background: var(--ig-bg) !important;
+  border-bottom: 1px solid var(--ig-divider) !important;
+}
+
+.workspace-toolbar,
+.holds-panel .rack-sticky-header {
+  background: var(--ig-bg) !important;
+  border-bottom: 1px solid var(--ig-divider) !important;
+}
+
+.workspace-body.content-card,
+.table-panel,
+.content-card {
+  background: var(--ig-bg) !important;
+}
+
+.footer-summary {
+  background: var(--ig-bg) !important;
+  border-top: 1px solid var(--ig-divider) !important;
+  color: var(--ig-text-secondary) !important;
+  font-family: var(--ig-font);
+  font-size: 12px;
+  font-weight: 550;
+}
+
+/* Search pill IG */
+.search-wrapper {
+  background: var(--ig-bg-tertiary) !important;
+  border: 0 !important;
+  border-radius: var(--ig-radius-md) !important;
+  box-shadow: none !important;
+}
+
+.search-wrapper:focus-within {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+.search-input {
+  background: transparent !important;
+  border: 0 !important;
+  font-family: var(--ig-font) !important;
+  font-size: 14px !important;
+  color: var(--ig-text) !important;
+}
+
+/* ── Segmented controls ── */
+.date-segment,
+.rack-view-modes,
+.ig-seg,
+.notes-kind-filters,
+.notes-filter-row {
+  background: var(--ig-bg-tertiary) !important;
+  border: 0 !important;
+  border-radius: var(--ig-radius-md) !important;
+}
+
+.date-pill.is-on,
+.rack-view-btn.is-on,
+.notes-filter-pill.is-on {
+  background: var(--ig-text) !important;
+  border-color: var(--ig-text) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+/* ── Buttons unified ── */
+.btn-action,
+.btn-action-outline,
+.btn-action-ghost,
+.rack-toolbar-btn,
+.rack-nav-btn,
+.btn-settings-secondary,
+.btn-exit,
+.notes-filter-pill,
+.notes-done-toggle {
+  font-family: var(--ig-font) !important;
+  border-radius: var(--ig-radius-md) !important;
+  transition:
+    background 160ms var(--ig-ease),
+    color 160ms var(--ig-ease),
+    transform 160ms var(--ig-press) !important;
+}
+
+.btn-action-outline,
+.rack-toolbar-btn,
+.rack-nav-btn,
+.btn-settings-secondary,
+.btn-exit {
+  border: 0 !important;
+  background: var(--ig-bg-tertiary) !important;
+  color: var(--ig-text) !important;
+  box-shadow: none !important;
+}
+
+.btn-action-outline:hover,
+.rack-toolbar-btn:hover,
+.btn-settings-secondary:hover {
+  background: #e9e9ee !important;
+}
+
+.rack-toolbar-btn--primary,
+.btn-primary,
+.btn-action-primary {
+  background: var(--ig-text) !important;
+  border-color: var(--ig-text) !important;
+  color: #fff !important;
+  border-radius: var(--ig-radius-md) !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:hover,
+.btn-action-primary:hover,
+.rack-toolbar-btn--primary:hover {
+  background: #000 !important;
+}
+
+/* ── Tables → flat IG list ── */
+.matrix-table thead th {
+  background: var(--ig-bg) !important;
+  border-bottom: 1px solid var(--ig-divider) !important;
+  color: var(--ig-text-secondary) !important;
+  font-family: var(--ig-font) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+.matrix-table td {
+  background: var(--ig-bg) !important;
+  border-bottom: 1px solid var(--ig-divider) !important;
+  font-family: var(--ig-font) !important;
+  font-size: 14px !important;
+}
+
+.matrix-table tbody tr:nth-child(even),
+.matrix-table tbody tr:nth-child(even) td {
+  background: var(--ig-bg) !important;
+}
+
+.workspace.is-clients .matrix-table tbody tr:nth-child(even),
+.workspace.is-clients .matrix-table tbody tr:nth-child(even) td {
+  background: transparent !important;
+}
+
+.matrix-table:not(.matrix-table--clients) tbody tr:hover td {
+  background: var(--ig-row-hover) !important;
+}
+
+.matrix-section-label {
+  font-family: var(--ig-font) !important;
+  color: var(--ig-text-secondary) !important;
+}
+
+/* ── Feed / list rows ── */
+.feed-row,
+.notes-list .feed-row,
+.blacklist-list .feed-row,
+.blacklist-row,
+.ops-note {
+  border: 0 !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--ig-divider) !important;
+  box-shadow: none !important;
+  background: var(--ig-bg) !important;
+  transition: background 160ms var(--ig-ease) !important;
+}
+
+.feed-row:hover,
+.notes-list .feed-row:hover,
+.blacklist-list .feed-row:hover,
+.ops-note:hover {
+  background: var(--ig-row-hover) !important;
+}
+
+.feed-row:active,
+.notes-list .feed-row:active {
+  background: var(--ig-bg-tertiary) !important;
+}
+
+/* ── Settings (flat IG) ── */
+.settings-shell {
+  background: var(--ig-bg) !important;
+  border: 1px solid var(--ig-divider) !important;
+  border-radius: var(--ig-radius-lg) !important;
+  box-shadow: none !important;
+}
+
+.settings-rail {
+  background: var(--ig-bg-secondary) !important;
+  border-right: 1px solid var(--ig-divider) !important;
+}
+
+.settings-rail-item.is-on {
+  background: var(--ig-bg) !important;
+  box-shadow: none !important;
+}
+
+.settings-pane-title,
+.settings-pane-body h2,
+.settings-pane-body h3 {
+  font-family: var(--ig-font) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.theme-card {
+  border: 1px solid var(--ig-divider) !important;
+  border-radius: var(--ig-radius-lg) !important;
+  box-shadow: none !important;
+}
+
+.theme-card.is-selected {
+  border-color: var(--ig-text) !important;
+  box-shadow: 0 0 0 1px var(--ig-text) !important;
+}
+
+.sys-settings-row,
+.sys-settings-card {
+  border-color: var(--ig-divider) !important;
+  border-radius: var(--ig-radius-md) !important;
+  box-shadow: none !important;
+}
+
+/* ── Rack (soft IG grid) ── */
+.rack-frame {
+  --rack-grid-bg: #fafafa !important;
+  --rack-grid-line: #efefef !important;
+}
+
+.rack-head,
+.rack-date-cell,
+.rack-day-slot {
+  font-family: var(--ig-font) !important;
+}
+
+.rack-room-label {
+  font-family: var(--ig-font) !important;
+  font-weight: 600 !important;
+  color: var(--ig-text) !important;
+}
+
+.rack-chrome-top,
+.rack-toolbar {
+  background: var(--ig-bg) !important;
+  border-color: var(--ig-divider) !important;
+}
+
+/* ── Sheets IG ── */
+.sheet.sheet--ig .sheet-panel--ig-report {
+  background: var(--ig-bg) !important;
+  font-family: var(--ig-font);
+}
+
+.sheet--ig .ig-sheet-bar {
+  border-bottom-color: var(--ig-divider) !important;
+}
+
+.sheet--ig .ig-sheet-body .sheet-foot,
+.sheet--ig .ig-sheet-body .hold-wizard-foot,
+.sheet--ig .ig-sheet-body .hold-share-foot {
+  background: var(--ig-bg) !important;
+  border-top: 1px solid var(--ig-divider) !important;
+  box-shadow: none !important;
+}
+
+.hold-box {
+  border: 1px solid var(--ig-divider) !important;
+  border-radius: var(--ig-radius-lg) !important;
+  background: var(--ig-bg) !important;
+  box-shadow: none !important;
+}
+
+.hold-box--muted {
+  background: var(--ig-bg-secondary) !important;
+}
+
+.hold-box__title,
+.sheet-label,
+.sheet-box__title {
+  font-family: var(--ig-font) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: var(--ig-text-secondary) !important;
+}
+
+.sheet--ig .field,
+.sheet--ig .field.ui-dropdown-trigger,
+.sheet--ig select.field,
+.sheet--ig textarea.field,
+.hold-box .field,
+.sys-settings-row .field {
+  background: #ffffff !important;
+  border: 1px solid var(--ig-hairline, #efefef) !important;
+  border-radius: var(--ig-radius-md, 12px) !important;
+  box-shadow: none !important;
+  font-family: var(--ig-font) !important;
+  color: var(--ig-text, #262626) !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.sheet--ig .field:focus,
+.sheet--ig .field.ui-dropdown-trigger:focus,
+.sheet--ig select.field:focus,
+.sheet--ig textarea.field:focus,
+.hold-box .field:focus {
+  outline: none !important;
+  border-color: #0a0a0a !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08) !important;
+}
+
+.sheet--ig .field.is-invalid,
+.hold-box .field.is-invalid {
+  border-color: #c62828 !important;
+  background: #fff9f9 !important;
+  box-shadow: inset 0 0 0 1px rgba(198, 40, 40, 0.12) !important;
+}
+
+.sheet--ig .field::placeholder,
+.hold-box .field::placeholder {
+  color: var(--ig-text-tertiary, #c7c7cc) !important;
+  opacity: 1 !important;
+}
+
+.hold-chip {
+  border-radius: var(--ig-radius-md) !important;
+  border-color: var(--ig-divider) !important;
+}
+
+/* ── Gate / login ── */
+.gate-card {
+  background: #faf8f4 !important;
+}
+
+.gate-header h1 {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.035em !important;
+  color: #0b1325 !important;
+}
+
+.gate-form .apple-input,
+.gate-form .field {
+  background: #ffffff !important;
+  border: 1px solid rgba(10, 10, 10, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  color: #0a0a0a !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.gate-form .form-group label,
+.gate-form .input-with-icon > label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.gate-form .btn-canal {
+  background: #121a2b !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+}
+
+/* ── Mobile chrome ── */
+@media (max-width: 1380px) {
+  .dash-topbar h1,
+  .dash-topbar h1#pageTitle {
+    font-family: var(--ig-font) !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+  }
+
+  .m-brand-name {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: var(--ig-text) !important;
+  }
+
+  .m-tabbar {
+    background: var(--ig-bg) !important;
+    border-top: 1px solid var(--ig-divider) !important;
+    box-shadow: none !important;
+  }
+
+  .m-tabbar-item {
+    font-family: var(--ig-font) !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    color: var(--ig-text-secondary) !important;
+  }
+
+  .m-tabbar-item.is-on {
+    color: var(--ig-text) !important;
+  }
+
+  body.is-dashboard .dash-sidebar {
+    background: var(--ig-bg) !important;
+    color: var(--ig-text) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .dash-nav-item {
+    color: var(--ig-text) !important;
+  }
+
+  .dash-nav-item.is-on {
+    background: var(--ig-bg-secondary) !important;
+    color: var(--ig-text) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ── Menus & dropdowns ── */
+.ui-dropdown-menu,
+.notify-menu,
+.row-menu:not(.is-bottom-sheet) {
+  border: 1px solid var(--ig-divider) !important;
+  border-radius: var(--ig-radius-lg) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+  font-family: var(--ig-font) !important;
+}
+
+.notify-menu {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.row-menu.is-bottom-sheet .riva-hold-sheet,
+.sheet--ig .sheet-panel--ig-report {
+  border-radius: var(--ig-radius-sheet) var(--ig-radius-sheet) 0 0 !important;
+}
+
+/* ── Ops HK tabs (IG underline) ── */
+.ops-sec-tab {
+  font-family: var(--ig-font) !important;
+  color: var(--ig-text-secondary) !important;
+}
+
+.ops-sec-tab.is-on {
+  color: var(--ig-text) !important;
+  font-weight: 700 !important;
+}
+
+/* ── Alerts / toasts ── */
+.staff-alert,
+#error {
+  font-family: var(--ig-font) !important;
+  border-radius: var(--ig-radius-md) !important;
+}
+
+/* ── Pack / disponibilità (already IG — reinforce) ── */
+.pack-option-shell {
+  border-color: var(--ig-divider) !important;
+}
+
+.pack-stat {
+  background: var(--ig-bg-tertiary) !important;
+  border-radius: var(--ig-radius-md) !important;
+}
+
+.pack-choice-btn {
+  border-color: var(--ig-divider) !important;
+  border-radius: var(--ig-radius-lg) !important;
+}
+
+.pack-choice-btn.is-selected {
+  box-shadow: none !important;
+}
+
+.login-view {
+  background: transparent;
+}
+
+/* ── Cards & summary blocks ── */
+.hold-share-summary,
+.mc-card,
+.note-detail-card {
+  border: 1px solid var(--ig-divider) !important;
+  border-radius: var(--ig-radius-lg) !important;
+  background: var(--ig-bg) !important;
+  box-shadow: none !important;
+}
+
+.ops-room-card {
+  border: 1px solid var(--ig-divider) !important;
+  border-radius: var(--ig-radius-lg) !important;
+  box-shadow: none !important;
+}
+
+.dash-main {
+  background: var(--ig-bg-secondary) !important;
+}
+
+/* ── Tablet tuning ── */
+@media (min-width: 721px) and (max-width: 1380px) {
+  .dash-topbar h1,
+  #pageTitle {
+    font-size: 21px !important;
+  }
+
+  .workspace-toolbar {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* ── Desktop wide ── */
+@media (min-width: 1381px) {
+  .dash-topbar h1,
+  #pageTitle {
+    font-size: 22px !important;
+  }
+
+  .workspace:not(.is-settings-page) .workspace-toolbar,
+  .workspace.is-settings-page .workspace-toolbar {
+    padding: 12px clamp(20px, 2.5vw, 32px) !important;
+  }
+}
+
+/* ── Reduced motion: layout-fixes.css handles sheet/pack transitions ── */
+@media (prefers-reduced-motion: reduce) {
+  .motion-workspace-in,
+  .motion-rise,
+  .motion-intro {
+    animation: none !important;
+  }
+}

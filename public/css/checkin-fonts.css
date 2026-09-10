@@ -1,0 +1,77 @@
+/**
+ * Check-in — font fallback calibrati (anti-FOUT / CLS)
+ * I webfont arrivano con display=swap; i fallback locali occupano
+ * gli stessi pixel così lo swap non sposta titoli e campi.
+ */
+
+@font-face {
+  font-family: "Montserrat Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 112.94%;
+  ascent-override: 88.31%;
+  descent-override: 23.02%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sora Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 101.2%;
+  ascent-override: 92%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+/* Script logo: fallback metrico (il box .ck-hero__mark è comunque a altezza fissa) */
+@font-face {
+  font-family: "Great Vibes Fallback";
+  src: local("Snell Roundhand"), local("Segoe Script"), local("Apple Chancery"), local("cursive");
+  size-adjust: 118%;
+  ascent-override: 90%;
+  descent-override: 35%;
+  line-gap-override: 0%;
+  font-display: optional;
+}
+
+:root {
+  --ck-font-ui: "Montserrat", "Montserrat Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ck-font-display: "Sora", "Sora Fallback", "Montserrat", "Montserrat Fallback", sans-serif;
+  --ck-font-script: "Great Vibes", "Great Vibes Fallback", cursive;
+}
+
+html:has(#guestGate),
+html:has(#guestGate) body,
+#guestGate {
+  font-family: var(--ck-font-ui) !important;
+}
+
+#guestGate .ck-hero__mark,
+#guestGate .ck-hero__word {
+  font-family: var(--ck-font-script) !important;
+}
+
+#guestGate .gate-header h1,
+#guestGate #lbl-title,
+#guestGate .ck-title,
+#loginCard .gate-header h1,
+#loginCard .ck-title,
+#hkLogin .gate-header h1,
+#hkLogin .ck-title {
+  font-family: var(--ck-font-ui) !important;
+}
+
+#guestGate .gate-lead,
+#guestGate #lbl-subtitle,
+#guestGate .ck-lead,
+#loginCard .gate-lead,
+#loginCard .ck-lead,
+#hkLogin .gate-lead,
+#hkLogin .ck-lead {
+  font-family: var(--ck-font-ui) !important;
+}
+
+#guestGate .btn-canal {
+  font-family: var(--ck-font-ui) !important;
+}

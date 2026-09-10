@@ -1,0 +1,583 @@
+/* Riva OS — FO chrome: topbar holds, alloggiati, docs, orb menu */
+:root {
+  --riva-orb-ink: #0a0a0a;
+  --riva-orb-muted: #737373;
+  --riva-orb-line: #efefef;
+  --riva-orb-wash: #fafafa;
+}
+
+/* —— 1. Rack chrome: solo legenda (periodo Ieri/Domani rimosso → più spazio tabellone) —— */
+.holds-panel .rack-bottom-bar {
+  display: none !important;
+}
+
+.holds-panel .rack-toolbar-period,
+.holds-panel .rack-sticky-header .rack-toolbar-period {
+  display: none !important;
+}
+
+.holds-panel .rack-sticky-header {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+.holds-panel .rack-chrome-top {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 4px 12px 6px !important;
+  border-bottom: 0 !important;
+  background: #fff !important;
+}
+
+.holds-panel .rack-view-modes {
+  display: none !important; /* vive in topbar */
+}
+
+.holds-panel .rack-legend {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  width: 100%;
+}
+
+.holds-panel .rack-frame {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+@media (max-width: 1380px) {
+  .holds-panel .rack-bottom-bar {
+    display: none !important;
+  }
+
+  .holds-panel .rack-toolbar-period {
+    display: none !important;
+  }
+}
+
+/* —— Topbar azioni Prenotazioni (ora in ig-subbar) —— */
+.holds-top-actions {
+  display: none;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: nowrap;
+  width: 100%;
+  flex: 1 1 100%;
+  min-height: var(--ig-seg-btn-h, 36px);
+  box-sizing: border-box;
+}
+
+.workspace.is-holds .holds-top-actions,
+.holds-top-actions.is-on,
+.holds-top-actions:not(.hidden) {
+  display: flex !important;
+}
+
+/* Capsule FO: geometria in /css/riva-capsule-toolbars.css (allineato a Clienti) */
+.holds-top-actions .rack-view-modes {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  height: var(--ig-seg-btn-h, 36px);
+  box-sizing: border-box;
+  background: transparent;
+  border-radius: 0;
+}
+
+.holds-top-actions .rack-view-btn {
+  height: var(--ig-seg-btn-h, 36px);
+  min-height: var(--ig-seg-btn-h, 36px);
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9999px;
+  background: #f3f4f6;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--riva-orb-muted);
+  cursor: pointer;
+}
+
+.holds-top-actions .rack-view-btn.is-on {
+  background: #0a0a0a;
+  color: #fff;
+  box-shadow: none;
+}
+
+.holds-top-actions__btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  min-height: var(--ig-seg-btn-h, 36px);
+}
+
+.holds-top-actions .rack-toolbar-btn {
+  height: var(--ig-seg-btn-h, 36px);
+  min-height: var(--ig-seg-btn-h, 36px);
+  padding: 0 14px;
+  border-radius: 9999px;
+  border: 1px solid #efefef;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.holds-top-actions .rack-toolbar-btn--primary {
+  background: #0a0a0a;
+  color: #fff;
+  border-color: #0a0a0a;
+}
+
+/* Report / CSV in Prenotazioni */
+.holds-top-actions__btns .btn-action {
+  min-height: var(--ig-seg-btn-h, 36px);
+  height: var(--ig-seg-btn-h, 36px);
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.holds-top-actions__btns .btn-action.hidden,
+.holds-top-actions__btns .btn-action[hidden] {
+  display: none !important;
+}
+
+/* Legenda stati: una riga pulita sotto le azioni */
+.workspace.is-holds .holds-panel .rack-legend,
+.holds-panel .rack-legend {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px 14px;
+  width: 100%;
+  padding: 8px var(--ig-chrome-pad-x, 16px) !important;
+  margin: 0;
+  border: 0 !important;
+  border-bottom: 1px solid var(--riva-orb-line, #efefef) !important;
+  background: #fff !important;
+  box-sizing: border-box;
+}
+
+/* —— 2. Schede alloggiati —— */
+.alloggiati-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: #fafafa;
+}
+
+.alloggiati-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--ig-seg-bar-h, 44px);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.alloggiati-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.toolbar-field--alloggiati {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.workspace.is-alloggiati .toolbar-field--period,
+.workspace.is-alloggiati .toolbar-field--search {
+  display: none !important;
+}
+
+.workspace.is-holds .toolbar-field--period {
+  display: none !important;
+}
+
+.alloggiati-filters {
+  min-height: var(--ig-seg-bar-h, 44px);
+  align-items: center;
+}
+
+.alloggiati-filter {
+  flex: 0 0 auto;
+  height: var(--ig-seg-btn-h, 36px);
+  min-height: var(--ig-seg-btn-h, 36px);
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--riva-orb-line);
+  background: #f4f4f5;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--riva-orb-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.alloggiati-filter.is-on {
+  background: var(--riva-orb-ink);
+  border-color: var(--riva-orb-ink);
+  color: #fff;
+}
+
+.alloggiati-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 24px;
+}
+
+.alloggiati-list {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.alloggiati-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--riva-orb-line);
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.alloggiati-row__room {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--riva-orb-ink);
+}
+
+.alloggiati-row__guest {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--riva-orb-ink);
+}
+
+.alloggiati-row__meta {
+  font-size: 12px;
+  color: var(--riva-orb-muted);
+  margin-top: 2px;
+}
+
+.alloggiati-row__cta {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--riva-orb-ink);
+  border: 1px solid var(--riva-orb-ink);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.alloggiati-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--riva-orb-muted);
+  font-size: 14px;
+}
+
+/* —— 3. Documenti contatti —— */
+.riva-docs {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--riva-orb-line);
+}
+
+.riva-docs__title {
+  margin: 0 0 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--riva-orb-muted);
+}
+
+.riva-docs__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.riva-docs__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--riva-orb-line);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+}
+
+.riva-docs__item-name {
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.riva-docs__item-del {
+  border: 0;
+  background: transparent;
+  color: #c62828;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.riva-docs__add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px dashed #c4c4c4;
+  background: var(--riva-orb-wash);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--riva-orb-ink);
+}
+
+.riva-docs__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.guest-sheet-group .riva-docs,
+.ig-profile-contacts + .riva-docs {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* —— 4. Menu hold: popover compatto al click (no sheet / no orb enorme) —— */
+#rowMenu.row-menu--hold.row-menu--orb:not(.is-bottom-sheet) {
+  width: 220px !important;
+  max-width: min(240px, calc(100vw - 16px));
+  max-height: min(60vh, 380px);
+  border-radius: 14px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.16),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 0 !important;
+  overflow: hidden;
+  z-index: 230;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: inherit;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__meta {
+  margin: 0;
+  padding: 8px 10px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #636366;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__list {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 4px 4px;
+  max-height: min(52vh, 320px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__item {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 34px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  color: #0a0a0a;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__item:hover,
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__item:active {
+  background: #f4f4f5;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__ico {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #525252;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__ico svg {
+  width: 15px;
+  height: 15px;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__lbl {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__item.is-danger,
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-pop__item.is-danger .riva-hold-pop__ico {
+  color: #c62828;
+}
+
+/* Backdrop trasparente: non oscura il rack */
+#rowMenuBackdrop.is-orb-mode {
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Legacy orb (cache) nascosto */
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-orb__head,
+#rowMenu.row-menu--hold.row-menu--orb .riva-hold-orb__avatar {
+  display: none !important;
+}
+
+/* —— Barre sezione: Report/CSV secondari; FO tasti sempre visibili —— */
+@media (max-width: 1380px) {
+  .holds-top-actions #btnReport,
+  .holds-top-actions #btnCsv {
+    display: none !important;
+  }
+
+  .holds-top-actions {
+    gap: 6px;
+    flex-wrap: nowrap !important;
+  }
+
+  .holds-top-actions .rack-toolbar-btn {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .holds-top-actions .rack-view-btn {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .holds-top-actions #rackBtnEdit,
+  .holds-top-actions #rackBtnOptimize,
+  .holds-top-actions #rackBtnSmartSpace,
+  .holds-top-actions .rack-view-btn[data-rack-view="week"] {
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .holds-top-actions #btnReport,
+  .holds-top-actions #btnCsv {
+    display: none !important;
+  }
+
+  .holds-top-actions {
+    flex-wrap: nowrap !important;
+  }
+
+  .holds-top-actions #rackBtnEdit,
+  .holds-top-actions #rackBtnOptimize,
+  .holds-top-actions #rackBtnSmartSpace,
+  .holds-top-actions .rack-view-btn[data-rack-view="week"] {
+    display: inline-flex !important;
+  }
+
+  .holds-top-actions__btns {
+    flex-wrap: nowrap !important;
+    gap: 5px;
+  }
+
+  .ops-sec-tab .ops-sec-tab__full {
+    display: none !important;
+  }
+
+  .ops-sec-tab .ops-sec-tab__short {
+    display: inline !important;
+  }
+
+  .ops-sec-tab {
+    padding: 0 10px !important;
+    font-size: 13px !important;
+  }
+
+  .ig-subbar-tabs-inner .ops-stats-line {
+    display: none !important;
+  }
+
+  .workspace.is-ops-rooms .ig-subbar-tabs-inner .ops-stats-line,
+  .workspace.is-ops-colazioni .ig-subbar-tabs-inner .ops-stats-line {
+    display: flex !important;
+  }
+}
