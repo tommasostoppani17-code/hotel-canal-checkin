@@ -1,9 +1,8 @@
 /**
  * Riva OS — Apple PWA standalone safe-area (status bar / notch)
  * Load LAST so it wins over chrome resets that zero padding-top.
- *
- * Standalone: home indicator ~21–34px. Mai “Richiedi sito desktop”
- * prima di Aggiungi a Home — iOS gonfia safe-area → banda grigia.
+ * env(safe-area-inset-*) is 0 in Safari browser; non-zero with
+ * viewport-fit=cover + apple-mobile-web-app-status-bar-style=black-translucent.
  */
 
 :root {
@@ -13,9 +12,9 @@
   --riva-safe-right: env(safe-area-inset-right, 0px);
   --riva-topbar-content-h: 52px;
   --riva-topbar-h: calc(var(--riva-topbar-content-h) + var(--riva-safe-top));
-  --riva-app-bg: #fafafa;
 }
 
+/* Tier-1 brand topbar (reception + HK) — shield under clock / battery */
 .dash-topbar {
   box-sizing: border-box !important;
   min-height: var(--riva-topbar-h) !important;
@@ -25,21 +24,25 @@
   padding-bottom: 0 !important;
 }
 
+/* Absolute-centered Riva wordmark: center in content band, not under status bar */
 .dash-topbar .m-brand-bar {
   top: calc(50% + var(--riva-safe-top) / 2) !important;
 }
 
+/* Drawer sidebar brand under status bar when open */
 @media (max-width: 1380px) {
   .dash-sidebar {
     padding-top: var(--riva-safe-top);
   }
 }
 
+/* Sticky secondary chrome under the topbar */
 .closure-shift-sticky,
 .sticky.top-12 {
   top: var(--riva-topbar-h) !important;
 }
 
+/* Bottom tabbar home-indicator (solo reception: HK non ha tabbar) */
 body:not(.hk-app) .m-tabbar {
   padding-bottom: max(0px, var(--riva-safe-bottom));
   padding-left: max(0px, var(--riva-safe-left));
@@ -55,11 +58,12 @@ body.hk-app .m-tabbar {
   border: 0 !important;
 }
 
+/* Feed scroll: padding trasparente sotto (Home Indicator) — niente banda grigia opaca */
 body.is-dashboard,
 body.is-board,
 body.hk-app.is-dashboard,
 body.hk-app.is-board {
-  background: var(--riva-app-bg) !important;
+  background: #fafafa !important;
 }
 
 body.is-dashboard .dash-main,
@@ -70,9 +74,10 @@ body.hk-app .dash-main,
 body.hk-app .dash-content,
 body.hk-app .workspace,
 body.hk-app .workspace-body.content-card {
-  background: var(--riva-app-bg) !important;
+  background: #fafafa !important;
 }
 
+/* Sheet che salgono dal basso */
 .sheet.sheet--ig .sheet-panel--ig-report,
 .sheet.sheet--ig .sheet-panel--ops,
 #opsIgSheet .sheet-panel {
@@ -80,11 +85,14 @@ body.hk-app .workspace-body.content-card {
   box-sizing: border-box !important;
 }
 
+/* ==========================================================================
+   HK iOS: niente banda morta in basso (ex-tabbar)
+   ========================================================================== */
 html:has(body.hk-app) {
   height: 100% !important;
   height: 100dvh !important;
-  background-color: var(--riva-app-bg) !important;
-  background: var(--riva-app-bg) !important;
+  background-color: #fafafa !important;
+  background: #fafafa !important;
 }
 
 body.hk-app,
@@ -93,8 +101,8 @@ body.hk-app.is-board {
   min-height: 100dvh !important;
   height: 100dvh !important;
   max-height: 100dvh !important;
-  background-color: var(--riva-app-bg) !important;
-  background: var(--riva-app-bg) !important;
+  background-color: #fafafa !important;
+  background: #fafafa !important;
   padding-bottom: 0 !important;
   margin: 0 !important;
 }
@@ -107,7 +115,7 @@ body.hk-app.is-board .staff-shell {
   max-height: 100dvh !important;
   padding-bottom: 0 !important;
   margin-bottom: 0 !important;
-  background: var(--riva-app-bg) !important;
+  background: #fafafa !important;
 }
 
 body.hk-app .dash-view,
@@ -122,10 +130,11 @@ body.hk-app .ops-body,
 body.hk-app .ops-rooms-shell,
 body.hk-app .ops-rooms-content,
 body.hk-app .ops-rooms-pager {
-  background-color: var(--riva-app-bg) !important;
-  background: var(--riva-app-bg) !important;
+  background-color: #fafafa !important;
+  background: #fafafa !important;
 }
 
+/* Mai padding-bottom sul contenitore flex/overflow: crea la banda grigia sotto le card */
 body.hk-app .dash-view,
 body.hk-app .dash-main,
 body.hk-app .dash-content,
@@ -141,6 +150,7 @@ body.hk-app .ops-rooms-pager {
   margin-bottom: 0 !important;
 }
 
+/* Safe-area SOLO dentro le pagine scrollabili */
 body.hk-app .ops-rooms-page {
   padding-bottom: max(16px, var(--riva-safe-bottom)) !important;
   box-sizing: border-box !important;
@@ -160,86 +170,27 @@ body.hk-app.is-board::before {
   display: none !important;
 }
 
-/* Reception PWA standalone — fullscreen, no phantom browser chrome */
+/* Standalone: solo anti-banda. Niente overflow:hidden / 100dvh forzati (rompevano lo scroll). */
 @media (display-mode: standalone), (display-mode: fullscreen) {
   :root {
     --riva-safe-bottom: min(34px, env(safe-area-inset-bottom, 0px));
-    --riva-safe-top: min(59px, env(safe-area-inset-top, 0px));
-  }
-
-  html,
-  html:has(body.is-dashboard) {
-    height: 100% !important;
-    height: 100dvh !important;
-    min-height: 100% !important;
-    min-height: -webkit-fill-available !important;
-    background: var(--riva-app-bg) !important;
-    overflow: hidden !important;
-  }
-
-  body.is-dashboard,
-  body.is-dashboard.is-board {
-    min-height: 100dvh !important;
-    min-height: -webkit-fill-available !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    margin: 0 !important;
-    background: var(--riva-app-bg) !important;
-    padding-bottom: 0 !important;
-  }
-
-  body.is-dashboard .staff-shell,
-  body.is-dashboard .dash-view,
-  body.is-dashboard .dash-main {
-    min-height: 100dvh !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    background: var(--riva-app-bg) !important;
   }
 
   body.is-dashboard .m-tabbar {
     display: none !important;
     height: 0 !important;
     min-height: 0 !important;
-    max-height: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
     border: 0 !important;
-    overflow: hidden !important;
-    pointer-events: none !important;
   }
 
+  /* Evita doppio safe-area sul footer lista (era la “barra grigia”) */
   body.is-dashboard .workspace.is-clients .footer-summary,
   body.is-dashboard .workspace.is-clients #checkinsPanel .footer-summary,
   body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary {
     padding-bottom: 12px !important;
   }
-
-  body.is-dashboard .workspace.is-clients #checkinsPanel .table-scroll,
-  body.is-dashboard .workspace.is-clients #inHousePanel .table-scroll {
-    padding-bottom: calc(72px + var(--riva-safe-bottom)) !important;
-  }
-
-  body.is-dashboard .clients-fab-checkin {
-    bottom: max(16px, calc(12px + var(--riva-safe-bottom))) !important;
-  }
-}
-
-html.is-pwa-standalone,
-html.is-pwa-standalone:has(body.is-dashboard) {
-  height: 100% !important;
-  height: 100dvh !important;
-  min-height: -webkit-fill-available !important;
-  background: var(--riva-app-bg) !important;
-  overflow: hidden !important;
-}
-
-html.is-pwa-standalone body.is-dashboard {
-  min-height: 100dvh !important;
-  min-height: -webkit-fill-available !important;
-  height: 100dvh !important;
-  background: var(--riva-app-bg) !important;
-  padding-bottom: 0 !important;
 }
 
 html.is-pwa-standalone body.is-dashboard .m-tabbar {
