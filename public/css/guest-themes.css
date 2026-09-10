@@ -1,0 +1,210 @@
+/* Temi premium check-in ospite — Legno / Quarzo / Laguna / Spezie
+ * Applicare classe su <html>: theme-legno | theme-quarzo | theme-laguna | theme-spezie
+ * Mappa sui token già usati da index.html (--canal-petroleum, --card-cream, …)
+ */
+
+html.theme-transition,
+html.theme-transition body,
+html.theme-transition .apple-card,
+html.theme-transition .btn-canal,
+html.theme-transition .apple-input {
+  transition:
+    background-color 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94),
+    color 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94),
+    border-color 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+}
+
+/* ── 1. LEGNO (Alpine) ── */
+html.theme-legno {
+  --canal-petroleum: #a07855;
+  --canal-petroleum-hover: #8a6547;
+  --riva-bg: #2a2725;
+  --riva-muted: #6e6761;
+  --text-main: #2a2725;
+  --text-muted: #6e6761;
+  --card-cream: #dfd9ce;
+  --card-cream-top: #efebe4;
+  --card-cream-bottom: #dfd9ce;
+  --input-white: #ffffff;
+  --placeholder: #9a9188;
+  --border: rgba(42, 39, 37, 0.12);
+  --input-border: rgba(42, 39, 37, 0.14);
+  --theme-shell: #efebe4;
+  --theme-accent-ink: #efebe4;
+  --canal: #a07855;
+  --canal-dark: #8a6547;
+  --c: #a07855;
+  --text: #2a2725;
+  --muted: #6e6761;
+  --bg: #2a2725;
+  color-scheme: light;
+}
+
+html.theme-legno body:has(.background-overlay) {
+  background-color: #2a2725 !important;
+}
+
+html.theme-legno .background-overlay::after {
+  background: linear-gradient(
+    165deg,
+    rgba(42, 39, 37, 0.45) 0%,
+    rgba(110, 103, 97, 0.35) 45%,
+    rgba(42, 39, 37, 0.72) 100%
+  ) !important;
+}
+
+html.theme-legno .btn-canal {
+  color: #efebe4 !important;
+  -webkit-text-fill-color: #efebe4 !important;
+}
+
+/* ── 2. QUARZO (Minimal luxury) — default ── */
+html.theme-quarzo {
+  --canal-petroleum: #111625;
+  --canal-petroleum-hover: #0a0e18;
+  --riva-bg: #111625;
+  --riva-muted: #6e7a8a;
+  --text-main: #111625;
+  --text-muted: #6e7a8a;
+  --card-cream: #ffffff;
+  --card-cream-top: #ffffff;
+  --card-cream-bottom: #f4f5f7;
+  --input-white: #f8f9fa;
+  --placeholder: #9aa3ad;
+  --border: rgba(17, 22, 37, 0.1);
+  --input-border: rgba(17, 22, 37, 0.12);
+  --theme-shell: #f4f5f7;
+  --theme-accent-ink: #ffffff;
+  --canal: #111625;
+  --canal-dark: #0a0e18;
+  --c: #111625;
+  --text: #111625;
+  --muted: #6e7a8a;
+  --bg: #111625;
+  color-scheme: light;
+}
+
+html.theme-quarzo body:has(.background-overlay) {
+  background-color: #111625 !important;
+}
+
+html.theme-quarzo .background-overlay::after {
+  background: linear-gradient(
+    165deg,
+    rgba(17, 22, 37, 0.5) 0%,
+    rgba(110, 122, 138, 0.28) 42%,
+    rgba(17, 22, 37, 0.75) 100%
+  ) !important;
+}
+
+html.theme-quarzo .btn-canal {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* ── 3. LAGUNA (Venezia / mare) ── */
+html.theme-laguna {
+  --canal-petroleum: #4a7a96;
+  --canal-petroleum-hover: #3a6280;
+  --riva-bg: #0f1e36;
+  --riva-muted: #5c728a;
+  --text-main: #0f1e36;
+  --text-muted: #5c728a;
+  --card-cream: #ffffff;
+  --card-cream-top: #ffffff;
+  --card-cream-bottom: #ebf1f5;
+  --input-white: #f4f7f9;
+  --placeholder: #8a9aab;
+  --border: rgba(15, 30, 54, 0.1);
+  --input-border: rgba(15, 30, 54, 0.12);
+  --theme-shell: #ebf1f5;
+  --theme-accent-ink: #ebf1f5;
+  --canal: #4a7a96;
+  --canal-dark: #3a6280;
+  --c: #4a7a96;
+  --text: #0f1e36;
+  --muted: #5c728a;
+  --bg: #0f1e36;
+  color-scheme: light;
+}
+
+html.theme-laguna body:has(.background-overlay) {
+  background-color: #0f1e36 !important;
+}
+
+html.theme-laguna .background-overlay::after {
+  background: linear-gradient(
+    165deg,
+    rgba(15, 30, 54, 0.48) 0%,
+    rgba(74, 122, 150, 0.32) 42%,
+    rgba(15, 30, 54, 0.72) 100%
+  ) !important;
+}
+
+html.theme-laguna .btn-canal {
+  color: #ebf1f5 !important;
+  -webkit-text-fill-color: #ebf1f5 !important;
+}
+
+/* ── 4. SPEZIE (terracotta soft) ── */
+html.theme-spezie {
+  --canal-petroleum: #c27d58;
+  --canal-petroleum-hover: #a86848;
+  --riva-bg: #3d261a;
+  --riva-muted: #7a6255;
+  --text-main: #3d261a;
+  --text-muted: #7a6255;
+  --card-cream: #eadcd3;
+  --card-cream-top: #f5efeb;
+  --card-cream-bottom: #eadcd3;
+  --input-white: #ffffff;
+  --placeholder: #a89082;
+  --border: rgba(61, 38, 26, 0.12);
+  --input-border: rgba(61, 38, 26, 0.14);
+  --theme-shell: #f5efeb;
+  --theme-accent-ink: #f5efeb;
+  --canal: #c27d58;
+  --canal-dark: #a86848;
+  --c: #c27d58;
+  --text: #3d261a;
+  --muted: #7a6255;
+  --bg: #3d261a;
+  color-scheme: light;
+}
+
+html.theme-spezie body:has(.background-overlay) {
+  background-color: #3d261a !important;
+}
+
+html.theme-spezie .background-overlay::after {
+  background: linear-gradient(
+    165deg,
+    rgba(61, 38, 26, 0.5) 0%,
+    rgba(194, 125, 88, 0.28) 42%,
+    rgba(61, 38, 26, 0.75) 100%
+  ) !important;
+}
+
+html.theme-spezie .btn-canal {
+  color: #f5efeb !important;
+  -webkit-text-fill-color: #f5efeb !important;
+}
+
+/* Privacy e pagine light: shell del tema */
+html[class*='theme-'] body.guest-theme-light {
+  background-color: var(--theme-shell) !important;
+}
+
+/* Header / titoli */
+html[class*='theme-'] .header .hotel-title,
+html[class*='theme-'] .header h1 {
+  color: var(--text-main);
+}
+
+html[class*='theme-'] .header .hotel-subtitle {
+  color: var(--text-muted);
+}
+
+html[class*='theme-'] .step-dots span.active {
+  background: var(--canal-petroleum);
+}

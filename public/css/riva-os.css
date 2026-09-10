@@ -1,0 +1,358 @@
+/* Riva OS — design system (Instagram-level dark minimal) */
+:root {
+  --riva-bg: #050505;
+  --riva-panel: #111114;
+  --riva-panel-2: #1a1d20;
+  --riva-line: rgba(255, 255, 255, 0.1);
+  --riva-line-soft: rgba(255, 255, 255, 0.06);
+  --riva-text: #f4f4f5;
+  --riva-muted: #9a9aa3;
+  --riva-muted-2: #71717a;
+  --riva-danger: #c62828;
+  --riva-font: "Instrument Sans", system-ui, -apple-system, sans-serif;
+  --riva-display: Syne, var(--riva-font);
+  --riva-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --riva-radius: 14px;
+  --riva-radius-lg: 22px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body.riva-os,
+body.riva-os button,
+body.riva-os input,
+body.riva-os select,
+body.riva-os textarea {
+  font-family: var(--riva-font);
+}
+
+.hidden { display: none !important; }
+
+/* —— Gate / login ——
+   Safe Layout Box (stile Instagram):
+   baricentro geometrico dello schermo + cuscinetto ≥ ~10% sopra/sotto.
+   Non usare margin-top fissi sul blocco form. */
+.riva-gate-shell {
+  min-height: 100dvh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--riva-bg);
+  color: var(--riva-text);
+}
+
+.riva-gate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding:
+    max(env(safe-area-inset-top, 0px), clamp(24px, 10dvh, 56px))
+    16px
+    max(env(safe-area-inset-bottom, 0px), clamp(24px, 10dvh, 56px));
+}
+
+.riva-gate-card {
+  width: 100%;
+  max-width: min(420px, calc(100vw - 32px));
+  margin: 0 auto;
+  flex-shrink: 0;
+  background: var(--riva-panel);
+  border: 1px solid var(--riva-line);
+  border-radius: var(--riva-radius-lg);
+  padding: 28px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  box-sizing: border-box;
+}
+
+@media (min-width: 721px) {
+  .riva-gate-card {
+    max-width: min(840px, calc(100vw - 32px));
+  }
+}
+
+.riva-gate-brand {
+  font-family: var(--riva-display);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0 0 6px;
+}
+
+.riva-gate-sub {
+  margin: 0 0 18px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--riva-muted);
+}
+
+.riva-gate-title {
+  margin: 0 0 6px;
+  font-family: var(--riva-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.riva-gate-lead {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--riva-muted);
+}
+
+.riva-field { margin-bottom: 14px; }
+.riva-field:last-of-type { margin-bottom: 18px; }
+
+.riva-field label {
+  display: block;
+  margin: 0 0 6px 2px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--riva-muted);
+}
+
+.riva-field label.label-error-state { color: var(--riva-danger); }
+
+.riva-field input {
+  width: 100%;
+  height: 48px;
+  border-radius: var(--riva-radius);
+  border: 1px solid var(--riva-line);
+  background: #0b0b0e;
+  color: var(--riva-text);
+  padding: 0 14px;
+  outline: none;
+  font-size: 16px !important;
+}
+
+.riva-field input::placeholder { color: var(--riva-muted-2); }
+.riva-field input.is-invalid { border-color: var(--riva-danger); }
+
+.riva-btn {
+  appearance: none;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  color: #0a0a0a;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 18px;
+  cursor: pointer;
+  touch-action: manipulation;
+  width: 100%;
+}
+
+.riva-btn-ghost {
+  background: transparent;
+  color: var(--riva-muted);
+  border: 1px solid var(--riva-line);
+  width: auto;
+}
+
+.riva-ios-shake { animation: rivaShake 0.4s ease; }
+
+@keyframes rivaShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* —— Top bar (colazioni / HK / feed apps) —— */
+.riva-top {
+  padding: 18px 0 12px;
+  padding-top: calc(18px + env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid var(--riva-line);
+  background: var(--riva-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.riva-rail {
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+.riva-brand {
+  font-family: var(--riva-display);
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.riva-brand-sub {
+  margin-top: 6px;
+  color: var(--riva-muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* —— Feed row + avatar (colazioni pattern) —— */
+.riva-feed {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 0 calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.riva-feed-list {
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.riva-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--riva-radius);
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.riva-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--riva-line-soft);
+}
+
+.riva-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  color: #0a0a0a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: -0.04em;
+  flex-shrink: 0;
+}
+
+.riva-row.is-done .riva-avatar {
+  background: #222226;
+  color: var(--riva-muted);
+}
+
+/* —— Instagram toggle —— */
+.riva-switch {
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  border: 0;
+  background: #333338;
+  padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s ease;
+}
+
+.riva-switch.is-on {
+  background: #fff;
+  justify-content: flex-end;
+}
+
+.riva-switch .riva-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0a0a0a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.riva-switch.is-on .riva-knob { background: #111; }
+
+/* —— Toast —— */
+.riva-toast {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1e;
+  border: 1px solid var(--riva-line);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  max-width: 90vw;
+}
+
+.riva-toast.show { opacity: 1; }
+
+/* —— Sidebar nav (staff / apps) —— */
+.riva-sidebar {
+  flex-shrink: 0;
+  width: 252px;
+  display: flex;
+  flex-direction: column;
+  background: var(--riva-panel-2);
+  border-right: 1px solid var(--riva-line-soft);
+  color: rgba(255, 255, 255, 0.88);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.riva-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 6px;
+  padding: 8px 12px;
+  min-height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  transition: background 0.2s var(--riva-ease), color 0.2s var(--riva-ease);
+}
+
+.riva-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.riva-nav-item.is-on {
+  background: rgba(255, 255, 255, 0.94);
+  color: #0a0a0a;
+  font-weight: 700;
+}

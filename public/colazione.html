@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Colazioni">
+  <link rel="manifest" href="/colazione-manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <title>Colazioni · Riva OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/riva-os.css">
+  <link rel="stylesheet" href="/css/colazione.css?v=20260829a">
+  <link rel="stylesheet" href="/css/colazione-mobile.css?v=1">
+</head>
+<body class="riva-os">
+  <div id="error" role="status" aria-live="polite"></div>
+  <p class="boot-hint hidden" id="bootHint" role="alert"></p>
+
+  <section class="login-view" id="loginView" aria-label="Accesso colazioni">
+    <div class="gate-card" id="gateCard">
+      <div class="gate-header">
+        <span class="hotel-title">Riva</span>
+        <span class="hotel-subtitle">OS</span>
+        <h1>Colazioni</h1>
+        <p class="gate-lead">Stesso account della reception. Tap sulla cella = ingresso in sala.</p>
+      </div>
+      <form id="gateForm" class="gate-form" autocomplete="off" novalidate>
+        <div class="form-group">
+          <label id="lbl-staff" for="staffMember">Nome</label>
+          <input class="apple-input" id="staffMember" maxlength="40" autocomplete="username" autocapitalize="words" placeholder="Il tuo nome">
+        </div>
+        <div class="form-group">
+          <label id="lbl-pin" for="pin">Password</label>
+          <input class="apple-input" id="pin" type="password" maxlength="64" autocomplete="current-password" placeholder="PIN / password">
+        </div>
+        <button class="btn-canal" id="btnLogin" type="submit" aria-busy="false">
+          <span class="btn-login-label">Entra</span>
+          <svg class="btn-login-spinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <div id="boardShell" class="app hidden">
+    <header class="app-top">
+      <div class="top-row">
+        <div class="top-brand">
+          <span class="brand-name">Riva</span>
+          <span class="brand-sub">OS · Hotel Canal</span>
+          <span class="brand-date" id="topDate">Sala · oggi</span>
+        </div>
+        <button type="button" class="btn-ghost" id="btnLogout">Esci</button>
+      </div>
+    </header>
+
+    <main class="app-bottom">
+      <section class="zone" aria-label="Piano alto">
+        <div class="zone-head">
+          <span class="zone-title">Piano alto · 2xx / 3xx</span>
+          <span class="zone-meta" id="upperMeta">0 camere</span>
+        </div>
+        <div class="ig-grid" id="gridUpper"></div>
+        <div class="zone-empty hidden" id="emptyUpper">Nessuna camera al piano alto.</div>
+      </section>
+
+      <section class="zone" aria-label="Piano basso">
+        <div class="zone-head">
+          <span class="zone-title">Piano basso · 1xx</span>
+          <span class="zone-meta" id="lowerMeta">0 camere</span>
+        </div>
+        <div class="ig-grid" id="gridLower"></div>
+        <div class="zone-empty hidden" id="emptyLower">Nessuna camera al piano basso.</div>
+      </section>
+
+      <div class="board-empty hidden" id="emptyBoard">Nessuna camera in house stamattina.</div>
+    </main>
+
+    <footer class="app-search" role="search">
+      <label class="sr-only" for="boardSearch">Cerca camera o ospite</label>
+      <input
+        type="search"
+        id="boardSearch"
+        class="board-search-input"
+        placeholder="Cerca stanza o ospite…"
+        autocomplete="off"
+        enterkeyhint="search"
+      >
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var els = {
+        loginView: document.getElementById('loginView'),
+        boardShell: document.getElementById('boardShell'),
+        gateCard: document.getElementById('gateCard'),
+        gateForm: document.getElementById('gateForm'),
+        staff: document.getElementById('staffMember'),
+        pin: document.getElementById('pin'),
+        lblStaff: document.getElementById('lbl-staff'),
+        lblPin: document.getElementById('lbl-pin'),
+        btnLogin: document.getElementById('btnLogin'),
+        btnLogout: document.getElementById('btnLogout'),
+        topDate: document.getElementById('topDate'),
+        boardSearch: document.getElementById('boardSearch'),
+        gridUpper: document.getElementById('gridUpper'),
+        gridLower: document.getElementById('gridLower'),
+        emptyUpper: document.getElementById('emptyUpper'),
+        emptyLower: document.getElementById('emptyLower'),
+        emptyBoard: document.getElementById('emptyBoard'),
+        upperMeta: document.getElementById('upperMeta'),
+        lowerMeta: document.getElementById('lowerMeta'),
+        error: document.getElementById('error'),
+        bootHint: document.getElementById('bootHint'),
+      };
+
+      var pollTimer = null;
+      var toastTimer = null;
+      var loginInFlight = false;
+      var boardLoading = false;
+      var hasBoard = false;
+      var searchQuery = '';
+      var allRooms = [];
+
+      function showServerToast(msg) {
+        els.error.textContent = msg || 'Errore di rete';
+        els.error.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          els.error.classList.remove('show');
+        }, 2800);
+      }
+
+      function shakeCard() {
+        els.gateCard.classList.remove('ios-shake');
+        void els.gateCard.offsetWidth;
+        els.gateCard.classList.add('ios-shake');
+      }
+
+      function clearFieldErrors() {
+        els.lblStaff.classList.remove('label-error-state');
+        els.lblPin.classList.remove('label-error-state');
+        els.staff.classList.remove('is-invalid');
+        els.pin.classList.remove('is-invalid');
+      }
+
+      function showFieldError(which) {
+        clearFieldErrors();
+        if (which === 'staff') {
+          els.lblStaff.classList.add('label-error-state');
+          els.staff.classList.add('is-invalid');
+          els.staff.focus();
+        } else {
+          els.lblPin.classList.add('label-error-state');
+          els.pin.classList.add('is-invalid');
+          els.pin.focus();
+        }
+        shakeCard();
+      }
+
+      function setLoginBusy(busy) {
+        loginInFlight = busy;
+        els.btnLogin.disabled = busy;
+        els.btnLogin.classList.toggle('is-loading', busy);
+        els.btnLogin.setAttribute('aria-busy', busy ? 'true' : 'false');
+        els.staff.disabled = busy;
+        els.pin.disabled = busy;
+      }
+
+      function showBootHint(msg) {
+        if (!els.bootHint) return;
+        els.bootHint.textContent = msg;
+        els.bootHint.classList.remove('hidden');
+      }
+
+      function api(path, opts) {
+        var options = opts || {};
+        var headers = { 'Content-Type': 'application/json' };
+        if (options.headers) {
+          for (var key in options.headers) {
+            if (Object.prototype.hasOwnProperty.call(options.headers, key)) {
+              headers[key] = options.headers[key];
+            }
+          }
+        }
+        return fetch(path, {
+          credentials: 'same-origin',
+          method: options.method,
+          body: options.body,
+          headers: headers,
+        }).then(function (res) {
+          var ct = String(res.headers.get('content-type') || '');
+          if (ct.indexOf('json') === -1) {
+            return { res: res, body: null, notJson: true };
+          }
+          return res.json().then(function (body) {
+            return { res: res, body: body };
+          }).catch(function () {
+            return { res: res, body: null, notJson: true };
+          });
+        });
+      }
+
+      function setSession(user) {
+        var loggedIn = Boolean(user);
+        els.loginView.classList.toggle('hidden', loggedIn);
+        els.boardShell.classList.toggle('hidden', !loggedIn);
+        if (user) {
+          startPoll();
+          paintSkeleton();
+          loadBoard();
+        } else {
+          stopPoll();
+          allRooms = [];
+          hasBoard = false;
+          searchQuery = '';
+          if (els.boardSearch) els.boardSearch.value = '';
+        }
+      }
+
+      function startPoll() {
+        stopPoll();
+        pollTimer = setInterval(loadBoard, 15000);
+      }
+
+      function stopPoll() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = null;
+      }
+
+      function escapeHtml(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function formatDate(iso) {
+        if (!iso) return '';
+        var parts = String(iso).split('-');
+        var y = parts[0];
+        var m = parts[1];
+        var d = parts[2];
+        if (!y || !m || !d) return iso;
+        return d + '/' + m + '/' + y;
+      }
+
+      function setDates(iso) {
+        var label = formatDate(iso);
+        els.topDate.textContent = label ? ('Sala · ' + label) : 'Sala · oggi';
+      }
+
+      function roomZone(room) {
+        var n = Number(room);
+        if (Number.isFinite(n) && n >= 200) return 'upper';
+        return 'lower';
+      }
+
+      function paintSkeleton() {
+        var i;
+        var html = '';
+        for (i = 0; i < 6; i++) html += '<div class="sk"></div>';
+        els.gridUpper.innerHTML = html;
+        html = '';
+        for (i = 0; i < 4; i++) html += '<div class="sk"></div>';
+        els.gridLower.innerHTML = html;
+        els.emptyUpper.classList.add('hidden');
+        els.emptyLower.classList.add('hidden');
+        els.emptyBoard.classList.add('hidden');
+        els.upperMeta.textContent = '…';
+        els.lowerMeta.textContent = '…';
+      }
+
+      function filterRooms(list, query) {
+        var q = String(query || '').trim().toLowerCase();
+        if (!q) return list || [];
+        return (list || []).filter(function (r) {
+          var room = String(r.room || '').toLowerCase();
+          var name = String(r.guestName || '').toLowerCase();
+          return room.indexOf(q) !== -1 || name.indexOf(q) !== -1;
+        });
+      }
+
+      function visibleRooms() {
+        return filterRooms(allRooms, searchQuery);
+      }
+
+      function switchHtml(on) {
+        return '<span class="riva-switch' + (on ? ' is-on' : '') + '" aria-hidden="true"><span class="riva-knob"></span></span>';
+      }
+
+      function zoneMeta(n) {
+        return n === 1 ? '1 camera' : (String(n) + ' camere');
+      }
+
+      function buildCell(r) {
+        var eaten = Boolean(r.eaten);
+        var name = r.guestName ? String(r.guestName).slice(0, 24) : 'Ospite';
+        var pax = Number(r.pax) || 0;
+        var checkout = r.kind === 'checkout_due';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ig-cell';
+        btn.dataset.room = r.room;
+        btn.dataset.eaten = eaten ? 'true' : 'false';
+        btn.setAttribute('role', 'switch');
+        btn.setAttribute('aria-checked', eaten ? 'true' : 'false');
+        btn.setAttribute(
+          'aria-label',
+          'Camera ' + r.room + ', ' + (pax || 0) + ' persone, ' + (eaten ? 'in sala' : 'in attesa')
+        );
+
+        btn.innerHTML =
+          '<div class="ig-cell-top">' +
+            '<span class="ig-room">' + escapeHtml(r.room) + '</span>' +
+            (checkout ? '<span class="ig-badge">Out</span>' : '') +
+          '</div>' +
+          '<div class="ig-pax">' +
+            '<span class="ig-pax-num' + (pax ? '' : ' is-empty') + '">' + (pax || '—') + '</span>' +
+            '<span class="ig-pax-label">persone</span>' +
+          '</div>' +
+          '<div class="ig-cell-foot">' +
+            '<span class="ig-guest">' + escapeHtml(name) + '</span>' +
+            '<span class="ig-state">' + (eaten ? 'Sala' : 'Attesa') + '</span>' +
+            switchHtml(eaten) +
+          '</div>';
+
+        btn.addEventListener('click', function () {
+          toggleRoom(r.room, btn);
+        });
+        return btn;
+      }
+
+      function renderZone(gridEl, emptyEl, metaEl, rooms) {
+        gridEl.innerHTML = '';
+        var list = Array.isArray(rooms) ? rooms : [];
+        var n = list.length;
+        var i;
+        emptyEl.classList.toggle('hidden', n > 0);
+        metaEl.textContent = zoneMeta(n);
+        for (i = 0; i < list.length; i++) gridEl.appendChild(buildCell(list[i]));
+      }
+
+      function renderRooms(rooms) {
+        var list = Array.isArray(rooms) ? rooms : [];
+        var searching = Boolean(String(searchQuery || '').trim());
+
+        if (!allRooms.length) {
+          els.emptyBoard.textContent = 'Nessuna camera in house stamattina.';
+          els.emptyBoard.classList.remove('hidden');
+        } else if (!list.length && searching) {
+          els.emptyBoard.textContent = 'Nessun risultato per «' + String(searchQuery).trim() + '».';
+          els.emptyBoard.classList.remove('hidden');
+        } else {
+          els.emptyBoard.classList.add('hidden');
+        }
+
+        var upper = list.filter(function (r) { return roomZone(r.room) === 'upper'; });
+        var lower = list.filter(function (r) { return roomZone(r.room) === 'lower'; });
+
+        renderZone(els.gridUpper, els.emptyUpper, els.upperMeta, upper);
+        renderZone(els.gridLower, els.emptyLower, els.lowerMeta, lower);
+      }
+
+      function applyOptimisticToggle(el, nextEaten) {
+        if (!el) return;
+        el.dataset.eaten = nextEaten ? 'true' : 'false';
+        el.setAttribute('aria-checked', nextEaten ? 'true' : 'false');
+        var paxEl = el.querySelector('.ig-pax-num');
+        var pax = paxEl && !paxEl.classList.contains('is-empty') ? paxEl.textContent : '0';
+        el.setAttribute(
+          'aria-label',
+          'Camera ' + el.dataset.room + ', ' + pax + ' persone, ' + (nextEaten ? 'in sala' : 'in attesa')
+        );
+        var state = el.querySelector('.ig-state');
+        if (state) state.textContent = nextEaten ? 'Sala' : 'Attesa';
+        var sw = el.querySelector('.riva-switch');
+        if (sw) sw.classList.toggle('is-on', nextEaten);
+        el.classList.remove('is-flash');
+        void el.offsetWidth;
+        el.classList.add('is-flash');
+      }
+
+      function cloneRoom(room) {
+        return {
+          room: room.room,
+          guestName: room.guestName,
+          pax: room.pax,
+          eaten: room.eaten,
+          updatedAt: room.updatedAt,
+          updatedBy: room.updatedBy,
+          kind: room.kind,
+          checkoutDate: room.checkoutDate,
+        };
+      }
+
+      function toggleRoom(room, el) {
+        if (el && el.classList.contains('is-pending')) return;
+        var prevEaten = el && el.dataset.eaten === 'true';
+        var nextEaten = !prevEaten;
+
+        if (el) {
+          el.classList.add('is-pending');
+          applyOptimisticToggle(el, nextEaten);
+        }
+
+        var idx = -1;
+        for (var i = 0; i < allRooms.length; i++) {
+          if (String(allRooms[i].room) === String(room)) {
+            idx = i;
+            break;
+          }
+        }
+        var prevRoom = idx >= 0 ? cloneRoom(allRooms[idx]) : null;
+        if (idx >= 0) {
+          allRooms[idx] = cloneRoom(allRooms[idx]);
+          allRooms[idx].eaten = nextEaten;
+        }
+
+        api('/api/breakfast/rooms/' + encodeURIComponent(room) + '/toggle', {
+          method: 'POST',
+          body: '{}',
+        }).then(function (result) {
+          var res = result.res;
+          var body = result.body;
+          if (!res.ok) {
+            if (prevRoom && idx >= 0) allRooms[idx] = prevRoom;
+            if (el) applyOptimisticToggle(el, prevEaten);
+            showServerToast((body && body.error) || 'Salvataggio fallito');
+            return;
+          }
+          var eaten = Boolean(body && body.eaten);
+          if (idx >= 0) {
+            allRooms[idx] = cloneRoom(allRooms[idx]);
+            allRooms[idx].eaten = eaten;
+          }
+          if (el) applyOptimisticToggle(el, eaten);
+          renderRooms(visibleRooms());
+        }).catch(function () {
+          if (prevRoom && idx >= 0) allRooms[idx] = prevRoom;
+          if (el) applyOptimisticToggle(el, prevEaten);
+          showServerToast('Connessione non disponibile');
+        }).then(function () {
+          if (el) el.classList.remove('is-pending');
+        });
+      }
+
+      function loadBoard() {
+        if (boardLoading) return;
+        boardLoading = true;
+        if (!hasBoard) paintSkeleton();
+        api('/api/breakfast/board').then(function (result) {
+          var res = result.res;
+          var body = result.body;
+          if (res.status === 401) {
+            setSession(null);
+            return;
+          }
+          if (!res.ok) {
+            showServerToast((body && body.error) || 'Board non raggiungibile');
+            return;
+          }
+          hasBoard = true;
+          allRooms = Array.isArray(body.rooms) ? body.rooms.slice() : [];
+          setDates(body.today);
+          renderRooms(visibleRooms());
+        }).catch(function () {
+          showServerToast('Connessione non disponibile');
+        }).then(function () {
+          boardLoading = false;
+        });
+      }
+
+      function logout() {
+        api('/api/staff/logout', { method: 'POST', body: '{}' }).then(function () {
+          setSession(null);
+        }).catch(function () {
+          setSession(null);
+        });
+      }
+
+      if (els.boardSearch) {
+        els.boardSearch.addEventListener('input', function () {
+          searchQuery = els.boardSearch.value || '';
+          renderRooms(visibleRooms());
+        });
+      }
+
+      els.gateForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (loginInFlight) return;
+        clearFieldErrors();
+        var staff = els.staff.value.trim();
+        var pin = els.pin.value;
+        if (!staff && !pin) {
+          els.staff.classList.add('is-invalid');
+          els.pin.classList.add('is-invalid');
+          els.lblStaff.classList.add('label-error-state');
+          els.lblPin.classList.add('label-error-state');
+          shakeCard();
+          return;
+        }
+        if (!staff) return showFieldError('staff');
+        if (!pin) return showFieldError('pin');
+        setLoginBusy(true);
+        api('/api/staff/login', {
+          method: 'POST',
+          body: JSON.stringify({ staff: staff, staffId: staff, pin: pin }),
+        }).then(function (result) {
+          var res = result.res;
+          var body = result.body;
+          if (!res.ok) {
+            if (body && body.field === 'staff') showFieldError('staff');
+            else showFieldError('pin');
+            return;
+          }
+          setSession((body && body.staff) || { name: staff });
+          els.pin.value = '';
+        }).catch(function () {
+          showServerToast('Connessione non disponibile');
+        }).then(function () {
+          setLoginBusy(false);
+        });
+      });
+
+      els.btnLogout.addEventListener('click', logout);
+
+      api('/api/staff/session').then(function (result) {
+        var res = result.res;
+        var body = result.body;
+        if (result.notJson || res.status === 404) {
+          showBootHint('Server sbagliato o non avviato. Sul Mac: cd hotel-canal-checkin && npm start — poi apri /colazione sulla porta indicata in console.');
+          setSession(null);
+          return;
+        }
+        if (res.ok && body && body.ok && body.staff) setSession(body.staff);
+        else setSession(null);
+      }).catch(function () {
+        showBootHint('Connessione al server non disponibile. Verifica Wi‑Fi e che npm start sia attivo.');
+        setSession(null);
+      });
+    })();
+  </script>
+</body>
+</html>

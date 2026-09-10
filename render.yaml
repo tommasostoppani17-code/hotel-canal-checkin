@@ -105,5 +105,9 @@ services:
         sync: false
       - key: TESTER_PHONES
         sync: false
+      - key: RIVA_LAB_SECRET
+        sync: false
+      - key: RIVA_LAB_GUARD
+        value: "1"
 
   # Report notturno: .github/workflows/cron-reports.yml

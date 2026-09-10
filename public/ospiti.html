@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#0A0A0A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Riva Ospiti">
+  <link rel="manifest" href="/ospiti-manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <title>Ospiti · Riva OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/ospiti.css?v=20260830h">
+</head>
+<body class="ospiti-app">
+  <div id="error" role="status" aria-live="polite"></div>
+
+  <div class="guest-stage">
+    <aside class="guest-hero" aria-label="Riva OS">
+      <div class="guest-hero__brand">
+        <span class="riva-wordmark" aria-label="Riva">
+          <span class="riva-wordmark__text">Riva</span>
+          <svg class="riva-shell" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M17.8 32.8c.7-.45 1.45-.7 2.2-.7s1.5.25 2.2.7c-.65.55-1.4.9-2.2.9s-1.55-.35-2.2-.9Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+            <path d="M8.2 18.2c1.1-6.4 5.4-11.7 11.8-13.2 6.4 1.5 10.7 6.8 11.8 13.2.4 2.4-.2 4.6-1.5 6.4-2.2 3.1-6.1 5.6-10.3 5.6s-8.1-2.5-10.3-5.6c-1.3-1.8-1.9-4-1.5-6.4Z" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/>
+            <path d="M20 6.4v21.8M12.4 10.6c2.3 3.5 4.2 8.3 5.6 15.4M27.6 10.6c-2.3 3.5-4.2 8.3-5.6 15.4M9.8 16c3.1 2.3 5.2 6.2 6.9 12.4M30.2 16c-3.1 2.3-5.2 6.2-6.9 12.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+            <path d="M12 22c2.6 1.1 5.2 1.7 8 1.7s5.4-.6 8-1.7" stroke="currentColor" stroke-width="1.05" stroke-linecap="round" opacity="0.55"/>
+          </svg>
+        </span>
+        <p class="guest-hero__os" id="brandSub">OS · OSPITI</p>
+      </div>
+      <div class="guest-hero__lang" role="group" aria-label="Language">
+        <button type="button" id="langIt" class="is-on" data-lang="it">IT</button>
+        <button type="button" id="langEn" data-lang="en">EN</button>
+      </div>
+    </aside>
+
+    <main class="guest-panel" id="hub">
+      <div class="guest-panel__inner">
+        <p class="guest-lead" id="hubLead">Wi‑Fi, codici e orari. Per aiuto, segnala alla reception.</p>
+        <p class="guest-welcome hidden" id="hubWelcome"></p>
+
+        <section class="osp-block" id="secWifi" aria-labelledby="wifiTitle">
+          <div class="osp-block__head">
+            <h2 class="osp-block__title" id="wifiTitle">Wi‑Fi</h2>
+            <span class="osp-block__kicker" id="wifiKicker">Rete</span>
+          </div>
+          <div class="osp-card" id="wifiCard">
+            <div class="wifi-tabs" id="wifiTabs" role="tablist" aria-label="Wi-Fi"></div>
+            <div class="osp-row">
+              <span class="osp-row__label" id="lblWifiSsid">Rete</span>
+              <span class="osp-row__right">
+                <span class="osp-row__value" id="valWifiSsid">—</span>
+                <button type="button" class="copy-btn" id="copySsid" data-copy="ssid">Copia</button>
+              </span>
+            </div>
+            <div class="osp-row">
+              <span class="osp-row__label" id="lblWifiPass">Password</span>
+              <span class="osp-row__right">
+                <span class="osp-row__value is-code" id="valWifiPass">—</span>
+                <button type="button" class="copy-btn" id="copyPass" data-copy="pass">Copia</button>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section class="osp-block hidden" id="secDoors" aria-labelledby="doorsTitle">
+          <div class="osp-block__head">
+            <h2 class="osp-block__title" id="doorsTitle">Codici porta</h2>
+            <span class="osp-block__kicker" id="doorsKicker">Accesso</span>
+          </div>
+          <div class="osp-card" id="doorsCard"></div>
+        </section>
+
+        <section class="osp-block hidden" id="secHours" aria-labelledby="hoursTitle">
+          <div class="osp-block__head">
+            <h2 class="osp-block__title" id="hoursTitle">Orari</h2>
+            <span class="osp-block__kicker" id="hoursKicker">Hotel</span>
+          </div>
+          <div class="osp-card" id="hoursCard"></div>
+        </section>
+
+        <section class="osp-block hidden" id="secOffers" aria-labelledby="offersTitle">
+          <div class="osp-block__head">
+            <h2 class="osp-block__title" id="offersTitle">Offerte</h2>
+            <span class="osp-block__kicker" id="offersKicker">Hotel</span>
+          </div>
+          <div class="osp-card" id="offersCard"></div>
+        </section>
+
+        <section class="osp-block hidden" id="secExtra" aria-labelledby="extraTitle">
+          <div class="osp-block__head">
+            <h2 class="osp-block__title" id="extraTitle">Utili</h2>
+            <span class="osp-block__kicker" id="extraKicker">Contatti</span>
+          </div>
+          <div class="osp-card" id="extraCard"></div>
+        </section>
+
+        <section class="osp-report" id="reportZone" aria-labelledby="reportTitle">
+          <div class="osp-block__head">
+            <h2 class="osp-block__title" id="reportTitle">Segnalazione</h2>
+            <span class="osp-block__kicker" id="reportKicker">Reception</span>
+          </div>
+          <p class="osp-report__lead" id="reportLead">Scegli il tipo, indica camera e nome. Arriva subito in reception.</p>
+
+          <div id="reportFormWrap">
+            <div class="cat-grid" id="catGrid" role="listbox" aria-label="Tipo segnalazione"></div>
+
+            <form id="reportForm" class="report-form" novalidate>
+              <div class="fields-row">
+                <div class="field">
+                  <label id="lblRoom" for="roomNumber">Camera</label>
+                  <input id="roomNumber" name="room" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="es. 205">
+                </div>
+                <div class="field">
+                  <label id="lblName" for="guestName">Nome</label>
+                  <input id="guestName" name="name" maxlength="80" autocomplete="name" autocapitalize="words" placeholder="Nome">
+                </div>
+              </div>
+              <div class="field">
+                <label id="lblMsg" for="message">Dettaglio (opzionale)</label>
+                <textarea id="message" name="message" maxlength="500" placeholder="Breve descrizione…"></textarea>
+              </div>
+              <button type="submit" class="btn-send" id="btnSend" aria-busy="false">
+                <span class="btn-label" id="btnSendLabel">Invia alla reception</span>
+                <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+                  <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <div class="report-done hidden" id="reportDone">
+            <div class="report-done-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3 id="doneTitle">Inviata</h3>
+            <p id="doneLead">La reception ha ricevuto la tua segnalazione.</p>
+            <button type="button" class="btn-ghost" id="btnAgain">Nuova segnalazione</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var COPY = {
+        it: {
+          brandSub: 'OS · OSPITI',
+          lead: 'Wi‑Fi, codici e orari. Per aiuto, segnala alla reception.',
+          hoursTitle: 'Orari',
+          hoursKicker: 'Hotel',
+          doorsTitle: 'Codici porta',
+          doorsKicker: 'Accesso',
+          wifiTitle: 'Wi‑Fi',
+          wifiKicker: 'Rete',
+          extraTitle: 'Utili',
+          extraKicker: 'Contatti',
+          offersTitle: 'Offerte',
+          offersKicker: 'Hotel',
+          reportTitle: 'Segnalazione',
+          reportKicker: 'Reception',
+          reportLead: 'Scegli il tipo, indica camera e nome. Arriva subito in reception.',
+          lblCheckIn: 'Check-in',
+          lblCheckOut: 'Check-out',
+          lblBreakfast: 'Colazione',
+          lblReception: 'Reception',
+          lblWifiSsid: 'Rete',
+          lblWifiPass: 'Password',
+          lblAddress: 'Indirizzo',
+          lblPartner: 'Partner',
+          lblRoom: 'Camera',
+          lblName: 'Nome',
+          lblMsg: 'Dettaglio (opzionale)',
+          roomPh: 'es. 205',
+          namePh: 'Nome',
+          msgPh: 'Breve descrizione…',
+          send: 'Invia alla reception',
+          copy: 'Copia',
+          copied: 'Copiato',
+          doneTitle: 'Inviata',
+          doneLead: 'La reception ha ricevuto la tua segnalazione.',
+          again: 'Nuova segnalazione',
+          netErr: 'Errore di rete. Riprova.',
+        },
+        en: {
+          brandSub: 'OS · GUESTS',
+          lead: 'Wi‑Fi, door codes and hours. Need help? Report to reception.',
+          hoursTitle: 'Hours',
+          hoursKicker: 'Hotel',
+          doorsTitle: 'Door codes',
+          doorsKicker: 'Access',
+          wifiTitle: 'Wi‑Fi',
+          wifiKicker: 'Network',
+          extraTitle: 'Useful',
+          extraKicker: 'Contacts',
+          offersTitle: 'Offers',
+          offersKicker: 'Hotel',
+          reportTitle: 'Report',
+          reportKicker: 'Reception',
+          reportLead: 'Pick a type, then room and name. It goes straight to reception.',
+          lblCheckIn: 'Check-in',
+          lblCheckOut: 'Check-out',
+          lblBreakfast: 'Breakfast',
+          lblReception: 'Reception',
+          lblWifiSsid: 'Network',
+          lblWifiPass: 'Password',
+          lblAddress: 'Address',
+          lblPartner: 'Partner',
+          lblRoom: 'Room',
+          lblName: 'Name',
+          lblMsg: 'Details (optional)',
+          roomPh: 'e.g. 205',
+          namePh: 'Name',
+          msgPh: 'Short description…',
+          send: 'Send to reception',
+          copy: 'Copy',
+          copied: 'Copied',
+          doneTitle: 'Sent',
+          doneLead: 'Reception has received your report.',
+          again: 'New report',
+          netErr: 'Network error. Try again.',
+        },
+      };
+
+      var els = {
+        error: document.getElementById('error'),
+        brandSub: document.getElementById('brandSub'),
+        hubLead: document.getElementById('hubLead'),
+        hubWelcome: document.getElementById('hubWelcome'),
+        secWifi: document.getElementById('secWifi'),
+        secDoors: document.getElementById('secDoors'),
+        secHours: document.getElementById('secHours'),
+        secOffers: document.getElementById('secOffers'),
+        secExtra: document.getElementById('secExtra'),
+        hoursTitle: document.getElementById('hoursTitle'),
+        hoursKicker: document.getElementById('hoursKicker'),
+        hoursCard: document.getElementById('hoursCard'),
+        doorsTitle: document.getElementById('doorsTitle'),
+        doorsKicker: document.getElementById('doorsKicker'),
+        doorsCard: document.getElementById('doorsCard'),
+        wifiTitle: document.getElementById('wifiTitle'),
+        wifiKicker: document.getElementById('wifiKicker'),
+        extraTitle: document.getElementById('extraTitle'),
+        extraKicker: document.getElementById('extraKicker'),
+        extraCard: document.getElementById('extraCard'),
+        offersTitle: document.getElementById('offersTitle'),
+        offersKicker: document.getElementById('offersKicker'),
+        offersCard: document.getElementById('offersCard'),
+        reportTitle: document.getElementById('reportTitle'),
+        reportKicker: document.getElementById('reportKicker'),
+        reportLead: document.getElementById('reportLead'),
+        lblWifiSsid: document.getElementById('lblWifiSsid'),
+        lblWifiPass: document.getElementById('lblWifiPass'),
+        valWifiSsid: document.getElementById('valWifiSsid'),
+        valWifiPass: document.getElementById('valWifiPass'),
+        wifiTabs: document.getElementById('wifiTabs'),
+        copySsid: document.getElementById('copySsid'),
+        copyPass: document.getElementById('copyPass'),
+        catGrid: document.getElementById('catGrid'),
+        reportForm: document.getElementById('reportForm'),
+        reportFormWrap: document.getElementById('reportFormWrap'),
+        reportDone: document.getElementById('reportDone'),
+        room: document.getElementById('roomNumber'),
+        name: document.getElementById('guestName'),
+        message: document.getElementById('message'),
+        lblRoom: document.getElementById('lblRoom'),
+        lblName: document.getElementById('lblName'),
+        lblMsg: document.getElementById('lblMsg'),
+        btnSend: document.getElementById('btnSend'),
+        btnSendLabel: document.getElementById('btnSendLabel'),
+        doneTitle: document.getElementById('doneTitle'),
+        doneLead: document.getElementById('doneLead'),
+        btnAgain: document.getElementById('btnAgain'),
+        langIt: document.getElementById('langIt'),
+        langEn: document.getElementById('langEn'),
+      };
+
+      var lang = localStorage.getItem('riva-ospiti-lang') === 'en' ? 'en' : 'it';
+      var hubData = null;
+      var wifiNetworks = [];
+      var activeWifiId = null;
+      var selectedCategory = null;
+      var sending = false;
+      var toastTimer = null;
+      var coldStart = true;
+
+      function t() {
+        return COPY[lang] || COPY.it;
+      }
+
+      function showServerToast(msg) {
+        els.error.textContent = msg || t().netErr;
+        els.error.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          els.error.classList.remove('show');
+        }, 2800);
+      }
+
+      function clearFieldErrors() {
+        els.lblRoom.classList.remove('label-error-state');
+        els.lblName.classList.remove('label-error-state');
+        els.room.classList.remove('is-invalid');
+        els.name.classList.remove('is-invalid');
+        Array.prototype.forEach.call(els.catGrid.querySelectorAll('.cat-chip'), function (chip) {
+          chip.classList.remove('is-invalid');
+        });
+      }
+
+      function shakeReport() {
+        els.reportForm.classList.remove('ios-shake');
+        void els.reportForm.offsetWidth;
+        els.reportForm.classList.add('ios-shake');
+      }
+
+      function showFieldError(which) {
+        clearFieldErrors();
+        if (which === 'category') {
+          Array.prototype.forEach.call(els.catGrid.querySelectorAll('.cat-chip'), function (chip) {
+            chip.classList.add('is-invalid');
+          });
+          shakeReport();
+          return;
+        }
+        if (which === 'room') {
+          els.lblRoom.classList.add('label-error-state');
+          els.room.classList.add('is-invalid');
+          els.room.focus();
+        } else {
+          els.lblName.classList.add('label-error-state');
+          els.name.classList.add('is-invalid');
+          els.name.focus();
+        }
+        shakeReport();
+      }
+
+      function escapeHtml(s) {
+        return String(s || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function rowHtml(label, value, opts) {
+        opts = opts || {};
+        var code = opts.code ? ' is-code' : '';
+        return (
+          '<div class="osp-row">' +
+          '<span class="osp-row__label">' + escapeHtml(label) + '</span>' +
+          '<span class="osp-row__value' + code + '">' + escapeHtml(value) + '</span>' +
+          '</div>'
+        );
+      }
+
+      function applyLang() {
+        var c = t();
+        document.documentElement.lang = lang;
+        els.brandSub.textContent = c.brandSub;
+        els.hubLead.textContent = c.lead;
+        els.hoursTitle.textContent = c.hoursTitle;
+        els.hoursKicker.textContent = c.hoursKicker;
+        els.doorsTitle.textContent = c.doorsTitle;
+        els.doorsKicker.textContent = c.doorsKicker;
+        els.wifiTitle.textContent = c.wifiTitle;
+        els.wifiKicker.textContent = c.wifiKicker;
+        els.extraTitle.textContent = c.extraTitle;
+        els.extraKicker.textContent = c.extraKicker;
+        els.offersTitle.textContent = c.offersTitle;
+        els.offersKicker.textContent = c.offersKicker;
+        els.reportTitle.textContent = c.reportTitle;
+        els.reportKicker.textContent = c.reportKicker;
+        els.reportLead.textContent = c.reportLead;
+        els.lblWifiSsid.textContent = c.lblWifiSsid;
+        els.lblWifiPass.textContent = c.lblWifiPass;
+        els.lblRoom.textContent = c.lblRoom;
+        els.lblName.textContent = c.lblName;
+        els.lblMsg.textContent = c.lblMsg;
+        els.room.placeholder = c.roomPh;
+        els.name.placeholder = c.namePh;
+        els.message.placeholder = c.msgPh;
+        els.btnSendLabel.textContent = c.send;
+        els.copySsid.textContent = c.copy;
+        els.copyPass.textContent = c.copy;
+        els.doneTitle.textContent = c.doneTitle;
+        els.doneLead.textContent = c.doneLead;
+        els.btnAgain.textContent = c.again;
+        document.title = 'Ospiti · Riva OS';
+        els.langIt.classList.toggle('is-on', lang === 'it');
+        els.langEn.classList.toggle('is-on', lang === 'en');
+        renderCategories();
+        paintWifiTabs();
+        if (hubData) {
+          paintHours(hubData.hours || {});
+          paintDoors(hubData.doors);
+          paintOffers(hubData.offerings);
+          paintExtra(hubData);
+        }
+      }
+
+      function paintWifi(net) {
+        els.valWifiSsid.textContent = (net && net.ssid) || '—';
+        els.valWifiPass.textContent = (net && net.password) || '—';
+      }
+
+      function paintWifiTabs() {
+        if (!els.wifiTabs) return;
+        if (wifiNetworks.length <= 1) {
+          els.wifiTabs.innerHTML = '';
+          els.wifiTabs.classList.add('hidden');
+          return;
+        }
+        els.wifiTabs.classList.remove('hidden');
+        els.wifiTabs.innerHTML = wifiNetworks
+          .map(function (n) {
+            var on = n.id === activeWifiId ? ' is-on' : '';
+            return (
+              '<button type="button" class="wifi-tab' +
+              on +
+              '" role="tab" data-wifi-id="' +
+              escapeHtml(n.id) +
+              '" aria-selected="' +
+              (n.id === activeWifiId ? 'true' : 'false') +
+              '">' +
+              escapeHtml(n.label || n.id) +
+              '</button>'
+            );
+          })
+          .join('');
+      }
+
+      function selectWifi(id) {
+        activeWifiId = id;
+        var net = wifiNetworks.find(function (n) {
+          return n.id === id;
+        }) || wifiNetworks[0];
+        paintWifiTabs();
+        paintWifi(net);
+      }
+
+      function renderCategories() {
+        if (!els.catGrid) return;
+        var cats = (hubData && hubData.reportCategories) || [];
+        els.catGrid.innerHTML = cats
+          .map(function (cat) {
+            var on = cat.id === selectedCategory ? ' is-on' : '';
+            var label = lang === 'en' ? cat.labelEn || cat.labelIt : cat.labelIt;
+            var hint = lang === 'en' ? cat.hintEn || cat.hintIt : cat.hintIt;
+            return (
+              '<button type="button" class="cat-chip' +
+              on +
+              '" role="option" data-cat="' +
+              escapeHtml(cat.id) +
+              '" aria-selected="' +
+              (cat.id === selectedCategory ? 'true' : 'false') +
+              '">' +
+              '<span class="cat-chip__label">' +
+              escapeHtml(label) +
+              '</span>' +
+              '<span class="cat-chip__hint">' +
+              escapeHtml(hint || '') +
+              '</span>' +
+              '</button>'
+            );
+          })
+          .join('');
+      }
+
+      function paintHours(hours) {
+        var c = t();
+        var rows = [];
+        if (hours.checkIn) rows.push(rowHtml(c.lblCheckIn, hours.checkIn));
+        if (hours.checkOut) rows.push(rowHtml(c.lblCheckOut, hours.checkOut));
+        if (hours.breakfast || (hubData && hubData.breakfastHours)) {
+          rows.push(rowHtml(c.lblBreakfast, hours.breakfast || hubData.breakfastHours));
+        }
+        if (hours.reception) rows.push(rowHtml(c.lblReception, hours.reception));
+        if (!rows.length) {
+          els.secHours.classList.add('hidden');
+          els.hoursCard.innerHTML = '';
+          return;
+        }
+        els.secHours.classList.remove('hidden');
+        els.hoursCard.innerHTML = rows.join('');
+      }
+
+      function paintDoors(doors) {
+        var list = Array.isArray(doors)
+          ? doors.filter(function (d) {
+              if (!d || !d.code) return false;
+              var c = String(d.code).trim().toLowerCase();
+              return c && c !== 'in reception' && c !== 'reception' && c !== '—';
+            })
+          : [];
+        if (!list.length && hubData) {
+          if (hubData.doorMain && String(hubData.doorMain).toLowerCase() !== 'in reception') {
+            list.push({ id: 'main', label: 'Ingresso', code: hubData.doorMain });
+          }
+          if (hubData.doorInner && String(hubData.doorInner).toLowerCase() !== 'in reception') {
+            list.push({ id: 'inner', label: 'Interno', code: hubData.doorInner });
+          }
+        }
+        if (!list.length) {
+          els.secDoors.classList.add('hidden');
+          els.doorsCard.innerHTML = '';
+          return;
+        }
+        els.secDoors.classList.remove('hidden');
+        els.doorsCard.innerHTML = list
+          .map(function (d) {
+            return rowHtml(d.label || 'Porta', d.code, { code: true });
+          })
+          .join('');
+      }
+
+      function paintOffers(offers) {
+        var list = Array.isArray(offers) ? offers.filter(function (o) { return o && o.title; }) : [];
+        if (!list.length) {
+          els.secOffers.classList.add('hidden');
+          els.offersCard.innerHTML = '';
+          return;
+        }
+        els.secOffers.classList.remove('hidden');
+        els.offersCard.innerHTML = list
+          .map(function (o) {
+            return rowHtml(o.title, o.detail || '');
+          })
+          .join('');
+      }
+
+      function paintExtra(data) {
+        var c = t();
+        var rows = [];
+        if (data.address) rows.push(rowHtml(c.lblAddress, data.address));
+        var partnerBits = [];
+        if (data.partnerName) partnerBits.push(data.partnerName);
+        var phone =
+          data.partnerPhoneDisplay || data.partnerPhone || data.trattoriaPhoneDisplay || '';
+        if (phone) partnerBits.push('Tel. ' + phone);
+        if (partnerBits.length) rows.push(rowHtml(c.lblPartner, partnerBits.join(' · ')));
+        if (!rows.length) {
+          els.secExtra.classList.add('hidden');
+          els.extraCard.innerHTML = '';
+          return;
+        }
+        els.secExtra.classList.remove('hidden');
+        els.extraCard.innerHTML = rows.join('');
+      }
+
+      function paintHub(data) {
+        hubData = data || {};
+        paintHours(hubData.hours || {});
+        paintDoors(hubData.doors);
+        paintOffers(hubData.offerings);
+        paintExtra(hubData);
+
+        var welcome = String(hubData.welcomeText || '').trim();
+        if (welcome) {
+          els.hubWelcome.textContent = welcome;
+          els.hubWelcome.classList.remove('hidden');
+        } else {
+          els.hubWelcome.textContent = '';
+          els.hubWelcome.classList.add('hidden');
+        }
+
+        wifiNetworks = Array.isArray(hubData.wifiNetworks) ? hubData.wifiNetworks : [];
+        if (!wifiNetworks.length && hubData.wifiSsid) {
+          wifiNetworks = [
+            {
+              id: 'primary',
+              label: 'Wi‑Fi',
+              ssid: hubData.wifiSsid,
+              password: hubData.wifiPassword,
+            },
+          ];
+        }
+        if (!wifiNetworks.length) {
+          els.secWifi.classList.add('hidden');
+        } else {
+          els.secWifi.classList.remove('hidden');
+          selectWifi((wifiNetworks[0] && wifiNetworks[0].id) || null);
+        }
+
+        applyLang();
+        coldStart = false;
+      }
+
+      async function loadHub() {
+        try {
+          var res = await fetch('/api/guest-hub', { cache: 'no-store', credentials: 'same-origin' });
+          if (!res.ok) throw new Error('hub');
+          paintHub(await res.json());
+        } catch (err) {
+          if (coldStart) showServerToast(t().netErr);
+        }
+      }
+
+      async function copyText(text, btn) {
+        if (!text || text === '—') return;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (e) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+          } catch (e2) {
+            /* ignore */
+          }
+          document.body.removeChild(ta);
+        }
+        if (btn) {
+          var prev = btn.textContent;
+          btn.textContent = t().copied;
+          setTimeout(function () {
+            btn.textContent = prev;
+          }, 1400);
+        }
+      }
+
+      function setSending(busy) {
+        sending = busy;
+        els.btnSend.disabled = busy;
+        els.btnSend.classList.toggle('is-loading', busy);
+        els.btnSend.setAttribute('aria-busy', busy ? 'true' : 'false');
+        els.room.disabled = busy;
+        els.name.disabled = busy;
+        els.message.disabled = busy;
+      }
+
+      async function submitReport(e) {
+        e.preventDefault();
+        if (sending) return;
+        clearFieldErrors();
+        if (!selectedCategory) {
+          showFieldError('category');
+          return;
+        }
+        var room = String(els.room.value || '').trim();
+        var name = String(els.name.value || '').trim();
+        if (!room) {
+          showFieldError('room');
+          return;
+        }
+        if (name.length < 2) {
+          showFieldError('name');
+          return;
+        }
+
+        setSending(true);
+        try {
+          var res = await fetch('/api/guest-reports', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              roomNumber: room,
+              guestName: name,
+              category: selectedCategory,
+              message: String(els.message.value || '').trim(),
+            }),
+          });
+          var body = await res.json().catch(function () {
+            return {};
+          });
+          if (!res.ok) {
+            if (
+              body.error === 'room_required' ||
+              body.error === 'room_invalid' ||
+              body.field === 'room'
+            ) {
+              showFieldError('room');
+            } else if (body.error === 'name_required' || body.field === 'name') {
+              showFieldError('name');
+            } else if (body.error === 'category_required' || body.field === 'category') {
+              showFieldError('category');
+            } else {
+              showServerToast(t().netErr);
+            }
+            return;
+          }
+          els.reportFormWrap.classList.add('hidden');
+          els.reportDone.classList.remove('hidden');
+        } catch (err) {
+          showServerToast(t().netErr);
+        } finally {
+          setSending(false);
+        }
+      }
+
+      function resetReport() {
+        selectedCategory = null;
+        els.reportForm.reset();
+        clearFieldErrors();
+        renderCategories();
+        els.reportDone.classList.add('hidden');
+        els.reportFormWrap.classList.remove('hidden');
+      }
+
+      els.langIt.addEventListener('click', function () {
+        lang = 'it';
+        localStorage.setItem('riva-ospiti-lang', 'it');
+        applyLang();
+      });
+      els.langEn.addEventListener('click', function () {
+        lang = 'en';
+        localStorage.setItem('riva-ospiti-lang', 'en');
+        applyLang();
+      });
+
+      els.wifiTabs.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-wifi-id]');
+        if (!btn) return;
+        selectWifi(btn.getAttribute('data-wifi-id'));
+      });
+
+      els.copySsid.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        copyText(els.valWifiSsid.textContent, els.copySsid);
+      });
+      els.copyPass.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        copyText(els.valWifiPass.textContent, els.copyPass);
+      });
+
+      els.catGrid.addEventListener('click', function (e) {
+        var chip = e.target.closest('[data-cat]');
+        if (!chip) return;
+        e.preventDefault();
+        e.stopPropagation();
+        selectedCategory = chip.getAttribute('data-cat');
+        clearFieldErrors();
+        renderCategories();
+      });
+
+      els.reportForm.addEventListener('submit', submitReport);
+      els.btnAgain.addEventListener('click', resetReport);
+
+      applyLang();
+      try {
+        var roomQ = new URLSearchParams(location.search).get('room');
+        if (roomQ && els.room && !els.room.value) els.room.value = String(roomQ).trim();
+      } catch (e) {
+        /* ignore */
+      }
+      loadHub();
+    })();
+  </script>
+</body>
+</html>

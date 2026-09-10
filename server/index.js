@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import express from 'express';
 import cron from 'node-cron';
 import dotenv from 'dotenv';
@@ -92,6 +93,12 @@ import {
   setHotelIbanConfig,
   expireDueHolds,
 } from './room-holds.js';
+import {
+  listHoldDocuments,
+  addHoldDocument,
+  deleteHoldDocument,
+  readHoldDocumentBuffer,
+} from './hold-documents.js';
 import { getCsvMedia, whatsappConfigured, sendTableBookingWhatsApp } from './whatsapp.js';
 import {
   sendWelcomeEmail,
@@ -112,18 +119,38 @@ import {
 } from './backup.js';
 import {
   buildCsv,
+  buildCheckinSheetHtml,
   buildTableBookingEmail,
   buildReportEmail,
   demoReportPreviewRows,
   formatRomeDate,
 } from './report.js';
-import { buildGuestServicesPayload } from './guest-services.js';
+import { buildGuestServicesPayload, buildGuestHubPayload, normalizeGuestReportCategory, GUEST_REPORT_CATEGORIES } from './guest-services.js';
+import {
+  GUEST_THEMES,
+  getGuestThemeId,
+  guestThemePublicPayload,
+  setGuestThemeId,
+} from './guest-themes.js';
 import {
   hashStaffPin,
   isStaffPinHash,
   isUsableStaffPassword,
   verifyStaffPin,
 } from './staff-auth.js';
+import {
+  ensureHkTables,
+  getHkBoard,
+  setHkRoomStatus,
+  hkStatusMapForToday,
+} from './hk-status.js';
+import {
+  ensureBreakfastTables,
+  getBreakfastBoard,
+  toggleBreakfastEaten,
+} from './breakfast.js';
+import { monitorWebhookConfigured, notifyMonitor } from './monitor.js';
+import { mountLab, hasLabAccess } from './lab.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -214,6 +241,7 @@ function assertProductionSecrets() {
 assertProductionSecrets();
 
 initDb(DATABASE_PATH);
+ensureHkTables();
 bootstrapStaffPinHashesFromEnv();
 
 async function syncCheckinsBackup(reason = 'update') {
@@ -478,6 +506,44 @@ app.get(['/staff.html', '/staff', '/staff/'], (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.type('html');
   return res.sendFile(path.join(rootDir, 'public', 'staff.html'));
+});
+
+/**
+ * Lab Riva OS — hub /lab + gate su /hk /colazione /ospiti.
+ * hasStaffSession risolto a runtime (parseStaffSession definito più sotto).
+ */
+mountLab(app, {
+  hasStaffSession(req) {
+    try {
+      return Boolean(parseStaffSession(readCookie(req, STAFF_COOKIE)));
+    } catch {
+      return false;
+    }
+  },
+});
+
+/** Housekeeping — Riva OS (stesso login staff). */
+app.get(['/hk.html', '/hk', '/hk/'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'hk.html'));
+});
+
+/** Colazioni sala — toggle ingresso (stile IG). */
+app.get(['/colazione.html', '/colazione', '/colazione/', '/colazioni', '/colazioni/'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'colazione.html'));
+});
+
+/** Area ospiti — Wi‑Fi, codici porta, segnalazioni → reception. */
+app.get(['/ospiti.html', '/ospiti', '/ospiti/', '/guest', '/guest/'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'ospiti.html'));
 });
 
 /** Link pagamento camera (bonifico IBAN) — pagina ospite. */
@@ -1021,7 +1087,10 @@ function requireStaff(req, res, next) {
 
 function sendStaffOnlyHtml(req, res, relativePath) {
   const session = parseStaffSession(readCookie(req, STAFF_COOKIE));
-  if (!session) {
+  const labOk = hasLabAccess(req, {
+    hasStaffSession: () => Boolean(session),
+  });
+  if (!session && !labOk) {
     res.setHeader('Cache-Control', 'no-store');
     return res.status(404).end();
   }
@@ -1037,8 +1106,22 @@ function sendStaffOnlyHtml(req, res, relativePath) {
 }
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true });
+  res.json({
+    ok: true,
+    service: 'riva-os',
+    uptimeSec: Math.floor(process.uptime()),
+  });
 });
+
+/** Tema grafico lato ospite — pubblico (serve prima del check-in). */
+app.get(
+  '/api/guest-theme',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  (_req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(guestThemePublicPayload());
+  },
+);
 
 /** Wi-Fi + codici porta: solo con token emesso al check-in riuscito. */
 app.get(
@@ -1055,8 +1138,92 @@ app.get(
   return res.json({
     ...buildGuestServicesPayload(),
     checkinId: access.checkinId,
+    guestTheme: getGuestThemeId(),
   });
 });
+
+/**
+ * Area ospiti (/ospiti): info utili + Wi‑Fi/porte (stesso payload servizi)
+ * + categorie segnalazione. Pubblico rate-limited (QR in camera).
+ */
+app.get(
+  '/api/guest-hub',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  (_req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(buildGuestHubPayload());
+  },
+);
+
+/**
+ * Segnalazione ospite → nota reception (inbox + Richieste).
+ * Obbligatori: camera, nome, categoria.
+ */
+app.post(
+  '/api/guest-reports',
+  rateLimit({ windowMs: 60_000, max: 8 }),
+  (req, res) => {
+    const roomNumber = String(req.body?.roomNumber ?? req.body?.room ?? '')
+      .trim()
+      .toUpperCase()
+      .slice(0, 8);
+    const guestName = String(req.body?.guestName ?? req.body?.name ?? '')
+      .trim()
+      .slice(0, 80);
+    const category = normalizeGuestReportCategory(
+      req.body?.category ?? req.body?.type,
+    );
+    const message = String(req.body?.message ?? req.body?.note ?? '')
+      .trim()
+      .slice(0, 500);
+
+    if (!roomNumber) {
+      return res.status(400).json({ error: 'room_required', field: 'room' });
+    }
+    if (!/^[A-Z0-9\-/#]{1,8}$/i.test(roomNumber)) {
+      return res.status(400).json({ error: 'room_invalid', field: 'room' });
+    }
+    if (!guestName || guestName.length < 2) {
+      return res.status(400).json({ error: 'name_required', field: 'name' });
+    }
+    if (!category) {
+      return res.status(400).json({ error: 'category_required', field: 'category' });
+    }
+
+    const catMeta = GUEST_REPORT_CATEGORIES.find((c) => c.id === category);
+    const catLabel = catMeta?.labelIt || RECEPTION_NOTE_CATEGORIES[category] || 'Segnalazione';
+    const instruction = message
+      ? `[Segnalazione ospite] ${catLabel}\n${message}`
+      : `[Segnalazione ospite] ${catLabel}`;
+
+    const result = createReceptionNote({
+      guestName,
+      roomNumber,
+      category,
+      instruction,
+      dueDate: romeCalendarDate(new Date().toISOString()),
+      createdBy: 'OSPITE',
+    });
+
+    if (!result.ok) {
+      const status =
+        result.error === 'name_required' || result.error === 'instruction_required'
+          ? 400
+          : 500;
+      return res.status(status).json({ error: result.error || 'save_failed' });
+    }
+
+    console.log(
+      `[guest-report] ${guestName} · stanza ${roomNumber} · ${category} · note #${result.note?.id}`,
+    );
+    return res.status(201).json({
+      ok: true,
+      id: result.note?.id,
+      category,
+      categoryLabel: catLabel,
+    });
+  },
+);
 
 /** Ops checklist — solo staff con CRON_SECRET (niente recon pubblico). */
 app.get(
@@ -1100,6 +1267,7 @@ app.get(
   res.setHeader('Cache-Control', 'no-store');
   res.json({
     ok: blockers.length === 0,
+    service: 'riva-os',
     hotel: HOTEL_NAME,
     checkins: countCheckins(),
     reportEmailConfigured: Boolean(reportOfficial),
@@ -1110,6 +1278,7 @@ app.get(
     backupConfigured: backupOk,
     persistentDisk: onPersistentDisk,
     databasePath: DATABASE_PATH,
+    monitorWebhook: monitorWebhookConfigured(),
     blockers,
   });
 });
@@ -1801,8 +1970,14 @@ app.get(
   rateLimit({ windowMs: 60_000, max: 60 }),
   (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
+    const hotelName = String(process.env.HOTEL_NAME || 'Hotel Canal').trim() || 'Hotel Canal';
+    const legalName = String(process.env.HOTEL_LEGAL_NAME || '').trim();
     return res.json({
       configured: staffAuthConfigured(),
+      hotel: {
+        name: hotelName,
+        legalName: legalName || null,
+      },
       local: isLocalStaffRuntime()
         ? { staff: 'Tommaso', pin: '1234' }
         : null,
@@ -2007,6 +2182,8 @@ app.get(
       ok: true,
       reportTime: getReportSendTime(),
       timezone: CRON_TZ,
+      guestTheme: getGuestThemeId(),
+      guestThemes: GUEST_THEMES,
     });
   },
 );
@@ -2016,21 +2193,40 @@ app.post(
   rateLimit({ windowMs: 15 * 60_000, max: 20 }),
   requireStaff,
   (req, res) => {
-    const result = setReportSendTime(
-      req.body?.reportTime,
-      req.staffUser?.staffId,
-    );
-    if (!result.ok) {
-      return res.status(400).json({
-        error: 'Orario non valido. Usa HH:MM.',
-        code: result.error,
-      });
+    const staffId = req.staffUser?.staffId;
+    let reportTime = getReportSendTime();
+    const wantsReport =
+      req.body?.reportTime !== undefined && req.body?.reportTime !== null;
+    if (wantsReport) {
+      const result = setReportSendTime(req.body.reportTime, staffId);
+      if (!result.ok) {
+        return res.status(400).json({
+          error: 'Orario non valido. Usa HH:MM.',
+          code: result.error,
+        });
+      }
+      reportTime = result.reportTime;
+      startDailyReportCron(result.reportTime);
     }
-    startDailyReportCron(result.reportTime);
+
+    let guestTheme = getGuestThemeId();
+    if (req.body?.guestTheme !== undefined && req.body?.guestTheme !== null) {
+      const themeResult = setGuestThemeId(req.body.guestTheme, staffId);
+      if (!themeResult.ok) {
+        return res.status(400).json({
+          error: 'Tema grafico non riconosciuto.',
+          code: themeResult.error,
+        });
+      }
+      guestTheme = themeResult.theme;
+    }
+
     return res.json({
       ok: true,
-      reportTime: result.reportTime,
+      reportTime,
       timezone: CRON_TZ,
+      guestTheme,
+      guestThemes: GUEST_THEMES,
     });
   },
 );
@@ -2096,8 +2292,88 @@ app.get(
   (req, res) => {
     const q = String(req.query.q || '').trim().slice(0, 80);
     const payload = listInHouseStaffCheckins({ q });
+    const hkMap = hkStatusMapForToday();
+    const withHk = (row) => {
+      const room = String(row.roomNumber || '')
+        .trim()
+        .replace(/\s+/g, '');
+      const hk = room ? hkMap.get(room) : null;
+      return {
+        ...row,
+        hkStatus: hk?.status || 'dirty',
+        hkUpdatedAt: hk?.updatedAt || null,
+      };
+    };
     res.setHeader('Cache-Control', 'no-store');
-    return res.json(payload);
+    return res.json({
+      ...payload,
+      checkins: (payload.checkins || []).map(withHk),
+      checkoutDue: (payload.checkoutDue || []).map(withHk),
+    });
+  },
+);
+
+app.get(
+  '/api/hk/board',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const q = String(req.query.q || '').trim().slice(0, 80);
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(getHkBoard({ q }));
+  },
+);
+
+app.post(
+  '/api/hk/rooms/:room/status',
+  rateLimit({ windowMs: 60_000, max: 120 }),
+  requireStaff,
+  (req, res) => {
+    const result = setHkRoomStatus(
+      req.params.room,
+      req.body?.status,
+      req.staffUser?.staffName,
+    );
+    if (!result.ok) {
+      return res.status(400).json({
+        error:
+          result.error === 'room_required'
+            ? 'Numero stanza obbligatorio'
+            : 'Stato non valido',
+        code: result.error,
+      });
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(result);
+  },
+);
+
+app.get(
+  '/api/breakfast/board',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    ensureBreakfastTables();
+    const q = String(req.query.q || '').trim().slice(0, 80);
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(getBreakfastBoard({ q }));
+  },
+);
+
+app.post(
+  '/api/breakfast/rooms/:room/toggle',
+  rateLimit({ windowMs: 60_000, max: 120 }),
+  requireStaff,
+  (req, res) => {
+    const result = toggleBreakfastEaten(req.params.room, req.staffUser?.staffName);
+    if (!result.ok) {
+      return res.status(400).json({
+        error: 'Numero stanza obbligatorio',
+        code: result.error,
+      });
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json(result);
   },
 );
 
@@ -2119,6 +2395,35 @@ function sendStaffCheckinsCsv(req, res) {
     return res.status(500).json({ error: 'Errore durante l’export CSV' });
   }
 }
+
+function sendStaffCheckinsHtml(req, res) {
+  try {
+    const date = String(req.query.date || '').trim();
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Data non valida' });
+    }
+    const day = date || romeCalendarDate();
+    const html = buildCheckinSheetHtml(listCheckinsForCsv(day), {
+      date: day,
+      hotelName: HOTEL_NAME,
+    });
+    const filename = `checkin_hotelcanal_${day}.html`;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    return res.send(html);
+  } catch (err) {
+    console.error('[staff] html export failed', err);
+    return res.status(500).json({ error: 'Errore durante l’export foglio' });
+  }
+}
+
+app.get(
+  '/api/staff/checkins/export.html',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  requireStaff,
+  sendStaffCheckinsHtml,
+);
 
 app.get(
   '/api/staff/checkins/export',
@@ -2594,10 +2899,17 @@ app.get(
     const holds = listRoomHolds({ includeClosed: true }).map((h) =>
       staffHoldPayload(h, base),
     );
+    const hkMap = hkStatusMapForToday();
+    const hkByRoom = {};
+    for (const [room, info] of hkMap) {
+      hkByRoom[room] = info?.status || 'dirty';
+    }
     res.setHeader('Cache-Control', 'no-store');
     return res.json({
       holds,
       iban: getHotelIbanConfig(),
+      hkToday: romeCalendarDate(),
+      hkByRoom,
     });
   },
 );
@@ -2826,6 +3138,109 @@ app.post(
       return res.status(400).json(result);
     }
     return res.json(staffHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
+app.get(
+  '/api/staff/holds/:id/documents',
+  rateLimit({ windowMs: 60_000, max: 60 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const hold = getRoomHoldById(id);
+    if (!hold) return res.status(404).json({ error: 'Hold non trovato' });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({ ok: true, documents: listHoldDocuments(id) });
+  },
+);
+
+app.post(
+  '/api/staff/holds/:id/documents',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const hold = getRoomHoldById(id);
+    if (!hold) return res.status(404).json({ error: 'Hold non trovato' });
+    const result = addHoldDocument(id, {
+      fileName: req.body?.fileName,
+      mimeType: req.body?.mimeType,
+      contentBase64: req.body?.contentBase64 ?? req.body?.dataUrl,
+      uploadedBy: req.staffUser?.staffName || req.staffUser?.label,
+      guestFirstName: req.body?.guestFirstName ?? req.body?.firstName,
+      guestLastName: req.body?.guestLastName ?? req.body?.lastName,
+      birthDate: req.body?.birthDate,
+      birthCountry: req.body?.birthCountry,
+      docType: req.body?.docType,
+      issueCountry: req.body?.issueCountry ?? req.body?.issuedIn,
+      citizenship: req.body?.citizenship,
+      docNumber: req.body?.docNumber,
+    });
+    if (!result.ok) {
+      const messages = {
+        identity_incomplete: 'Compila tutti i campi obbligatori della schedina',
+        content_invalid: 'File non valido',
+        file_too_large: 'File troppo grande (max 2,5 MB)',
+        mime_not_allowed: 'Tipo file non consentito',
+        docs_limit: 'Limite documenti raggiunto',
+      };
+      return res.status(result.status || 400).json({
+        error: messages[result.error] || 'Salvataggio non riuscito',
+        code: result.error,
+        field: result.field || undefined,
+      });
+    }
+    return res.status(201).json({ ok: true, document: result.document });
+  },
+);
+
+app.get(
+  '/api/staff/holds/:id/documents/:docId',
+  rateLimit({ windowMs: 60_000, max: 120 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    const docId = Number(req.params.docId);
+    if (!Number.isInteger(id) || id < 1 || !Number.isInteger(docId) || docId < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const hold = getRoomHoldById(id);
+    if (!hold) return res.status(404).json({ error: 'Hold non trovato' });
+    const file = readHoldDocumentBuffer(id, docId);
+    if (!file) return res.status(404).json({ error: 'Documento non trovato' });
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.setHeader('Content-Type', file.meta.mimeType || 'application/octet-stream');
+    res.setHeader(
+      'Content-Disposition',
+      `inline; filename="${String(file.meta.fileName || 'documento').replace(/"/g, '')}"`,
+    );
+    return res.send(file.buffer);
+  },
+);
+
+app.delete(
+  '/api/staff/holds/:id/documents/:docId',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    const id = Number(req.params.id);
+    const docId = Number(req.params.docId);
+    if (!Number.isInteger(id) || id < 1 || !Number.isInteger(docId) || docId < 1) {
+      return res.status(400).json({ error: 'Id non valido' });
+    }
+    const hold = getRoomHoldById(id);
+    if (!hold) return res.status(404).json({ error: 'Hold non trovato' });
+    const result = deleteHoldDocument(id, docId);
+    if (!result.ok) {
+      return res.status(result.status || 404).json({ error: 'Documento non trovato' });
+    }
+    return res.json({ ok: true });
   },
 );
 
@@ -3115,6 +3530,10 @@ async function runNightlyReportJob() {
       );
       if (result.partialErrors?.length) {
         console.warn('[cron] Canali parziali:', result.partialErrors.join('; '));
+        void notifyMonitor('report_partial', {
+          errors: result.partialErrors.slice(0, 5),
+          count: result.count,
+        });
       }
     } else {
       console.log(`[cron] Nessun nuovo contatto — report non inviato`);
@@ -3126,6 +3545,9 @@ async function runNightlyReportJob() {
     }
   } catch (err) {
     console.error('[cron] Fallito:', err.message || err);
+    void notifyMonitor('report_failed', {
+      message: String(err.message || err).slice(0, 400),
+    });
   }
 }
 
@@ -3144,9 +3566,24 @@ function startDailyReportCron(hhmm = getReportSendTime()) {
   return time;
 }
 
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', async () => {
   const reportTime = startDailyReportCron();
+  const lanIps = [];
+  try {
+    const nets = os.networkInterfaces();
+    for (const list of Object.values(nets || {})) {
+      for (const net of list || []) {
+        if (net.family === 'IPv4' && !net.internal) lanIps.push(net.address);
+      }
+    }
+  } catch {
+    /* ignore */
+  }
   console.log(`${HOTEL_NAME} check-in attivo su http://localhost:${PORT}`);
+  for (const ip of lanIps) {
+    console.log(`  iPad / LAN → http://${ip}:${PORT}`);
+    console.log(`    Staff ${`http://${ip}:${PORT}/staff`} · HK ${`http://${ip}:${PORT}/hk`} · Colazioni ${`http://${ip}:${PORT}/colazione`} · Ospiti ${`http://${ip}:${PORT}/ospiti`}`);
+  }
   console.log(
     `Cron report: ${reportTime} ${CRON_TZ} → ufficiale ${process.env.REPORT_EMAIL_OFFICIAL || 'grandcanalhotels@gmail.com'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
   );

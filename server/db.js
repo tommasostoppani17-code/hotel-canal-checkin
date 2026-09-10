@@ -272,6 +272,33 @@ export function initDb(databasePath) {
       ON room_holds (expires_at, status);
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS hold_documents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      hold_id INTEGER NOT NULL,
+      file_name TEXT NOT NULL,
+      mime_type TEXT,
+      size_bytes INTEGER NOT NULL DEFAULT 0,
+      storage_name TEXT NOT NULL UNIQUE,
+      uploaded_by TEXT,
+      guest_first_name TEXT,
+      guest_last_name TEXT,
+      birth_date TEXT,
+      birth_country TEXT,
+      doc_type TEXT,
+      issue_country TEXT,
+      citizenship TEXT,
+      doc_number TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (hold_id) REFERENCES room_holds(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_hold_documents_hold
+      ON hold_documents (hold_id, created_at);
+  `);
+
+  ensureHoldDocumentColumns();
+
   ensureRoomHoldColumn('room_type', 'room_type TEXT');
   ensureRoomHoldColumn('board_plan', 'board_plan TEXT');
   ensureRoomHoldColumn('extras', 'extras TEXT');
@@ -280,6 +307,26 @@ export function initDb(databasePath) {
   seedStaffRoster();
 
   return db;
+}
+
+function ensureHoldDocumentColumns() {
+  const cols = new Set(
+    db.prepare(`PRAGMA table_info(hold_documents)`).all().map((c) => c.name),
+  );
+  const add = [
+    ['guest_first_name', 'TEXT'],
+    ['guest_last_name', 'TEXT'],
+    ['birth_date', 'TEXT'],
+    ['birth_country', 'TEXT'],
+    ['doc_type', 'TEXT'],
+    ['issue_country', 'TEXT'],
+    ['citizenship', 'TEXT'],
+    ['doc_number', 'TEXT'],
+  ];
+  for (const [name, type] of add) {
+    if (cols.has(name)) continue;
+    db.exec(`ALTER TABLE hold_documents ADD COLUMN ${name} ${type}`);
+  }
 }
 
 function ensureRoomHoldColumn(name, ddl) {
@@ -608,6 +655,8 @@ const STAFF_ROSTER_SEED = [
   { id: 'mizan', name: 'MIZAN', label: 'Mizan', protected: 1 },
   { id: 'payel', name: 'PAYEL', label: 'Payel', protected: 1 },
   { id: 'sayeed', name: 'SAYEED', label: 'Sayeed', protected: 0 },
+  { id: 'farooq', name: 'FAROOQ', label: 'Farooq', protected: 0 },
+  { id: 'farhad', name: 'FARHAD', label: 'Farhad', protected: 0 },
 ];
 
 function seedStaffRoster() {
@@ -2307,6 +2356,13 @@ export const RECEPTION_NOTE_CATEGORIES = {
   info: 'Info & documenti',
   room_change: 'Cambio camera',
   checkout: 'Checkout / partenza',
+  /** Segnalazioni da area ospiti (/ospiti) */
+  maintenance: 'Manutenzione',
+  cleaning: 'Pulizia camera',
+  noise: 'Rumore',
+  missing: 'Dotazione mancante',
+  wifi: 'Problema Wi‑Fi',
+  access: 'Accesso / porta',
   other: 'Altro',
 };
 

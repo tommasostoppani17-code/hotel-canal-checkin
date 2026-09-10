@@ -8,6 +8,66 @@ function wifiNetwork(id, label, ssid, password) {
   return { id, label, ssid, password };
 }
 
+/** Categorie segnalazione ospite → note reception. */
+export const GUEST_REPORT_CATEGORIES = [
+  {
+    id: 'maintenance',
+    labelIt: 'Manutenzione',
+    labelEn: 'Maintenance',
+    hintIt: 'Aria, luce, bagno, riparazioni',
+    hintEn: 'AC, lights, bathroom, repairs',
+  },
+  {
+    id: 'cleaning',
+    labelIt: 'Pulizia camera',
+    labelEn: 'Room cleaning',
+    hintIt: 'Biancheria, riassetto, richiesta extra',
+    hintEn: 'Linens, tidy-up, extra request',
+  },
+  {
+    id: 'noise',
+    labelIt: 'Rumore',
+    labelEn: 'Noise',
+    hintIt: 'Disturbo da altre camere o corridoio',
+    hintEn: 'Disturbance from other rooms or corridor',
+  },
+  {
+    id: 'missing',
+    labelIt: 'Dotazione mancante',
+    labelEn: 'Missing amenity',
+    hintIt: 'Asciugamani, cuscini, asciugacapelli…',
+    hintEn: 'Towels, pillows, hairdryer…',
+  },
+  {
+    id: 'wifi',
+    labelIt: 'Problema Wi‑Fi',
+    labelEn: 'Wi‑Fi issue',
+    hintIt: 'Connessione lenta o assente',
+    hintEn: 'Slow or missing connection',
+  },
+  {
+    id: 'access',
+    labelIt: 'Accesso / porta',
+    labelEn: 'Access / door',
+    hintIt: 'Chiave, codice, ingresso hotel',
+    hintEn: 'Key, door code, hotel entrance',
+  },
+  {
+    id: 'other',
+    labelIt: 'Altro',
+    labelEn: 'Other',
+    hintIt: 'Qualsiasi altra richiesta',
+    hintEn: 'Any other request',
+  },
+];
+
+const GUEST_REPORT_IDS = new Set(GUEST_REPORT_CATEGORIES.map((c) => c.id));
+
+export function normalizeGuestReportCategory(raw) {
+  const key = String(raw || '').trim().toLowerCase();
+  return GUEST_REPORT_IDS.has(key) ? key : null;
+}
+
 /** Reti Wi-Fi per sede: Canal, Airone, appartamenti Ca Pisani. */
 export function buildWifiNetworks() {
   const canalPassword = envTrim('WIFI_PASSWORD', 'hotelcanal');
@@ -48,5 +108,23 @@ export function buildGuestServicesPayload() {
       envTrim('TRATTORIA_TRIPADVISOR_URL') ||
       'https://www.tripadvisor.it/Restaurant_Review-g187870-d34095681-Reviews-Trattoria_Alla_Terrazza-Venice_Veneto.html',
     tripadvisorRating: envTrim('TRATTORIA_TRIPADVISOR_RATING') || '4.3',
+  };
+}
+
+/** Payload area ospiti: servizi + orari + categorie segnalazione. */
+export function buildGuestHubPayload() {
+  const services = buildGuestServicesPayload();
+  const hotelName = envTrim('HOTEL_NAME', 'Hotel Canal');
+  return {
+    hotelName,
+    address: envTrim('HOTEL_ADDRESS', 'Santa Croce 553, Venezia'),
+    hours: {
+      checkIn: envTrim('HOTEL_CHECKIN_LABEL', 'dalle 14:00'),
+      checkOut: envTrim('HOTEL_CHECKOUT_LABEL', 'entro le 10:30'),
+      breakfast: envTrim('HOTEL_BREAKFAST_LABEL', '07:30 – 10:00'),
+      reception: envTrim('HOTEL_RECEPTION_HOURS', '24h · codice porta di notte'),
+    },
+    ...services,
+    reportCategories: GUEST_REPORT_CATEGORIES,
   };
 }

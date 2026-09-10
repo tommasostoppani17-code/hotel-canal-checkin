@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#050505">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Housekeeping">
+  <link rel="manifest" href="/hk-manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <title>Housekeeping · Riva OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/riva-os.css">
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #111114;
+      --line: rgba(255,255,255,0.1);
+      --text: #f4f4f5;
+      --muted: #9a9aa3;
+      --danger: #C62828;
+      --dirty: #f59e0b;
+      --clean: #10b981;
+      --inspect: #3b82f6;
+      --radius: 18px;
+      --font: "Instrument Sans", system-ui, sans-serif;
+      --display: Syne, var(--font);
+      --card-max-w: min(840px, calc(100vw - 32px));
+      --slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      background: var(--bg);
+      color: var(--text);
+    }
+    body { min-height: 100dvh; }
+    button, input { font: inherit; color: inherit; }
+    .hidden { display: none !important; }
+
+    /* —— Login — Safe Layout Box IG (centro geometrico + cuscinetto) —— */
+    .login-view {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      min-height: 100dvh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      padding:
+        max(env(safe-area-inset-top, 0px), clamp(24px, 10dvh, 56px))
+        16px
+        max(env(safe-area-inset-bottom, 0px), clamp(24px, 10dvh, 56px));
+    }
+
+    .gate-card {
+      width: 100%;
+      max-width: min(420px, calc(100vw - 32px));
+      margin: 0 auto;
+      flex-shrink: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px 22px 24px;
+      box-sizing: border-box;
+      animation: cardIntro 560ms var(--slide-ease) both;
+    }
+
+    @media (min-width: 721px) {
+      .gate-card {
+        max-width: var(--card-max-w);
+      }
+    }
+
+    @keyframes cardIntro {
+      from { opacity: 0; transform: scale(0.97) translate3d(0, 12px, 0); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .card-sheen { display: none; }
+
+    .gate-header { text-align: left; margin-bottom: 18px; }
+
+    .gate-header .hotel-title {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      display: block;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .gate-header .hotel-subtitle {
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+
+    .gate-header h1 {
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 6px;
+      color: var(--text);
+    }
+
+    .gate-lead {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .gate-form { margin-top: 20px; }
+
+    .gate-form .form-group { margin-bottom: 14px; }
+
+    .gate-form .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .gate-form .form-group label.label-error-state { color: var(--danger); }
+
+    .input-with-icon { position: relative; }
+
+    .input-with-icon .field-glyph { display: none; }
+
+    .apple-input {
+      width: 100%;
+      height: 48px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0b0b0e;
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+      font-size: 16px !important;
+    }
+
+    .apple-input.is-invalid { border-color: var(--danger); }
+
+    .btn-canal {
+      width: 100%;
+      margin-top: 4px;
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      background: #fff;
+      color: #0a0a0a;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .gate-card.ios-shake { animation: iosShake 0.4s ease; }
+    @keyframes iosShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    /* —— Board —— */
+    .shell {
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: minmax(220px, 252px) 1fr;
+      background: var(--bg);
+      color: var(--text);
+    }
+    @media (max-width: 860px) {
+      .shell { grid-template-columns: 1fr; }
+      .side { min-height: 120px; }
+    }
+    .side {
+      position: relative;
+      overflow: hidden;
+      background: #1a1d20;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      padding: 28px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .brand-mark {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(24px, 3.5vw, 28px);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    .brand-sub {
+      margin-top: 8px;
+      color: rgba(255,255,255,0.45);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .side-foot { color: rgba(255,255,255,0.55); font-size: 12px; line-height: 1.4; }
+    .side-legend { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 8px; }
+    .side-swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.72);
+    }
+    .side-swatch::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .side-swatch[data-s="dirty"] { color: var(--dirty); }
+    .side-swatch[data-s="inspect"] { color: var(--inspect); }
+    .side-swatch[data-s="clean"] { color: var(--clean); }
+    .side-howto { margin: 0; font-size: 11px; color: rgba(255,255,255,0.5); }
+    .side-date { margin: 6px 0 0; font-size: 11px; color: rgba(255,255,255,0.4); }
+
+    .main {
+      padding: 28px 22px 40px;
+      max-width: 920px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .topbar h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .who { color: var(--muted); font-size: 13px; }
+    .btn-ghost {
+      padding: 10px 16px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .stat b { display: block; font-size: 22px; font-weight: 800; }
+    .stat span {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 12px;
+    }
+    .room {
+      position: relative;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 16px 14px 14px;
+      min-height: 128px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      text-align: left;
+      color: inherit;
+      width: 100%;
+    }
+    .room:active { transform: scale(0.97); }
+    .room.is-flash { animation: flash 0.45s ease; }
+    @keyframes flash {
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.35); }
+      100% { box-shadow: 0 0 0 18px rgba(255,255,255,0); }
+    }
+    .room-num {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .room-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .pill {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+    }
+    .room[data-status="dirty"] .pill { color: var(--dirty); }
+    .room[data-status="clean"] .pill { color: var(--clean); }
+    .room[data-status="inspect"] .pill { color: var(--inspect); }
+    .room[data-status="clean"] { background: #0f1a14; border-color: rgba(16,185,129,0.25); }
+    .room[data-status="dirty"] { background: #1a140f; border-color: rgba(245,158,11,0.22); }
+    .room[data-status="inspect"] { background: #0f1620; border-color: rgba(59,130,246,0.25); }
+    .empty {
+      padding: 36px 18px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+    }
+
+    .btn-canal.is-loading { cursor: wait; pointer-events: none; }
+    .btn-canal .btn-login-spinner { display: none; width: 20px; height: 20px; }
+    .btn-canal.is-loading .btn-login-label { display: none; }
+    .btn-canal.is-loading .btn-login-spinner {
+      display: block;
+      animation: gateLoginSpin 0.7s linear infinite;
+    }
+    @keyframes gateLoginSpin { to { transform: rotate(360deg); } }
+
+    .gate-local-hint {
+      margin: 14px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .gate-tenant {
+      margin: 18px 0 0;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    #error {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      max-width: min(92vw, 420px);
+      background: #2a1212;
+      border: 1px solid rgba(198,40,40,0.45);
+      color: #ffd7d7;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      display: none;
+    }
+    #error.show { display: block; }
+  </style>
+</head>
+<body class="riva-os">
+  <div id="error" role="status" aria-live="polite"></div>
+
+  <section class="login-view" id="loginView" aria-label="Accesso housekeeping">
+    <div class="gate-card" id="gateCard">
+      <div class="card-sheen" aria-hidden="true"></div>
+      <div class="gate-header">
+        <span class="hotel-title">Riva</span>
+        <span class="hotel-subtitle">OS</span>
+        <h1>Accedi</h1>
+        <p class="gate-lead">Nome e password del personale</p>
+      </div>
+      <form id="gateForm" class="gate-form" action="" method="post" autocomplete="off" novalidate>
+        <div class="form-group">
+          <label id="lbl-staff" for="staffMember">Nome</label>
+          <div class="input-with-icon">
+            <span class="field-glyph" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="12" cy="11" r="2.5"/><path d="M8 16.5c1-1.5 2.4-2.2 4-2.2s3 .7 4 2.2"/></svg>
+            </span>
+            <input class="apple-input" id="staffMember" type="text" inputmode="text" autocomplete="username" autocapitalize="words" spellcheck="false" maxlength="40" placeholder="Nome o ID staff" aria-describedby="gateTenant">
+          </div>
+        </div>
+        <div class="form-group">
+          <label id="lbl-pin" for="pin">Password</label>
+          <div class="input-with-icon">
+            <span class="field-glyph" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+            <input class="apple-input" id="pin" type="password" inputmode="text" autocomplete="current-password" maxlength="64" placeholder="Inserisci password">
+          </div>
+        </div>
+        <button class="btn-canal" id="btnLogin" type="submit" aria-busy="false">
+          <span class="btn-login-label">Entra</span>
+          <svg class="btn-login-spinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <p class="gate-local-hint hidden" id="localLoginHint"></p>
+        <p class="gate-tenant" id="gateTenant" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <div id="boardShell" class="shell hidden">
+    <aside class="side">
+      <div>
+        <div class="brand-mark">Riva OS</div>
+        <div class="brand-sub">Housekeeping</div>
+      </div>
+      <div class="side-foot" id="sideFoot">
+        <div class="side-legend" aria-label="Stati camera">
+          <span class="side-swatch" data-s="dirty">Da fare</span>
+          <span class="side-swatch" data-s="inspect">Ispezionare</span>
+          <span class="side-swatch" data-s="clean">Pulita</span>
+        </div>
+        <p class="side-howto">Tap = ciclo · doppio tap = pulita</p>
+        <p class="side-date" id="sideDate" hidden></p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="boardView">
+        <div class="topbar">
+          <div>
+            <h1>Piani</h1>
+            <div class="who" id="whoLine"></div>
+          </div>
+          <button type="button" class="btn-ghost" id="btnLogout">Esci</button>
+        </div>
+        <div class="stats" id="stats"></div>
+        <div class="grid" id="grid"></div>
+        <div class="empty hidden" id="empty">Nessuna camera da gestire ora.</div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STATUS_LABEL = { dirty: 'Da fare', clean: 'Pulita', inspect: 'Ispezionare' };
+      const CYCLE = { dirty: 'inspect', inspect: 'clean', clean: 'dirty' };
+
+      const els = {
+        loginView: document.getElementById('loginView'),
+        boardShell: document.getElementById('boardShell'),
+        gateCard: document.getElementById('gateCard'),
+        gateForm: document.getElementById('gateForm'),
+        staff: document.getElementById('staffMember'),
+        pin: document.getElementById('pin'),
+        lblStaff: document.getElementById('lbl-staff'),
+        lblPin: document.getElementById('lbl-pin'),
+        btnLogin: document.getElementById('btnLogin'),
+        btnLogout: document.getElementById('btnLogout'),
+        who: document.getElementById('whoLine'),
+        stats: document.getElementById('stats'),
+        grid: document.getElementById('grid'),
+        empty: document.getElementById('empty'),
+        sideDate: document.getElementById('sideDate'),
+        tenant: document.getElementById('gateTenant'),
+        localHint: document.getElementById('localLoginHint'),
+        error: document.getElementById('error'),
+      };
+
+      let me = null;
+      let pollTimer = null;
+      let toastTimer = null;
+      let loginInFlight = false;
+      const tapState = new Map();
+
+      function showServerToast(msg) {
+        els.error.textContent = msg || 'Errore di rete';
+        els.error.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => els.error.classList.remove('show'), 3200);
+      }
+
+      function shakeCard() {
+        els.gateCard.classList.remove('ios-shake');
+        void els.gateCard.offsetWidth;
+        els.gateCard.classList.add('ios-shake');
+      }
+
+      function clearFieldErrors() {
+        els.staff.classList.remove('is-invalid');
+        els.pin.classList.remove('is-invalid');
+        els.lblStaff.classList.remove('label-error-state');
+        els.lblPin.classList.remove('label-error-state');
+      }
+
+      function showFieldError(which) {
+        clearFieldErrors();
+        if (which === 'staff') {
+          els.staff.classList.add('is-invalid');
+          els.lblStaff.classList.add('label-error-state');
+          els.staff.focus();
+        } else {
+          els.pin.classList.add('is-invalid');
+          els.lblPin.classList.add('label-error-state');
+          els.pin.focus();
+        }
+        shakeCard();
+      }
+
+      function setLoginBusy(busy) {
+        loginInFlight = busy;
+        els.gateForm.classList.toggle('is-submitting', busy);
+        els.btnLogin.disabled = busy;
+        els.btnLogin.classList.toggle('is-loading', busy);
+        els.btnLogin.setAttribute('aria-busy', busy ? 'true' : 'false');
+        els.staff.disabled = busy;
+        els.pin.disabled = busy;
+      }
+
+      async function api(path, opts = {}) {
+        const res = await fetch(path, {
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+          ...opts,
+        });
+        let body = null;
+        try { body = await res.json(); } catch { body = null; }
+        return { res, body };
+      }
+
+      function setSession(user) {
+        me = user;
+        const loggedIn = Boolean(user);
+        els.loginView.classList.toggle('hidden', loggedIn);
+        els.boardShell.classList.toggle('hidden', !loggedIn);
+        document.body.classList.toggle('is-hk-board', loggedIn);
+        if (user) {
+          els.who.textContent = user.name || user.label || 'Staff';
+          startPoll();
+          loadBoard();
+        } else {
+          stopPoll();
+          void applyLoginInfo();
+        }
+      }
+
+      async function applyLoginInfo() {
+        try {
+          const { res, body } = await api('/api/staff/login-info');
+          if (!res.ok || !body) return;
+          const hotelName = String(body.hotel?.name || '').trim();
+          const legal = String(body.hotel?.legalName || '').trim();
+          if (els.tenant) {
+            if (legal && hotelName) {
+              els.tenant.textContent = `${legal} — ${hotelName}`;
+              els.tenant.hidden = false;
+            } else if (hotelName) {
+              els.tenant.textContent = hotelName;
+              els.tenant.hidden = false;
+            } else {
+              els.tenant.textContent = '';
+              els.tenant.hidden = true;
+            }
+          }
+          const local = body.local;
+          if (local?.staff && local?.pin && els.localHint) {
+            els.localHint.textContent = `Locale: ${local.staff} · ${local.pin}`;
+            els.localHint.classList.remove('hidden');
+            if (!els.staff.value) els.staff.value = local.staff;
+            if (!els.pin.value) els.pin.value = local.pin;
+          }
+        } catch (_) { /* ignore */ }
+      }
+
+      function startPoll() {
+        stopPoll();
+        pollTimer = setInterval(loadBoard, 20000);
+      }
+      function stopPoll() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = null;
+      }
+
+      function renderStats(counts) {
+        const c = counts || {};
+        els.stats.innerHTML = [
+          ['dirty', 'Da fare', c.dirty || 0],
+          ['inspect', 'Ispezionare', c.inspect || 0],
+          ['clean', 'Pulite', c.clean || 0],
+        ].map(([k, label, n]) =>
+          `<div class="stat"><b style="color:var(--${k})">${n}</b><span>${label}</span></div>`
+        ).join('');
+      }
+
+      function kindLabel(kind) {
+        if (kind === 'checkout_due') return 'Checkout';
+        if (kind === 'vacant') return 'Vuota';
+        if (kind === 'hold') return 'Prenotata';
+        return 'In camera';
+      }
+
+      function escapeHtml(s) {
+        return String(s ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function renderRooms(rooms) {
+        els.grid.innerHTML = '';
+        const list = Array.isArray(rooms) ? rooms : [];
+        els.empty.classList.toggle('hidden', list.length > 0);
+        for (const room of list) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'room';
+          btn.dataset.room = room.room;
+          btn.dataset.status = room.status || 'dirty';
+          const guest = room.guestName ? String(room.guestName).slice(0, 28) : kindLabel(room.kind);
+          btn.innerHTML =
+            `<span class="pill">${STATUS_LABEL[room.status] || room.status}</span>` +
+            `<div class="room-num">${escapeHtml(room.room)}</div>` +
+            `<div class="room-meta">${escapeHtml(guest)}${room.guestsCount ? ' · ' + room.guestsCount + ' pax' : ''}</div>`;
+          btn.addEventListener('click', () => onRoomTap(btn, room));
+          els.grid.appendChild(btn);
+        }
+      }
+
+      async function setStatus(room, status, el) {
+        const { res, body } = await api(`/api/hk/rooms/${encodeURIComponent(room)}/status`, {
+          method: 'POST',
+          body: JSON.stringify({ status }),
+        });
+        if (!res.ok) {
+          showServerToast(body?.error || 'Aggiornamento non riuscito');
+          return;
+        }
+        if (el) {
+          el.dataset.status = body.status || status;
+          const pill = el.querySelector('.pill');
+          if (pill) pill.textContent = STATUS_LABEL[el.dataset.status] || el.dataset.status;
+          el.classList.remove('is-flash');
+          void el.offsetWidth;
+          el.classList.add('is-flash');
+        }
+        loadBoard();
+      }
+
+      function onRoomTap(el, room) {
+        const key = room.room;
+        const now = Date.now();
+        const prev = tapState.get(key) || { t: 0 };
+        if (now - prev.t < 380) {
+          tapState.delete(key);
+          setStatus(key, 'clean', el);
+          return;
+        }
+        tapState.set(key, { t: now });
+        setTimeout(() => {
+          const cur = tapState.get(key);
+          if (!cur || cur.t !== now) return;
+          tapState.delete(key);
+          const next = CYCLE[el.dataset.status] || 'dirty';
+          setStatus(key, next, el);
+        }, 380);
+      }
+
+      async function loadBoard() {
+        const { res, body } = await api('/api/hk/board');
+        if (res.status === 401) {
+          setSession(null);
+          return;
+        }
+        if (!res.ok) {
+          showServerToast(body?.error || 'Board non disponibile');
+          return;
+        }
+        if (els.sideDate) {
+          if (body.today) {
+            els.sideDate.textContent = body.today;
+            els.sideDate.hidden = false;
+          } else {
+            els.sideDate.textContent = '';
+            els.sideDate.hidden = true;
+          }
+        }
+        renderStats(body.counts);
+        renderRooms(body.rooms);
+      }
+
+      async function boot() {
+        const { res, body } = await api('/api/staff/session');
+        if (res.ok && body?.ok && body.staff) {
+          setSession(body.staff);
+        } else {
+          setSession(null);
+        }
+      }
+
+      els.gateForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (loginInFlight) return;
+        clearFieldErrors();
+        const staff = String(els.staff.value || '').trim();
+        const pin = String(els.pin.value || '');
+        if (!staff && !pin) {
+          els.staff.classList.add('is-invalid');
+          els.pin.classList.add('is-invalid');
+          els.lblStaff.classList.add('label-error-state');
+          els.lblPin.classList.add('label-error-state');
+          shakeCard();
+          return;
+        }
+        if (!staff) return showFieldError('staff');
+        if (!pin) return showFieldError('pin');
+        setLoginBusy(true);
+        try {
+          const { res, body } = await api('/api/staff/login', {
+            method: 'POST',
+            body: JSON.stringify({ staff, staffId: staff, pin }),
+          });
+          if (!res.ok) {
+            if (body?.field === 'staff') showFieldError('staff');
+            else showFieldError('pin');
+            return;
+          }
+          setSession(body.staff || body);
+          els.pin.value = '';
+        } catch {
+          showServerToast('Connessione non disponibile');
+        } finally {
+          setLoginBusy(false);
+        }
+      });
+
+      els.btnLogout.addEventListener('click', async () => {
+        await api('/api/staff/logout', { method: 'POST', body: '{}' });
+        setSession(null);
+      });
+
+      document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) e.preventDefault();
+      }, { passive: false });
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
