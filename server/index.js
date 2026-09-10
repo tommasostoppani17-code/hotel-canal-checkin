@@ -3572,7 +3572,7 @@ app.listen(PORT, '0.0.0.0', async () => {
   console.log(`${HOTEL_NAME} check-in attivo su http://localhost:${PORT}`);
   for (const ip of lanIps) {
     console.log(`  iPad / LAN → http://${ip}:${PORT}`);
-    console.log(`    Staff ${`http://${ip}:${PORT}/staff`} · HK ${`http://${ip}:${PORT}/hk`} · Colazioni ${`http://${ip}:${PORT}/colazione`} · Ospiti ${`http://${ip}:${PORT}/ospiti`}`);
+    console.log(`    Staff ${`http://${ip}:${PORT}/staff`} · Riva ${`http://${ip}:${PORT}/staff124`} · HK ${`http://${ip}:${PORT}/hk`}`);
   }
   console.log(
     `Cron report: ${reportTime} ${CRON_TZ} → ufficiale ${process.env.REPORT_EMAIL_OFFICIAL || 'grandcanalhotels@gmail.com'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,
