@@ -2113,7 +2113,8 @@ app.get(
       return res.status(403).json({ error: 'Solo direzione', code: 'forbidden' });
     }
     res.setHeader('Cache-Control', 'no-store');
-    const payload = buildOrgConsolePayload(req.staffUser?.staffId);
+    const view = String(req.query?.view || '').trim().toLowerCase();
+    const payload = buildOrgConsolePayload(req.staffUser?.staffId, { view });
     if (!payload.ok) {
       return res.status(403).json({ error: 'Solo direzione', code: 'forbidden' });
     }

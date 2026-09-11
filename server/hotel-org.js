@@ -352,38 +352,17 @@ function groupByDepartment(staffList) {
   return ORG_DEPARTMENTS.map((d) => groups[d.id]).filter((g) => g.staff.length);
 }
 
-export function buildOrgConsolePayload(staffId) {
+export function buildOrgConsolePayload(staffId, { view } = {}) {
   seedHotelOrg();
   const me = getStaffOrgProfile(staffId);
   const dev = isOrgDev(staffId);
   const manager = isOrgManager(staffId);
   const hotels = listOrgHotels({ activeOnly: true });
+  const want = String(view || '').toLowerCase();
 
-  if (dev) {
-    return {
-      ok: true,
-      mode: 'dev',
-      me,
-      modulesCatalog: ORG_MODULES,
-      departments: ORG_DEPARTMENTS,
-      standardPinHint: 'password standard (env STAFF_STANDARD_PIN o 1234)',
-      hotels: hotels.map((h) => {
-        const staff = staffForHotel(h.slug);
-        const managers = staff.filter((s) => s.role === ROLE_MANAGER || s.role === ROLE_DEV);
-        return {
-          ...h,
-          roomCount: (h.rooms || []).length,
-          managers: managers.map((m) => ({ id: m.id, label: m.label, role: m.role })),
-          departments: groupByDepartment(staff),
-          staffCount: staff.length,
-        };
-      }),
-    };
-  }
-
-  if (manager) {
-    const slug = me?.hotelSlug || 'hotel-canal';
+  const asManagerHotel = (slug) => {
     const hotel = getOrgHotel(slug) || hotels.find((h) => h.slug === slug) || hotels[0];
+    if (!hotel) return { ok: false, error: 'forbidden' };
     const staff = staffForHotel(hotel.slug);
     return {
       ok: true,
@@ -399,6 +378,42 @@ export function buildOrgConsolePayload(staffId) {
         staffCount: staff.length,
       },
     };
+  };
+
+  // Dev può aprire anche la sezione Manager del proprio hotel (?view=manager).
+  if (dev && want === 'manager') {
+    return asManagerHotel(me?.hotelSlug || 'hotel-canal');
+  }
+
+  if (dev) {
+    return {
+      ok: true,
+      mode: 'dev',
+      me,
+      modulesCatalog: ORG_MODULES,
+      departments: ORG_DEPARTMENTS,
+      standardPinHint: 'password standard (env STAFF_STANDARD_PIN o 1234)',
+      hotels: hotels.map((h) => {
+        const staff = staffForHotel(h.slug);
+        const managers = staff.filter((s) => s.role === ROLE_MANAGER || s.role === ROLE_DEV);
+        return {
+          ...h,
+          roomCount: (h.rooms || []).length,
+          managers: managers.map((m) => ({
+            id: m.id,
+            label: m.label,
+            role: m.role,
+            protected: m.protected,
+          })),
+          departments: groupByDepartment(staff),
+          staffCount: staff.length,
+        };
+      }),
+    };
+  }
+
+  if (manager) {
+    return asManagerHotel(me?.hotelSlug || 'hotel-canal');
   }
 
   return { ok: false, error: 'forbidden' };

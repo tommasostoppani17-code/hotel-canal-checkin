@@ -7851,9 +7851,17 @@
       height: auto;
     }
 
-    body:not(.can-info) #tabInfo,
-    body:not(.can-info) #infoPanel,
     body:not(.can-info) .sys-settings-sales {
+      display: none !important;
+    }
+    body:not(.can-dev) #tabDev,
+    body:not(.can-dev) #devConsolePanel,
+    body:not(.can-dev) #moreDevBtn {
+      display: none !important;
+    }
+    body:not(.can-manager) #tabManager,
+    body:not(.can-manager) #managerConsolePanel,
+    body:not(.can-manager) #moreManagerBtn {
       display: none !important;
     }
 
@@ -22787,7 +22795,7 @@
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
   <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=8">
   <link rel="stylesheet" href="/css/layout-stability.css?v=3">
-  <link rel="stylesheet" href="/css/staff-org-console.css?v=1">
+  <link rel="stylesheet" href="/css/staff-org-console.css?v=2">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
   <link rel="stylesheet" href="/css/riva-access-aligned.css?v=9">
 </head>
@@ -22938,16 +22946,25 @@
       </nav>
       <nav class="dash-nav-secondary" aria-label="Account">
         <span class="dash-nav-section-label">Account</span>
-        <button type="button" class="dash-nav-item" id="tabInfo">
+        <button type="button" class="dash-nav-item hidden" id="tabDev" hidden>
           <span class="dash-nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 10.5V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="12" cy="7.5" r="1.1" fill="currentColor"/>
+              <path d="M4 19h16M7 19V9l5-5 5 5v10" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M10 19v-4h4v4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
             </svg>
           </span>
-          Console hotel
+          Console Dev
         </button>
+        <button type="button" class="dash-nav-item hidden" id="tabManager" hidden>
+          <span class="dash-nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M5 19c1.6-3 4-4.5 7-4.5s5.4 1.5 7 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Console Manager
+        </button>
+        <span class="hidden" id="tabInfo" hidden></span>
         <button type="button" class="dash-nav-item" id="tabSettings">
           <span class="dash-nav-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -23874,17 +23891,32 @@
             </div>
           </div>
 
-          <div class="table-panel hidden settings-panel info-panel" id="infoPanel">
-            <div class="settings-scroll" id="infoScroll">
+          <div class="table-panel hidden settings-panel info-panel" id="devConsolePanel">
+            <div class="settings-scroll" id="devConsoleScroll">
               <div class="sys-settings sys-settings--plans">
-                <div id="orgConsoleRoot" class="org-console-root" aria-live="polite"></div>
+                <div id="devOrgRoot" class="org-console-root" aria-live="polite"></div>
               </div>
             </div>
             <div class="footer-summary">
-              <span id="infoFooterLabel">Riva OS — Console hotel</span>
-              <span class="footer-summary-meta">Dev / Manager</span>
+              <span id="devFooterLabel">Riva OS — Console Dev</span>
+              <span class="footer-summary-meta">Hotel · Manager · Organico</span>
             </div>
           </div>
+
+          <div class="table-panel hidden settings-panel info-panel" id="managerConsolePanel">
+            <div class="settings-scroll" id="managerConsoleScroll">
+              <div class="sys-settings sys-settings--plans">
+                <div id="managerOrgRoot" class="org-console-root" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="footer-summary">
+              <span id="managerFooterLabel">Riva OS — Console Manager</span>
+              <span class="footer-summary-meta">Staff · Password · Moduli</span>
+            </div>
+          </div>
+          <div class="hidden" id="infoPanel" hidden></div>
+          <span class="hidden" id="infoFooterLabel" hidden></span>
+          <span class="hidden" id="orgConsoleRoot" hidden></span>
 
           <div class="table-panel hidden m-more-panel" id="morePanel">
             <header class="m-hub-hero">
@@ -23984,11 +24016,19 @@
               <section class="m-hub-section sys-settings-sales hidden" id="moreInfoSection" aria-label="Direzione">
                 <h3 class="m-hub-section__title">Direzione</h3>
                 <div class="m-hub-list">
-                  <button type="button" class="m-hub-link" data-more-view="info" id="moreInfoBtn">
-                    <span class="m-hub-link__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 10.5V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.1" fill="currentColor"/></svg></span>
+                  <button type="button" class="m-hub-link hidden" data-more-view="dev" id="moreDevBtn" hidden>
+                    <span class="m-hub-link__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19h16M7 19V9l5-5 5 5v10" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19v-4h4v4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
                     <span class="m-hub-link__copy">
-                      <span class="m-hub-link__label">Console hotel</span>
-                      <span class="m-hub-link__hint">Dev / Manager</span>
+                      <span class="m-hub-link__label">Console Dev</span>
+                      <span class="m-hub-link__hint">Hotel · Manager · Organico</span>
+                    </span>
+                    <span class="m-hub-link__chev" aria-hidden="true">›</span>
+                  </button>
+                  <button type="button" class="m-hub-link hidden" data-more-view="manager" id="moreManagerBtn" hidden>
+                    <span class="m-hub-link__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5 19c1.6-3 4-4.5 7-4.5s5.4 1.5 7 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                    <span class="m-hub-link__copy">
+                      <span class="m-hub-link__label">Console Manager</span>
+                      <span class="m-hub-link__hint">Staff · Password · Moduli</span>
                     </span>
                     <span class="m-hub-link__chev" aria-hidden="true">›</span>
                   </button>
@@ -25111,7 +25151,7 @@
   <script src="/js/riva-skeleton.js?v=15"></script>
   <script src="/js/tenant-boot.js"></script>
   <script src="/js/staff-ops.js?v=107"></script>
-  <script src="/js/staff-org-console.js?v=1"></script>
+  <script src="/js/staff-org-console.js?v=2"></script>
   <script src="/js/excel-grid-nav.js?v=2"></script>
   <script>
     document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
@@ -26779,7 +26819,9 @@
       if (activeView === 'requests') return requestsPanel;
       if (activeView === 'blacklist') return blacklistPanel;
       if (activeView === 'settings') return settingsPanel;
-      if (activeView === 'info') return infoPanel;
+      if (activeView === 'dev') return document.getElementById('devConsolePanel');
+      if (activeView === 'manager') return document.getElementById('managerConsolePanel');
+      if (activeView === 'info') return document.getElementById('devConsolePanel') || infoPanel;
       if (activeView === 'holds') return holdsPanel;
       if (activeView === 'alloggiati') return document.getElementById('alloggiatiPanel');
       if (isOpsView(activeView)) return opsPanel;
@@ -27796,6 +27838,8 @@
       'shift-audit': 'Chiusura turno',
       settings: 'Impostazioni',
       info: 'Console hotel',
+      dev: 'Console Dev',
+      manager: 'Console Manager',
       more: 'Altro',
     };
 
@@ -27851,6 +27895,8 @@
       'shift-audit',
       'settings',
       'info',
+      'dev',
+      'manager',
       'more',
       'ops-rooms',
       'ops-colazioni',
@@ -28029,6 +28075,12 @@
     function canSeeStaffInfo() {
       return Boolean(currentStaff?.info || currentStaff?.dev || currentStaff?.manager);
     }
+    function canSeeDevConsole() {
+      return Boolean(currentStaff?.dev);
+    }
+    function canSeeManagerConsole() {
+      return Boolean(currentStaff?.manager || currentStaff?.dev);
+    }
 
     function applyHotelModules(modules) {
       const m = modules && typeof modules === 'object' ? modules : {};
@@ -28044,13 +28096,30 @@
 
     function applyInfoAccess() {
       const allowed = canSeeStaffInfo();
+      const showDev = canSeeDevConsole();
+      const showMgr = canSeeManagerConsole();
       document.body.classList.toggle('can-info', allowed);
+      document.body.classList.toggle('can-dev', showDev);
+      document.body.classList.toggle('can-manager', showMgr);
       document.body.classList.toggle('is-dev', Boolean(currentStaff?.dev));
-      tabInfo?.classList.toggle('hidden', !allowed);
+      const tabDev = document.getElementById('tabDev');
+      const tabManager = document.getElementById('tabManager');
+      tabDev?.classList.toggle('hidden', !showDev);
+      if (tabDev) tabDev.hidden = !showDev;
+      tabManager?.classList.toggle('hidden', !showMgr);
+      if (tabManager) tabManager.hidden = !showMgr;
+      document.getElementById('moreDevBtn')?.classList.toggle('hidden', !showDev);
+      document.getElementById('moreManagerBtn')?.classList.toggle('hidden', !showMgr);
+      const moreDev = document.getElementById('moreDevBtn');
+      const moreMgr = document.getElementById('moreManagerBtn');
+      if (moreDev) moreDev.hidden = !showDev;
+      if (moreMgr) moreMgr.hidden = !showMgr;
       document.querySelectorAll('.sys-settings-sales').forEach((el) => {
         el.hidden = !allowed;
         el.classList.toggle('hidden', !allowed);
       });
+      if (!showDev && activeView === 'dev') setActiveView('checkins');
+      if (!showMgr && activeView === 'manager') setActiveView('checkins');
       if (!allowed && activeView === 'info') setActiveView('checkins');
       const activeNav = settingsPanel?.querySelector('[data-settings-nav].is-on');
       if (!allowed && activeNav?.getAttribute('data-settings-nav') === 'integrations') {
@@ -28068,11 +28137,13 @@
         selectedDate = DATE_IN_HOUSE;
         view = 'checkins';
       }
-      if (view === 'info' && !canSeeStaffInfo()) view = 'checkins';
+      if (view === 'info') view = canSeeDevConsole() ? 'dev' : (canSeeManagerConsole() ? 'manager' : 'checkins');
+      if (view === 'dev' && !canSeeDevConsole()) view = 'checkins';
+      if (view === 'manager' && !canSeeManagerConsole()) view = 'checkins';
       if (view === 'oggi' || view === 'rooms') view = 'checkins';
       if (!HOLDS_UI_ENABLED && view === 'holds') view = 'checkins';
       if (isOpsView(view) && !opsIntegrationEnabled) view = 'checkins';
-      const allowed = ['requests', 'checkins', 'oggi', 'rooms', 'holds', 'alloggiati', ...OPS_VIEWS, 'blacklist', 'shift-audit', 'settings', 'info', 'more'];
+      const allowed = ['requests', 'checkins', 'oggi', 'rooms', 'holds', 'alloggiati', ...OPS_VIEWS, 'blacklist', 'shift-audit', 'settings', 'info', 'dev', 'manager', 'more'];
       activeView = allowed.includes(view) ? view : 'checkins';
       if (!HOLDS_UI_ENABLED && activeView === 'holds') activeView = 'checkins';
       writeSavedStaffView(activeView);
@@ -28091,8 +28162,10 @@
       tabBlacklist?.classList.toggle('is-on', activeView === 'blacklist');
       document.getElementById('navShiftAudit')?.classList.toggle('is-on', activeView === 'shift-audit');
       tabSettings?.classList.toggle('is-on', activeView === 'settings');
+      document.getElementById('tabDev')?.classList.toggle('is-on', activeView === 'dev');
+      document.getElementById('tabManager')?.classList.toggle('is-on', activeView === 'manager');
       tabInfo?.classList.toggle('is-on', activeView === 'info');
-      const moreOn = ['more', 'settings', 'info', 'holds', 'alloggiati', 'blacklist', 'shift-audit', 'ops-problems'].includes(activeView);
+      const moreOn = ['more', 'settings', 'info', 'dev', 'manager', 'holds', 'alloggiati', 'blacklist', 'shift-audit', 'ops-problems'].includes(activeView);
       document.querySelectorAll('#mTabbar .m-tab').forEach((btn) => {
         const key = btn.getAttribute('data-m-view');
         let on = false;
@@ -28150,7 +28223,11 @@
         if (activeView === 'shift-audit') shiftAuditPanelEl.removeAttribute('hidden');
         else shiftAuditPanelEl.setAttribute('hidden', '');
       }
-      infoPanel?.classList.toggle('hidden', activeView !== 'info');
+      const devConsolePanel = document.getElementById('devConsolePanel');
+      const managerConsolePanel = document.getElementById('managerConsolePanel');
+      infoPanel?.classList.toggle('hidden', true);
+      devConsolePanel?.classList.toggle('hidden', activeView !== 'dev');
+      managerConsolePanel?.classList.toggle('hidden', activeView !== 'manager');
       settingsPanel?.classList.toggle('hidden', activeView !== 'settings');
       if (settingsPanel) {
         if (activeView === 'settings') {
@@ -28162,7 +28239,7 @@
         }
       }
       morePanel?.classList.toggle('hidden', activeView !== 'more');
-      workspaceEl?.classList.toggle('is-settings', activeView === 'settings' || activeView === 'info');
+      workspaceEl?.classList.toggle('is-settings', activeView === 'settings' || activeView === 'dev' || activeView === 'manager' || activeView === 'info');
       workspaceEl?.classList.toggle('is-settings-page', activeView === 'settings');
       document.querySelector('.dash-main')?.classList.toggle('is-settings-page', activeView === 'settings');
       workspaceEl?.classList.toggle('is-clients', activeView === 'checkins');
@@ -28245,7 +28322,9 @@
         showSettingsList();
         loadSettings();
       }
-      else if (activeView === 'info') loadRoadmap();
+      else if (activeView === 'dev') loadOrgConsole('dev');
+      else if (activeView === 'manager') loadOrgConsole('manager');
+      else if (activeView === 'info') loadOrgConsole(canSeeDevConsole() ? 'dev' : 'manager');
       else if (activeView === 'holds') {
         if (window.matchMedia('(max-width: 1024px)').matches && rackViewMode !== 'week') {
           setRackViewMode('week');
@@ -28292,23 +28371,26 @@
     }
 
     function resetRoadmap() {
-      if (infoFooterLabel) infoFooterLabel.textContent = 'Riva OS — Console hotel';
+      const el = document.getElementById('devFooterLabel');
+      if (el) el.textContent = 'Riva OS — Console Dev';
+      const el2 = document.getElementById('managerFooterLabel');
+      if (el2) el2.textContent = 'Riva OS — Console Manager';
     }
 
-    async function loadRoadmap() {
-      const root = document.getElementById('orgConsoleRoot');
+    async function loadOrgConsole(view) {
+      const rootId = view === 'manager' ? 'managerOrgRoot' : 'devOrgRoot';
+      const root = document.getElementById(rootId);
       try {
         if (window.StaffOrgConsole?.mount) {
-          await window.StaffOrgConsole.mount(root);
-        }
-        if (infoFooterLabel) {
-          infoFooterLabel.textContent = currentStaff?.dev
-            ? 'Console Dev'
-            : 'Console Manager';
+          await window.StaffOrgConsole.mount(root, { view });
         }
       } catch (_) {
         resetRoadmap();
       }
+    }
+
+    async function loadRoadmap() {
+      await loadOrgConsole(canSeeDevConsole() ? 'dev' : 'manager');
     }
 
     function openDashNav() {
@@ -35651,7 +35733,9 @@
         document.querySelector('.sheet:not([hidden]):not(.sheet--ig)')
       );
     }
-    tabInfo?.addEventListener('click', () => setActiveView('info'));
+    tabInfo?.addEventListener('click', () => setActiveView(canSeeDevConsole() ? 'dev' : 'manager'));
+    document.getElementById('tabDev')?.addEventListener('click', () => setActiveView('dev'));
+    document.getElementById('tabManager')?.addEventListener('click', () => setActiveView('manager'));
     tabSettings?.addEventListener('click', () => setActiveView('settings'));
 
     btnAddHold?.addEventListener('click', () => openHoldSheet('link'));

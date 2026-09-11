@@ -1,7 +1,7 @@
 /**
- * Console Dev / Manager hotel (staff124 info panel).
- * Dev: hotel → manager → dipendenti per reparto.
- * Manager: solo il suo hotel, password standard, toggle manager, moduli.
+ * Due sezioni separate:
+ * - Console Dev: hotel → manager → dipendenti per reparto (tutti gli hotel)
+ * - Console Manager: solo il proprio hotel (staff, password standard, toggle manager, moduli)
  */
 (function () {
   const apiPrefix = () => {
@@ -59,11 +59,11 @@
       </div>`;
   }
 
-  function renderStaffRow(person, { canManage }) {
+  function renderStaffRow(person, { canManage, compact = false } = {}) {
     const isMgr = person.role === 'manager' || person.role === 'dev';
     const isDev = person.role === 'dev';
     return `
-      <li class="org-staff-row" data-staff="${esc(person.id)}">
+      <li class="org-staff-row ${compact ? 'is-compact' : ''}" data-staff="${esc(person.id)}">
         <div class="org-staff-main">
           <span class="org-staff-name">${esc(person.label)}</span>
           <span class="org-staff-meta">${esc(person.role)}${person.protected ? ' · protetto' : ''}</span>
@@ -76,14 +76,25 @@
             </button>
             <button type="button" class="org-btn org-btn--ghost" data-act="reset-pin">Password standard</button>
           </div>`
-            : ''
+            : isDev
+              ? `<span class="org-staff-badge">Dev</span>`
+              : ''
         }
       </li>`;
   }
 
+  function employeesOnly(deps) {
+    return (deps || [])
+      .map((d) => ({
+        ...d,
+        staff: (d.staff || []).filter((p) => p.role !== 'manager' && p.role !== 'dev'),
+      }))
+      .filter((d) => d.staff.length);
+  }
+
   function renderDepartments(deps, opts) {
     if (!deps?.length) {
-      return `<p class="org-empty">Nessun dipendente assegnato. La struttura è pronta da personalizzare.</p>`;
+      return `<p class="org-empty">Nessun dipendente assegnato. Struttura pronta da personalizzare.</p>`;
     }
     return deps
       .map(
@@ -98,91 +109,135 @@
       .join('');
   }
 
-  function renderHotelCard(hotel, payload, { open = false } = {}) {
-    const canEditModules = payload.mode === 'dev' || payload.mode === 'manager';
-    const canManageStaff = canEditModules;
-    const mgrs = (hotel.managers || [])
-      .map((m) => esc(m.label))
-      .join(', ') || '—';
+  /** Dev: hotel → manager → dipendenti per reparto */
+  function renderDevHotel(hotel, payload, { open = false } = {}) {
+    const managers = hotel.managers || [];
+    const empDeps = employeesOnly(hotel.departments);
     return `
-      <article class="org-hotel ${open ? 'is-open' : ''}" data-slug="${esc(hotel.slug)}">
+      <article class="org-hotel org-hotel--dev ${open ? 'is-open' : ''}" data-slug="${esc(hotel.slug)}">
         <button type="button" class="org-hotel-head" data-act="toggle-hotel">
           <span class="org-hotel-title">
             <span class="org-hotel-name">${esc(hotel.name)}</span>
             <span class="org-pill org-pill--${esc(hotel.kind)}">${esc(kindLabel(hotel.kind))}</span>
           </span>
           <span class="org-hotel-sub">
-            ${esc(hotel.city || '—')} · ${hotel.roomCount || 0} camere · ${hotel.staffCount || 0} staff
-            ${hotel.managers ? ` · Manager: ${mgrs}` : ''}
+            ${esc(hotel.city || '—')} · ${hotel.roomCount || 0} camere · ${managers.length} manager · ${hotel.staffCount || 0} staff
           </span>
         </button>
         <div class="org-hotel-body">
           ${hotel.notes ? `<p class="org-notes">${esc(hotel.notes)}</p>` : ''}
-          <h4 class="org-section-label">Moduli</h4>
-          ${renderModules(hotel, payload.modulesCatalog, canEditModules)}
-          <h4 class="org-section-label">Organico per reparto</h4>
-          ${renderDepartments(hotel.departments, { canManage: canManageStaff })}
+
+          <h4 class="org-section-label">1 · Manager</h4>
+          ${
+            managers.length
+              ? `<ul class="org-staff-list org-staff-list--mgr">
+                  ${managers
+                    .map((m) =>
+                      renderStaffRow(
+                        { ...m, role: m.role || 'manager' },
+                        { canManage: true },
+                      ),
+                    )
+                    .join('')}
+                </ul>`
+              : `<p class="org-empty">Nessun manager ancora. Promuovi qualcuno dall’organico.</p>`
+          }
+
+          <h4 class="org-section-label">2 · Dipendenti per reparto</h4>
+          ${renderDepartments(empDeps, { canManage: true })}
+
+          <h4 class="org-section-label">3 · Moduli hotel</h4>
+          ${renderModules(hotel, payload.modulesCatalog, true)}
         </div>
       </article>`;
   }
 
-  function paint(root, payload) {
+  /** Manager: solo il proprio hotel — staff + moduli, senza lista multi-hotel */
+  function renderManagerHotel(hotel, payload) {
+    return `
+      <article class="org-hotel org-hotel--manager is-open" data-slug="${esc(hotel.slug)}">
+        <div class="org-hotel-head org-hotel-head--static">
+          <span class="org-hotel-title">
+            <span class="org-hotel-name">${esc(hotel.name)}</span>
+            <span class="org-pill org-pill--live">Tuo hotel</span>
+          </span>
+          <span class="org-hotel-sub">
+            ${esc(hotel.city || '—')} · ${hotel.roomCount || 0} camere · ${hotel.staffCount || 0} persone
+          </span>
+        </div>
+        <div class="org-hotel-body">
+          <h4 class="org-section-label">Moduli attivi</h4>
+          <p class="org-mini">Accendi o spegni funzionalità per questo hotel.</p>
+          ${renderModules(hotel, payload.modulesCatalog, true)}
+
+          <h4 class="org-section-label">Il tuo staff</h4>
+          <p class="org-mini">Password standard per tutti i nuovi / reset. Puoi promuovere altri account a manager.</p>
+          ${renderDepartments(hotel.departments || [], { canManage: true })}
+        </div>
+      </article>`;
+  }
+
+  function paint(root, payload, forcedView) {
     if (!root) return;
     if (!payload?.ok) {
-      root.innerHTML = `<p class="org-empty">Accesso riservato a Dev e Manager.</p>`;
+      root.innerHTML = `<p class="org-empty">Accesso riservato.</p>`;
       return;
     }
 
-    const title =
-      payload.mode === 'dev'
-        ? 'Console Dev — hotel, manager, organico'
-        : `Console Manager — ${esc(payload.hotel?.name || 'Hotel')}`;
-    const lead =
-      payload.mode === 'dev'
-        ? 'Canal e affiliati già popolati. Gli slot template sono pronti da personalizzare per i prossimi hotel.'
-        : 'Solo il tuo staff. Puoi resettare la password allo standard, promuovere manager e accendere/spegnere i moduli.';
+    const view = forcedView || payload.mode;
+    root.dataset.orgView = view;
 
-    let body = '';
-    if (payload.mode === 'dev') {
-      body = (payload.hotels || [])
-        .map((h, i) => renderHotelCard(h, payload, { open: i === 0 }))
-        .join('');
-    } else if (payload.hotel) {
-      body = renderHotelCard(
-        {
-          ...payload.hotel,
-          managers: (payload.hotel.departments || [])
-            .flatMap((d) => d.staff)
-            .filter((s) => s.role === 'manager' || s.role === 'dev'),
-        },
-        payload,
-        { open: true },
-      );
+    if (view === 'dev') {
+      const hotels = payload.hotels || [];
+      root.innerHTML = `
+        <header class="org-head">
+          <p class="org-kicker">Sezione Dev</p>
+          <h2 class="org-title">Hotel → Manager → Organico</h2>
+          <p class="org-lead">Canal e affiliati già popolati. Gli slot template sono pronti da personalizzare per i prossimi hotel (~10 strutture).</p>
+          <p class="org-hint">${esc(payload.standardPinHint || '')}</p>
+        </header>
+        <div class="org-stack">
+          ${hotels.map((h, i) => renderDevHotel(h, payload, { open: i === 0 })).join('') || '<p class="org-empty">Nessun hotel.</p>'}
+        </div>`;
+      return;
     }
 
-    root.innerHTML = `
-      <header class="org-head">
-        <h2 class="org-title">${title}</h2>
-        <p class="org-lead">${lead}</p>
-        <p class="org-hint">${esc(payload.standardPinHint || '')}</p>
-      </header>
-      <div class="org-stack">${body}</div>
-    `;
+    if (view === 'manager' && payload.hotel) {
+      root.innerHTML = `
+        <header class="org-head">
+          <p class="org-kicker">Sezione Manager</p>
+          <h2 class="org-title">Staff del tuo hotel</h2>
+          <p class="org-lead">Solo i tuoi dipendenti. Reset password allo standard, promuovi manager, moduli on/off.</p>
+          <p class="org-hint">${esc(payload.standardPinHint || '')}</p>
+        </header>
+        <div class="org-stack">
+          ${renderManagerHotel(payload.hotel, payload)}
+        </div>`;
+      return;
+    }
+
+    root.innerHTML = `<p class="org-empty">Nessun dato per questa sezione.</p>`;
   }
 
   async function reload(root) {
     if (!root) return;
+    const view = root.dataset.forceView || 'auto';
     root.innerHTML = `<div class="org-skeleton" aria-hidden="true"></div>`;
     try {
-      const payload = await api('/api/staff/org');
-      paint(root, payload);
+      const q = view && view !== 'auto' ? `?view=${encodeURIComponent(view)}` : '';
+      const payload = await api(`/api/staff/org${q}`);
+      paint(root, payload, view === 'auto' ? null : view);
       root._orgPayload = payload;
     } catch (err) {
       if (err.status === 401) {
         root.innerHTML = `<p class="org-empty">Sessione scaduta. Rieffettua il login.</p>`;
         return;
       }
-      root.innerHTML = `<p class="org-empty">Impossibile caricare la console organizzazione.</p>`;
+      if (err.status === 403) {
+        root.innerHTML = `<p class="org-empty">Accesso non consentito a questa sezione.</p>`;
+        return;
+      }
+      root.innerHTML = `<p class="org-empty">Impossibile caricare la console.</p>`;
     }
   }
 
@@ -256,7 +311,10 @@
   }
 
   window.StaffOrgConsole = {
-    async mount(root) {
+    /** @param {HTMLElement} root @param {{ view?: 'dev'|'manager'|'auto' }} [opts] */
+    async mount(root, opts = {}) {
+      if (!root) return;
+      root.dataset.forceView = opts.view || 'auto';
       bind(root);
       await reload(root);
     },
