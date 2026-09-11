@@ -4636,8 +4636,10 @@
       right: 0 !important;
       bottom: 0 !important;
       top: auto !important;
-      width: 100% !important;
-      max-width: 100%;
+      width: 100vw !important;
+      width: 100dvw !important;
+      max-width: 100vw !important;
+      max-width: 100dvw !important;
       min-width: 0;
       height: auto;
       max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top, 0px) - 8px));
@@ -4656,6 +4658,7 @@
       z-index: 230;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
+      box-sizing: border-box;
     }
 
     .row-menu.is-bottom-sheet.is-opening {
@@ -4671,13 +4674,15 @@
       content: none;
     }
 
-    @media (min-width: 640px) {
+    /* Centrato solo da tablet in su (≥721): su mobile resta edge-to-edge. */
+    @media (min-width: 721px) {
       .row-menu.is-bottom-sheet {
         left: 50% !important;
         right: auto !important;
         bottom: auto !important;
         top: 50% !important;
         width: min(390px, calc(100vw - 48px)) !important;
+        max-width: min(390px, calc(100vw - 48px)) !important;
         max-height: min(84dvh, 640px);
         padding: 0;
         padding-bottom: 0;
@@ -19130,6 +19135,40 @@
       min-width: 0 !important;
       max-width: min(420px, calc(100vw - 24px)) !important;
       width: auto;
+      box-sizing: border-box;
+    }
+
+    /* Mobile: tendina a tutta larghezza schermo (visualViewport). */
+    .ui-dropdown-menu.is-sheet-fixed.is-full-bleed,
+    .sheet-form .ui-dropdown-menu.is-sheet-fixed.is-full-bleed {
+      left: 0 !important;
+      right: 0 !important;
+      width: 100vw !important;
+      width: 100dvw !important;
+      max-width: 100vw !important;
+      max-width: 100dvw !important;
+      border-radius: 0 !important;
+      border-left: 0 !important;
+      border-right: 0 !important;
+    }
+
+    @media (max-width: 720px) {
+      .ui-dropdown-menu.is-sheet-fixed,
+      .sheet-form .ui-dropdown-menu.is-sheet-fixed {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100vw !important;
+        width: 100dvw !important;
+        max-width: 100vw !important;
+        max-width: 100dvw !important;
+        border-radius: 0 !important;
+      }
+
+      .row-menu:not(.is-bottom-sheet) {
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        border-radius: 0 !important;
+      }
     }
 
     .brand-calendar {
@@ -26866,7 +26905,7 @@
       if (!menuEl) return;
       menuEl.hidden = true;
       menuEl.classList.add('hidden');
-      menuEl.classList.remove('is-flip-up', 'is-sheet-fixed');
+      menuEl.classList.remove('is-flip-up', 'is-sheet-fixed', 'is-full-bleed');
       menuEl.style.position = '';
       menuEl.style.zIndex = '';
       menuEl.style.left = '';
@@ -26879,33 +26918,57 @@
       menuEl.style.maxHeight = '';
     }
 
+    function isMobileDropdownViewport() {
+      try {
+        return window.matchMedia('(max-width: 720px)').matches;
+      } catch (_) {
+        return (window.innerWidth || 0) <= 720;
+      }
+    }
+
+    function viewportWidthPx() {
+      const vv = window.visualViewport;
+      const w = Math.round(vv?.width || window.innerWidth || 0);
+      return Math.max(280, w);
+    }
+
     function positionFixedMenu(triggerEl, menuEl, { preferredMax = 280 } = {}) {
       if (!triggerEl || !menuEl) return;
       if (menuEl.parentElement !== document.body) {
         document.body.appendChild(menuEl);
       }
       const rect = triggerEl.getBoundingClientRect();
-      const vw = window.innerWidth || 360;
-      const vh = window.innerHeight || 640;
+      const vw = viewportWidthPx();
+      const vh = Math.round(window.visualViewport?.height || window.innerHeight || 640);
       const gap = 8;
       const pad = 12;
-      // Larghezza = trigger (con floor leggibile), mai viewport: min-width:100% su fixed = 100vw
-      const triggerW = Math.max(0, Number(rect.width) || 0);
-      const width = Math.min(
-        Math.max(triggerW, 200),
-        Math.min(420, vw - pad * 2),
-      );
-      let left = rect.left;
-      if (left + width > vw - pad) left = Math.max(pad, vw - width - pad);
-      if (left < pad) left = pad;
+      const mobile = isMobileDropdownViewport();
       menuEl.classList.add('is-sheet-fixed');
+      menuEl.classList.toggle('is-full-bleed', mobile);
       menuEl.style.position = 'fixed';
       menuEl.style.zIndex = '260';
       menuEl.style.minWidth = '0';
-      menuEl.style.maxWidth = `${Math.round(width)}px`;
-      menuEl.style.width = `${Math.round(width)}px`;
-      menuEl.style.left = `${Math.round(left)}px`;
-      menuEl.style.right = 'auto';
+
+      if (mobile) {
+        menuEl.style.width = `${vw}px`;
+        menuEl.style.maxWidth = `${vw}px`;
+        menuEl.style.left = '0px';
+        menuEl.style.right = '0px';
+      } else {
+        const triggerW = Math.max(0, Number(rect.width) || 0);
+        const width = Math.min(
+          Math.max(triggerW, 200),
+          Math.min(420, vw - pad * 2),
+        );
+        let left = rect.left;
+        if (left + width > vw - pad) left = Math.max(pad, vw - width - pad);
+        if (left < pad) left = pad;
+        menuEl.style.maxWidth = `${Math.round(width)}px`;
+        menuEl.style.width = `${Math.round(width)}px`;
+        menuEl.style.left = `${Math.round(left)}px`;
+        menuEl.style.right = 'auto';
+      }
+
       const spaceBelow = vh - rect.bottom - pad;
       const spaceAbove = rect.top - pad;
       let maxH = Math.min(preferredMax, spaceBelow - gap);
@@ -28954,11 +29017,13 @@
       if (!rowMenu || !anchor) return;
       if (isMobileRowMenu()) {
         rowMenu.classList.add('is-bottom-sheet');
+        const vw = viewportWidthPx();
         rowMenu.style.left = '0';
         rowMenu.style.right = '0';
         rowMenu.style.bottom = '0';
         rowMenu.style.top = 'auto';
-        rowMenu.style.width = '100%';
+        rowMenu.style.width = `${vw}px`;
+        rowMenu.style.maxWidth = `${vw}px`;
         rowMenu.style.removeProperty('height');
         fitRowMenuOverflow();
         return;
@@ -28973,8 +29038,26 @@
       const rect = anchor.getBoundingClientRect();
       /* Safe area 16px: mai attaccato al bordo destro del tablet. */
       const pad = 16;
-      const vw = window.innerWidth;
+      const vw = viewportWidthPx();
       const vh = window.innerHeight;
+      /* Telefono / stretto: menu a piena larghezza anche se non è bottom-sheet (hold/rack). */
+      if (isMobileDropdownViewport()) {
+        const menuW = vw;
+        rowMenu.style.width = `${menuW}px`;
+        rowMenu.style.maxWidth = `${menuW}px`;
+        rowMenu.style.left = '0px';
+        rowMenu.style.right = '0px';
+        rowMenu.style.top = `${rect.bottom + 6}px`;
+        rowMenu.style.transformOrigin = 'top center';
+        const menuRect = rowMenu.getBoundingClientRect();
+        const floor = vh - pad;
+        if (menuRect.height > 0 && menuRect.bottom > floor) {
+          const above = rect.top - menuRect.height - 6;
+          rowMenu.style.top = `${Math.max(pad, above)}px`;
+        }
+        fitRowMenuOverflow();
+        return;
+      }
       rowMenu.style.width = `${preferredW}px`;
       rowMenu.style.maxWidth = `${Math.max(160, vw - pad * 2)}px`;
       void rowMenu.offsetWidth;
@@ -38725,10 +38808,30 @@
       });
     });
 
+    window.visualViewport?.addEventListener('resize', () => {
+      if (rowMenu && !rowMenu.hidden && rowMenuAnchor) {
+        positionRowMenu(rowMenuAnchor);
+      }
+      if (noteCategoryDropdown?.classList.contains('is-open')) {
+        positionFixedMenu(noteCategoryTrigger, noteCategoryMenu, { preferredMax: 320 });
+      }
+      if (noteDueTimeDropdown?.classList.contains('is-open')) {
+        positionFixedMenu(noteDueTimeTrigger, noteDueTimeMenu, { preferredMax: 240 });
+      }
+      wiredSelectDropdowns.forEach((state) => {
+        if (state.dropdown.classList.contains('is-open')) {
+          positionFixedMenu(state.trigger, state.menu, { preferredMax: 280 });
+        }
+      });
+    }, { passive: true });
+
     window.addEventListener('orientationchange', () => {
       if (notifyWrap?.classList.contains('is-open')) {
         window.setTimeout(() => positionNotifyMenu(), 80);
       }
+      window.setTimeout(() => {
+        if (rowMenu && !rowMenu.hidden && rowMenuAnchor) positionRowMenu(rowMenuAnchor);
+      }, 80);
     });
 
     document.getElementById('btnLogout').addEventListener('click', async () => {
