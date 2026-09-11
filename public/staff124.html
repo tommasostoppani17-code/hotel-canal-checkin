@@ -25101,7 +25101,7 @@
 
   <script src="/js/riva-skeleton.js?v=15"></script>
   <script src="/js/tenant-boot.js"></script>
-  <script src="/js/staff-ops.js?v=105"></script>
+  <script src="/js/staff-ops.js?v=106"></script>
   <script src="/js/staff-org-console.js?v=1"></script>
   <script src="/js/excel-grid-nav.js?v=2"></script>
   <script>
@@ -35122,7 +35122,19 @@
         if (!restore) replayMotion(dash, 'motion-rise');
         paintStaffSettingsForm();
         bindStaffIdleWatch();
-        setActiveView(readSavedStaffView() || 'checkins', { restore });
+        const hashSec = (() => {
+          try {
+            const m = String(window.location.hash || '').match(/^#ops\/([^/?#]+)/i);
+            return m ? decodeURIComponent(m[1] || '').trim() : '';
+          } catch (_) {
+            return '';
+          }
+        })();
+        if (hashSec && opsIntegrationEnabled) {
+          setActiveView('ops-rooms', { restore });
+        } else {
+          setActiveView(readSavedStaffView() || 'checkins', { restore });
+        }
         startAlertPolling();
         void syncRivaThemeFromServer();
       };
@@ -38620,13 +38632,23 @@
       if (staffOps.hasData?.()) {
         opsLoadedView = view;
         staffOps.setView(view);
+        if (view === 'rooms') staffOps.applyHash?.();
         void staffOps.refresh?.({ silent: true }).catch(() => {});
         return;
       }
       opsLoadedView = view;
       // Prima apertura: prova prefetch già partito; altrimenti load bloccante.
       await staffOps.load(view);
+      if (view === 'rooms') staffOps.applyHash?.();
     }
+
+    window.addEventListener('hashchange', () => {
+      if (!opsIntegrationEnabled || !staffOps) return;
+      const m = String(window.location.hash || '').match(/^#ops\/([^/?#]+)/i);
+      if (!m) return;
+      if (activeView !== 'ops-rooms') setActiveView('ops-rooms');
+      else staffOps.applyHash?.();
+    });
 
     function applyOpsIntegration(integrations) {
       // StaffOps nativo in bundle: mostra Housekeeping/Colazioni se il server le espone

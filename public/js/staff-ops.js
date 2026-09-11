@@ -308,6 +308,7 @@
         ) {
           root.activeSection = root.sections[0]?.id || null;
         }
+        applyOpsHashSection();
         // Poll silenzioso: se i dati non sono cambiati non rifare il DOM (resetta lo scroll).
         // Ma se la toolbar hotel è stata svuotata (cambio tab), rimontalav senza wipe griglia.
         if (silent && nextVersion === prevVersion) {
@@ -315,6 +316,7 @@
           return;
         }
         paint();
+        writeOpsHash(root.activeSection);
         const { body } = els();
         if (body && window.RivaSkeleton) window.RivaSkeleton.revealEl(body);
       })();
@@ -1406,13 +1408,15 @@
       if (onBtn) placeSegThumb(tabs, onBtn, { animate: Boolean(scrollTab) });
     }
 
-    function goToRoomsSection(sectionId, { fromPager = false } = {}) {
+    function goToRoomsSection(sectionId, { fromPager = false, writeHash = true } = {}) {
       if (!sectionId || sectionId === root.activeSection) {
         if (!fromPager) syncSecTabs(sectionId);
+        if (writeHash) writeOpsHash(sectionId);
         return;
       }
       root.activeSection = sectionId;
       syncSecTabs(sectionId);
+      if (writeHash) writeOpsHash(sectionId);
       if (fromPager) return;
       const pager = document.getElementById('opsRoomsPager');
       const page = pager?.querySelector(`[data-ops-page="${sectionId}"]`);
@@ -1421,6 +1425,36 @@
       } else {
         paint();
       }
+    }
+
+    function writeOpsHash(sectionId) {
+      try {
+        if (root.view !== 'rooms') return;
+        const id = String(sectionId || root.activeSection || '').trim();
+        if (!id) return;
+        const next = `#ops/${encodeURIComponent(id)}`;
+        if (window.location.hash !== next) {
+          history.replaceState(null, '', `${window.location.pathname}${window.location.search}${next}`);
+        }
+      } catch (_) { /* ignore */ }
+    }
+
+    function readOpsHashSection() {
+      try {
+        const m = String(window.location.hash || '').match(/^#ops\/([^/?#]+)/i);
+        if (!m) return null;
+        return decodeURIComponent(m[1] || '').trim() || null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function applyOpsHashSection() {
+      const wanted = readOpsHashSection();
+      if (!wanted || !root.sections?.length) return false;
+      if (!root.sections.some((s) => s.id === wanted)) return false;
+      goToRoomsSection(wanted, { writeHash: false });
+      return true;
     }
 
     function renderRooms() {
@@ -2508,6 +2542,9 @@
       closeSheet,
       setNotesQuery,
       setBfQuery,
+      goToSection: goToRoomsSection,
+      applyHash: applyOpsHashSection,
+      readHashSection: readOpsHashSection,
       hasData() {
         return Array.isArray(root.sections) && root.sections.length > 0;
       },
