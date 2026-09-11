@@ -95,6 +95,11 @@ import {
 } from './room-holds.js';
 import { listHotelInventoryRooms } from './hotel-rooms.js';
 import {
+  canalOpsIntegrationPayload,
+  getNativeOpsSnapshot,
+  patchNativeOpsRoom,
+} from './staff-ops-native.js';
+import {
   listHoldDocuments,
   addHoldDocument,
   deleteHoldDocument,
@@ -2026,6 +2031,7 @@ app.post('/api/staff/login', staffLoginBurstLimit, (req, res) => {
   return res.json({
     ok: true,
     staff: staffClientJson(member),
+    integrations: canalOpsIntegrationPayload(),
   });
 });
 
@@ -2040,6 +2046,7 @@ app.get('/api/staff/session', (req, res) => {
   return res.json({
     ok: true,
     staff: staffClientJson(session),
+    integrations: canalOpsIntegrationPayload(),
   });
 });
 
@@ -2320,6 +2327,53 @@ app.get(
     const q = String(req.query.q || '').trim().slice(0, 80);
     res.setHeader('Cache-Control', 'no-store');
     return res.json(getHkBoard({ q }));
+  },
+);
+
+/** Staff Ops (tab Camere / Colazioni) — snapshot nativo Canal */
+app.get(
+  '/api/staff/ops/snapshot',
+  rateLimit({ windowMs: 60_000, max: 120 }),
+  requireStaff,
+  (_req, res) => {
+    try {
+      const snapshot = getNativeOpsSnapshot();
+      res.setHeader('Cache-Control', 'no-store');
+      return res.json({ ok: true, ...snapshot });
+    } catch (err) {
+      console.error('[ops] snapshot:', err?.message || err);
+      return res.status(500).json({ error: 'Operazioni non disponibili', code: 'ops_error' });
+    }
+  },
+);
+
+app.patch(
+  '/api/staff/ops/rooms/:sectionId/:roomId',
+  rateLimit({ windowMs: 60_000, max: 120 }),
+  requireStaff,
+  (req, res) => {
+    try {
+      const result = patchNativeOpsRoom(
+        req.params.sectionId,
+        req.params.roomId,
+        req.body || {},
+        req.staffUser?.staffName,
+      );
+      if (!result.ok) {
+        return res.status(400).json({
+          error:
+            result.error === 'room_required'
+              ? 'Numero stanza obbligatorio'
+              : 'Aggiornamento non riuscito',
+          code: result.error || 'ops_patch_failed',
+        });
+      }
+      res.setHeader('Cache-Control', 'no-store');
+      return res.json({ ok: true, room: result.room, version: result.version });
+    } catch (err) {
+      console.error('[ops] patch room:', err?.message || err);
+      return res.status(500).json({ error: 'Salvataggio non riuscito', code: 'ops_error' });
+    }
   },
 );
 

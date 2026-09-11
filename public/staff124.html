@@ -38577,9 +38577,12 @@
         setStaffUserLabel(currentStaff);
         pinEl.value = '';
         try {
-          const sess = await fetch(`${TENANT_API_PREFIX}/api/staff/session`, { credentials: 'same-origin' });
-          const sessBody = await sess.json().catch(() => ({}));
-          applyOpsIntegration(sessBody.integrations || {});
+          applyOpsIntegration(body.integrations || {});
+          if (!body.integrations?.ops?.enabled) {
+            const sess = await fetch(`${TENANT_API_PREFIX}/api/staff/session`, { credentials: 'same-origin' });
+            const sessBody = await sess.json().catch(() => ({}));
+            applyOpsIntegration(sessBody.integrations || {});
+          }
         } catch (_) { /* ignore */ }
         showDash();
       } catch (_) {
