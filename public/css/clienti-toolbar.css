@@ -366,8 +366,8 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
   appearance: none;
   position: fixed;
   z-index: 55;
-  right: max(16px, env(safe-area-inset-right, 0px));
-  bottom: max(20px, calc(16px + env(safe-area-inset-bottom, 0px)));
+  right: max(20px, env(safe-area-inset-right, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
   width: 56px;
   height: 56px;
   margin: 0;
@@ -376,7 +376,7 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
   border-radius: 9999px;
   background: #0a0a0a;
   color: #fff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   align-items: center;
   justify-content: center;
   cursor: pointer;

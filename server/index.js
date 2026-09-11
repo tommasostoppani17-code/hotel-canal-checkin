@@ -93,6 +93,7 @@ import {
   setHotelIbanConfig,
   expireDueHolds,
 } from './room-holds.js';
+import { listHotelInventoryRooms } from './hotel-rooms.js';
 import {
   listHoldDocuments,
   addHoldDocument,
@@ -513,6 +514,14 @@ app.get(['/staff124', '/staff124/', '/staff124.html'], (_req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.type('html');
   return res.sendFile(path.join(rootDir, 'public', 'staff124.html'));
+});
+
+/** Check-in ospite lab — stesso form di `/` (produzione invariata). */
+app.get(['/checkin124', '/checkin124/', '/checkin124.html'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'index.html'));
 });
 
 /** Housekeeping — stesso login staff. */
@@ -2879,6 +2888,69 @@ app.delete(
 
 /* ——— Hold camera / link IBAN ——— */
 
+function ymdAddDays(ymd, days) {
+  const raw = String(ymd || '').trim().slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return '';
+  const [y, m, d] = raw.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + Number(days || 0)));
+  if (Number.isNaN(dt.getTime())) return '';
+  return dt.toISOString().slice(0, 10);
+}
+
+function holdDateRangesOverlap(aIn, aOut, bIn, bOut) {
+  const a0 = String(aIn || '').slice(0, 10);
+  const a1 = String(aOut || '').slice(0, 10);
+  const b0 = String(bIn || '').slice(0, 10);
+  const b1 = String(bOut || '').slice(0, 10);
+  if (!a0 || !a1 || !b0 || !b1) return false;
+  return a0 < b1 && b0 < a1;
+}
+
+/** Barre planner da check-in ospite (stayDate → checkoutDate) se non c’è già una hold sulla stessa camera. */
+function syntheticHoldsFromCheckins(realHolds = []) {
+  const inHouse = listInHouseStaffCheckins({});
+  const rows = [...(inHouse.checkins || []), ...(inHouse.checkoutDue || [])];
+  const seen = new Set();
+  const out = [];
+  for (const row of rows) {
+    const cid = Number(row?.id);
+    if (!Number.isInteger(cid) || cid < 1 || seen.has(cid)) continue;
+    seen.add(cid);
+    const room = String(row.roomNumber || '').trim();
+    const cin = String(row.stayDate || '').trim().slice(0, 10);
+    if (!room || !/^\d{4}-\d{2}-\d{2}$/.test(cin)) continue;
+    let cout = String(row.checkoutDate || '').trim().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(cout) || cout <= cin) {
+      cout = ymdAddDays(cin, 1);
+    }
+    if (!cout || cout <= cin) continue;
+    const roomKey = room.toLowerCase();
+    const clash = (Array.isArray(realHolds) ? realHolds : []).some((h) => {
+      const st = String(h?.status || '');
+      if (st === 'cancelled' || st === 'expired') return false;
+      if (String(h?.roomNumber || '').trim().toLowerCase() !== roomKey) return false;
+      return holdDateRangesOverlap(cin, cout, h.checkIn, h.checkOut);
+    });
+    if (clash) continue;
+    out.push({
+      id: -cid,
+      source: 'checkin',
+      checkinId: cid,
+      status: 'confirmed',
+      guestName: String(row.guestName || '').trim() || 'Ospite',
+      roomNumber: room,
+      checkIn: cin,
+      checkOut: cout,
+      checkedInAt: row.createdAt || cin,
+      checkedInBy: row.receptionist || '',
+      packLocked: true,
+      paymentRef: row.checkCode || '',
+      guestsCount: row.guestsCount ?? null,
+    });
+  }
+  return out;
+}
+
 app.get(
   '/api/staff/holds',
   rateLimit({ windowMs: 60_000, max: 60 }),
@@ -2886,9 +2958,27 @@ app.get(
   (_req, res) => {
     expireDueHolds();
     const base = publicBaseUrl();
+    const today = romeCalendarDate();
     const holds = listRoomHolds({ includeClosed: true }).map((h) =>
       staffHoldPayload(h, base),
     );
+    const fromCheckins = syntheticHoldsFromCheckins(holds);
+    const merged = holds.concat(fromCheckins);
+    const rooms = listHotelInventoryRooms().map((roomNumber) => ({ roomNumber }));
+    // Camere presenti solo nei dati (hold / check-in) ma non in inventario
+    const known = new Set(rooms.map((r) => String(r.roomNumber).toLowerCase()));
+    for (const h of merged) {
+      const n = String(h?.roomNumber || '').trim();
+      if (!n || n.includes('__') || known.has(n.toLowerCase())) continue;
+      known.add(n.toLowerCase());
+      rooms.push({ roomNumber: n });
+    }
+    rooms.sort((a, b) => {
+      const na = Number(a.roomNumber);
+      const nb = Number(b.roomNumber);
+      if (Number.isFinite(na) && Number.isFinite(nb) && na !== nb) return na - nb;
+      return String(a.roomNumber).localeCompare(String(b.roomNumber), 'it');
+    });
     const hkMap = hkStatusMapForToday();
     const hkByRoom = {};
     for (const [room, info] of hkMap) {
@@ -2896,9 +2986,12 @@ app.get(
     }
     res.setHeader('Cache-Control', 'no-store');
     return res.json({
-      holds,
+      holds: merged,
+      rooms,
+      rackMode: 'room',
+      today,
       iban: getHotelIbanConfig(),
-      hkToday: romeCalendarDate(),
+      hkToday: today,
       hkByRoom,
     });
   },

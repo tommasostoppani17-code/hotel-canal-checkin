@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
   <meta name="robots" content="noindex, nofollow">
   <meta name="color-scheme" content="light only">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#fafafa">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3122,7 +3122,7 @@
       .workspace.is-clients #checkinsPanel .footer-summary,
       .workspace.is-clients #inHousePanel .footer-summary {
         margin: 0 clamp(20px, 2.5vw, 32px);
-        padding: 12px 4px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+        padding: 12px 4px 8px !important;
         border-top: 0 !important;
         background: transparent !important;
         color: #6B7280 !important;
@@ -3683,6 +3683,47 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-gutter: stable;
       background: #fff;
+    }
+
+    /* Feed scroll stile chiusura: lista/note/settings scorrono sotto chrome fisso */
+    @media (max-width: 1024px) {
+      .workspace.is-clients .clients-matrix.table-panel,
+      .workspace.is-clients #checkinsPanel.table-panel,
+      .workspace.is-clients #inHousePanel.table-panel,
+      .workspace.is-notes-hub .notes-panel.table-panel,
+      .workspace.is-blacklist .blacklist-panel.table-panel {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+      }
+
+      .workspace.is-clients .table-scroll,
+      .workspace.is-clients #checkinsPanel .riva-master-column,
+      .workspace.is-clients #checkinsPanel .riva-main-layout,
+      .workspace.is-notes-hub .notes-scroll,
+      .workspace.is-blacklist .blacklist-scroll,
+      .workspace.is-settings-page .settings-scroll {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        overscroll-behavior-y: contain;
+      }
+
+      .workspace.is-clients #checkinsPanel .riva-main-layout,
+      .workspace.is-clients #checkinsPanel .riva-master-column {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        max-height: none !important;
+      }
+
+      .workspace.is-clients #checkinsPanel .riva-detail-column {
+        display: none !important;
+      }
     }
 
     @media (min-width: 1025px) {
@@ -8179,13 +8220,13 @@
         overflow: auto;
       }
 
-      .workspace.is-clients #checkinsPanel .riva-master-column .footer-summary,
-      #checkinsPanel .riva-master-column .footer-summary {
+      .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll .footer-summary,
+      #checkinsPanel .riva-master-column .table-scroll .footer-summary {
         flex-shrink: 0;
         margin: 0 !important;
-        padding: 10px 14px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
-        background: #fff !important;
-        border-top: 1px solid #EFEFEF !important;
+        padding: 10px 14px 8px !important;
+        background: transparent !important;
+        border-top: 0 !important;
         color: #8e8e8e;
         font-size: 12px;
         align-items: flex-start;
@@ -8573,18 +8614,18 @@
       #inHousePanel.clients-matrix .matrix-table tbody tr.nv-guest-card-mobile,
       #inHousePanel.clients-matrix .matrix-table tbody tr[data-id] {
         display: grid !important;
-        grid-template-columns: 56px minmax(0, 1fr) 40px !important;
-        align-items: start;
-        column-gap: 0;
+        grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+        align-items: center;
+        column-gap: 16px;
         gap: 0;
         width: 100%;
         margin: 0;
-        padding: 16px 16px;
-        min-height: 0;
+        padding: 16px 20px;
+        min-height: 88px;
         height: auto !important;
         box-sizing: border-box;
         border: 0 !important;
-        border-bottom: 1px solid #EFEFEF !important;
+        border-bottom: 0 !important;
         border-radius: 0 !important;
         background: #fff !important;
         box-shadow: none !important;
@@ -8592,6 +8633,18 @@
         transition: background-color 120ms ease;
         overflow: visible;
         position: relative;
+      }
+
+      #checkinsPanel .riva-master-column .matrix-table tbody tr:not(:last-child)::after,
+      #inHousePanel.clients-matrix .matrix-table tbody tr:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 84px;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: #efefef;
+        pointer-events: none;
       }
 
       #checkinsPanel .riva-master-column .matrix-table tbody tr:last-child,
@@ -8657,19 +8710,19 @@
       #checkinsPanel .riva-master-column .col-room.nv-mobile-room-zone,
       #inHousePanel.clients-matrix .col-room.nv-mobile-room-zone {
         display: flex !important;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
         grid-column: 1 !important;
-        width: 56px !important;
-        min-width: 56px !important;
-        max-width: 56px !important;
-        padding-top: 2px !important;
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        padding-top: 0 !important;
       }
 
       #checkinsPanel .riva-master-column .nv-guest-avatar,
       #inHousePanel.clients-matrix .nv-guest-avatar {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
@@ -8677,17 +8730,18 @@
         background: #0a0a0a;
         color: #fff;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 13px;
-        font-weight: 700;
+        font-size: 14px;
+        font-weight: 650;
         font-variant-numeric: tabular-nums;
         letter-spacing: -0.02em;
         overflow: hidden;
-        max-width: 44px;
-        padding: 0 3px;
+        max-width: 48px;
+        padding: 0 4px;
         box-sizing: border-box;
         white-space: nowrap;
         text-overflow: ellipsis;
         line-height: 1;
+        flex-shrink: 0;
       }
 
       #checkinsPanel .riva-master-column .nv-guest-avatar.is-tight,
@@ -8714,11 +8768,11 @@
         min-width: 0;
         display: flex !important;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: stretch;
         gap: 4px;
         grid-column: 2 !important;
-        padding: 0 10px 0 4px !important;
+        padding: 0 !important;
         overflow: visible !important;
       }
 
@@ -8730,11 +8784,11 @@
         height: auto !important;
         max-height: none !important;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 15px;
-        font-weight: 650;
+        font-size: 16px;
+        font-weight: 600;
         letter-spacing: -0.02em;
-        color: #0a0a0a;
-        line-height: 1.25;
+        color: #000;
+        line-height: 1.3;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -8749,9 +8803,9 @@
         height: auto !important;
         max-height: none !important;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
-        color: #8E8E8E;
+        color: #666666;
         line-height: 1.3;
         white-space: nowrap;
         overflow: hidden;
@@ -20139,22 +20193,22 @@
         padding: 0;
       }
 
-      /* Card ospite: nome + meta + telefono/email */
+      /* Card ospite: whitespace IG (respiro thumb-friendly) */
       .clients-matrix .matrix-table tbody tr,
       .clients-matrix .matrix-table tbody tr.nv-guest-card-mobile {
         display: grid !important;
-        grid-template-columns: 52px minmax(0, 1fr) 72px;
+        grid-template-columns: 48px minmax(0, 1fr) 72px;
         align-items: center;
-        column-gap: 0;
+        column-gap: 16px;
         width: 100%;
         box-sizing: border-box;
         height: auto !important;
-        min-height: 96px !important;
+        min-height: 88px !important;
         max-height: none !important;
         margin: 0;
-        padding: 10px 12px;
+        padding: 16px 20px;
         border: 0;
-        border-bottom: 1px solid #EFEFEF;
+        border-bottom: 0;
         border-radius: 0;
         background: #fff !important;
         box-shadow: none;
@@ -20170,8 +20224,20 @@
         content: none;
       }
 
+      /* Separatore sfalsato: non taglia l’avatar (stile Instagram Direct) */
+      .clients-matrix .matrix-table tbody tr:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 84px;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: #efefef;
+        pointer-events: none;
+      }
+
       .clients-matrix .matrix-table tbody tr:active:not(:has(.empty)) {
-        background: #fafafa !important;
+        background: #f0f0f2 !important;
         transform: none;
       }
 
@@ -20230,17 +20296,17 @@
         align-items: center;
         justify-content: center;
         grid-column: 1;
-        width: 44px !important;
-        min-width: 44px !important;
-        max-width: 44px !important;
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
         border-right: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
       }
 
       .clients-matrix .nv-guest-avatar {
-        width: 40px;
-        height: 40px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
@@ -20248,21 +20314,22 @@
         background: #0a0a0a;
         color: #fff;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 12px;
-        font-weight: 700;
+        font-size: 14px;
+        font-weight: 650;
         font-variant-numeric: tabular-nums;
         letter-spacing: -0.02em;
         overflow: hidden;
-        max-width: 40px;
-        padding: 0 3px;
+        max-width: 48px;
+        padding: 0 4px;
         box-sizing: border-box;
         white-space: nowrap;
         text-overflow: ellipsis;
         line-height: 1;
+        flex-shrink: 0;
       }
 
       .clients-matrix .nv-guest-avatar.is-tight {
-        font-size: 10px;
+        font-size: 11px;
         letter-spacing: -0.04em;
         padding: 0 2px;
       }
@@ -20294,10 +20361,10 @@
         flex-direction: column;
         justify-content: center;
         align-items: stretch;
-        gap: 2px;
+        gap: 4px;
         grid-column: 2;
         min-width: 0;
-        padding: 0 8px !important;
+        padding: 0 12px 0 0 !important;
         overflow: hidden !important;
       }
 
@@ -20308,16 +20375,17 @@
         height: auto !important;
         max-height: none !important;
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Montserrat", sans-serif;
-        font-size: 15px;
-        font-weight: 650;
+        font-size: 16px;
+        font-weight: 600;
         letter-spacing: -0.02em;
-        color: #0B1317;
-        line-height: 1.25;
+        color: #000;
+        line-height: 1.3;
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         flex: 0 0 auto;
+        margin: 0;
       }
 
       .clients-matrix .nv-guest-status {
@@ -20326,23 +20394,24 @@
         opacity: 1 !important;
         height: auto !important;
         max-height: none !important;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
-        color: var(--text-muted, #8E8E8E);
-        line-height: 1.3;
+        color: #666666;
+        line-height: 1.4;
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         flex: 0 0 auto;
+        margin: 0;
       }
 
       .clients-matrix .nv-guest-contacts.cell-contacts,
       .clients-matrix .nv-guest-contacts {
         display: flex !important;
         flex-direction: column;
-        gap: 2px;
-        margin-top: 2px;
+        gap: 3px;
+        margin-top: 4px;
         width: 100%;
         min-width: 0;
       }
@@ -20350,10 +20419,10 @@
       .clients-matrix .nv-guest-phone,
       .clients-matrix .nv-guest-email {
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
-        color: #6B7280;
-        line-height: 1.3;
+        color: #666666;
+        line-height: 1.4;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -20394,8 +20463,8 @@
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
         font-size: 13px;
         font-weight: 400;
-        line-height: 1.35;
-        color: #4B5563;
+        line-height: 1.4;
+        color: #666666;
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
@@ -20498,9 +20567,9 @@
       }
 
       .clients-matrix .footer-summary {
-        background: #fff;
-        border-top: 1px solid rgba(0, 0, 0, 0.08);
-        padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+        background: transparent;
+        border-top: 0;
+        padding: 12px 14px 8px;
         font-size: 12px;
         font-weight: 500;
         color: #8e8e8e;
@@ -22515,7 +22584,7 @@
   <link rel="stylesheet" href="/css/colazioni-grid.css?v=81">
   <link rel="stylesheet" href="/css/colazioni-premium.css?v=9">
   <link rel="stylesheet" href="/css/colazioni-mobile.css?v=4">
-  <link rel="stylesheet" href="/css/settings-ig.css?v=9">
+  <link rel="stylesheet" href="/css/settings-ig.css?v=10">
   <link rel="stylesheet" href="/css/riva-instagram.css?v=126">
   <link rel="stylesheet" href="/css/rack-perf.css?v=139">
   <link rel="stylesheet" href="/css/rack-geometry.css?v=1">
@@ -22529,12 +22598,12 @@
   <link rel="stylesheet" href="/css/segnalazioni-stability.css?v=2">
   <link rel="stylesheet" href="/css/riva-gate.css?v=146">
   <link rel="stylesheet" href="/css/riva-tap-stable.css?v=3">
-  <link rel="stylesheet" href="/css/clienti-toolbar.css?v=8">
+  <link rel="stylesheet" href="/css/clienti-toolbar.css?v=9">
   <link rel="stylesheet" href="/css/riva-capsule-toolbars.css?v=5">
-  <link rel="stylesheet" href="/css/clienti-desktop.css?v=2">
-  <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=3">
+  <link rel="stylesheet" href="/css/clienti-desktop.css?v=4">
+  <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=4">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
-  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=5">
+  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=6">
   <link rel="stylesheet" href="/css/layout-stability.css?v=3">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
   <link rel="stylesheet" href="/css/riva-access-aligned.css?v=9">
@@ -22894,10 +22963,10 @@
                     </thead>
                     <tbody id="list"></tbody>
                   </table>
-                </div>
-                <div class="footer-summary">
-                  <span id="rowCount">0 check-in</span>
-                  <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
+                  <div class="footer-summary">
+                    <span id="rowCount">0 check-in</span>
+                    <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
+                  </div>
                 </div>
               </section>
               <aside class="riva-detail-column" id="guestDetailColumn" aria-label="Dettaglio ospite">
@@ -22943,10 +23012,10 @@
                 </thead>
                 <tbody id="inHouseList"></tbody>
               </table>
-            </div>
-            <div class="footer-summary">
-              <span id="inHouseRowCount">0 in camera</span>
-              <span class="footer-summary-meta">Soggiorno in corso</span>
+              <div class="footer-summary">
+                <span id="inHouseRowCount">0 in camera</span>
+                <span class="footer-summary-meta">Soggiorno in corso</span>
+              </div>
             </div>
           </div>
 
@@ -23243,7 +23312,7 @@
                               </span>
                               <span class="ig-row-text-block settings-rail-item__copy">
                                 <span class="settings-rail-item__label">Reception</span>
-                                <span class="settings-rail-item__sub">Privacy, sessioni e timeout di blocco</span>
+                                <span class="settings-rail-item__sub">Privacy contatti e timeout sessione</span>
                               </span>
                             </span>
                             <span class="ig-row-chevron" aria-hidden="true"></span>
@@ -23255,7 +23324,7 @@
                               </span>
                               <span class="ig-row-text-block settings-rail-item__copy">
                                 <span class="settings-rail-item__label">Bonifico</span>
-                                <span class="settings-rail-item__sub">Mappatura IBAN e coordinate prenotazioni</span>
+                                <span class="settings-rail-item__sub">IBAN e intestatario per l’ospite</span>
                               </span>
                             </span>
                             <span class="ig-row-chevron" aria-hidden="true"></span>
@@ -23267,7 +23336,7 @@
                               </span>
                               <span class="ig-row-text-block settings-rail-item__copy">
                                 <span class="settings-rail-item__label">Report</span>
-                                <span class="settings-rail-item__sub">Invio e sincronizzazione contatti di cassa</span>
+                                <span class="settings-rail-item__sub">Orario invio contatti automatico</span>
                               </span>
                             </span>
                             <span class="ig-row-chevron" aria-hidden="true"></span>
@@ -23366,43 +23435,33 @@
                     <section class="settings-pane is-on" data-settings-pane="reception" id="settingsPaneReception">
                       <header class="settings-pane-head">
                         <h2>Reception</h2>
-                        <p>Privacy in lista clienti e sicurezza del banco.</p>
+                        <p>Privacy in lista clienti e blocco automatico del banco.</p>
                       </header>
-                      <div class="settings-pane-body">
-                        <div class="sys-settings-row">
-                          <div class="sys-settings-row-info">
-                            <span class="sys-settings-row-title">Privacy contatti</span>
-                            <span class="sys-settings-row-desc">Nasconde email e telefono in lista clienti finché non li sveli.</span>
-                          </div>
-                          <label class="sys-switch">
-                            <input type="checkbox" id="prefGdprMask" checked disabled>
-                            <span class="sys-switch-slider"></span>
-                          </label>
-                        </div>
-                        <div class="sys-settings-row sys-settings-row--disabled">
-                          <div class="sys-settings-row-info">
-                            <div class="sys-settings-title-row">
-                              <span class="sys-settings-row-title">Check-in rapido</span>
-                              <span class="sys-settings-row-badge sys-settings-row-badge--soon">Presto</span>
+                      <div class="settings-pane-body settings-pane-body--stack settings-ig-pane">
+                        <div class="ig-settings-section">
+                          <span class="ig-settings-section-title">Banco</span>
+                          <div class="ig-settings-box">
+                            <div class="sys-settings-row">
+                              <div class="sys-settings-row-info">
+                                <span class="sys-settings-row-title">Privacy contatti</span>
+                                <span class="sys-settings-row-desc">Email e telefono restano nascosti in lista finché non li sveli.</span>
+                              </div>
+                              <span class="sys-settings-row-badge sys-settings-row-badge--on">Sempre attiva</span>
+                              <input type="checkbox" id="prefGdprMask" checked disabled hidden aria-hidden="true">
                             </div>
-                            <span class="sys-settings-row-desc">Scorciatoie quando i dati ospite sono già noti.</span>
+                            <div class="sys-settings-row">
+                              <div class="sys-settings-row-info">
+                                <span class="sys-settings-row-title">Timeout sessione</span>
+                                <span class="sys-settings-row-desc">Disconnessione automatica per inattività su questo iPad.</span>
+                              </div>
+                              <select class="sys-settings-select" id="prefSessionTimeout" aria-label="Timeout sessione">
+                                <option value="15">15 min</option>
+                                <option value="30" selected>30 min</option>
+                                <option value="60">1 ora</option>
+                                <option value="never">Mai</option>
+                              </select>
+                            </div>
                           </div>
-                          <label class="sys-switch" aria-disabled="true">
-                            <input type="checkbox" disabled>
-                            <span class="sys-switch-slider"></span>
-                          </label>
-                        </div>
-                        <div class="sys-settings-row">
-                          <div class="sys-settings-row-info">
-                            <span class="sys-settings-row-title">Timeout sessione</span>
-                            <span class="sys-settings-row-desc">Disconnessione automatica per inattività su questo browser.</span>
-                          </div>
-                          <select class="sys-settings-select" id="prefSessionTimeout" aria-label="Timeout sessione">
-                            <option value="15">15 min</option>
-                            <option value="30" selected>30 min</option>
-                            <option value="60">1 ora</option>
-                            <option value="never">Mai</option>
-                          </select>
                         </div>
                       </div>
                     </section>
@@ -23534,45 +23593,34 @@
                         <h2>Report</h2>
                         <p>Invio automatico dei contatti all’amministrazione.</p>
                       </header>
-                      <div class="settings-pane-body">
-                        <div class="sys-settings-row">
-                          <div class="sys-settings-row-info">
-                            <span class="sys-settings-row-title">Report contatti automatico</span>
-                            <span class="sys-settings-row-desc" id="prefAutoReportDesc">Invio giornaliero alle 00:00 (Roma) all’amministrazione.</span>
+                      <div class="settings-pane-body settings-pane-body--stack settings-ig-pane">
+                        <div class="ig-settings-section">
+                          <span class="ig-settings-section-title">Invio</span>
+                          <div class="ig-settings-box">
+                            <div class="sys-settings-row">
+                              <div class="sys-settings-row-info">
+                                <span class="sys-settings-row-title">Report contatti automatico</span>
+                                <span class="sys-settings-row-desc" id="prefAutoReportDesc">Invio giornaliero alle 00:00 (Roma) all’amministrazione.</span>
+                              </div>
+                              <span class="sys-settings-row-badge sys-settings-row-badge--on">Attivo</span>
+                            </div>
+                            <div class="sys-settings-row">
+                              <div class="sys-settings-row-info">
+                                <span class="sys-settings-row-title">Orario di spedizione</span>
+                                <span class="sys-settings-row-desc">Fuso Europa/Roma. Vale dal prossimo invio.</span>
+                              </div>
+                              <input type="time" class="sys-settings-input sys-settings-input--time" id="prefReportTime" value="00:00" step="60" aria-label="Orario report automatico">
+                            </div>
                           </div>
-                          <span class="sys-settings-row-badge sys-settings-row-badge--on">Attivo</span>
-                        </div>
-                        <div class="sys-settings-row">
-                          <div class="sys-settings-row-info">
-                            <span class="sys-settings-row-title">Orario di spedizione</span>
-                            <span class="sys-settings-row-desc">Fuso Europa/Roma. Vale dal prossimo invio.</span>
-                          </div>
-                          <input type="time" class="sys-settings-input sys-settings-input--time" id="prefReportTime" value="00:00" step="60" aria-label="Orario report automatico">
                         </div>
                       </div>
                     </section>
 
-                    <section class="settings-pane sys-settings-sales hidden" data-settings-pane="integrations" hidden>
+                    <section class="settings-pane sys-settings-sales hidden" data-settings-pane="integrations" hidden aria-hidden="true">
                       <header class="settings-pane-head">
                         <h2>Integrazioni</h2>
-                        <p>Moduli esterni in roadmap.</p>
+                        <p>Modulo non ancora disponibile.</p>
                       </header>
-                      <div class="settings-pane-body">
-                        <div class="sys-settings-row sys-settings-row--disabled">
-                          <div class="sys-settings-row-info">
-                            <span class="sys-settings-row-title">Canali OTA</span>
-                            <span class="sys-settings-row-desc">Booking.com, Expedia, Airbnb.</span>
-                          </div>
-                          <span class="sys-settings-row-badge sys-settings-row-badge--soon">Presto</span>
-                        </div>
-                        <div class="sys-settings-row sys-settings-row--disabled">
-                          <div class="sys-settings-row-info">
-                            <span class="sys-settings-row-title">Hub upsell</span>
-                            <span class="sys-settings-row-desc">QR in camera per servizi e partner.</span>
-                          </div>
-                          <span class="sys-settings-row-badge sys-settings-row-badge--addon">Add-on</span>
-                        </div>
-                      </div>
                     </section>
 
                     <section class="settings-pane settings-manager-only hidden" data-settings-pane="themes" id="settingsPaneThemes" hidden>
@@ -27964,7 +28012,7 @@
       if (activeView === 'blacklist') {
         loadBlacklistView();
       }
-      else if (activeView === 'shift-audit') void loadShiftAuditScreen({ forceSkeleton: false, resetShiftPick: true });
+      else if (activeView === 'shift-audit') void loadShiftAuditScreen({ resetShiftPick: true });
       else if (activeView === 'requests') {
         loadReceptionNotes();
       }
@@ -29075,6 +29123,17 @@
     }
 
     function buildHoldBarMenuHtml(hold) {
+      if (hold?.source === 'checkin' || Number(hold?.id) < 0) {
+        const guest = String(hold?.guestName || '').trim() || 'Ospite';
+        const room = formatHoldMenuRoom(hold) || 'Camera';
+        const stay = [fmtHoldDate(hold?.checkIn), fmtHoldDate(hold?.checkOut)].filter((x) => x && x !== '—').join(' → ');
+        const meta = [room, stay, 'In camera da check-in'].filter(Boolean).join(' · ');
+        return wrapHoldMenuGroups([
+          [
+            rowMenuItem('goto-clienti', 'row-menu-item-icon--table', ICON_PRINT_MENU, 'Apri in Clienti'),
+          ],
+        ], { title: guest, meta });
+      }
       const status = String(hold?.status || '');
       const canConfirm = status === 'awaiting_transfer' || status === 'details_submitted';
       const canCancel = status === 'hold' || status === 'details_submitted' || status === 'awaiting_transfer';
@@ -29190,8 +29249,10 @@
 
     function findHoldById(id) {
       const n = Number(id);
-      if (!Number.isFinite(n) || n < 1) return null;
-      return holdsById.get(n) || lastHolds.find((h) => Number(h.id) === n) || null;
+      if (!Number.isFinite(n) || n === 0) return null;
+      if (n > 0) return holdsById.get(n) || lastHolds.find((h) => Number(h.id) === n) || null;
+      /* id negativi = barre sintetiche da check-in ospite */
+      return lastHolds.find((h) => Number(h.id) === n) || null;
     }
 
     function openHoldContextMenu(anchor, hold, { clickMode = true, clientX = null, clientY = null } = {}) {
@@ -29382,6 +29443,10 @@
 
       if (action === 'hold-pratica' || action === 'hold-details' || action === 'hold-folio') {
         openHoldPrint(hold);
+        return;
+      }
+      if (action === 'goto-clienti') {
+        void setActiveView('checkins');
         return;
       }
       if (action === 'hold-docs') {
@@ -32086,8 +32151,17 @@
       }
 
       if (holdsRowCountEl) {
-        const n = list.filter((h) => ['hold', 'details_submitted', 'awaiting_transfer', 'confirmed'].includes(h.status)).length;
-        holdsRowCountEl.textContent = `${n} prenotazion${n === 1 ? 'e' : 'i'}`;
+        const active = list.filter((h) => ['hold', 'details_submitted', 'awaiting_transfer', 'confirmed'].includes(h.status));
+        const fromCi = active.filter((h) => h.source === 'checkin' || Number(h.id) < 0);
+        const real = active.filter((h) => h.source !== 'checkin' && Number(h.id) > 0);
+        if (fromCi.length && !real.length) {
+          holdsRowCountEl.textContent = `${fromCi.length} in camera`;
+        } else if (fromCi.length) {
+          holdsRowCountEl.textContent = `${real.length} prenotazion${real.length === 1 ? 'e' : 'i'} · ${fromCi.length} in camera`;
+        } else {
+          const n = real.length;
+          holdsRowCountEl.textContent = `${n} prenotazion${n === 1 ? 'e' : 'i'}`;
+        }
       }
       if (rackPeriodLabel) {
         rackPeriodLabel.textContent = fmtRackPeriodLabel(days);
@@ -32236,7 +32310,7 @@
       });
 
       if (!rooms.length) {
-        rowHtml.push('<div class="rack-free"><span class="rack-free-label">Nessuna tipologia</span></div>');
+        rowHtml.push('<div class="rack-free"><span class="rack-free-label">Nessuna camera in inventario</span></div>');
       }
 
       rackBody.innerHTML = rowHtml.join('');
@@ -39257,6 +39331,7 @@
       const hint = document.getElementById('auditKeysHint');
       const grid = document.getElementById('auditKeysGrid');
       const SK = window.RivaSkeleton;
+      auditKeysStatusNeedsReveal = true;
 
       if (progress) {
         progress.innerHTML = SK?.shiftClosureCashLine
@@ -39273,7 +39348,12 @@
               </div>`).join('');
         list.classList.add('is-skeleton-host');
       }
-      if (hint) hint.textContent = 'Caricamento inventario chiavi…';
+      if (hint) {
+        hint.innerHTML = SK?.shiftClosureCashLine
+          ? SK.shiftClosureCashLine(1, '200px')
+          : '<span class="sc-skel sc-skel--line skeleton-shimmer" style="width:70%;height:12px;display:inline-block;border-radius:4px" aria-hidden="true"></span>';
+        hint.setAttribute('aria-busy', 'true');
+      }
       if (grid) {
         grid.innerHTML = SK?.shiftAuditKeyTiles
           ? SK.shiftAuditKeyTiles(count)
@@ -39370,6 +39450,7 @@
       if (hint) hint.innerHTML = line(0, '92px');
       document.getElementById('auditCashCard')?.classList.add('is-skeleton');
       document.getElementById('auditCashAmount')?.classList.add('is-skeleton-field');
+      auditCashHintNeedsReveal = true;
     }
 
     function clearAuditCashSkeletonChrome() {
@@ -39382,13 +39463,17 @@
       document.getElementById('auditKeysMarkAll')?.removeAttribute('disabled');
     }
 
+    let auditCashHintNeedsReveal = false;
+    let auditKeysStatusNeedsReveal = false;
+
     function paintAuditCashHint(exp) {
       clearAuditCashSkeletonChrome();
       const tax = Number(exp?.cityTaxCollected);
       const hint = document.getElementById('auditCashExpectedHint');
       if (hint) hint.textContent = fmtAuditEuro(Number.isFinite(tax) ? tax : 0);
       const hero = document.querySelector('#auditCashCard .sc-cash-hero');
-      if (hero) {
+      if (hero && auditCashHintNeedsReveal) {
+        auditCashHintNeedsReveal = false;
         hero.classList.remove('sc-fade-in-premium');
         void hero.offsetWidth;
         hero.classList.add('sc-fade-in-premium');
@@ -39725,11 +39810,15 @@
             </div>
           </div>`;
         }).join('');
-        list.classList.remove('sc-fade-in-premium');
-        void list.offsetWidth;
-        list.classList.add('sc-fade-in-premium');
+        if (auditKeysStatusNeedsReveal) {
+          auditKeysStatusNeedsReveal = false;
+          list.classList.remove('sc-fade-in-premium');
+          void list.offsetWidth;
+          list.classList.add('sc-fade-in-premium');
+        }
       }
       if (hint) {
+        hint.removeAttribute('aria-busy');
         const missing = collectMissingRooms().length;
         const closedActive = closed.has(active);
         if (closedActive) {
@@ -40094,14 +40183,11 @@
 
     async function loadClosureContextSection({ shiftName = null, forceSkeleton = false } = {}) {
       const grid = document.getElementById('auditKeysGrid');
-      if (forceSkeleton) {
-        renderAuditKeysSkeleton();
-        renderAuditCashHintSkeleton();
-      }
-      try {
-        const params = new URLSearchParams();
-        if (shiftName) params.set('shift', shiftName);
-        const ctx = await fetchAuditJson(`/api/staff/closure/context?${params}`);
+      const SK = window.RivaSkeleton;
+      const cacheKey = `audit:closure-context:${shiftName || 'auto'}`;
+
+      const applyCtx = (ctx) => {
+        if (!ctx || typeof ctx !== 'object') return;
         closureContext = ctx;
         auditRoomInventory = Array.isArray(ctx.rooms) ? ctx.rooms : [];
         auditClosedShifts = Array.isArray(ctx.closedShifts) ? ctx.closedShifts : [];
@@ -40145,12 +40231,36 @@
         applyClosureDraft(ctx.draft?.payload);
         paintAuditKeysCompactStatus(lastAuditSummary);
         paintAuditKeysGridFromState();
-        if (grid) RivaSkeleton?.revealEl(grid);
+      };
+
+      const stale = SK?.peek?.(cacheKey) || SK?.peekStale?.(cacheKey);
+      if (stale && !forceSkeleton) {
+        applyCtx(stale);
+      } else if (forceSkeleton || (!closureContext && !stale)) {
+        renderAuditKeysSkeleton();
+        renderAuditCashHintSkeleton();
+      }
+
+      try {
+        const params = new URLSearchParams();
+        if (shiftName) params.set('shift', shiftName);
+        const loader = () => fetchAuditJson(`/api/staff/closure/context?${params}`);
+        if (SK?.fetchSWR) {
+          const { data: ctx, fromCache } = await SK.fetchSWR(cacheKey, loader, {
+            onFresh: (fresh) => applyCtx(fresh),
+          });
+          applyCtx(ctx);
+          if (grid && !fromCache) SK.revealEl?.(grid);
+        } else {
+          const ctx = await loader();
+          applyCtx(ctx);
+          if (grid) SK?.revealEl?.(grid);
+        }
       } catch (err) {
         if (err?.message === 'auth') return;
         clearAuditKeysSkeletonChrome();
         clearAuditCashSkeletonChrome();
-        if (grid) {
+        if (grid && !auditRoomInventory.length) {
           grid.innerHTML = '<p class="sc-empty">Impossibile caricare inventario.</p>';
         }
       }
@@ -40398,10 +40508,12 @@
 
     async function loadClosureHistorySection() {
       const body = document.getElementById('shiftClosureHistoryBody');
-      if (body && !window.RivaSkeleton?.peek?.('audit:closure-history')) {
+      if (body && !window.RivaSkeleton?.peek?.('audit:closure-history') && !window.RivaSkeleton?.peekStale?.('audit:closure-history')) {
         body.innerHTML = window.RivaSkeleton?.shiftAuditTableRows
-          ? RivaSkeleton.shiftAuditTableRows(4, 3)
-          : `<tr><td colspan="6"><p class="shift-audit-empty">Caricamento…</p></td></tr>`;
+          ? RivaSkeleton.shiftAuditTableRows(6, 4)
+          : Array.from({ length: 4 }, (_, i) =>
+            `<tr class="skel-row" aria-hidden="true"><td colspan="6"><span class="skel-text skel-w70 skeleton-shimmer" style="--sc-skel-i:${i};display:block;height:12px;border-radius:4px"></span></td></tr>`,
+          ).join('');
       }
       try {
         const month = new Intl.DateTimeFormat('en-CA', {
@@ -40435,7 +40547,9 @@
       if (!sheet || !bodyEl) return;
       lastClosureDetail = null;
       if (footEl) footEl.hidden = true;
-      bodyEl.innerHTML = '<p class="shift-audit-hint">Caricamento…</p>';
+      bodyEl.innerHTML = window.RivaSkeleton?.shiftClosureSignRows
+        ? `<div class="sc-detail-skel" aria-busy="true">${RivaSkeleton.shiftClosureSignRows(3)}</div>`
+        : '<div class="sc-detail-skel" aria-busy="true"><span class="sc-skel sc-skel--line skeleton-shimmer" style="width:72%;height:14px;display:block;border-radius:4px;margin-bottom:12px"></span><span class="sc-skel sc-skel--line skeleton-shimmer" style="width:48%;height:14px;display:block;border-radius:4px"></span></div>';
       lockSheetScroll({ sheet });
       animateSheetOpen(sheet);
       sheet.hidden = false;
@@ -40683,7 +40797,6 @@
       if (cached) paintAuditSummaryTables(cached);
       else if (lastAuditSummary) paintAuditSummaryTables(lastAuditSummary);
       else if (forceSkeleton) renderAuditTablesSkeleton();
-      else renderAuditTablesSkeleton();
       try {
         const { data: sum, fromCache } = await (window.RivaSkeleton?.fetchSWR
           ? RivaSkeleton.fetchSWR(

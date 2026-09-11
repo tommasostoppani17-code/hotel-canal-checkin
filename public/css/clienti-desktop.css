@@ -50,11 +50,14 @@
     margin: 0 !important;
   }
 
-  .workspace.is-clients #checkinsPanel .riva-master-column .footer-summary,
-  #checkinsPanel .riva-master-column .footer-summary {
+  /* Contatore in fondo allo scroll (stesso flusso della lista) */
+  .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll .footer-summary,
+  #checkinsPanel .riva-master-column .table-scroll .footer-summary {
     flex-shrink: 0 !important;
     border-top: 1px solid #efefef !important;
     background: #fff !important;
+    margin: 0 !important;
+    padding: 12px 14px 16px !important;
   }
 
   /* Colonna dettaglio: centro geometrico verticale + orizzontale */
@@ -122,6 +125,9 @@
   #checkinsPanel .riva-master-column .matrix-table tbody tr.nv-guest-card-mobile,
   #checkinsPanel .riva-master-column .matrix-table tbody tr.clienti-row-card,
   #checkinsPanel .riva-master-column .matrix-table tbody tr[data-id] {
+    min-height: 88px !important;
+    padding: 16px 20px !important;
+    gap: 16px !important;
     cursor: pointer !important;
     user-select: none !important;
     -webkit-user-select: none !important;
@@ -130,7 +136,7 @@
       box-shadow 150ms ease,
       transform 150ms cubic-bezier(0.22, 1, 0.36, 1) !important;
     background: #fff !important;
-    border-bottom: 1px solid #efefef !important;
+    border-bottom: 0 !important;
     box-shadow: none !important;
   }
 

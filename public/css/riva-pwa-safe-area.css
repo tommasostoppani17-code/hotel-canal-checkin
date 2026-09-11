@@ -1,8 +1,11 @@
 /**
- * Riva OS — Apple PWA standalone safe-area (status bar / notch)
+ * Riva OS — Apple PWA standalone safe-area (status bar / notch / Home Indicator)
  * Load LAST so it wins over chrome resets that zero padding-top.
  * env(safe-area-inset-*) is 0 in Safari browser; non-zero with
  * viewport-fit=cover + apple-mobile-web-app-status-bar-style=black-translucent.
+ *
+ * IMPORTANT: non usare overflow:hidden globale su html/body in standalone —
+ * spezza lo scroll della lista Clienti. Lo scroll resta su .table-scroll.
  */
 
 :root {
@@ -12,6 +15,8 @@
   --riva-safe-right: env(safe-area-inset-right, 0px);
   --riva-topbar-content-h: 52px;
   --riva-topbar-h: calc(var(--riva-topbar-content-h) + var(--riva-safe-top));
+  --riva-clients-wash: #fafafa;
+  --riva-fab-clearance: 88px;
 }
 
 /* Tier-1 brand topbar (reception + HK) — shield under clock / battery */
@@ -58,12 +63,12 @@ body.hk-app .m-tabbar {
   border: 0 !important;
 }
 
-/* Feed scroll: padding trasparente sotto (Home Indicator) — niente banda grigia opaca */
+/* Feed scroll: wash grigio continuo (mai fascia bianca sotto la lista) */
 body.is-dashboard,
 body.is-board,
 body.hk-app.is-dashboard,
 body.hk-app.is-board {
-  background: #fafafa !important;
+  background: var(--riva-clients-wash) !important;
 }
 
 body.is-dashboard .dash-main,
@@ -74,7 +79,7 @@ body.hk-app .dash-main,
 body.hk-app .dash-content,
 body.hk-app .workspace,
 body.hk-app .workspace-body.content-card {
-  background: #fafafa !important;
+  background: var(--riva-clients-wash) !important;
 }
 
 /* Sheet che salgono dal basso */
@@ -91,8 +96,8 @@ body.hk-app .workspace-body.content-card {
 html:has(body.hk-app) {
   height: 100% !important;
   height: 100dvh !important;
-  background-color: #fafafa !important;
-  background: #fafafa !important;
+  background-color: var(--riva-clients-wash) !important;
+  background: var(--riva-clients-wash) !important;
 }
 
 body.hk-app,
@@ -101,8 +106,8 @@ body.hk-app.is-board {
   min-height: 100dvh !important;
   height: 100dvh !important;
   max-height: 100dvh !important;
-  background-color: #fafafa !important;
-  background: #fafafa !important;
+  background-color: var(--riva-clients-wash) !important;
+  background: var(--riva-clients-wash) !important;
   padding-bottom: 0 !important;
   margin: 0 !important;
 }
@@ -115,7 +120,7 @@ body.hk-app.is-board .staff-shell {
   max-height: 100dvh !important;
   padding-bottom: 0 !important;
   margin-bottom: 0 !important;
-  background: #fafafa !important;
+  background: var(--riva-clients-wash) !important;
 }
 
 body.hk-app .dash-view,
@@ -130,8 +135,8 @@ body.hk-app .ops-body,
 body.hk-app .ops-rooms-shell,
 body.hk-app .ops-rooms-content,
 body.hk-app .ops-rooms-pager {
-  background-color: #fafafa !important;
-  background: #fafafa !important;
+  background-color: var(--riva-clients-wash) !important;
+  background: var(--riva-clients-wash) !important;
 }
 
 /* Mai padding-bottom sul contenitore flex/overflow: crea la banda grigia sotto le card */
@@ -170,23 +175,30 @@ body.hk-app.is-board::before {
   display: none !important;
 }
 
-/*
- * Home icon (standalone) vs Safari browser.
- * Riempie il vuoto sotto “N in camera” senza overflow:hidden globale
- * (lo scroll resta su .table-scroll come già in mobile).
- */
+/* ==========================================================================
+   Home icon (standalone) — Clienti: wash grigio fino al bordo + FAB safe
+   Non lockare overflow su body (rompe lo scroll).
+   ========================================================================== */
 @media (display-mode: standalone), (display-mode: fullscreen) {
   :root {
-    --riva-safe-bottom: min(34px, env(safe-area-inset-bottom, 0px));
-    --riva-clients-fill: #ffffff;
+    /* Fallback Home Indicator se iOS non espone ancora env() */
+    --riva-safe-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
+  }
+
+  html {
+    background-color: var(--riva-clients-wash) !important;
+    background: var(--riva-clients-wash) !important;
   }
 
   body.is-dashboard,
+  body.is-dashboard .staff-shell,
+  body.is-dashboard .dash-view,
   body.is-dashboard .dash-main,
   body.is-dashboard .dash-content,
   body.is-dashboard .workspace.is-clients,
   body.is-dashboard .workspace.is-clients .workspace-body {
-    background: var(--riva-clients-fill) !important;
+    background: var(--riva-clients-wash) !important;
+    background-color: var(--riva-clients-wash) !important;
   }
 
   body.is-dashboard .m-tabbar {
@@ -198,6 +210,8 @@ body.hk-app.is-board::before {
     border: 0 !important;
   }
 
+  /* Catena flex: la lista cresce, il contatore resta nel flusso, lo sfondo riempie */
+  body.is-dashboard .workspace.is-clients .workspace-body.content-card,
   body.is-dashboard .workspace.is-clients .clients-matrix.table-panel,
   body.is-dashboard .workspace.is-clients #checkinsPanel.table-panel,
   body.is-dashboard .workspace.is-clients #inHousePanel.table-panel {
@@ -205,35 +219,79 @@ body.hk-app.is-board::before {
     min-height: 0 !important;
     display: flex !important;
     flex-direction: column !important;
-    background: var(--riva-clients-fill) !important;
+    background: var(--riva-clients-wash) !important;
+    background-color: var(--riva-clients-wash) !important;
+  }
+
+  body.is-dashboard .workspace.is-clients #checkinsPanel .riva-main-layout,
+  body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: var(--riva-clients-wash) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   body.is-dashboard .workspace.is-clients .clients-matrix .table-scroll,
   body.is-dashboard .workspace.is-clients #checkinsPanel .table-scroll,
-  body.is-dashboard .workspace.is-clients #inHousePanel .table-scroll {
+  body.is-dashboard .workspace.is-clients #inHousePanel .table-scroll,
+  body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll {
     flex: 1 1 auto !important;
     min-height: 0 !important;
-    background: var(--riva-clients-fill) !important;
+    background: var(--riva-clients-wash) !important;
+    background-color: var(--riva-clients-wash) !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+    /* Cuscinetto: ultimo ospite + contatore non finiscono sotto FAB / Home Indicator */
+    padding-bottom: calc(var(--riva-fab-clearance) + var(--riva-safe-bottom)) !important;
   }
 
   body.is-dashboard .workspace.is-clients .footer-summary,
   body.is-dashboard .workspace.is-clients #checkinsPanel .footer-summary,
-  body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary {
+  body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary,
+  body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .footer-summary {
     flex: 0 0 auto !important;
     margin: 0 !important;
-    background: var(--riva-clients-fill) !important;
     border-top: 0 !important;
-    padding: 12px 16px max(12px, var(--riva-safe-bottom)) !important;
+    box-shadow: none !important;
+    /* Trasparente: eredita il wash — niente striscia bianca che spezza lo sfondo */
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #6b7280 !important;
+    padding: 12px 16px 8px !important;
+  }
+
+  /* FAB: millimetrico sopra la Home Indicator (standalone) */
+  body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
+    bottom: calc(var(--riva-safe-bottom) + 20px) !important;
+    right: max(20px, var(--riva-safe-right)) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
   }
 }
 
-/* iOS: navigator.standalone (stesse regole, se il media query fallisce) */
+/* iOS: navigator.standalone (stesse regole se il media query fallisce) */
+html.is-pwa-standalone {
+  background-color: var(--riva-clients-wash) !important;
+  background: var(--riva-clients-wash) !important;
+}
+
+html.is-pwa-standalone,
+html.is-pwa-touch.is-pwa-standalone {
+  --riva-safe-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
+}
+
 html.is-pwa-standalone body.is-dashboard,
+html.is-pwa-standalone body.is-dashboard .staff-shell,
+html.is-pwa-standalone body.is-dashboard .dash-view,
 html.is-pwa-standalone body.is-dashboard .dash-main,
 html.is-pwa-standalone body.is-dashboard .dash-content,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients .workspace-body {
-  background: #ffffff !important;
+  background: var(--riva-clients-wash) !important;
+  background-color: var(--riva-clients-wash) !important;
 }
 
 html.is-pwa-standalone body.is-dashboard .m-tabbar {
@@ -245,6 +303,7 @@ html.is-pwa-standalone body.is-dashboard .m-tabbar {
   border: 0 !important;
 }
 
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients .workspace-body.content-card,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients .clients-matrix.table-panel,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel.table-panel,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel.table-panel {
@@ -252,23 +311,49 @@ html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel.tab
   min-height: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  background: #ffffff !important;
+  background: var(--riva-clients-wash) !important;
+}
+
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-main-layout,
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--riva-clients-wash) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients .clients-matrix .table-scroll,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .table-scroll,
-html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel .table-scroll {
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel .table-scroll,
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll {
   flex: 1 1 auto !important;
   min-height: 0 !important;
-  background: #ffffff !important;
+  background: var(--riva-clients-wash) !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+  padding-bottom: calc(var(--riva-fab-clearance) + var(--riva-safe-bottom)) !important;
 }
 
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients .footer-summary,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .footer-summary,
-html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary {
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary,
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .footer-summary {
   flex: 0 0 auto !important;
   margin: 0 !important;
-  background: #ffffff !important;
   border-top: 0 !important;
-  padding: 12px 16px max(12px, min(34px, env(safe-area-inset-bottom, 0px))) !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #6b7280 !important;
+  padding: 12px 16px 8px !important;
+}
+
+html.is-pwa-standalone body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
+  bottom: calc(var(--riva-safe-bottom) + 20px) !important;
+  right: max(20px, var(--riva-safe-right)) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 }

@@ -828,4 +828,21 @@ button.ig-settings-row.settings-rail-item {
     display: flex !important;
     justify-content: flex-end !important;
   }
+
+  /* Reception / Report: stessa card IG di Bonifico e Sicurezza */
+  .workspace.is-settings-page .settings-ig-pane .ig-settings-box > .sys-settings-row {
+    min-height: 64px;
+  }
+
+  .workspace.is-settings-page .settings-ig-pane .sys-settings-row-badge {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .workspace.is-settings-page .settings-ig-pane .sys-settings-select,
+  .workspace.is-settings-page .settings-ig-pane .sys-settings-input--time {
+    flex-shrink: 0;
+    min-width: 112px;
+    max-width: 140px;
+  }
 }
