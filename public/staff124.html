@@ -8614,9 +8614,9 @@
       #inHousePanel.clients-matrix .matrix-table tbody tr.nv-guest-card-mobile,
       #inHousePanel.clients-matrix .matrix-table tbody tr[data-id] {
         display: grid !important;
-        grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+        grid-template-columns: 48px minmax(0, 1fr) 84px !important;
         align-items: center;
-        column-gap: 16px;
+        column-gap: 12px;
         gap: 0;
         width: 100%;
         margin: 0;
@@ -8868,28 +8868,30 @@
       #checkinsPanel .riva-master-column .col-actions.nv-mobile-action-zone,
       #inHousePanel.clients-matrix .col-actions.nv-mobile-action-zone {
         display: flex !important;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        justify-content: flex-start;
-        gap: 8px;
+        justify-content: flex-end;
+        gap: 2px;
         grid-column: 3 !important;
-        width: 40px !important;
-        align-self: start;
-        padding-top: 2px !important;
+        width: 84px !important;
+        min-width: 84px !important;
+        max-width: 84px !important;
+        align-self: center;
+        padding-top: 0 !important;
       }
 
       #checkinsPanel .riva-master-column .btn-reveal.nv-mini-eye-btn,
       #checkinsPanel .riva-master-column .btn-row-menu,
       #inHousePanel.clients-matrix .btn-reveal.nv-mini-eye-btn,
       #inHousePanel.clients-matrix .btn-row-menu {
-        width: 32px;
-        height: 32px;
-        min-width: 32px;
-        min-height: 32px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
         border-radius: 50%;
         border: 0;
         background: transparent;
-        color: #C7C7CC;
+        color: #8e8e93;
         opacity: 1;
         transition: background 140ms ease, color 140ms ease;
       }
@@ -8898,8 +8900,57 @@
       #checkinsPanel .riva-master-column .btn-row-menu.is-open,
       #checkinsPanel .riva-master-column .btn-reveal.nv-mini-eye-btn:hover,
       #checkinsPanel .riva-master-column .btn-reveal.nv-mini-eye-btn.is-locked {
-        background: #F2F2F2;
-        color: #262626;
+        color: #1c1c1e;
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #checkinsPanel .riva-master-column .nv-guest-dates,
+      #inHousePanel.clients-matrix .nv-guest-dates {
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+        min-width: 0;
+        max-width: 100%;
+        font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.25;
+        color: #3a3a3c;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      #checkinsPanel .riva-master-column .nv-guest-dates .nv-date,
+      #inHousePanel.clients-matrix .nv-guest-dates .nv-date {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 4px;
+        min-width: 0;
+      }
+
+      #checkinsPanel .riva-master-column .nv-guest-dates .nv-date em,
+      #inHousePanel.clients-matrix .nv-guest-dates .nv-date em {
+        font-style: normal;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #8e8e93;
+      }
+
+      #checkinsPanel .riva-master-column .nv-guest-dates .nv-date-sep,
+      #inHousePanel.clients-matrix .nv-guest-dates .nv-date-sep {
+        color: #c7c7cc;
+        font-weight: 500;
+        flex: 0 0 auto;
+      }
+
+      #checkinsPanel .riva-master-column .nv-guest-status.is-due,
+      #inHousePanel.clients-matrix .nv-guest-status.is-due {
+        color: #c62828 !important;
+        font-weight: 600 !important;
       }
 
       #checkinsPanel .riva-master-column .matrix-section-row,
@@ -20197,7 +20248,7 @@
       .clients-matrix .matrix-table tbody tr,
       .clients-matrix .matrix-table tbody tr.nv-guest-card-mobile {
         display: grid !important;
-        grid-template-columns: 48px minmax(0, 1fr) 72px;
+        grid-template-columns: 48px minmax(0, 1fr) 84px;
         align-items: center;
         column-gap: 16px;
         width: 100%;
@@ -20477,17 +20528,17 @@
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Montserrat", sans-serif;
       }
 
-      /* 3. Azioni — occhio + ⋮ in riga (anti loop menu: stopPropagation in JS) */
+      /* 3. Azioni — occhio + ⋮ in riga, colonna dedicata 84px */
       .clients-matrix .matrix-table tbody td.col-actions.nv-mobile-action-zone {
         display: flex !important;
         flex-direction: row;
         align-items: center;
         justify-content: flex-end;
-        gap: 4px;
+        gap: 2px;
         grid-column: 3;
-        width: 72px !important;
-        min-width: 72px !important;
-        max-width: 72px !important;
+        width: 84px !important;
+        min-width: 84px !important;
+        max-width: 84px !important;
         height: auto !important;
         min-height: 0 !important;
         padding: 0 !important;
@@ -20501,24 +20552,65 @@
         top: auto;
         right: auto;
         margin: 0;
-        width: 32px;
-        height: 32px;
-        min-width: 32px;
-        min-height: 32px;
-        padding: 4px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        padding: 0;
         border-radius: 50%;
         background: transparent;
         border: 0;
         box-shadow: none;
-        color: #9CA3AF;
+        color: #8e8e93;
         flex-shrink: 0;
         opacity: 1;
         pointer-events: auto;
       }
 
       .clients-matrix .nv-mobile-action-zone .btn-reveal svg {
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
+      }
+
+      .clients-matrix .nv-guest-dates {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+        min-width: 0;
+        max-width: 100%;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.25;
+        color: #3a3a3c;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .clients-matrix .nv-guest-dates .nv-date {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 4px;
+      }
+
+      .clients-matrix .nv-guest-dates .nv-date em {
+        font-style: normal;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #8e8e93;
+      }
+
+      .clients-matrix .nv-guest-dates .nv-date-sep {
+        color: #c7c7cc;
+        font-weight: 500;
+      }
+
+      .clients-matrix .nv-guest-status.is-due {
+        color: #c62828 !important;
+        font-weight: 600 !important;
       }
 
       .clients-matrix .nv-mobile-action-zone .btn-row-menu:hover,
@@ -21479,9 +21571,13 @@
 
       .clients-matrix .matrix-table tbody td.col-actions.nv-mobile-action-zone {
         grid-column: 3 !important;
-        width: 40px !important;
-        align-self: start;
-        justify-content: flex-start;
+        width: 84px !important;
+        min-width: 84px !important;
+        max-width: 84px !important;
+        align-self: center;
+        justify-content: flex-end;
+        flex-direction: row;
+        gap: 2px;
       }
 
       .clients-matrix .nv-mobile-action-zone .btn-row-menu,
@@ -21489,7 +21585,11 @@
         background: transparent !important;
         border: 0 !important;
         box-shadow: none !important;
-        color: #9CA3AF !important;
+        color: #8e8e93 !important;
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
       }
 
       .feed-row,
@@ -22600,8 +22700,8 @@
   <link rel="stylesheet" href="/css/riva-tap-stable.css?v=3">
   <link rel="stylesheet" href="/css/clienti-toolbar.css?v=9">
   <link rel="stylesheet" href="/css/riva-capsule-toolbars.css?v=5">
-  <link rel="stylesheet" href="/css/clienti-desktop.css?v=4">
-  <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=4">
+  <link rel="stylesheet" href="/css/clienti-desktop.css?v=5">
+  <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=5">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
   <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=6">
   <link rel="stylesheet" href="/css/layout-stability.css?v=3">
@@ -31029,18 +31129,29 @@
       const room = String(row.roomNumber || '').trim();
       const desktopFeed = isTabletMasterDetail();
       const roomBit = room ? `St. ${room}` : 'Senza stanza';
-      const metaBits = [];
+      const stayIn = row.stayDate ? formatDateShort(row.stayDate) : '';
+      const stayOut = row.checkoutDate ? formatDateShort(row.checkoutDate) : '';
+      let statusHtml = '';
+      let datesHtml = '';
       if (checkoutDue) {
-        metaBits.push(`Checkout oltre le ${inHouseMeta.checkoutTime || '14:00'}`);
-      } else if (activeView === 'checkins' && isInHouseFilter()) {
-        if (row.stayDate) metaBits.push(`Arrivo ${formatDateShort(row.stayDate)}`);
-        if (row.checkoutDate) metaBits.push(`Checkout ${formatDateShort(row.checkoutDate)}`);
-        else if (!row.stayDate) metaBits.push('Checkout non indicato');
-      } else if (row.stayDate) {
-        metaBits.push(`Arrivo ${formatDateShort(row.stayDate)}`);
-        if (row.checkoutDate) metaBits.push(`Checkout ${formatDateShort(row.checkoutDate)}`);
+        statusHtml = `<div class="nv-guest-status is-due">Checkout oltre le ${escapeHtml(inHouseMeta.checkoutTime || '14:00')}</div>`;
+        if (stayIn || stayOut) {
+          datesHtml = `<div class="nv-guest-dates" aria-label="Soggiorno">
+            <span class="nv-date nv-date--in"><em>In</em>${escapeHtml(stayIn || '—')}</span>
+            <span class="nv-date-sep" aria-hidden="true">→</span>
+            <span class="nv-date nv-date--out"><em>Out</em>${escapeHtml(stayOut || '—')}</span>
+          </div>`;
+        }
+      } else {
+        statusHtml = `<div class="nv-guest-status">${escapeHtml(roomBit)}</div>`;
+        if (stayIn || stayOut) {
+          datesHtml = `<div class="nv-guest-dates" aria-label="Soggiorno">
+            <span class="nv-date nv-date--in"><em>In</em>${escapeHtml(stayIn || '—')}</span>
+            <span class="nv-date-sep" aria-hidden="true">→</span>
+            <span class="nv-date nv-date--out"><em>Out</em>${escapeHtml(stayOut || '—')}</span>
+          </div>`;
+        }
       }
-      const meta = [roomBit, ...metaBits].filter(Boolean).join(' · ');
       const phoneCell = maskedContactCell(
         row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone',
         'Mostra telefono', 'Nascondi telefono', { hideReveal: true },
@@ -31080,7 +31191,8 @@
           </td>
           <td class="col-guest nv-mobile-info-zone">
             <div class="nv-guest-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
-            <div class="nv-guest-status">${escapeHtml(meta || '—')}</div>
+            ${statusHtml}
+            ${datesHtml}
             ${contactsHtml}
           </td>
           <td class="col-actions nv-mobile-action-zone guest-right-block">
