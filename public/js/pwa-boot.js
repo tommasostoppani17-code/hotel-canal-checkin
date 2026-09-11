@@ -9,6 +9,12 @@
       window.navigator.standalone === true;
     if (standalone) {
       document.documentElement.classList.add('is-pwa-standalone');
+      var touch =
+        (window.matchMedia &&
+          (window.matchMedia('(pointer: coarse)').matches ||
+            window.matchMedia('(hover: none)').matches)) ||
+        (navigator.maxTouchPoints > 0);
+      if (touch) document.documentElement.classList.add('is-pwa-touch');
     }
   } catch (_) { /* ignore */ }
 
