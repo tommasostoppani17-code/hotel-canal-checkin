@@ -31047,10 +31047,19 @@
         desktopFeed ? 'nv-guest-card-desktop' : '',
       ].filter(Boolean).join(' ');
 
+      const roomAvatar = formatRoomAvatarLabel(room);
+      const roomAvatarClass = [
+        'nv-guest-avatar',
+        'nv-guest-avatar--room',
+        'ig-direct-avatar',
+        room ? '' : 'is-empty',
+        roomAvatar.length >= 3 ? 'is-tight' : '',
+      ].filter(Boolean).join(' ');
+
       return `
         <tr data-id="${row.id}" class="${rowClass}">
           <td class="col-room nv-mobile-room-zone">
-            <span class="nv-guest-avatar nv-guest-avatar--room ig-direct-avatar" title="${escapeAttr(guestTitle)}" aria-hidden="true">${escapeHtml(guestInitials(guestTitle))}</span>
+            <span class="${roomAvatarClass}" title="${escapeAttr(room ? `Stanza ${room}` : guestTitle)}" aria-hidden="true">${escapeHtml(roomAvatar)}</span>
           </td>
           <td class="col-guest nv-mobile-info-zone">
             <div class="nv-guest-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
