@@ -342,7 +342,7 @@
     color: #0a0a0a !important;
   }
 
-  /* Azioni: occhio + ⋮ in riga, colonna 84px centrata */
+  /* Azioni: occhio poi ⋮ verticali, colonna 84px */
   .workspace.is-clients #checkinsPanel .riva-master-column .col-actions.nv-mobile-action-zone,
   #checkinsPanel .riva-master-column .col-actions.nv-mobile-action-zone,
   #inHousePanel.clients-matrix .col-actions.nv-mobile-action-zone {
@@ -351,13 +351,25 @@
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-end !important;
-    gap: 2px !important;
+    gap: 0 !important;
     width: 84px !important;
     min-width: 84px !important;
     max-width: 84px !important;
     grid-column: auto !important;
     pointer-events: auto !important;
     align-self: center !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-dates,
+  #checkinsPanel .riva-master-column .nv-guest-dates,
+  #inHousePanel.clients-matrix .nv-guest-dates {
+    display: none !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column .nv-guest-status:not(.is-due),
+  #checkinsPanel .riva-master-column .nv-guest-status:not(.is-due),
+  #inHousePanel.clients-matrix .nv-guest-status:not(.is-due) {
+    display: none !important;
   }
 
   .workspace.is-clients #checkinsPanel .riva-master-column .btn-row-menu,

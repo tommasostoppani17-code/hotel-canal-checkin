@@ -4734,7 +4734,7 @@
       min-height: 0;
     }
 
-    @media (min-width: 640px) {
+    @media (min-width: 721px) {
       .row-menu.is-bottom-sheet .ig-actions.riva-hold-sheet,
       .row-menu.is-bottom-sheet .riva-hold-sheet {
         border-radius: var(--radius-ui);
@@ -8170,6 +8170,40 @@
     .riva-master-column .table-scroll {
       flex: 1 1 auto;
       min-height: 0;
+    }
+
+    .clients-footer-summary,
+    #checkinsFooter.footer-summary {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 12px;
+      margin: 0;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      background: #fff;
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 550;
+      z-index: 2;
+    }
+
+    #checkinsFooter #rowCount {
+      color: #111;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    @media (max-width: 720px) {
+      #checkinsFooter .footer-summary-meta {
+        display: none;
+      }
+
+      .clients-footer-summary,
+      #checkinsFooter.footer-summary {
+        padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+      }
     }
 
     .riva-detail-column {
@@ -22739,10 +22773,10 @@
   <link rel="stylesheet" href="/css/riva-tap-stable.css?v=3">
   <link rel="stylesheet" href="/css/clienti-toolbar.css?v=9">
   <link rel="stylesheet" href="/css/riva-capsule-toolbars.css?v=5">
-  <link rel="stylesheet" href="/css/clienti-desktop.css?v=5">
-  <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=5">
+  <link rel="stylesheet" href="/css/clienti-desktop.css?v=6">
+  <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=6">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
-  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=6">
+  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=7">
   <link rel="stylesheet" href="/css/layout-stability.css?v=3">
   <link rel="stylesheet" href="/css/staff-org-console.css?v=1">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
@@ -23103,10 +23137,10 @@
                     </thead>
                     <tbody id="list"></tbody>
                   </table>
-                  <div class="footer-summary">
-                    <span id="rowCount">0 check-in</span>
-                    <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
-                  </div>
+                </div>
+                <div class="footer-summary clients-footer-summary" id="checkinsFooter">
+                  <span id="rowCount">0 check-in</span>
+                  <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
                 </div>
               </section>
               <aside class="riva-detail-column" id="guestDetailColumn" aria-label="Dettaglio ospite">
@@ -28461,15 +28495,14 @@
 
     function buildGuestSheetHead(row) {
       const guest = String(row?.guestName || '').trim() || 'Ospite';
-      const room = String(row?.roomNumber || '').trim();
-      const stay = [row?.stayDate, row?.checkoutDate]
-        .map((d) => (d ? fmtHoldDate(d) : ''))
-        .filter((x) => x && x !== '—')
-        .join(' → ');
-      const meta = [room ? `Cam. ${room}` : '', stay, row?.receptionist ? String(row.receptionist) : '']
-        .filter(Boolean)
-        .join(' · ');
-      return { title: guest, meta };
+      const stayIn = row?.stayDate ? formatDateShort(row.stayDate) : '';
+      const stayOut = row?.checkoutDate ? formatDateShort(row.checkoutDate) : '';
+      const parts = [];
+      if (stayIn || stayOut) {
+        parts.push(`Check-in ${stayIn || '—'} · Check-out ${stayOut || '—'}`);
+      }
+      if (row?.receptionist) parts.push(String(row.receptionist));
+      return { title: guest, meta: parts.join(' · ') };
     }
 
     function buildRowMenuHtml(row) {
@@ -28755,9 +28788,7 @@
     }
 
     function isMobileRowMenu() {
-      /* Hold/rack: sempre popover ancorato. */
-      if (rowMenuKind === 'hold' || rowMenuKind === 'rack') return false;
-      /* Clienti / note: bottom sheet SOLO su telefono — iPad/desktop = popover IG. */
+      /* Su telefono: sempre bottom sheet a tutta larghezza (anche hold/rack/csv). */
       try {
         return window.matchMedia('(max-width: 720px)').matches;
       } catch (_) {
@@ -31211,30 +31242,10 @@
       const guestTitle = String(row.guestName || '').trim() || '—';
       const room = String(row.roomNumber || '').trim();
       const desktopFeed = isTabletMasterDetail();
-      const roomBit = room ? `St. ${room}` : 'Senza stanza';
-      const stayIn = row.stayDate ? formatDateShort(row.stayDate) : '';
-      const stayOut = row.checkoutDate ? formatDateShort(row.checkoutDate) : '';
-      let statusHtml = '';
-      let datesHtml = '';
-      if (checkoutDue) {
-        statusHtml = `<div class="nv-guest-status is-due">Checkout oltre le ${escapeHtml(inHouseMeta.checkoutTime || '14:00')}</div>`;
-        if (stayIn || stayOut) {
-          datesHtml = `<div class="nv-guest-dates" aria-label="Soggiorno">
-            <span class="nv-date nv-date--in"><em>In</em>${escapeHtml(stayIn || '—')}</span>
-            <span class="nv-date-sep" aria-hidden="true">→</span>
-            <span class="nv-date nv-date--out"><em>Out</em>${escapeHtml(stayOut || '—')}</span>
-          </div>`;
-        }
-      } else {
-        statusHtml = `<div class="nv-guest-status">${escapeHtml(roomBit)}</div>`;
-        if (stayIn || stayOut) {
-          datesHtml = `<div class="nv-guest-dates" aria-label="Soggiorno">
-            <span class="nv-date nv-date--in"><em>In</em>${escapeHtml(stayIn || '—')}</span>
-            <span class="nv-date-sep" aria-hidden="true">→</span>
-            <span class="nv-date nv-date--out"><em>Out</em>${escapeHtml(stayOut || '—')}</span>
-          </div>`;
-        }
-      }
+      /* Solo nome + telefono/email. Stanza = pallino nero. Date = menu ⋯. */
+      const dueHtml = checkoutDue
+        ? `<div class="nv-guest-status is-due">Checkout da verificare</div>`
+        : '';
       const phoneCell = maskedContactCell(
         row, 'phone', row.phoneMasked, row.hasPhone, '', 'phone',
         'Mostra telefono', 'Nascondi telefono', { hideReveal: true },
@@ -31274,8 +31285,7 @@
           </td>
           <td class="col-guest nv-mobile-info-zone">
             <div class="nv-guest-name" title="${escapeAttr(guestTitle)}">${escapeHtml(guestLabel)}</div>
-            ${statusHtml}
-            ${datesHtml}
+            ${dueHtml}
             ${contactsHtml}
           </td>
           <td class="col-actions nv-mobile-action-zone guest-right-block">
