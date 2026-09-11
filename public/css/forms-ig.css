@@ -55,10 +55,28 @@
 .sheet.sheet--ig {
   align-items: flex-end !important;
   justify-content: center !important;
-  padding: env(safe-area-inset-top, 0px) var(--ig-form-overlay-pad) 0 !important;
+  /* Mobile default: edge-to-edge (Instagram). Il pad laterale resta solo ≥721. */
+  padding: env(safe-area-inset-top, 0px) 0 0 !important;
   box-sizing: border-box;
   overflow: hidden !important; /* scroll solo in .ig-sheet-body */
   overscroll-behavior: none;
+}
+
+/* Phone: pannello a tutta larghezza schermo, senza gutter laterale */
+@media (max-width: 720px) {
+  .sheet.sheet--ig {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    justify-content: stretch !important;
+  }
+
+  .sheet.sheet--ig .sheet-panel--ig-report {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: var(--ig-form-radius) var(--ig-form-radius) 0 0 !important;
+  }
 }
 
 /* Pannello: flex column, max-height viewport-safe, piede a terra */

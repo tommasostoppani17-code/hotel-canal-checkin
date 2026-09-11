@@ -681,11 +681,18 @@
 
 #auditConfirmSheet .sheet-panel--audit-confirm{
   width: 100% !important;
-  max-width: var(--ig-form-panel-max, 460px) !important;
-  margin: 0 auto !important;
+  max-width: 100% !important;
+  margin: 0 !important;
   border-radius: 28px 28px 0 0 !important;
   max-height: min(70dvh, 420px) !important;
   transform: none !important;
+}
+
+@media (min-width: 721px) {
+  #auditConfirmSheet .sheet-panel--audit-confirm{
+    max-width: var(--ig-form-panel-max, 460px) !important;
+    margin: 0 auto !important;
+  }
 }
 
 #auditConfirmSheet .ig-sheet-body{

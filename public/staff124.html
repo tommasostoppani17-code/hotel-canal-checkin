@@ -4636,10 +4636,9 @@
       right: 0 !important;
       bottom: 0 !important;
       top: auto !important;
-      width: 100vw !important;
-      width: 100dvw !important;
-      max-width: 100vw !important;
-      max-width: 100dvw !important;
+      /* left+right=0 → piena larghezza viewport (evita 100vw che su iOS “sborda”) */
+      width: auto !important;
+      max-width: none !important;
       min-width: 0;
       height: auto;
       max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top, 0px) - 8px));
@@ -4649,6 +4648,7 @@
       overscroll-behavior: contain;
       border-radius: 0;
       border: 0;
+      margin: 0 !important;
       padding: 0;
       padding-bottom: env(safe-area-inset-bottom, 0px);
       box-shadow: none;
@@ -4659,6 +4659,48 @@
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       box-sizing: border-box;
+    }
+
+    /* Action sheet Clienti (⋯): gruppo + Annulla a tutta larghezza */
+    .row-menu.is-bottom-sheet > .ig-actions:not(.riva-hold-sheet) {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      gap: 0;
+      background: #fff;
+      border-radius: var(--radius-sheet-top, 14px) var(--radius-sheet-top, 14px) 0 0;
+      overflow: hidden;
+    }
+
+    .row-menu.is-bottom-sheet > .ig-actions:not(.riva-hold-sheet) .ig-actions__group {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+
+    .row-menu.is-bottom-sheet > .ig-actions:not(.riva-hold-sheet) .ig-actions__cancel {
+      width: 100%;
+      min-height: 52px;
+      margin: 0;
+      border: 0;
+      border-top: 1px solid #dbdbdb;
+      border-radius: 0;
+      background: #fff;
+      color: #262626;
+      font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .row-menu.is-bottom-sheet > .ig-actions:not(.riva-hold-sheet) .ig-actions__cancel:active {
+      background: #fafafa;
     }
 
     .row-menu.is-bottom-sheet.is-opening {
@@ -19172,15 +19214,14 @@
       box-sizing: border-box;
     }
 
-    /* Mobile: tendina a tutta larghezza schermo (visualViewport). */
+    /* Mobile: tendina a tutta larghezza schermo (left/right, no 100vw). */
     .ui-dropdown-menu.is-sheet-fixed.is-full-bleed,
     .sheet-form .ui-dropdown-menu.is-sheet-fixed.is-full-bleed {
       left: 0 !important;
       right: 0 !important;
-      width: 100vw !important;
-      width: 100dvw !important;
-      max-width: 100vw !important;
-      max-width: 100dvw !important;
+      width: auto !important;
+      max-width: none !important;
+      margin: 0 !important;
       border-radius: 0 !important;
       border-left: 0 !important;
       border-right: 0 !important;
@@ -19191,15 +19232,17 @@
       .sheet-form .ui-dropdown-menu.is-sheet-fixed {
         left: 0 !important;
         right: 0 !important;
-        width: 100vw !important;
-        width: 100dvw !important;
-        max-width: 100vw !important;
-        max-width: 100dvw !important;
+        width: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
         border-radius: 0 !important;
       }
 
       .row-menu:not(.is-bottom-sheet) {
-        max-width: 100vw !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: auto !important;
+        max-width: none !important;
         min-width: 0 !important;
         border-radius: 0 !important;
       }
@@ -22752,7 +22795,7 @@
   <link rel="stylesheet" href="/css/riva-ig-global.css?v=7">
   <link rel="stylesheet" href="/css/riva-ig-layout-fixes.css?v=77">
   <link rel="stylesheet" href="/css/riva-ig-chrome.css?v=153">
-  <link rel="stylesheet" href="/css/shift-closure-cockpit.css?v=41">
+  <link rel="stylesheet" href="/css/shift-closure-cockpit.css?v=42">
   <link rel="stylesheet" href="/css/chiusura-turno.css?v=14">
   <link rel="stylesheet" href="/css/colazioni-grid.css?v=81">
   <link rel="stylesheet" href="/css/colazioni-premium.css?v=9">
@@ -22764,7 +22807,7 @@
   <link rel="stylesheet" href="/css/rack-mobile.css?v=4">
   <link rel="stylesheet" href="/css/riva-fo-chrome.css?v=146">
   <link rel="stylesheet" href="/css/riva-hold-orb.css?v=3">
-  <link rel="stylesheet" href="/css/forms-ig.css?v=82">
+  <link rel="stylesheet" href="/css/forms-ig.css?v=83">
   <link rel="stylesheet" href="/css/riva-skeleton.css?v=12">
   <link rel="stylesheet" href="/css/housekeeping-skeleton.css?v=1">
   <link rel="stylesheet" href="/css/notify-panel-fluid.css?v=3">
@@ -26984,8 +27027,9 @@
       menuEl.style.minWidth = '0';
 
       if (mobile) {
-        menuEl.style.width = `${vw}px`;
-        menuEl.style.maxWidth = `${vw}px`;
+        /* Edge-to-edge: left/right ancorati, width auto (niente gutter tipo card). */
+        menuEl.style.width = 'auto';
+        menuEl.style.maxWidth = 'none';
         menuEl.style.left = '0px';
         menuEl.style.right = '0px';
       } else {
@@ -29118,13 +29162,13 @@
       if (!rowMenu || !anchor) return;
       if (isMobileRowMenu()) {
         rowMenu.classList.add('is-bottom-sheet');
-        const vw = viewportWidthPx();
         rowMenu.style.left = '0';
         rowMenu.style.right = '0';
         rowMenu.style.bottom = '0';
         rowMenu.style.top = 'auto';
-        rowMenu.style.width = `${vw}px`;
-        rowMenu.style.maxWidth = `${vw}px`;
+        rowMenu.style.width = 'auto';
+        rowMenu.style.maxWidth = 'none';
+        rowMenu.style.margin = '0';
         rowMenu.style.removeProperty('height');
         fitRowMenuOverflow();
         return;
@@ -29143,9 +29187,8 @@
       const vh = window.innerHeight;
       /* Telefono / stretto: menu a piena larghezza anche se non è bottom-sheet (hold/rack). */
       if (isMobileDropdownViewport()) {
-        const menuW = vw;
-        rowMenu.style.width = `${menuW}px`;
-        rowMenu.style.maxWidth = `${menuW}px`;
+        rowMenu.style.width = 'auto';
+        rowMenu.style.maxWidth = 'none';
         rowMenu.style.left = '0px';
         rowMenu.style.right = '0px';
         rowMenu.style.top = `${rect.bottom + 6}px`;
