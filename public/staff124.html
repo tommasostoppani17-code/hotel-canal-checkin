@@ -27831,9 +27831,78 @@
       sessionTimeoutMin: '30',
       reportTime: '00:00',
     };
+    /** Deep-link hash → vista staff124 (es. #holds, #ops-colazioni, #ops/canal). */
+    const STAFF_HASH_VIEWS = new Set([
+      'checkins',
+      'holds',
+      'requests',
+      'alloggiati',
+      'blacklist',
+      'shift-audit',
+      'settings',
+      'info',
+      'more',
+      'ops-rooms',
+      'ops-colazioni',
+      'ops-problems',
+    ]);
 
     let staffIdleTimer = null;
     let staffIdleBound = false;
+    let staffHashSyncLock = false;
+
+    function readStaffHashRoute() {
+      try {
+        const raw = String(window.location.hash || '').replace(/^#/, '').trim();
+        if (!raw) return null;
+        const opsSec = raw.match(/^ops\/([^/?#]+)$/i);
+        if (opsSec) {
+          return {
+            view: 'ops-rooms',
+            section: decodeURIComponent(opsSec[1] || '').trim() || null,
+          };
+        }
+        const view = decodeURIComponent(raw.split(/[/?#]/)[0] || '').trim();
+        if (!STAFF_HASH_VIEWS.has(view)) return null;
+        return { view, section: null };
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function writeStaffHash(view) {
+      if (staffHashSyncLock) return;
+      try {
+        // Camere: lascia a staff-ops il dettaglio #ops/{sezione}.
+        if (view === 'ops-rooms') {
+          if (/^#ops\//i.test(window.location.hash || '')) return;
+          const next = '#ops-rooms';
+          if (window.location.hash !== next) {
+            history.replaceState(null, '', `${window.location.pathname}${window.location.search}${next}`);
+          }
+          return;
+        }
+        const next = `#${encodeURIComponent(view)}`;
+        if (window.location.hash !== next) {
+          history.replaceState(null, '', `${window.location.pathname}${window.location.search}${next}`);
+        }
+      } catch (_) { /* ignore */ }
+    }
+
+    function applyStaffHashRoute({ restore = false } = {}) {
+      const route = readStaffHashRoute();
+      if (!route) return false;
+      staffHashSyncLock = true;
+      try {
+        setActiveView(route.view, { restore });
+        if (route.view === 'ops-rooms' && route.section) {
+          staffOps?.applyHash?.();
+        }
+      } finally {
+        staffHashSyncLock = false;
+      }
+      return true;
+    }
 
     function readSavedStaffView() {
       try {
@@ -27997,6 +28066,7 @@
       activeView = allowed.includes(view) ? view : 'checkins';
       if (!HOLDS_UI_ENABLED && activeView === 'holds') activeView = 'checkins';
       writeSavedStaffView(activeView);
+      writeStaffHash(activeView);
       if (isNotesHubView(activeView)) lastNotesHubView = activeView;
       tabRequests?.classList.toggle('is-on', activeView === 'requests');
       tabNotes?.classList.toggle('is-on', activeView === 'requests');
@@ -35122,17 +35192,7 @@
         if (!restore) replayMotion(dash, 'motion-rise');
         paintStaffSettingsForm();
         bindStaffIdleWatch();
-        const hashSec = (() => {
-          try {
-            const m = String(window.location.hash || '').match(/^#ops\/([^/?#]+)/i);
-            return m ? decodeURIComponent(m[1] || '').trim() : '';
-          } catch (_) {
-            return '';
-          }
-        })();
-        if (hashSec && opsIntegrationEnabled) {
-          setActiveView('ops-rooms', { restore });
-        } else {
+        if (!applyStaffHashRoute({ restore })) {
           setActiveView(readSavedStaffView() || 'checkins', { restore });
         }
         startAlertPolling();
@@ -38643,11 +38703,14 @@
     }
 
     window.addEventListener('hashchange', () => {
-      if (!opsIntegrationEnabled || !staffOps) return;
-      const m = String(window.location.hash || '').match(/^#ops\/([^/?#]+)/i);
-      if (!m) return;
-      if (activeView !== 'ops-rooms') setActiveView('ops-rooms');
-      else staffOps.applyHash?.();
+      if (!document.body.classList.contains('is-dashboard')) return;
+      const route = readStaffHashRoute();
+      if (!route) return;
+      if (route.view === activeView) {
+        if (route.view === 'ops-rooms' && route.section) staffOps?.applyHash?.();
+        return;
+      }
+      applyStaffHashRoute();
     });
 
     function applyOpsIntegration(integrations) {
