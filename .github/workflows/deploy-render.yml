@@ -1,0 +1,33 @@
+# Deploy production via Render Deploy Hook (no Manual Deploy UI).
+#
+# One-time setup (Render dashboard → hotel-canal-checkin → Settings → Deploy Hook):
+#   gh secret set RENDER_DEPLOY_HOOK -R tommasostoppani17-code/hotel-canal-checkin
+#
+# Then: Actions → "Deploy Render" → Run workflow
+# Or push to main if you enable the push trigger below.
+
+name: Deploy Render
+
+on:
+  workflow_dispatch:
+  # Uncomment after RENDER_DEPLOY_HOOK secret is set:
+  # push:
+  #   branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "Missing secret RENDER_DEPLOY_HOOK"
+            echo "Create a Deploy Hook on Render and: gh secret set RENDER_DEPLOY_HOOK"
+            exit 1
+          fi
+          code=$(curl -sS -o /tmp/out -w '%{http_code}' -X POST "$HOOK")
+          echo "HTTP $code"
+          cat /tmp/out || true
+          test "$code" = "200" -o "$code" = "201" -o "$code" = "202"
