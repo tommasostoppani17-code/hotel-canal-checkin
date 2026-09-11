@@ -13,7 +13,8 @@
 
 /* —— Staff reception: split fisso —— */
 @media (min-width: 1024px) {
-  body.is-dashboard:not(.hk-app) .dash-view {
+  /* Skip su iPhone Home + Request Desktop Site */
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-view {
     display: flex !important;
     flex-direction: row !important;
     align-items: stretch !important;
@@ -22,9 +23,9 @@
     overflow: hidden !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-sidebar,
-  body.is-dashboard:not(.hk-app) .dash-sidebar.is-open,
-  body.is-dashboard:not(.hk-app).is-nav-open .dash-sidebar {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar.is-open,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app).is-nav-open .dash-sidebar {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -51,35 +52,35 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-brand-name,
-  body.is-dashboard:not(.hk-app) .dash-sidebar .riva-wordmark,
-  body.is-dashboard:not(.hk-app) .dash-sidebar .riva-wordmark__text,
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-item,
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-icon,
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-icon svg {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-brand-name,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .riva-wordmark,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .riva-wordmark__text,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-item,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-icon,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-icon svg {
     color: #262626 !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-brand-sub,
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-section-label {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-brand-sub,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-section-label {
     color: #8e8e93 !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-item.is-on {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-item.is-on {
     background: #f0f0f0 !important;
     color: #0a0a0a !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-spacer {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .dash-nav-spacer {
     display: block !important;
     flex: 1 1 auto !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-sidebar .btn-logout {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-sidebar .btn-logout {
     color: #ed4956 !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-main {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-main {
     flex: 1 1 auto !important;
     margin-left: var(--riva-sidebar-w) !important;
     width: calc(100% - var(--riva-sidebar-w)) !important;
@@ -90,24 +91,24 @@
     overflow: hidden !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-menu-btn {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-menu-btn {
     display: none !important;
   }
 
-  body.is-dashboard:not(.hk-app) .dash-scrim,
-  body.is-dashboard:not(.hk-app) .dash-scrim:not(.hidden),
-  body.is-dashboard:not(.hk-app).is-nav-open .dash-scrim {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-scrim,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .dash-scrim:not(.hidden),
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app).is-nav-open .dash-scrim {
     display: none !important;
     pointer-events: none !important;
   }
 
-  body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .sc-scroll,
-  body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .closure-feed-wrapper {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .sc-scroll,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .closure-feed-wrapper {
     overflow-y: auto !important;
   }
 
-  body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .sc-cockpit--flat,
-  body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .closure-feed-column {
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .sc-cockpit--flat,
+  html:not(.is-pwa-phone) body.is-dashboard:not(.hk-app) .workspace.is-shift-audit .closure-feed-column {
     width: 100% !important;
     max-width: 640px !important;
     margin-left: auto !important;
@@ -368,4 +369,102 @@ body.hk-app .btn-logout:hover,
 body.hk-app .btn-logout:active {
   background: rgba(237, 73, 86, 0.06) !important;
   color: #ed4956 !important;
+}
+
+
+/* ============================================================================
+   iPhone Home + “Richiedi sito desktop”: Safari spoofa ≥1024px e attiva la sidebar
+   fissa + overflow:hidden → la pagina non scrolla. Forza drawer mobile + scroll.
+   ========================================================================== */
+html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-view {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  height: var(--app-vh, 100dvh) !important;
+  max-height: var(--app-vh, 100dvh) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-sidebar,
+html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-sidebar.is-open {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: min(90vw, 280px) !important;
+  max-width: 280px !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  max-height: none !important;
+  transform: translateX(-105%) !important;
+  z-index: 129 !important;
+}
+
+html.is-pwa-phone body.is-dashboard:not(.hk-app).is-nav-open .dash-sidebar,
+html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-sidebar.is-open {
+  transform: translateX(0) !important;
+}
+
+html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-main {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html.is-pwa-phone body.is-dashboard .dash-content,
+html.is-pwa-phone body.is-dashboard .workspace,
+html.is-pwa-phone body.is-dashboard .workspace-body,
+html.is-pwa-phone body.is-dashboard .table-panel,
+html.is-pwa-phone body.is-dashboard .content-card {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html.is-pwa-phone body.is-dashboard .table-scroll,
+html.is-pwa-phone body.is-dashboard .settings-scroll,
+html.is-pwa-phone body.is-dashboard .notes-scroll,
+html.is-pwa-phone body.is-dashboard .blacklist-scroll,
+html.is-pwa-phone body.is-dashboard #checkinsScroll,
+html.is-pwa-phone body.is-dashboard #opsBody {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  overscroll-behavior-y: contain !important;
+}
+
+html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-main-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-master-column {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+}
+
+html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-detail-column {
+  display: none !important;
 }

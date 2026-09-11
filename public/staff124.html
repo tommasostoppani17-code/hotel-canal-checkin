@@ -23,17 +23,27 @@
           (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
           window.navigator.standalone === true;
         if (!standalone) return;
-        document.documentElement.classList.add('is-pwa-standalone');
+        var html = document.documentElement;
+        html.classList.add('is-pwa-standalone');
         var touch =
           (window.matchMedia &&
             (window.matchMedia('(pointer: coarse)').matches ||
               window.matchMedia('(hover: none)').matches)) ||
           (navigator.maxTouchPoints > 0);
-        if (touch) document.documentElement.classList.add('is-pwa-touch');
+        if (touch) html.classList.add('is-pwa-touch');
+        /* Request Desktop Site spoofa innerWidth (~980) ma screen resta telefono:
+           forziamo layout phone altrimenti overflow:hidden desktop blocca lo scroll. */
+        var sw = Math.min(window.screen && window.screen.width || 0, window.screen && window.screen.height || 0);
+        var iw = window.innerWidth || 0;
+        var spoofDesktop = sw > 0 && iw > sw + 80;
+        var phoneScreen = sw > 0 && sw <= 520;
+        if (touch && (spoofDesktop || phoneScreen)) {
+          html.classList.add('is-pwa-phone');
+        }
       } catch (_) { /* ignore */ }
     })();
   </script>
-  <script src="/js/pwa-boot.js?v=183" defer></script>
+  <script src="/js/pwa-boot.js?v=184" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Montserrat 300 = titolo Check-in; display=swap obbligatorio -->
@@ -22790,11 +22800,11 @@
   <link rel="stylesheet" href="/css/riva-tap-stable.css?v=3">
   <link rel="stylesheet" href="/css/clienti-toolbar.css?v=9">
   <link rel="stylesheet" href="/css/riva-capsule-toolbars.css?v=5">
-  <link rel="stylesheet" href="/css/clienti-desktop.css?v=7">
+  <link rel="stylesheet" href="/css/clienti-desktop.css?v=8">
   <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=6">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
-  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=8">
-  <link rel="stylesheet" href="/css/layout-stability.css?v=3">
+  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=9">
+  <link rel="stylesheet" href="/css/layout-stability.css?v=4">
   <link rel="stylesheet" href="/css/staff-org-console.css?v=2">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
   <link rel="stylesheet" href="/css/riva-access-aligned.css?v=9">
@@ -41928,8 +41938,19 @@
         if (h >= 200) gate.style.minHeight = `${h}px`;
       };
       const applyAppVh = (h) => {
-        const px = Math.max(280, Math.round(h || restH()));
-        document.documentElement.style.setProperty('--app-vh', `${px}px`);
+        const html = document.documentElement;
+        let px = Math.max(280, Math.round(h || restH()));
+        /* Home + Request Desktop Site: innerHeight mente → visualViewport / screen */
+        if (html.classList.contains('is-pwa-phone')) {
+          try {
+            const vv = window.visualViewport;
+            const fromVv = vv ? Math.round(vv.height) : 0;
+            const fromScreen = Math.round(Math.max(window.screen?.height || 0, window.screen?.width || 0));
+            if (fromVv >= 280) px = fromVv;
+            else if (fromScreen >= 280) px = Math.min(px, fromScreen);
+          } catch (_) { /* ignore */ }
+        }
+        html.style.setProperty('--app-vh', `${px}px`);
       };
       const isField = (el) => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT');
       const scrollerFor = (el) => el?.closest?.(

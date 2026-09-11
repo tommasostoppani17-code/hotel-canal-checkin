@@ -8,13 +8,34 @@
       (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
       window.navigator.standalone === true;
     if (standalone) {
-      document.documentElement.classList.add('is-pwa-standalone');
+      var html = document.documentElement;
+      html.classList.add('is-pwa-standalone');
       var touch =
         (window.matchMedia &&
           (window.matchMedia('(pointer: coarse)').matches ||
             window.matchMedia('(hover: none)').matches)) ||
         (navigator.maxTouchPoints > 0);
-      if (touch) document.documentElement.classList.add('is-pwa-touch');
+      if (touch) html.classList.add('is-pwa-touch');
+      var sw = Math.min(window.screen && window.screen.width || 0, window.screen && window.screen.height || 0);
+      var iw = window.innerWidth || 0;
+      var spoofDesktop = sw > 0 && iw > sw + 80;
+      var phoneScreen = sw > 0 && sw <= 520;
+      if (touch && (spoofDesktop || phoneScreen)) {
+        html.classList.add('is-pwa-phone');
+      }
+      /* VH reale: con Request Desktop Site innerHeight mente; usa visualViewport/screen */
+      var syncPhoneVh = function () {
+        if (!html.classList.contains('is-pwa-phone')) return;
+        var vv = window.visualViewport;
+        var h = Math.round((vv && vv.height) || window.innerHeight || sw || 640);
+        h = Math.max(280, Math.min(h, Math.round(window.screen && window.screen.height || h)));
+        html.style.setProperty('--app-vh', h + 'px');
+      };
+      syncPhoneVh();
+      window.addEventListener('resize', syncPhoneVh, { passive: true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', syncPhoneVh, { passive: true });
+      }
     }
   } catch (_) { /* ignore */ }
 

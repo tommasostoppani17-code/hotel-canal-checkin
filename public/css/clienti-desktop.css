@@ -210,3 +210,40 @@
     width: min(100%, 420px) !important;
   }
 }
+
+
+/* iPhone PWA + Request Desktop Site: non usare lo split desktop */
+html.is-pwa-phone .workspace.is-clients #checkinsPanel.clients-matrix,
+html.is-pwa-phone #checkinsPanel.clients-matrix {
+  overflow: hidden !important;
+}
+html.is-pwa-phone .workspace.is-clients #checkinsPanel .riva-main-layout,
+html.is-pwa-phone #checkinsPanel .riva-main-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  gap: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+html.is-pwa-phone .workspace.is-clients #checkinsPanel .riva-master-column,
+html.is-pwa-phone #checkinsPanel .riva-master-column {
+  height: auto !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+}
+html.is-pwa-phone .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll,
+html.is-pwa-phone #checkinsPanel .riva-master-column .table-scroll {
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+}
+html.is-pwa-phone .workspace.is-clients #checkinsPanel .riva-detail-column,
+html.is-pwa-phone #checkinsPanel .riva-detail-column {
+  display: none !important;
+}

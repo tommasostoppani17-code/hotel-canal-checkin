@@ -357,3 +357,31 @@ html.is-pwa-standalone body.is-dashboard:has(.workspace.is-clients) .clients-fab
   right: max(20px, var(--riva-safe-right)) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 }
+
+
+/* ==========================================================================
+   is-pwa-phone — Home icon su iPhone anche con “Richiedi sito desktop”
+   ========================================================================== */
+html.is-pwa-phone,
+html.is-pwa-phone body.is-dashboard {
+  height: var(--app-vh, 100dvh) !important;
+  max-height: var(--app-vh, 100dvh) !important;
+  overflow: hidden !important;
+}
+
+html.is-pwa-phone body.is-dashboard .staff-shell,
+html.is-pwa-phone body.is-dashboard .dash-view {
+  height: var(--app-vh, 100dvh) !important;
+  max-height: var(--app-vh, 100dvh) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html.is-pwa-phone body.is-dashboard .table-scroll,
+html.is-pwa-phone body.is-dashboard .settings-scroll,
+html.is-pwa-phone body.is-dashboard .notes-scroll,
+html.is-pwa-phone body.is-dashboard .blacklist-scroll {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+}
