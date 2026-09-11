@@ -6,6 +6,7 @@
   'use strict';
 
   const SECTION_TAB = {
+    all: 'Tutte le camere',
     canal: 'Hotel Canal',
     walter: 'Walter',
     'extra-vaca': 'Extra Vaca',
@@ -14,6 +15,7 @@
     airone: 'Airone',
   };
   const SECTION_TAB_SHORT = {
+    all: 'Tutte',
     canal: 'Canal',
     walter: 'Walter',
     'extra-vaca': 'Extra Vaca',

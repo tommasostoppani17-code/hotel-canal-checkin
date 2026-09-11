@@ -4,13 +4,18 @@
  */
 import { getDb, getStaffMember, setStaffPinHash } from './db.js';
 import { hashStaffPin, isUsableStaffPassword } from './staff-auth.js';
-import { DEFAULT_HOTEL_ROOMS } from './hotel-rooms.js';
+import { OPS_SECTION_ROOMS } from './config/ops-sections.js';
 
 export const ORG_MODULES = [
   { id: 'checkin', label: 'Check-in digitale', defaultOn: true },
   { id: 'holds', label: 'Prenotazioni', defaultOn: true },
   { id: 'ops_rooms', label: 'Camere / HK', defaultOn: true },
   { id: 'ops_colazioni', label: 'Colazioni', defaultOn: true },
+  {
+    id: 'ops_unified_rooms',
+    label: 'Camere: un’unica lista (senza sezioni)',
+    defaultOn: false,
+  },
   { id: 'notes', label: 'Note reception', defaultOn: true },
   { id: 'blacklist', label: 'Segnalazioni', defaultOn: true },
   { id: 'shift_audit', label: 'Chiusura turno', defaultOn: true },
@@ -87,45 +92,45 @@ const AFFILIATE_SEED = [
     name: 'Hotel Canal',
     kind: 'live',
     city: 'Venezia',
-    rooms: DEFAULT_HOTEL_ROOMS,
+    rooms: OPS_SECTION_ROOMS.canal,
     modules: defaultModulesMap(true),
-    notes: 'Tenant operativo produzione',
+    notes: 'Tenant operativo — sezioni Camere: Canal / Walter / Extra Vaca / Ca’ dei Polo / Appartamenti / Airone',
   },
   {
     slug: 'hotel-walter',
     name: 'Hotel Walter',
     kind: 'affiliate',
     city: 'Venezia',
-    rooms: ['1', '2', '3', '4', '5', '6'],
-    modules: { ...defaultModulesMap(false), checkin: true, notes: true },
-    notes: 'Affiliato — porta / Wi‑Fi già in guest services',
+    rooms: OPS_SECTION_ROOMS.walter,
+    modules: { ...defaultModulesMap(false), checkin: true, notes: true, ops_rooms: true },
+    notes: 'Affiliato — sezione Walter in Camere',
   },
   {
     slug: 'hotel-airone',
     name: 'Hotel Airone',
     kind: 'affiliate',
     city: 'Venezia',
-    rooms: ['101', '102', '103', '201', '202'],
-    modules: { ...defaultModulesMap(false), checkin: true, notes: true },
-    notes: 'Affiliato — rete Wi‑Fi dedicata',
+    rooms: OPS_SECTION_ROOMS.airone,
+    modules: { ...defaultModulesMap(false), checkin: true, notes: true, ops_rooms: true },
+    notes: 'Affiliato — sezione Airone in Camere',
   },
   {
     slug: 'ca-pisani',
     name: 'Ca’ Pisani / Appartamenti',
     kind: 'affiliate',
     city: 'Venezia',
-    rooms: ['A1', 'A2', 'A3', 'A4'],
-    modules: { ...defaultModulesMap(false), checkin: true },
-    notes: 'Appartamenti — Wi‑Fi Ca Pisani Vista Canal',
+    rooms: OPS_SECTION_ROOMS.appartamenti,
+    modules: { ...defaultModulesMap(false), checkin: true, ops_rooms: true },
+    notes: 'Appartamenti — sezione dedicata in Camere',
   },
   {
     slug: 'ca-dei-polo',
     name: 'Ca’ dei Polo',
     kind: 'affiliate',
     city: 'Venezia',
-    rooms: ['1', '2', '3', '4'],
-    modules: { ...defaultModulesMap(false), checkin: true },
-    notes: 'Affiliato rete Sestriere / Emily',
+    rooms: OPS_SECTION_ROOMS['cadei-polo'],
+    modules: { ...defaultModulesMap(false), checkin: true, ops_rooms: true },
+    notes: 'Affiliato — sezione Ca’ dei Polo in Camere',
   },
 ];
 
