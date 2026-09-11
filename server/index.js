@@ -95,6 +95,18 @@ import {
 } from './room-holds.js';
 import { listHotelInventoryRooms } from './hotel-rooms.js';
 import {
+  seedHotelOrg,
+  buildOrgConsolePayload,
+  patchHotelModules,
+  setStaffManagerFlag,
+  resetStaffPasswordStandard,
+  assignStaffDepartment,
+  isOrgDev,
+  isOrgManager,
+  modulesForStaffSession,
+  getStaffOrgProfile,
+} from './hotel-org.js';
+import {
   canalOpsIntegrationPayload,
   getNativeOpsSnapshot,
   patchNativeOpsRoom,
@@ -247,6 +259,11 @@ assertProductionSecrets();
 
 initDb(DATABASE_PATH);
 ensureHkTables();
+try {
+  seedHotelOrg();
+} catch (err) {
+  console.warn('[hotel-org] seed failed:', err?.message || err);
+}
 bootstrapStaffPinHashesFromEnv();
 
 async function syncCheckinsBackup(reason = 'update') {
@@ -853,12 +870,20 @@ function staffMemberFromLogin(raw) {
 }
 
 function isStaffManager(staffId) {
-  const id = String(staffId || '').trim().toLowerCase();
-  return id === 'mizan' || id === 'payel';
+  try {
+    return isOrgManager(staffId);
+  } catch {
+    const id = String(staffId || '').trim().toLowerCase();
+    return id === 'mizan' || id === 'payel';
+  }
 }
 
 function isStaffDev(staffId) {
-  return String(staffId || '').trim().toLowerCase() === 'tommaso';
+  try {
+    return isOrgDev(staffId);
+  } catch {
+    return String(staffId || '').trim().toLowerCase() === 'tommaso';
+  }
 }
 
 function canSeeStaffInfo(staffId) {
@@ -868,13 +893,29 @@ function canSeeStaffInfo(staffId) {
 function staffClientJson(staff) {
   if (!staff) return null;
   const id = staff.id || staff.staffId;
+  let profile = null;
+  try {
+    profile = getStaffOrgProfile(id);
+  } catch {
+    profile = null;
+  }
+  let modules = null;
+  try {
+    modules = modulesForStaffSession(id);
+  } catch {
+    modules = null;
+  }
   return {
     id,
-    name: staff.name || staff.staffName,
-    label: staff.label || staff.staffLabel,
+    name: staff.name || staff.staffName || profile?.name,
+    label: staff.label || staff.staffLabel || profile?.label,
     manager: isStaffManager(id),
     dev: isStaffDev(id),
     info: canSeeStaffInfo(id),
+    role: profile?.role || (isStaffDev(id) ? 'dev' : isStaffManager(id) ? 'manager' : 'receptionist'),
+    department: profile?.department || 'reception',
+    hotelSlug: profile?.hotelSlug || 'hotel-canal',
+    modules,
   };
 }
 
@@ -2060,6 +2101,98 @@ app.get(
     }
     res.setHeader('Cache-Control', 'no-store');
     return res.json(staffRoadmapPayload(req.staffUser?.staffId));
+  },
+);
+
+app.get(
+  '/api/staff/org',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    if (!canSeeStaffInfo(req.staffUser?.staffId)) {
+      return res.status(403).json({ error: 'Solo direzione', code: 'forbidden' });
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    const payload = buildOrgConsolePayload(req.staffUser?.staffId);
+    if (!payload.ok) {
+      return res.status(403).json({ error: 'Solo direzione', code: 'forbidden' });
+    }
+    return res.json(payload);
+  },
+);
+
+app.patch(
+  '/api/staff/org/hotels/:slug/modules',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const result = patchHotelModules(
+      req.params.slug,
+      req.body?.modules || req.body || {},
+      req.staffUser?.staffId,
+    );
+    if (!result.ok) {
+      const status = result.error === 'forbidden' ? 403 : 400;
+      return res.status(status).json(result);
+    }
+    return res.json(result);
+  },
+);
+
+app.post(
+  '/api/staff/org/staff/:staffId/manager',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const makeManager = Boolean(req.body?.manager ?? req.body?.makeManager);
+    const result = setStaffManagerFlag(
+      req.params.staffId,
+      makeManager,
+      req.staffUser?.staffId,
+    );
+    if (!result.ok) {
+      const status =
+        result.error === 'forbidden' ? 403 : result.error === 'not_found' ? 404 : 400;
+      return res.status(status).json(result);
+    }
+    return res.json(result);
+  },
+);
+
+app.post(
+  '/api/staff/org/staff/:staffId/reset-password',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  requireStaff,
+  (req, res) => {
+    const result = resetStaffPasswordStandard(
+      req.params.staffId,
+      req.staffUser?.staffId,
+    );
+    if (!result.ok) {
+      const status =
+        result.error === 'forbidden' ? 403 : result.error === 'not_found' ? 404 : 400;
+      return res.status(status).json(result);
+    }
+    return res.json({ ...result, message: 'Password ripristinata allo standard' });
+  },
+);
+
+app.post(
+  '/api/staff/org/staff/:staffId/department',
+  rateLimit({ windowMs: 60_000, max: 30 }),
+  requireStaff,
+  (req, res) => {
+    const result = assignStaffDepartment(
+      req.params.staffId,
+      req.body?.department,
+      req.staffUser?.staffId,
+    );
+    if (!result.ok) {
+      const status =
+        result.error === 'forbidden' ? 403 : result.error === 'not_found' ? 404 : 400;
+      return res.status(status).json(result);
+    }
+    return res.json(result);
   },
 );
 

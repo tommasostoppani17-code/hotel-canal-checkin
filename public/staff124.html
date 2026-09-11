@@ -22605,6 +22605,7 @@
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
   <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=6">
   <link rel="stylesheet" href="/css/layout-stability.css?v=3">
+  <link rel="stylesheet" href="/css/staff-org-console.css?v=1">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
   <link rel="stylesheet" href="/css/riva-access-aligned.css?v=9">
 </head>
@@ -22763,7 +22764,7 @@
               <circle cx="12" cy="7.5" r="1.1" fill="currentColor"/>
             </svg>
           </span>
-          Registro direzione
+          Console hotel
         </button>
         <button type="button" class="dash-nav-item" id="tabSettings">
           <span class="dash-nav-icon" aria-hidden="true">
@@ -23694,80 +23695,12 @@
           <div class="table-panel hidden settings-panel info-panel" id="infoPanel">
             <div class="settings-scroll" id="infoScroll">
               <div class="sys-settings sys-settings--plans">
-                <header class="sys-settings-header">
-                  <h2>Registro direzione <span class="plan-badge-live" style="vertical-align:middle;margin-left:8px;">Beta v1.4</span></h2>
-                  <p>Roadmap di rilascio e moduli Riva OS attivi per la struttura.</p>
-                </header>
-
-                <div id="infoManagerWrap" style="max-width:640px;margin:0 auto;">
-                <section class="plan-block">
-                  <header class="plan-head">
-                    <span class="plan-index" aria-hidden="true">1</span>
-                    <h3>Check-in digitale e sicurezza dei dati</h3>
-                  </header>
-                  <p class="plan-lead">Il check-in digitale è <strong>già realtà</strong>. L’ospite inquadra il QR code, seleziona la stanza, inserisce i propri dati e accetta la privacy. I nuovi arrivi compaiono <strong>all’istante</strong> nella dashboard della reception: i dati di contatto rimangono <strong>protetti</strong> e visibili solo in caso di necessità. A fine giornata, il sistema genera e invia un <strong>report automatico</strong>.</p>
-                  <figure class="plan-table-shot">
-                    <img src="/emily/dashboard-clienti.png" alt="Dashboard Clienti: arrivi del giorno, contatti protetti e check-in in reception.">
-                  </figure>
-                  <p class="plan-muted">Documenti, pagamenti e consumazioni minibar sono sempre accessibili in reception e nel <strong>report giornaliero</strong>.</p>
-                </section>
-
-                <section class="plan-block">
-                  <header class="plan-head">
-                    <span class="plan-index" aria-hidden="true">2</span>
-                    <h3>Sincronizzazione reception e governante in tempo reale</h3>
-                    <span class="plan-badge-live">Attivo</span>
-                  </header>
-                  <p class="plan-lead">Reception e Housekeeping sono nella stessa piattaforma Riva OS: board piani mobile (<a href="../hk" style="color:inherit;font-weight:700;text-decoration:underline;">/hk</a>), colazioni e note operative. Al check-in o alla prenotazione confermata, gli stati camera restano allineati. La governante segna le camere pronte con un tap; reception vede lo stato senza telefonate.</p>
-                </section>
-
-                <section class="plan-block">
-                  <header class="plan-head">
-                    <span class="plan-index" aria-hidden="true">3</span>
-                    <h3>Gestione automatizzata e tutela dall’overbooking</h3>
-                    <span class="plan-badge-soon">Prossimamente</span>
-                  </header>
-                  <p class="plan-lead">L’integrazione con il gestionale (<strong>PMS</strong>) tramite Email Parsing consentirà di inoltrare le email di prenotazione e far inserire i dati in automatico, azzerando il data-entry. Il collegamento con Booking Expert e i Channel Manager aggiornerà l’inventario camere <strong>in tempo reale</strong>, bloccando l’<strong>overbooking</strong> sulle OTA.</p>
-                </section>
-
-                <section class="plan-block">
-                  <header class="plan-head">
-                    <span class="plan-index" aria-hidden="true">4</span>
-                    <h3>Programma Upselling: la tua rete sul territorio</h3>
-                  </header>
-                  <p class="plan-lead">Pensato per gestori che hanno anche altre attività sul territorio: ristoranti, negozi, escursioni. La piattaforma invia <strong>in automatico</strong> proposte agli ospiti prima e durante il soggiorno, indirizzandoli verso i <strong>partner convenzionati</strong>. Ogni acquisto genera una <strong>commissione trasparente</strong> per chi porta il cliente. I partner ricevono più flusso, la struttura guadagna senza costi aggiuntivi.</p>
-                </section>
-
-                <section class="plan-block">
-                  <header class="plan-head">
-                    <span class="plan-index" aria-hidden="true">5</span>
-                    <h3>Assistente virtuale: EmiLayAli su WhatsApp</h3>
-                  </header>
-                  <p class="plan-lead">EmiLayAli risponde su WhatsApp <strong>24 ore su 24</strong> a qualsiasi domanda su Wi-Fi, orari, cene, late check-out e <strong>servizi in camera</strong>. L’ospite inquadra il QR in camera e chiede quello che gli serve direttamente dal proprio telefono, <strong>senza passare dal banco</strong>. Questo toglie alla reception l’<strong>80%</strong> delle richieste ripetitive. Inoltre, EmiLayAli analizza il <strong>livello di soddisfazione</strong> dell’ospite durante il soggiorno: se l’esperienza è positiva, propone di lasciare una <strong>recensione</strong> nel momento giusto, aumentando le valutazioni senza pressioni.</p>
-                </section>
-
-                <section class="plan-block">
-                  <header class="plan-head">
-                    <span class="plan-index" aria-hidden="true">6</span>
-                    <h3>In sintesi: canone e guadagno extra</h3>
-                  </header>
-                  <p class="plan-lead">Un unico sistema: check-in digitale, report automatici, sincronizzazione piani, tutela dall’overbooking, upselling con i partner, recupero recensioni e assistente virtuale EmiLayAli. Tutto integrato, tutto gestito.</p>
-                  <p class="plan-price-hero"><strong>39 €</strong><small> / mese per l’activity manager</small></p>
-                  <p class="plan-price-small">EmiLayAli: <strong>5 €</strong> — extra facoltativo, pagato dal cliente</p>
-                  <p class="plan-lead plan-optional-note">Tutto è opzionale e pagato direttamente dal cliente, <strong>senza alcun costo per la struttura</strong>. La struttura guadagna già grazie alle recensioni, all’upselling e ai servizi partner, senza spendere nulla.</p>
-                </section>
-
-                <footer class="sys-settings-legal">
-                  <h3>Condizioni</h3>
-                  <p>Questo è il listino della piattaforma, non un ordine. Add-on, referral e moduli in coda si attivano solo su richiesta della direzione. Nessun pagamento né rinnovo parte da questo pannello. IVA, fatturazione e contratti si definiscono in sede. Il check-in digitale è il modulo già attivo; PMS, Channel Manager e gestione avanzata si rilasciano quando il collegamento tecnico è reale.</p>
-                </footer>
-                </div>
-
+                <div id="orgConsoleRoot" class="org-console-root" aria-live="polite"></div>
               </div>
             </div>
             <div class="footer-summary">
-              <span id="infoFooterLabel">Riva OS - Version 2026.1.4</span>
-              <span class="footer-summary-meta">Area Riservata Direzione</span>
+              <span id="infoFooterLabel">Riva OS — Console hotel</span>
+              <span class="footer-summary-meta">Dev / Manager</span>
             </div>
           </div>
 
@@ -23872,8 +23805,8 @@
                   <button type="button" class="m-hub-link" data-more-view="info" id="moreInfoBtn">
                     <span class="m-hub-link__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 10.5V17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.1" fill="currentColor"/></svg></span>
                     <span class="m-hub-link__copy">
-                      <span class="m-hub-link__label">Registro direzione</span>
-                      <span class="m-hub-link__hint">Beta</span>
+                      <span class="m-hub-link__label">Console hotel</span>
+                      <span class="m-hub-link__hint">Dev / Manager</span>
                     </span>
                     <span class="m-hub-link__chev" aria-hidden="true">›</span>
                   </button>
@@ -24996,6 +24929,7 @@
   <script src="/js/riva-skeleton.js?v=15"></script>
   <script src="/js/tenant-boot.js"></script>
   <script src="/js/staff-ops.js?v=105"></script>
+  <script src="/js/staff-org-console.js?v=1"></script>
   <script src="/js/excel-grid-nav.js?v=2"></script>
   <script>
     document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
@@ -27654,7 +27588,7 @@
       blacklist: 'Segnalazioni',
       'shift-audit': 'Chiusura turno',
       settings: 'Impostazioni',
-      info: 'Registro direzione',
+      info: 'Console hotel',
       more: 'Altro',
     };
 
@@ -27817,12 +27751,25 @@
     }
 
     function canSeeStaffInfo() {
-      return false;
+      return Boolean(currentStaff?.info || currentStaff?.dev || currentStaff?.manager);
+    }
+
+    function applyHotelModules(modules) {
+      const m = modules && typeof modules === 'object' ? modules : {};
+      const on = (key, fallback = true) => (key in m ? Boolean(m[key]) : fallback);
+      document.body.classList.toggle('mod-holds-off', !on('holds', true));
+      document.body.classList.toggle('mod-ops-off', !on('ops_rooms', true));
+      document.body.classList.toggle('mod-bf-off', !on('ops_colazioni', true));
+      document.body.classList.toggle('mod-notes-off', !on('notes', true));
+      document.body.classList.toggle('mod-blacklist-off', !on('blacklist', true));
+      document.body.classList.toggle('mod-shift-off', !on('shift_audit', true));
+      document.body.classList.toggle('mod-alloggiati-off', !on('alloggiati', true));
     }
 
     function applyInfoAccess() {
       const allowed = canSeeStaffInfo();
       document.body.classList.toggle('can-info', allowed);
+      document.body.classList.toggle('is-dev', Boolean(currentStaff?.dev));
       tabInfo?.classList.toggle('hidden', !allowed);
       document.querySelectorAll('.sys-settings-sales').forEach((el) => {
         el.hidden = !allowed;
@@ -27833,6 +27780,7 @@
       if (!allowed && activeNav?.getAttribute('data-settings-nav') === 'integrations') {
         setSettingsPane('reception');
       }
+      applyHotelModules(currentStaff?.modules);
     }
 
     function setActiveView(view, { restore = false } = {}) {
@@ -28067,15 +28015,19 @@
     }
 
     function resetRoadmap() {
-      if (infoFooterLabel) infoFooterLabel.textContent = 'Riva OS - Version 2026.1.4';
+      if (infoFooterLabel) infoFooterLabel.textContent = 'Riva OS — Console hotel';
     }
 
     async function loadRoadmap() {
+      const root = document.getElementById('orgConsoleRoot');
       try {
-        const res = await fetch(`${TENANT_API_PREFIX}/api/staff/roadmap`, { credentials: 'same-origin' });
-        if (res.status === 401) {
-          resetRoadmap();
-          showLogin();
+        if (window.StaffOrgConsole?.mount) {
+          await window.StaffOrgConsole.mount(root);
+        }
+        if (infoFooterLabel) {
+          infoFooterLabel.textContent = currentStaff?.dev
+            ? 'Console Dev'
+            : 'Console Manager';
         }
       } catch (_) {
         resetRoadmap();

@@ -1,0 +1,234 @@
+/* Console Dev / Manager — Registro direzione (staff124) */
+.org-head {
+  max-width: 720px;
+  margin: 0 auto 20px;
+  padding: 0 4px;
+}
+.org-title {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+.org-lead {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #555;
+}
+.org-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #888;
+}
+.org-stack {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 32px;
+}
+.org-hotel {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.org-hotel-head {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 16px 18px;
+  border: 0;
+  background: #fafafa;
+  cursor: pointer;
+}
+.org-hotel.is-open .org-hotel-head {
+  border-bottom: 1px solid #eee;
+}
+.org-hotel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.org-hotel-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111;
+}
+.org-hotel-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #777;
+}
+.org-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eee;
+  color: #444;
+}
+.org-pill--live { background: #e8f5e9; color: #1b5e20; }
+.org-pill--affiliate { background: #e3f2fd; color: #0d47a1; }
+.org-pill--template { background: #f5f5f5; color: #757575; }
+.org-hotel-body {
+  display: none;
+  padding: 14px 18px 18px;
+}
+.org-hotel.is-open .org-hotel-body { display: block; }
+.org-notes {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.4;
+}
+.org-section-label {
+  margin: 16px 0 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #999;
+}
+.org-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.org-mod-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  margin: 0;
+  cursor: pointer;
+}
+.org-mod-row:last-child { border-bottom: 0; }
+.org-mod-row.is-readonly { cursor: default; opacity: 0.85; }
+.org-mod-title {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #222;
+}
+.org-mod-id {
+  display: block;
+  font-size: 0.72rem;
+  color: #aaa;
+  margin-top: 2px;
+}
+.org-dept { margin-top: 8px; }
+.org-dept-title {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #333;
+}
+.org-dept-title span {
+  font-weight: 500;
+  color: #999;
+  margin-left: 4px;
+}
+.org-staff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.org-staff-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.org-staff-row:last-child { border-bottom: 0; }
+.org-staff-name {
+  display: block;
+  font-weight: 600;
+  color: #111;
+}
+.org-staff-meta {
+  display: block;
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 2px;
+}
+.org-staff-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.org-btn {
+  appearance: none;
+  border: 1px solid #ddd;
+  background: #111;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.org-btn--ghost {
+  background: #fff;
+  color: #333;
+}
+.org-btn:disabled { opacity: 0.5; cursor: default; }
+.org-empty {
+  max-width: 720px;
+  margin: 24px auto;
+  text-align: center;
+  color: #777;
+  font-size: 0.95rem;
+}
+.org-skeleton {
+  max-width: 720px;
+  margin: 12px auto;
+  height: 180px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #fafafa 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: orgShimmer 1.2s ease-in-out infinite;
+}
+@keyframes orgShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+body.mod-holds-off #tabHolds,
+body.mod-holds-off [data-more-view="holds"],
+body.mod-blacklist-off #tabBlacklist,
+body.mod-blacklist-off [data-more-view="blacklist"],
+body.mod-shift-off #navShiftAudit,
+body.mod-shift-off [data-more-view="shift-audit"],
+body.mod-alloggiati-off #tabAlloggiati,
+body.mod-alloggiati-off [data-more-view="alloggiati"],
+body.mod-notes-off #tabNotes,
+body.mod-notes-off #tabRequests,
+body.mod-notes-off [data-m-view="requests"] {
+  display: none !important;
+}
+
+@media (max-width: 720px) {
+  .org-staff-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
