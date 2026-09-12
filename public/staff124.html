@@ -13395,31 +13395,50 @@
       box-shadow: none;
     }
 
-    @media (min-width: 1381px) {
-      .ops-rooms-grid {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-content: flex-start;
-        gap: 12px;
+    @media (min-width: 900px) {
+      /* Tablet / desktop: griglia fluida a tutta larghezza (niente card 220px centrate) */
+      .ops-rooms-grid,
+      .workspace.is-ops .ops-rooms-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)) !important;
+        justify-content: stretch !important;
+        align-content: start !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 0 12px !important;
       }
-      .ops-room {
-        flex: 0 0 220px;
-        width: 220px;
-        max-width: 220px;
-        min-height: 112px;
-        padding: 11px 14px 10px;
+      .ops-room,
+      .workspace.is-ops .ops-room {
+        flex: unset !important;
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        min-height: 118px !important;
+        padding: 14px 12px 12px !important;
       }
-      .ops-room__num { font-size: 20px; }
-      .ops-room__status { font-size: 10px; }
+      .ops-room__num { font-size: 22px !important; }
+      .ops-room__status { font-size: 12px !important; }
     }
 
-    @media (min-width: 1400px) {
-      .ops-rooms-grid { gap: 14px; }
-      .ops-room {
-        flex-basis: 240px;
-        width: 240px;
-        max-width: 240px;
+    @media (min-width: 1200px) {
+      .ops-rooms-grid,
+      .workspace.is-ops .ops-rooms-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+        gap: 14px !important;
+      }
+      .ops-room,
+      .workspace.is-ops .ops-room {
+        min-height: 124px !important;
+      }
+    }
+
+    @media (min-width: 1600px) {
+      .ops-rooms-grid,
+      .workspace.is-ops .ops-rooms-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+        gap: 16px !important;
       }
     }
 
@@ -22360,6 +22379,7 @@
         padding: 0 12px 12px;
       }
 
+      /* Phone stretto: 2 colonne. Da 900px in su vince la griglia fluida sopra. */
       .workspace.is-ops .ops-rooms-grid {
         display: flex;
         flex-wrap: wrap;
@@ -22382,6 +22402,22 @@
         padding: 12px 8px 10px;
         justify-content: flex-start;
         gap: 6px;
+      }
+
+      @media (min-width: 900px) {
+        .workspace.is-ops .ops-rooms-grid {
+          display: grid !important;
+          grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)) !important;
+          justify-content: stretch !important;
+          gap: 12px !important;
+        }
+        .workspace.is-ops .ops-room {
+          flex: unset !important;
+          width: auto !important;
+          max-width: none !important;
+          min-height: 118px !important;
+          padding: 14px 12px 12px !important;
+        }
       }
 
       .workspace.is-ops .ops-room::before {
