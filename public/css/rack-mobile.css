@@ -77,6 +77,29 @@
     padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
+  /* Tabella gestionale: scroll sinistra/destra anche in settimana */
+  .workspace.is-holds .holds-panel .rack-scroll,
+  .workspace.is-holds .holds-panel #rackScroll.rack-scroll {
+    overflow: auto !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    touch-action: pan-x pan-y !important;
+  }
+
+  .workspace.is-holds .holds-panel .rack-frame:not(.is-wide) .rack-head,
+  .workspace.is-holds .holds-panel .rack-frame:not(.is-wide) .rack-row {
+    grid-template-columns: var(--rack-room-w) max-content !important;
+    width: max(100%, calc(var(--rack-room-w) + (var(--rack-day-count) * var(--rack-day-min, 44px)))) !important;
+    min-width: calc(var(--rack-room-w) + (var(--rack-day-count) * var(--rack-day-min, 44px))) !important;
+  }
+
+  .workspace.is-holds .holds-panel .rack-frame:not(.is-wide) .rack-dates,
+  .workspace.is-holds .holds-panel .rack-frame:not(.is-wide) .rack-row-track {
+    grid-template-columns: repeat(var(--rack-day-count), minmax(var(--rack-day-min, 44px), 1fr)) !important;
+    width: max(100%, calc(var(--rack-day-count) * var(--rack-day-min, 44px))) !important;
+    min-width: calc(var(--rack-day-count) * var(--rack-day-min, 44px)) !important;
+  }
+
   /* Periodo nav: VISIBILE solo nella bottom bar (override staff.html display:none) */
   .workspace.is-holds .holds-panel .rack-bottom-bar .rack-toolbar-period,
   .workspace.is-holds .holds-panel #rackDayNav,

@@ -444,6 +444,18 @@ html.is-pwa-phone body.is-dashboard #opsBody {
   overscroll-behavior-y: contain !important;
 }
 
+/* Prenotazioni: sempre pan X+Y anche in PWA phone / Request Desktop Site */
+html.is-pwa-phone body.is-dashboard .holds-panel .rack-scroll,
+html.is-pwa-phone body.is-dashboard #rackScroll.rack-scroll,
+html.is-pwa-phone body.is-dashboard .workspace.is-holds .rack-scroll {
+  overflow: auto !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  touch-action: pan-x pan-y !important;
+  -webkit-overflow-scrolling: auto !important;
+  overscroll-behavior: none !important;
+}
+
 html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-main-layout {
   display: flex !important;
   flex-direction: column !important;
