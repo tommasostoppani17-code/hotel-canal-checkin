@@ -13377,13 +13377,13 @@
     }
 
     @media (min-width: 900px) {
-      /* Tablet / desktop: griglia fluida a tutta larghezza (niente card 220px centrate) */
+      /* Tablet: tile fisse centrate (niente stretch 1fr) */
       .ops-rooms-grid,
       .workspace.is-ops .ops-rooms-grid {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)) !important;
-        justify-content: stretch !important;
-        align-content: start !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-content: flex-start !important;
         gap: 12px !important;
         width: 100% !important;
         max-width: none !important;
@@ -13392,34 +13392,49 @@
       }
       .ops-room,
       .workspace.is-ops .ops-room {
-        flex: unset !important;
-        width: auto !important;
-        max-width: none !important;
+        flex: 0 0 200px !important;
+        width: 200px !important;
+        max-width: 200px !important;
         min-width: 0 !important;
-        min-height: 118px !important;
-        padding: 14px 12px 12px !important;
+        min-height: 112px !important;
+        padding: 12px 12px 10px !important;
       }
-      .ops-room__num { font-size: 22px !important; }
-      .ops-room__status { font-size: 12px !important; }
+      .ops-room__num { font-size: 20px !important; }
+      .ops-room__status { font-size: 11px !important; }
     }
 
-    @media (min-width: 1200px) {
+    @media (min-width: 1381px) {
+      /* Desktop ufficio: card 220px centrate (design originale) */
       .ops-rooms-grid,
       .workspace.is-ops .ops-rooms-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-content: flex-start !important;
+        gap: 12px !important;
+      }
+      .ops-room,
+      .workspace.is-ops .ops-room {
+        flex: 0 0 220px !important;
+        width: 220px !important;
+        max-width: 220px !important;
+        min-height: 112px !important;
+        padding: 11px 14px 10px !important;
+      }
+      .ops-room__num { font-size: 20px !important; }
+      .ops-room__status { font-size: 10px !important; }
+    }
+
+    @media (min-width: 1400px) {
+      .ops-rooms-grid,
+      .workspace.is-ops .ops-rooms-grid {
         gap: 14px !important;
       }
       .ops-room,
       .workspace.is-ops .ops-room {
-        min-height: 124px !important;
-      }
-    }
-
-    @media (min-width: 1600px) {
-      .ops-rooms-grid,
-      .workspace.is-ops .ops-rooms-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
-        gap: 16px !important;
+        flex: 0 0 240px !important;
+        width: 240px !important;
+        max-width: 240px !important;
       }
     }
 
@@ -22360,7 +22375,7 @@
         padding: 0 12px 12px;
       }
 
-      /* Phone stretto: 2 colonne. Da 900px in su vince la griglia fluida sopra. */
+      /* Phone stretto (≤899): 2 colonne. Tablet 900–1380: tile fisse da regole globali. */
       .workspace.is-ops .ops-rooms-grid {
         display: flex;
         flex-wrap: wrap;
@@ -22385,19 +22400,14 @@
         gap: 6px;
       }
 
-      @media (min-width: 900px) {
+      @media (max-width: 899px) {
         .workspace.is-ops .ops-rooms-grid {
-          display: grid !important;
-          grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)) !important;
-          justify-content: stretch !important;
-          gap: 12px !important;
+          display: flex !important;
         }
         .workspace.is-ops .ops-room {
-          flex: unset !important;
-          width: auto !important;
-          max-width: none !important;
-          min-height: 118px !important;
-          padding: 14px 12px 12px !important;
+          flex: 0 0 calc(50% - 4px) !important;
+          width: calc(50% - 4px) !important;
+          max-width: calc(50% - 4px) !important;
         }
       }
 
