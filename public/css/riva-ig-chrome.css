@@ -368,11 +368,11 @@ body.hk-app .ig-subbar-tabs-inner .ops-stats-line {
   gap: 4px 6px !important;
   width: 100% !important;
   margin: 0 !important;
-  padding: 3px 10px 5px !important;
+  padding: 6px 10px 8px !important;
   min-height: 0 !important;
   height: auto !important;
-  border-top: 1px solid #efefef;
-  background: #fafafa;
+  border-top: 0 !important;
+  background: #fff !important;
   font-size: 11px !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em;
@@ -722,7 +722,7 @@ body.hk-app .ops-rooms-content {
 .workspace.is-ops-colazioni .ops-hk-toolbar-slot,
 .workspace.is-ops-colazioni #opsHkToolbarSlot {
   width: 100% !important;
-  flex: 1 1 auto !important;
+  flex: 0 0 auto !important;
 }
 
 /* Prenotazioni: i tasti devono stare tutti — niente clip a 48px */
@@ -737,13 +737,22 @@ body.hk-app .ops-rooms-content {
 
 .workspace.is-holds .ig-subbar-head,
 .workspace.is-clients .dash-toolbar,
-.workspace.is-alloggiati .dash-toolbar,
-.workspace.is-ops-rooms .dash-toolbar,
-.workspace.is-ops-colazioni .dash-toolbar {
+.workspace.is-alloggiati .dash-toolbar {
   margin: 0 !important;
   min-height: 0 !important;
   height: 100% !important;
   align-items: center !important;
+}
+
+/* HK: mai height 100% — altrimenti la barra tab/stats mangia lo spazio della griglia */
+.workspace.is-ops-rooms .dash-toolbar,
+.workspace.is-ops-colazioni .dash-toolbar {
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  flex: 0 0 auto !important;
+  align-items: stretch !important;
 }
 
 .workspace.is-holds .ig-subbar-head {

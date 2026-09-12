@@ -44,7 +44,7 @@
       } catch (_) { /* ignore */ }
     })();
   </script>
-  <script src="/js/pwa-boot.js?v=185" defer></script>
+  <script src="/js/pwa-boot.js?v=186" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Montserrat 300 = titolo Check-in; display=swap obbligatorio -->
@@ -12634,10 +12634,10 @@
       position: sticky;
       top: 0;
       z-index: 8;
-      margin: 0 0 10px;
-      padding: 0 0 10px;
+      margin: 0;
+      padding: 0;
       background: #fff;
-      box-shadow: 0 1px 0 rgba(10, 10, 10, 0.06);
+      box-shadow: none;
     }
 
     .ops-rooms-shell > .ops-toolbar .ops-sec-tabs {
@@ -22300,12 +22300,19 @@
       .workspace.is-ops .ops-body {
         flex: 1 1 auto;
         min-height: 0;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: hidden;
         overscroll-behavior: none;
-        padding: 12px 14px calc(24px + env(safe-area-inset-bottom, 0px));
-        -webkit-overflow-scrolling: touch;
+        padding: 8px 12px max(12px, env(safe-area-inset-bottom, 0px));
+        -webkit-overflow-scrolling: auto;
         background: #fafafa;
+      }
+
+      .workspace.is-ops.is-ops-rooms .ops-body {
+        padding: 8px 0 max(8px, env(safe-area-inset-bottom, 0px));
+      }
+
+      .workspace.is-ops.is-ops-rooms .ops-rooms-page {
+        padding: 0 12px 12px;
       }
 
       .workspace.is-ops .ops-rooms-grid {
@@ -22313,21 +22320,23 @@
         flex-wrap: wrap;
         justify-content: center;
         align-content: flex-start;
-        gap: 10px;
-        padding: 0 0 8px;
+        gap: 8px;
+        padding: 0;
         background: transparent;
       }
 
       .workspace.is-ops .ops-room {
-        flex: 0 0 calc(50% - 5px);
-        width: calc(50% - 5px);
-        max-width: calc(50% - 5px);
+        flex: 0 0 calc(50% - 4px);
+        width: calc(50% - 4px);
+        max-width: calc(50% - 4px);
         border: 1px solid rgba(0, 0, 0, 0.08) !important;
         border-radius: 14px !important;
         box-shadow: none !important;
         background: #fff !important;
-        min-height: 108px;
-        padding: 14px 10px 12px;
+        min-height: 92px;
+        padding: 12px 8px 10px;
+        justify-content: flex-start;
+        gap: 6px;
       }
 
       .workspace.is-ops .ops-room::before {
@@ -22877,7 +22886,7 @@
   <link rel="stylesheet" href="/css/riva-coherence.css?v=74">
   <link rel="stylesheet" href="/css/riva-ig-global.css?v=7">
   <link rel="stylesheet" href="/css/riva-ig-layout-fixes.css?v=77">
-  <link rel="stylesheet" href="/css/riva-ig-chrome.css?v=153">
+  <link rel="stylesheet" href="/css/riva-ig-chrome.css?v=154">
   <link rel="stylesheet" href="/css/shift-closure-cockpit.css?v=42">
   <link rel="stylesheet" href="/css/chiusura-turno.css?v=14">
   <link rel="stylesheet" href="/css/colazioni-grid.css?v=81">
@@ -22903,7 +22912,7 @@
   <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=6">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
   <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=10">
-  <link rel="stylesheet" href="/css/layout-stability.css?v=7">
+  <link rel="stylesheet" href="/css/layout-stability.css?v=8">
   <link rel="stylesheet" href="/css/staff-org-console.css?v=2">
   <link rel="stylesheet" href="/css/riva-large-desktop.css?v=1">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
@@ -25307,7 +25316,7 @@
 
   <script src="/js/riva-skeleton.js?v=15"></script>
   <script src="/js/tenant-boot.js"></script>
-  <script src="/js/staff-ops.js?v=109"></script>
+  <script src="/js/staff-ops.js?v=110"></script>
   <script src="/js/staff-org-console.js?v=2"></script>
   <script src="/js/excel-grid-nav.js?v=2"></script>
   <script>

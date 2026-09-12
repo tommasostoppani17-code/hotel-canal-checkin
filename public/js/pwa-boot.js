@@ -19,10 +19,18 @@
 
     var sw = Math.min(window.screen && window.screen.width || 0, window.screen && window.screen.height || 0);
     var iw = window.innerWidth || 0;
-    var spoofDesktop = sw > 0 && iw > sw + 80;
+    var spoofDesktop = sw > 0 && iw > sw + 60;
     var phoneOrTabletScreen = sw > 0 && sw <= 920;
+    var ua = String(navigator.userAgent || '');
+    var ios = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     /* Richiedi sito desktop su iPhone/iPad (Safari o Home): forza layout phone */
-    if (touch && (spoofDesktop || (standalone && sw <= 520) || (spoofDesktop && phoneOrTabletScreen))) {
+    if (
+      touch &&
+      (spoofDesktop ||
+        (standalone && sw <= 520) ||
+        (spoofDesktop && phoneOrTabletScreen) ||
+        (ios && phoneOrTabletScreen && iw >= 768))
+    ) {
       html.classList.add('is-pwa-phone');
     }
 
@@ -89,7 +97,7 @@
 
   const register = () => {
     navigator.serviceWorker
-      .register('/sw.js?v=182', { scope: '/' })
+      .register('/sw.js?v=186', { scope: '/' })
       .then((reg) => {
         try { reg.update(); } catch (_) { /* ignore */ }
         if (reg.waiting) {
