@@ -50,10 +50,10 @@
     margin: 0 !important;
   }
 
-  /* Contatore in fondo allo scroll (stesso flusso della lista) */
-  .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll .footer-summary,
-  #checkinsPanel .riva-master-column .table-scroll .footer-summary {
-    flex-shrink: 0 !important;
+  /* Contatore fissato in fondo alla colonna (lista scorre sopra) */
+  .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+  #checkinsPanel .riva-master-column > .footer-summary {
+    flex: 0 0 auto !important;
     border-top: 1px solid #efefef !important;
     background: #fff !important;
     margin: 0 !important;

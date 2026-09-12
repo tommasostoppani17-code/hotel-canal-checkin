@@ -303,6 +303,8 @@ export function initDb(databasePath) {
   ensureRoomHoldColumn('board_plan', 'board_plan TEXT');
   ensureRoomHoldColumn('extras', 'extras TEXT');
   ensureRoomHoldColumn('offer_notes', 'offer_notes TEXT');
+  ensureRoomHoldColumn('channel_source', 'channel_source TEXT');
+  ensureRoomHoldColumn('channel_ref', 'channel_ref TEXT');
 
   seedStaffRoster();
 
@@ -335,6 +337,8 @@ function ensureRoomHoldColumn(name, ddl) {
     board_plan: 'board_plan TEXT',
     extras: 'extras TEXT',
     offer_notes: 'offer_notes TEXT',
+    channel_source: 'channel_source TEXT',
+    channel_ref: 'channel_ref TEXT',
   };
   if (!ALLOWED[name] || ALLOWED[name] !== ddl) {
     throw new Error(`[db] colonna room_holds non consentita: ${name}`);

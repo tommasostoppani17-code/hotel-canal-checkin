@@ -247,6 +247,8 @@ function mapHoldRow(row, { includeGuestPii = true } = {}) {
     expiresAt: row.expires_at,
     guestsCount: row.guests_count,
     guestNotes: row.guest_notes || '',
+    channelSource: String(row.channel_source || '').trim(),
+    channelRef: String(row.channel_ref || '').trim(),
     privacyAcceptedAt: row.privacy_accepted_at,
     detailsSubmittedAt: row.details_submitted_at,
     transferDeclaredAt: row.transfer_declared_at,
@@ -308,6 +310,8 @@ export function createRoomHold({
   extras = [],
   offerNotes = '',
   status = null,
+  channelSource = '',
+  channelRef = '',
 }) {
   expireDueHolds();
   const room = normalizeRoom(roomNumber);
@@ -321,6 +325,8 @@ export function createRoomHold({
   const boardId = normalizeBoardPlan(boardPlan);
   const extrasList = normalizeExtras(extras);
   const notesOffer = String(offerNotes || '').trim().slice(0, 2000);
+  const chSrc = String(channelSource || '').trim().toLowerCase().slice(0, 64);
+  const chRef = String(channelRef || '').trim().slice(0, 128);
 
   if (!room) {
     return { ok: false, error: 'stanza_mancante' };
@@ -377,12 +383,14 @@ export function createRoomHold({
         total_cents, deposit_percent, amount_due_cents, status,
         sold_by, expires_at, guest_name, guest_phone, guest_email,
         guests_count, guest_notes, room_type, board_plan, extras, offer_notes,
+        channel_source, channel_ref,
         confirmed_at, confirmed_by, manual, updated_at
       ) VALUES (
         ?, ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
+        ?, ?,
         ?, ?, ?, datetime('now')
       )
       `,
@@ -410,6 +418,8 @@ export function createRoomHold({
       boardId,
       extrasToStore(extrasList),
       notesOffer || null,
+      chSrc || null,
+      chRef || null,
       finalStatus === HOLD_STATUSES.CONFIRMED ? nowIso() : null,
       finalStatus === HOLD_STATUSES.CONFIRMED ? seller : null,
       isManual ? 1 : 0,

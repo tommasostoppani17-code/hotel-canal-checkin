@@ -117,6 +117,11 @@ import {
   deleteHoldDocument,
   readHoldDocumentBuffer,
 } from './hold-documents.js';
+import {
+  injectSandboxBookings,
+  listRecentSandboxHolds,
+  sandboxCatalogPayload,
+} from './channel-sandbox.js';
 import { getCsvMedia, whatsappConfigured, sendTableBookingWhatsApp } from './whatsapp.js';
 import {
   sendWelcomeEmail,
@@ -3279,12 +3284,54 @@ app.post(
       boardPlan: req.body?.boardPlan,
       extras: req.body?.extras,
       offerNotes: req.body?.offerNotes,
+      channelSource: req.body?.channelSource,
+      channelRef: req.body?.channelRef,
     });
     if (!result.ok) {
       const status = result.error === 'camera_occupata' ? 409 : 400;
       return res.status(status).json(result);
     }
     return res.status(201).json(staffHoldPayload(result.hold, publicBaseUrl()));
+  },
+);
+
+/** Sandbox Channel Manager — solo Dev, prenotazioni fittizie gratis */
+app.get(
+  '/api/staff/channel-sandbox',
+  rateLimit({ windowMs: 60_000, max: 40 }),
+  requireStaff,
+  (req, res) => {
+    if (!isStaffDev(req.staffUser?.staffId)) {
+      return res.status(403).json({ error: 'Solo Dev', code: 'forbidden' });
+    }
+    res.setHeader('Cache-Control', 'no-store');
+    return res.json({
+      ...sandboxCatalogPayload(),
+      recent: listRecentSandboxHolds(15),
+    });
+  },
+);
+
+app.post(
+  '/api/staff/channel-sandbox/inject',
+  rateLimit({ windowMs: 60_000, max: 20 }),
+  requireStaff,
+  (req, res) => {
+    if (!isStaffDev(req.staffUser?.staffId)) {
+      return res.status(403).json({ error: 'Solo Dev', code: 'forbidden' });
+    }
+    const result = injectSandboxBookings({
+      count: req.body?.count,
+      channel: req.body?.channel,
+      roomNumber: req.body?.roomNumber,
+      checkIn: req.body?.checkIn,
+      checkOut: req.body?.checkOut,
+      soldBy: req.staffUser?.staffName || 'channel-sandbox',
+    });
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+    return res.status(201).json(result);
   },
 );
 
