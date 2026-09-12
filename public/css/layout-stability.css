@@ -537,19 +537,30 @@ html.is-pwa-touch body.is-dashboard .ops-sec-tab {
 
 html.is-pwa-phone body.is-dashboard #checkinsScroll,
 html.is-pwa-phone body.is-dashboard #inHouseScroll {
-  display: flex !important;
-  flex-direction: column !important;
+  display: block !important;
 }
 
-html.is-pwa-phone body.is-dashboard #checkinsScroll > .footer-summary,
-html.is-pwa-phone body.is-dashboard #inHouseScroll > .footer-summary {
+html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-master-column,
+html.is-pwa-phone body.is-dashboard #inHousePanel {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-master-column > .footer-summary,
+html.is-pwa-phone body.is-dashboard #inHousePanel > .footer-summary,
+html.is-pwa-phone body.is-dashboard #checkinsFooter,
+html.is-pwa-phone body.is-dashboard #inHouseFooter {
   flex: 0 0 auto !important;
-  margin-top: auto !important;
-  margin-bottom: 0 !important;
-  background: transparent !important;
-  border-top: 0 !important;
+  margin: 0 !important;
+  background: #fff !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow: none !important;
   padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
+  color: #0a0a0a !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  z-index: 4;
 }
 
 /* Prenotazioni: sempre pan X+Y anche in PWA phone / Request Desktop Site */

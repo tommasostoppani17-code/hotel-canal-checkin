@@ -39,27 +39,25 @@
     box-shadow: none !important;
   }
 
+  /* Contatore sempre visibile sotto la lista (fuori dallo scroll) */
   .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll,
   #checkinsPanel .riva-master-column .table-scroll {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow: auto !important;
     -webkit-overflow-scrolling: touch;
-    display: flex !important;
-    flex-direction: column !important;
+    display: block !important;
     background: #fff !important;
     padding: 0 !important;
     margin: 0 !important;
   }
 
-  /* Contatore in fondo allo scroll (niente barra flottante sotto la colonna) */
-  .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll > .footer-summary,
-  #checkinsPanel .riva-master-column .table-scroll > .footer-summary {
+  .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+  #checkinsPanel .riva-master-column > .footer-summary {
     flex: 0 0 auto !important;
-    margin-top: auto !important;
-    margin-bottom: 0 !important;
-    border-top: 0 !important;
-    background: transparent !important;
+    margin: 0 !important;
+    border-top: 1px solid #efefef !important;
+    background: #fff !important;
     padding: 10px 14px 12px !important;
   }
 

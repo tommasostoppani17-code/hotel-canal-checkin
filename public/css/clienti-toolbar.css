@@ -357,21 +357,43 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
 
   .workspace.is-clients #checkinsPanel .table-scroll,
   .workspace.is-clients #inHousePanel .table-scroll {
-    display: flex !important;
-    flex-direction: column !important;
-    /* Cuscinetto minimo sotto il contatore (FAB flottante sopra) */
-    padding-bottom: 0 !important;
+    display: block !important;
+    padding-bottom: 8px !important;
   }
 
-  .workspace.is-clients #checkinsPanel .table-scroll > .footer-summary,
-  .workspace.is-clients #inHousePanel .table-scroll > .footer-summary {
+  .workspace.is-clients #checkinsPanel .riva-master-column,
+  .workspace.is-clients #inHousePanel {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+  .workspace.is-clients #inHousePanel > .footer-summary,
+  .workspace.is-clients #checkinsFooter,
+  .workspace.is-clients #inHouseFooter {
     flex: 0 0 auto !important;
-    margin-top: auto !important;
-    margin-bottom: 0 !important;
-    background: transparent !important;
-    border-top: 0 !important;
+    margin: 0 !important;
+    margin-top: 0 !important;
+    background: #fff !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
     box-shadow: none !important;
     padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
+    color: #262626 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    z-index: 4;
+  }
+
+  .workspace.is-clients #checkinsFooter #rowCount,
+  .workspace.is-clients #inHouseFooter #inHouseRowCount {
+    color: #0a0a0a !important;
+    font-weight: 700 !important;
+  }
+
+  .workspace.is-clients #checkinsFooter .footer-summary-meta,
+  .workspace.is-clients #inHouseFooter .footer-summary-meta {
+    display: none !important;
   }
 }
 
@@ -381,8 +403,8 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
   position: fixed;
   z-index: 55;
   right: max(20px, env(safe-area-inset-right, 0px));
-  /* Sopra safe area — contatore è nel flusso lista, non barra fissa */
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  /* Sopra il contatore fissato + safe area */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
   width: 56px;
   height: 56px;
   margin: 0;

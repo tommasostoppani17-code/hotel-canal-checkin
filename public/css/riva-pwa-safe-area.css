@@ -241,34 +241,47 @@ body.hk-app.is-board::before {
   body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll {
     flex: 1 1 auto !important;
     min-height: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
+    display: block !important;
     background: var(--riva-clients-wash) !important;
     background-color: var(--riva-clients-wash) !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: none;
-    padding-bottom: 0 !important;
+    padding-bottom: 8px !important;
+  }
+
+  body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column,
+  body.is-dashboard .workspace.is-clients #inHousePanel {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
   }
 
   body.is-dashboard .workspace.is-clients .footer-summary,
   body.is-dashboard .workspace.is-clients #checkinsPanel .footer-summary,
   body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary,
-  body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .footer-summary,
-  body.is-dashboard .workspace.is-clients .table-scroll > .footer-summary {
+  body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+  body.is-dashboard .workspace.is-clients #checkinsFooter,
+  body.is-dashboard .workspace.is-clients #inHouseFooter {
     flex: 0 0 auto !important;
-    margin: auto 0 0 !important;
-    border-top: 0 !important;
+    margin: 0 !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
     box-shadow: none !important;
-    /* Stesso wash della lista — niente striscia/barra bianca */
-    background: transparent !important;
-    background-color: transparent !important;
-    color: #6b7280 !important;
+    background: #fff !important;
+    background-color: #fff !important;
+    color: #262626 !important;
     padding: 10px 16px max(10px, var(--riva-safe-bottom)) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
   }
 
-  /* FAB: millimetrico sopra la Home Indicator */
+  body.is-dashboard .workspace.is-clients #checkinsFooter .footer-summary-meta,
+  body.is-dashboard .workspace.is-clients #inHouseFooter .footer-summary-meta {
+    display: none !important;
+  }
+
+  /* FAB: sopra il contatore + Home Indicator */
   body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
-    bottom: calc(var(--riva-safe-bottom) + 20px) !important;
+    bottom: calc(var(--riva-safe-bottom) + 56px) !important;
     right: max(20px, var(--riva-safe-right)) !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
   }
@@ -334,31 +347,33 @@ html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel .ta
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll {
   flex: 1 1 auto !important;
   min-height: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
+  display: block !important;
   background: var(--riva-clients-wash) !important;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
-  padding-bottom: 0 !important;
+  padding-bottom: 8px !important;
 }
 
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients .footer-summary,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .footer-summary,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary,
-html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column .footer-summary,
-html.is-pwa-standalone body.is-dashboard .workspace.is-clients .table-scroll > .footer-summary {
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsFooter,
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHouseFooter {
   flex: 0 0 auto !important;
-  margin: auto 0 0 !important;
-  border-top: 0 !important;
+  margin: 0 !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow: none !important;
-  background: transparent !important;
-  background-color: transparent !important;
-  color: #6b7280 !important;
+  background: #fff !important;
+  background-color: #fff !important;
+  color: #262626 !important;
   padding: 10px 16px max(10px, var(--riva-safe-bottom)) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
 }
 
 html.is-pwa-standalone body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
-  bottom: calc(var(--riva-safe-bottom) + 20px) !important;
+  bottom: calc(var(--riva-safe-bottom) + 56px) !important;
   right: max(20px, var(--riva-safe-right)) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 }

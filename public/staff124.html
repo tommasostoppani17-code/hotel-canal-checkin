@@ -3132,13 +3132,14 @@
       .workspace.is-clients .footer-summary,
       .workspace.is-clients #checkinsPanel .footer-summary,
       .workspace.is-clients #inHousePanel .footer-summary {
-        margin: auto 0 0;
+        margin: 0;
         padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
-        border-top: 0 !important;
-        background: transparent !important;
-        color: #6B7280 !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+        background: #fff !important;
+        color: #0a0a0a !important;
         font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-weight: 550;
+        font-weight: 700;
+        font-size: 13px;
       }
 
       .workspace.is-clients .footer-summary strong {
@@ -3724,18 +3725,27 @@
 
       .workspace.is-clients #checkinsScroll,
       .workspace.is-clients #inHouseScroll {
-        display: flex !important;
-        flex-direction: column !important;
+        display: block !important;
       }
 
-      .workspace.is-clients #checkinsScroll > .footer-summary,
-      .workspace.is-clients #inHouseScroll > .footer-summary {
+      .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+      .workspace.is-clients #inHousePanel > .footer-summary,
+      .workspace.is-clients #checkinsFooter,
+      .workspace.is-clients #inHouseFooter {
         flex: 0 0 auto !important;
-        margin-top: auto !important;
-        margin-bottom: 0 !important;
-        background: transparent !important;
-        border-top: 0 !important;
+        margin: 0 !important;
+        background: #fff !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
         box-shadow: none !important;
+        padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
+        color: #0a0a0a !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+      }
+
+      .workspace.is-clients #checkinsFooter .footer-summary-meta,
+      .workspace.is-clients #inHouseFooter .footer-summary-meta {
+        display: none !important;
       }
 
       .workspace.is-clients #checkinsPanel .riva-main-layout,
@@ -3744,9 +3754,16 @@
         flex-direction: column !important;
         flex: 1 1 auto !important;
         min-height: 0 !important;
-        height: auto !important;
+        height: 100% !important;
         max-height: none !important;
         overflow: hidden !important;
+      }
+
+      .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+      .workspace.is-clients #inHousePanel > .footer-summary,
+      .workspace.is-clients #checkinsFooter,
+      .workspace.is-clients #inHouseFooter {
+        flex: 0 0 auto !important;
       }
 
       .workspace.is-clients #checkinsPanel .riva-detail-column {
@@ -8304,15 +8321,18 @@
       }
 
       .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll .footer-summary,
-      #checkinsPanel .riva-master-column .table-scroll .footer-summary {
+      #checkinsPanel .riva-master-column .table-scroll .footer-summary,
+      .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
+      #checkinsPanel .riva-master-column > .footer-summary,
+      #checkinsFooter {
         flex: 0 0 auto;
-        margin-top: auto !important;
-        margin-bottom: 0 !important;
+        margin: 0 !important;
         padding: 10px 14px 12px !important;
-        background: transparent !important;
-        border-top: 0 !important;
-        color: #8e8e8e;
-        font-size: 12px;
+        background: #fff !important;
+        border-top: 1px solid #efefef !important;
+        color: #0a0a0a;
+        font-size: 13px;
+        font-weight: 700;
         align-items: flex-start;
         gap: 6px;
       }
@@ -20854,13 +20874,13 @@
       }
 
       .clients-matrix .footer-summary {
-        background: transparent;
-        border-top: 0;
-        margin-top: auto;
-        padding: 10px 14px 12px;
-        font-size: 12px;
-        font-weight: 500;
-        color: #8e8e8e;
+        background: #fff;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        margin-top: 0;
+        padding: 10px 14px max(10px, env(safe-area-inset-bottom, 0px));
+        font-size: 13px;
+        font-weight: 700;
+        color: #0a0a0a;
         box-shadow: none;
       }
 
@@ -22639,12 +22659,12 @@
       .workspace.is-clients #checkinsPanel .footer-summary,
       .workspace.is-clients #inHousePanel .footer-summary {
         padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px));
-        margin-top: auto;
-        font-size: 12px;
-        font-weight: 500;
-        color: #8e8e8e;
-        background: transparent;
-        border-top: 0;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 700;
+        color: #0a0a0a;
+        background: #fff;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: none;
       }
     }
@@ -22931,13 +22951,13 @@
   <link rel="stylesheet" href="/css/segnalazioni-stability.css?v=2">
   <link rel="stylesheet" href="/css/riva-gate.css?v=146">
   <link rel="stylesheet" href="/css/riva-tap-stable.css?v=4">
-  <link rel="stylesheet" href="/css/clienti-toolbar.css?v=10">
+  <link rel="stylesheet" href="/css/clienti-toolbar.css?v=11">
   <link rel="stylesheet" href="/css/riva-capsule-toolbars.css?v=5">
-  <link rel="stylesheet" href="/css/clienti-desktop.css?v=10">
+  <link rel="stylesheet" href="/css/clienti-desktop.css?v=11">
   <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=6">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
-  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=10">
-  <link rel="stylesheet" href="/css/layout-stability.css?v=9">
+  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=11">
+  <link rel="stylesheet" href="/css/layout-stability.css?v=10">
   <link rel="stylesheet" href="/css/staff-org-console.css?v=2">
   <link rel="stylesheet" href="/css/riva-large-desktop.css?v=1">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
@@ -23307,10 +23327,10 @@
                     </thead>
                     <tbody id="list"></tbody>
                   </table>
-                  <div class="footer-summary">
-                    <span id="rowCount">0 check-in</span>
-                    <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
-                  </div>
+                </div>
+                <div class="footer-summary" id="checkinsFooter">
+                  <span id="rowCount">0 check-in</span>
+                  <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
                 </div>
               </section>
               <aside class="riva-detail-column" id="guestDetailColumn" aria-label="Dettaglio ospite">
@@ -23356,10 +23376,10 @@
                 </thead>
                 <tbody id="inHouseList"></tbody>
               </table>
-              <div class="footer-summary">
-                <span id="inHouseRowCount">0 in camera</span>
-                <span class="footer-summary-meta">Soggiorno in corso</span>
-              </div>
+            </div>
+            <div class="footer-summary" id="inHouseFooter">
+              <span id="inHouseRowCount">0 in camera</span>
+              <span class="footer-summary-meta">Soggiorno in corso</span>
             </div>
           </div>
 
