@@ -3132,8 +3132,8 @@
       .workspace.is-clients .footer-summary,
       .workspace.is-clients #checkinsPanel .footer-summary,
       .workspace.is-clients #inHousePanel .footer-summary {
-        margin: 0 clamp(20px, 2.5vw, 32px);
-        padding: 8px 4px 6px !important;
+        margin: auto 0 0;
+        padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
         border-top: 0 !important;
         background: transparent !important;
         color: #6B7280 !important;
@@ -3722,6 +3722,22 @@
         overscroll-behavior-y: contain;
       }
 
+      .workspace.is-clients #checkinsScroll,
+      .workspace.is-clients #inHouseScroll {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      .workspace.is-clients #checkinsScroll > .footer-summary,
+      .workspace.is-clients #inHouseScroll > .footer-summary {
+        flex: 0 0 auto !important;
+        margin-top: auto !important;
+        margin-bottom: 0 !important;
+        background: transparent !important;
+        border-top: 0 !important;
+        box-shadow: none !important;
+      }
+
       .workspace.is-clients #checkinsPanel .riva-main-layout,
       .workspace.is-clients #checkinsPanel .riva-master-column {
         display: flex !important;
@@ -3731,11 +3747,6 @@
         height: auto !important;
         max-height: none !important;
         overflow: hidden !important;
-      }
-
-      .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
-      .workspace.is-clients #inHousePanel > .footer-summary {
-        flex: 0 0 auto !important;
       }
 
       .workspace.is-clients #checkinsPanel .riva-detail-column {
@@ -8292,11 +8303,12 @@
         overflow: auto;
       }
 
-      .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
-      #checkinsPanel .riva-master-column > .footer-summary {
+      .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll .footer-summary,
+      #checkinsPanel .riva-master-column .table-scroll .footer-summary {
         flex: 0 0 auto;
-        margin: 0 !important;
-        padding: 8px 14px 6px !important;
+        margin-top: auto !important;
+        margin-bottom: 0 !important;
+        padding: 10px 14px 12px !important;
         background: transparent !important;
         border-top: 0 !important;
         color: #8e8e8e;
@@ -20844,7 +20856,8 @@
       .clients-matrix .footer-summary {
         background: transparent;
         border-top: 0;
-        padding: 8px 14px 6px;
+        margin-top: auto;
+        padding: 10px 14px 12px;
         font-size: 12px;
         font-weight: 500;
         color: #8e8e8e;
@@ -22588,13 +22601,16 @@
         width: 100%;
       }
 
-      .footer-summary {
-        padding: 8px 14px max(6px, env(safe-area-inset-bottom, 0px));
+      .workspace.is-clients .footer-summary,
+      .workspace.is-clients #checkinsPanel .footer-summary,
+      .workspace.is-clients #inHousePanel .footer-summary {
+        padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px));
+        margin-top: auto;
         font-size: 12px;
         font-weight: 500;
         color: #8e8e8e;
-        background: #fff;
-        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        background: transparent;
+        border-top: 0;
         box-shadow: none;
       }
     }
@@ -22881,13 +22897,13 @@
   <link rel="stylesheet" href="/css/segnalazioni-stability.css?v=2">
   <link rel="stylesheet" href="/css/riva-gate.css?v=146">
   <link rel="stylesheet" href="/css/riva-tap-stable.css?v=3">
-  <link rel="stylesheet" href="/css/clienti-toolbar.css?v=9">
+  <link rel="stylesheet" href="/css/clienti-toolbar.css?v=10">
   <link rel="stylesheet" href="/css/riva-capsule-toolbars.css?v=5">
-  <link rel="stylesheet" href="/css/clienti-desktop.css?v=9">
+  <link rel="stylesheet" href="/css/clienti-desktop.css?v=10">
   <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=6">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
-  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=9">
-  <link rel="stylesheet" href="/css/layout-stability.css?v=6">
+  <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=10">
+  <link rel="stylesheet" href="/css/layout-stability.css?v=7">
   <link rel="stylesheet" href="/css/staff-org-console.css?v=2">
   <link rel="stylesheet" href="/css/riva-large-desktop.css?v=1">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
@@ -23257,10 +23273,10 @@
                     </thead>
                     <tbody id="list"></tbody>
                   </table>
-                </div>
-                <div class="footer-summary">
-                  <span id="rowCount">0 check-in</span>
-                  <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
+                  <div class="footer-summary">
+                    <span id="rowCount">0 check-in</span>
+                    <span class="footer-summary-meta" id="checkinsFooterMeta">Checkout dichiarato in registrazione · aggiornamento alle 14:00</span>
+                  </div>
                 </div>
               </section>
               <aside class="riva-detail-column" id="guestDetailColumn" aria-label="Dettaglio ospite">
@@ -23306,10 +23322,10 @@
                 </thead>
                 <tbody id="inHouseList"></tbody>
               </table>
-            </div>
-            <div class="footer-summary">
-              <span id="inHouseRowCount">0 in camera</span>
-              <span class="footer-summary-meta">Soggiorno in corso</span>
+              <div class="footer-summary">
+                <span id="inHouseRowCount">0 in camera</span>
+                <span class="footer-summary-meta">Soggiorno in corso</span>
+              </div>
             </div>
           </div>
 

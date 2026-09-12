@@ -357,8 +357,21 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
 
   .workspace.is-clients #checkinsPanel .table-scroll,
   .workspace.is-clients #inHousePanel .table-scroll {
-    /* Footer fuori dallo scroll: niente cuscinetto FAB qui (era spazio morto) */
-    padding-bottom: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    /* Cuscinetto minimo sotto il contatore (FAB flottante sopra) */
+    padding-bottom: 0 !important;
+  }
+
+  .workspace.is-clients #checkinsPanel .table-scroll > .footer-summary,
+  .workspace.is-clients #inHousePanel .table-scroll > .footer-summary {
+    flex: 0 0 auto !important;
+    margin-top: auto !important;
+    margin-bottom: 0 !important;
+    background: transparent !important;
+    border-top: 0 !important;
+    box-shadow: none !important;
+    padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
@@ -368,8 +381,8 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
   position: fixed;
   z-index: 55;
   right: max(20px, env(safe-area-inset-right, 0px));
-  /* Sopra il footer-summary fissato (~44px) + safe area */
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
+  /* Sopra safe area — contatore è nel flusso lista, non barra fissa */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
   width: 56px;
   height: 56px;
   margin: 0;

@@ -472,6 +472,23 @@ html.is-pwa-phone body.is-dashboard #opsBody {
   overscroll-behavior-y: contain !important;
 }
 
+html.is-pwa-phone body.is-dashboard #checkinsScroll,
+html.is-pwa-phone body.is-dashboard #inHouseScroll {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html.is-pwa-phone body.is-dashboard #checkinsScroll > .footer-summary,
+html.is-pwa-phone body.is-dashboard #inHouseScroll > .footer-summary {
+  flex: 0 0 auto !important;
+  margin-top: auto !important;
+  margin-bottom: 0 !important;
+  background: transparent !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+  padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
+}
+
 /* Prenotazioni: sempre pan X+Y anche in PWA phone / Request Desktop Site */
 html.is-pwa-phone body.is-dashboard .holds-panel .rack-scroll,
 html.is-pwa-phone body.is-dashboard #rackScroll.rack-scroll,
