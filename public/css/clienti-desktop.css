@@ -19,7 +19,7 @@
     height: 100% !important;
     min-height: 0 !important;
     background: #fafafa !important;
-    padding: 0 20px 16px 0 !important;
+    padding: 0 20px 8px 0 !important;
     box-sizing: border-box !important;
   }
 
@@ -57,7 +57,7 @@
     border-top: 1px solid #efefef !important;
     background: #fff !important;
     margin: 0 !important;
-    padding: 12px 14px 16px !important;
+    padding: 10px 14px 10px !important;
   }
 
   /* Colonna dettaglio: centro geometrico verticale + orizzontale */

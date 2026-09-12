@@ -245,8 +245,8 @@ body.hk-app.is-board::before {
     background-color: var(--riva-clients-wash) !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: none;
-    /* Cuscinetto: ultimo ospite + contatore non finiscono sotto FAB / Home Indicator */
-    padding-bottom: calc(var(--riva-fab-clearance) + var(--riva-safe-bottom)) !important;
+    /* Footer è sibling fuori dallo scroll: solo un filo d’aria sotto l’ultimo ospite */
+    padding-bottom: 8px !important;
   }
 
   body.is-dashboard .workspace.is-clients .footer-summary,
@@ -261,12 +261,12 @@ body.hk-app.is-board::before {
     background: transparent !important;
     background-color: transparent !important;
     color: #6b7280 !important;
-    padding: 12px 16px 8px !important;
+    padding: 8px 16px max(8px, var(--riva-safe-bottom)) !important;
   }
 
-  /* FAB: millimetrico sopra la Home Indicator (standalone) */
+  /* FAB: sopra il contatore + Home Indicator */
   body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
-    bottom: calc(var(--riva-safe-bottom) + 20px) !important;
+    bottom: calc(var(--riva-safe-bottom) + 56px) !important;
     right: max(20px, var(--riva-safe-right)) !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
   }
@@ -335,7 +335,7 @@ html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .r
   background: var(--riva-clients-wash) !important;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
-  padding-bottom: calc(var(--riva-fab-clearance) + var(--riva-safe-bottom)) !important;
+  padding-bottom: 8px !important;
 }
 
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients .footer-summary,
@@ -349,11 +349,11 @@ html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .r
   background: transparent !important;
   background-color: transparent !important;
   color: #6b7280 !important;
-  padding: 12px 16px 8px !important;
+  padding: 8px 16px max(8px, var(--riva-safe-bottom)) !important;
 }
 
 html.is-pwa-standalone body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
-  bottom: calc(var(--riva-safe-bottom) + 20px) !important;
+  bottom: calc(var(--riva-safe-bottom) + 56px) !important;
   right: max(20px, var(--riva-safe-right)) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 }

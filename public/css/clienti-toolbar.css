@@ -357,7 +357,8 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
 
   .workspace.is-clients #checkinsPanel .table-scroll,
   .workspace.is-clients #inHousePanel .table-scroll {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+    /* Footer fuori dallo scroll: niente cuscinetto FAB qui (era spazio morto) */
+    padding-bottom: 8px !important;
   }
 }
 
@@ -367,7 +368,8 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
   position: fixed;
   z-index: 55;
   right: max(20px, env(safe-area-inset-right, 0px));
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  /* Sopra il footer-summary fissato (~44px) + safe area */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
   width: 56px;
   height: 56px;
   margin: 0;
