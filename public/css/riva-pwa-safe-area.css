@@ -396,8 +396,13 @@ html.is-pwa-phone body.is-dashboard .dash-view {
 html.is-pwa-phone body.is-dashboard .table-scroll,
 html.is-pwa-phone body.is-dashboard .settings-scroll,
 html.is-pwa-phone body.is-dashboard .notes-scroll,
-html.is-pwa-phone body.is-dashboard .blacklist-scroll {
+html.is-pwa-phone body.is-dashboard .blacklist-scroll,
+html.is-pwa-touch body.is-dashboard .table-scroll,
+html.is-pwa-touch body.is-dashboard .settings-scroll,
+html.is-pwa-touch body.is-dashboard .notes-scroll,
+html.is-pwa-touch body.is-dashboard .blacklist-scroll {
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
   touch-action: pan-y !important;
+  pointer-events: auto !important;
 }
