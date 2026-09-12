@@ -1,24 +1,23 @@
 /**
- * Large / office monitors — densità sidebar (NO zoom automatico).
- * Il zoom CSS spezza iPad / “Richiedi sito desktop” e rimpicciolisce le card Camere.
- * Clienti wide: dettaglio più largo (vedi clienti-desktop.css).
+ * Large / office monitors — densità più alta (meno “zoomato”).
+ * Niente zoom CSS su touch/PWA phone (rompe iPad / Request Desktop Site).
  */
 
 /* —— Sidebar più compatta su desktop alto —— */
 @media (min-width: 1381px) and (min-height: 820px) {
   body.is-dashboard .dash-sidebar,
   .dash-sidebar {
-    width: 228px !important;
+    width: 212px !important;
     overflow-y: auto !important;
   }
 
   .dash-sidebar .dash-brand {
-    padding: 18px 16px 12px !important;
+    padding: 14px 14px 10px !important;
   }
 
   .dash-sidebar .dash-brand-name,
   .dash-sidebar .riva-wordmark__text {
-    font-size: 32px !important;
+    font-size: 28px !important;
   }
 
   .dash-sidebar .dash-brand-sub {
@@ -27,7 +26,7 @@
   }
 
   .dash-sidebar .dash-nav-section-label {
-    margin: 10px 16px 4px !important;
+    margin: 8px 14px 4px !important;
   }
 
   .dash-sidebar .dash-nav {
@@ -36,54 +35,68 @@
 
   .dash-sidebar .dash-nav-item,
   .dash-sidebar .btn-logout {
-    min-height: 40px !important;
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-    font-size: 12.5px !important;
-    gap: 10px !important;
+    min-height: 36px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    font-size: 12px !important;
+    gap: 8px !important;
   }
 
   .dash-sidebar .dash-nav-icon,
   .dash-sidebar .dash-nav-icon svg {
-    width: 16px !important;
-    height: 16px !important;
+    width: 15px !important;
+    height: 15px !important;
   }
 
   .dash-sidebar .dash-nav-secondary {
-    padding: 8px 0 6px !important;
+    padding: 6px 0 4px !important;
   }
 
   .dash-sidebar .dash-nav-spacer {
-    min-height: 8px !important;
+    min-height: 6px !important;
   }
 }
 
 @media (min-width: 1600px) and (min-height: 900px) {
   body.is-dashboard .dash-sidebar,
   .dash-sidebar {
-    width: 212px !important;
+    width: 200px !important;
   }
 
   .dash-sidebar .dash-nav-item,
   .dash-sidebar .btn-logout {
-    min-height: 36px !important;
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
-    font-size: 12px !important;
+    min-height: 34px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    font-size: 11.5px !important;
   }
 
   .dash-sidebar .dash-brand-name,
   .dash-sidebar .riva-wordmark__text {
-    font-size: 28px !important;
+    font-size: 26px !important;
   }
 }
 
-/* Mai zoom CSS: rompe touch + fa sembrare tutto microscopico */
-body.is-dashboard .dash-view,
+/*
+ * Monitor ufficio: scala leggera solo su desktop “mouse”
+ * (non su phone / touch / spoof desktop).
+ */
+@media (min-width: 1280px) {
+  body.is-dashboard .dash-view {
+    zoom: 0.9 !important;
+  }
+}
+
+@media (min-width: 1600px) {
+  body.is-dashboard .dash-view {
+    zoom: 0.86 !important;
+  }
+}
+
 html.is-pwa-phone body.is-dashboard .dash-view,
 html.is-pwa-touch body.is-dashboard .dash-view,
-html.is-pwa-standalone body.is-dashboard .dash-view {
+html.is-pwa-standalone.is-pwa-phone body.is-dashboard .dash-view {
   zoom: 1 !important;
 }
