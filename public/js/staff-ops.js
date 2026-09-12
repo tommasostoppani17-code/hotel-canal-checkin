@@ -485,6 +485,16 @@
       return '';
     }
 
+    /** Una sola etichetta sulla card: Partenza | Fermata | Pronta | Da rifare | Bloccata */
+    function roomStatusWord(st) {
+      if (Boolean(st?.blocked)) return 'Bloccata';
+      const stay = stayToneOf(st);
+      if (stay === 'partenza') return 'Partenza';
+      if (stay === 'fermata') return 'Fermata';
+      if (st?.status === 'clean') return 'Pronta';
+      return 'Da rifare';
+    }
+
     function paintRoomCard(sectionId, roomId) {
       const key = roomKey(sectionId, roomId);
       const st = root.rooms[key] || {};
@@ -496,8 +506,7 @@
       const clean = st.status === 'clean' && !blocked;
       const tone = blocked ? 'blocked' : clean ? 'clean' : 'dirty';
       const stay = stayToneOf(st);
-      const statusWord =
-        tone === 'clean' ? 'Pronta' : tone === 'blocked' ? 'Bloccata' : 'Da rifare';
+      const statusWord = roomStatusWord(st);
       const lampTone = blocked ? 'blocked' : clean ? 'ready' : 'dirty';
 
       el.classList.remove(
@@ -514,28 +523,17 @@
       else el.removeAttribute('data-stay-tone');
 
       const statusEl = el.querySelector('.ops-room__status');
-      if (statusEl && statusEl.textContent !== statusWord) statusEl.textContent = statusWord;
-
-      const stayLbl = stayToneLabel(stay);
-      let stayEl = el.querySelector('.ops-room__stay');
-      const bodyEl = el.querySelector('.ops-room__body');
-      if (stayLbl) {
-        if (!stayEl) {
-          stayEl = document.createElement('span');
-          stayEl.className = 'ops-room__stay';
-          statusEl?.insertAdjacentElement('afterend', stayEl) || bodyEl?.appendChild(stayEl);
-        }
-        stayEl.className = `ops-room__stay ops-room__stay--${stay}`;
-        stayEl.textContent = stayLbl;
-      } else if (stayEl) {
-        stayEl.remove();
+      if (statusEl) {
+        if (statusEl.textContent !== statusWord) statusEl.textContent = statusWord;
+        statusEl.classList.toggle('is-partenza', stay === 'partenza');
+        statusEl.classList.toggle('is-fermata', stay === 'fermata');
       }
+      el.querySelector('.ops-room__stay')?.remove();
 
-      const ariaStay = stayLbl ? `, ${stayLbl}` : '';
       const ariaHint = blocked ? '' : '. Doppio tap per cambiare stato';
       el.setAttribute(
         'aria-label',
-        `Camera ${roomLabel(sectionId, roomId)}, ${statusWord}${ariaStay}${ariaHint}`,
+        `Camera ${roomLabel(sectionId, roomId)}, ${statusWord}${ariaHint}`,
       );
 
       let lamp = el.querySelector('.ops-semaforo');
@@ -568,6 +566,7 @@
       const hk = String(st.hkNote || '').trim();
       const mgr = String(st.managerNote || '').trim();
       const markers = [];
+      const bodyEl = el.querySelector('.ops-room__body');
       if (!roomsOnly) {
         if (problem?.isOpen) {
           markers.push(
@@ -1535,16 +1534,14 @@
       const clean = st.status === 'clean' && !blocked;
       const tone = blocked ? 'blocked' : clean ? 'clean' : 'dirty';
       const stay = stayToneOf(st);
-      const stayLbl = stayToneLabel(stay);
-      const statusWord =
-        tone === 'clean' ? 'Pronta' : tone === 'blocked' ? 'Bloccata' : 'Da rifare';
+      const statusWord = roomStatusWord(st);
       const bf = breakfastInfo(st);
       const problem = receptionProblem(st);
       const hk = String(st.hkNote || '').trim();
       const mgr = String(st.managerNote || '').trim();
       const markers = [];
       const extras = [];
-      if (stayLbl) extras.push(stayLbl.toLowerCase());
+      if (stay) extras.push(statusWord.toLowerCase());
       if (!roomsOnly) {
         if (problem?.isOpen) {
           markers.push(
@@ -1588,15 +1585,12 @@
         : '. Doppio tap per cambiare stato';
       const stayClass = stay ? ` ops-room--${stay}` : '';
       const stayAttr = stay ? ` data-stay-tone="${esc(stay)}"` : '';
-      const stayHtml = stayLbl
-        ? `<span class="ops-room__stay ops-room__stay--${esc(stay)}">${esc(stayLbl)}</span>`
-        : '';
+      const statusCls = stay === 'partenza' ? ' is-partenza' : stay === 'fermata' ? ' is-fermata' : '';
       return `
         <div class="ops-room ops-room--${tone}${stayClass} hk-card-touch-area" data-ops-room="${esc(sectionId)}:${esc(roomId)}" data-ops-sig="${esc(roomCardSig(st))}"${stayAttr} tabindex="0" role="button" aria-label="Camera ${esc(roomLabel(sectionId, roomId))}, ${statusWord}${esc(ariaExtra)}${ariaHint}">
           <div class="ops-room__body">
             <span class="ops-room__num">${esc(roomLabel(sectionId, roomId))}</span>
-            <span class="ops-room__status">${statusWord}</span>
-            ${stayHtml}
+            <span class="ops-room__status${statusCls}">${statusWord}</span>
             ${markers.length ? `<div class="ops-room__chips" aria-hidden="true">${markers.join('')}</div>` : ''}
           </div>
           ${lamp}
@@ -2212,11 +2206,9 @@
       const sec = root.sections.find((s) => s.id === sectionId);
       const problem = receptionProblem(st);
       const tone = st.blocked ? 'blocked' : st.status === 'clean' ? 'clean' : 'dirty';
-      const statusText =
-        tone === 'clean' ? 'Pronta' : tone === 'blocked' ? 'Bloccata' : 'Da rifare';
+      const statusText = roomStatusWord(st);
       const stayLbl = stayToneLabel(stayToneOf(st));
       const guestBits = [sectionLabel(sec), statusText];
-      if (stayLbl) guestBits.push(stayLbl);
       if (st.guestName) guestBits.push(String(st.guestName).trim());
       if (st.checkoutDate) {
         guestBits.push(

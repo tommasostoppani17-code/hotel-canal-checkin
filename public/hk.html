@@ -705,15 +705,14 @@
           const guest = room.guestName
             ? String(room.guestName).slice(0, 28)
             : kindLabel(room.kind, stay);
-          const stayPill =
+          const statusText =
             stay === 'partenza'
-              ? '<span class="stay stay-out">Partenza</span>'
+              ? 'Partenza'
               : stay === 'fermata'
-                ? '<span class="stay stay-in">Fermata</span>'
-                : '';
+                ? 'Fermata'
+                : (STATUS_LABEL[room.status] || room.status);
           btn.innerHTML =
-            `<span class="pill">${STATUS_LABEL[room.status] || room.status}</span>` +
-            stayPill +
+            `<span class="pill">${escapeHtml(statusText)}</span>` +
             `<div class="room-num">${escapeHtml(room.room)}</div>` +
             `<div class="room-meta">${escapeHtml(guest)}${room.guestsCount ? ' · ' + room.guestsCount + ' pax' : ''}</div>`;
           btn.addEventListener('click', () => onRoomTap(btn, room));
