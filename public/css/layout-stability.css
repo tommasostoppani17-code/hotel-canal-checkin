@@ -420,13 +420,41 @@ html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-main {
 html.is-pwa-phone body.is-dashboard .dash-content,
 html.is-pwa-phone body.is-dashboard .workspace,
 html.is-pwa-phone body.is-dashboard .workspace-body,
-html.is-pwa-phone body.is-dashboard .table-panel,
 html.is-pwa-phone body.is-dashboard .content-card {
   display: flex !important;
   flex-direction: column !important;
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow: hidden !important;
+}
+
+/* Solo il pannello attivo: .hidden deve restare display:none (prima crashava tutto) */
+html.is-pwa-phone body.is-dashboard .table-panel:not(.hidden):not([hidden]) {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html.is-pwa-phone body.is-dashboard .table-panel.hidden,
+html.is-pwa-phone body.is-dashboard .table-panel[hidden] {
+  display: none !important;
+  flex: 0 0 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-menu-btn {
+  display: inline-flex !important;
+}
+
+html.is-pwa-phone body.is-dashboard:not(.hk-app) .dash-scrim:not(.hidden) {
+  display: block !important;
+  pointer-events: auto !important;
 }
 
 html.is-pwa-phone body.is-dashboard .table-scroll,

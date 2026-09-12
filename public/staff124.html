@@ -16,34 +16,35 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <title>Clienti — Riva OS</title>
   <script>
-    /* Contesto PWA ASAP: Home icon vs Safari (FAANG-style display-mode detect) */
+    /* Contesto PWA ASAP + anti “Richiedi sito desktop” su telefono/iPad */
     (function () {
       try {
+        var html = document.documentElement;
         var standalone =
           (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
           window.navigator.standalone === true;
-        if (!standalone) return;
-        var html = document.documentElement;
-        html.classList.add('is-pwa-standalone');
+        if (standalone) html.classList.add('is-pwa-standalone');
+
         var touch =
           (window.matchMedia &&
             (window.matchMedia('(pointer: coarse)').matches ||
               window.matchMedia('(hover: none)').matches)) ||
           (navigator.maxTouchPoints > 0);
         if (touch) html.classList.add('is-pwa-touch');
-        /* Request Desktop Site spoofa innerWidth (~980) ma screen resta telefono:
-           forziamo layout phone altrimenti overflow:hidden desktop blocca lo scroll. */
+
+        /* Request Desktop Site spoofa innerWidth (~980/1024) ma screen resta phone/tablet.
+           Vale anche in Safari (non solo Home icon), altrimenti layout desktop crasha. */
         var sw = Math.min(window.screen && window.screen.width || 0, window.screen && window.screen.height || 0);
         var iw = window.innerWidth || 0;
         var spoofDesktop = sw > 0 && iw > sw + 80;
-        var phoneScreen = sw > 0 && sw <= 520;
-        if (touch && (spoofDesktop || phoneScreen)) {
+        var phoneOrTabletScreen = sw > 0 && sw <= 920;
+        if (touch && (spoofDesktop || (standalone && sw <= 520))) {
           html.classList.add('is-pwa-phone');
         }
       } catch (_) { /* ignore */ }
     })();
   </script>
-  <script src="/js/pwa-boot.js?v=184" defer></script>
+  <script src="/js/pwa-boot.js?v=185" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Montserrat 300 = titolo Check-in; display=swap obbligatorio -->
@@ -22909,7 +22910,7 @@
   <link rel="stylesheet" href="/css/clienti-sticky-matrix.css?v=6">
   <link rel="stylesheet" href="/css/riva-staff-topbar.css?v=1">
   <link rel="stylesheet" href="/css/riva-pwa-safe-area.css?v=9">
-  <link rel="stylesheet" href="/css/layout-stability.css?v=5">
+  <link rel="stylesheet" href="/css/layout-stability.css?v=6">
   <link rel="stylesheet" href="/css/staff-org-console.css?v=2">
   <link rel="stylesheet" href="/css/riva-large-desktop.css?v=1">
   <!-- Login gate: allineato al check-in guest — ultimo CSS di head -->
