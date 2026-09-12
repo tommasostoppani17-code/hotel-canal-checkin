@@ -10183,6 +10183,28 @@
       --rack-day-min: 44px;
     }
 
+    /* Settimana: colonne larghe, nomi giorno leggibili (≠ mese compatto) */
+    .rack-frame.is-week {
+      --rack-day-w: 108px;
+      --rack-day-min: 108px;
+    }
+
+    .rack-frame.is-week .rack-date-num {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .rack-frame.is-week .rack-date-dow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .rack-frame.is-week .rack-bar-name {
+      font-size: 12px;
+    }
+
     /* Settimana e mese: colonne con min-width → scroll X su telefono/tablet/desktop */
     .rack-frame:not(.is-wide) .rack-head,
     .rack-frame:not(.is-wide) .rack-row {
@@ -11409,7 +11431,7 @@
       }
 
       .holds-panel .rack-view-modes {
-        display: none !important;
+        display: inline-flex !important;
       }
 
       .holds-panel {
@@ -11488,9 +11510,10 @@
         min-height: 0 !important;
       }
 
-      /* Periodo ← Ieri | date | Domani →: nascosto (più spazio al tabellone) */
-      .holds-panel .rack-toolbar-period {
-        display: none !important;
+      /* Periodo ← Sett/Mese | date | → : sempre visibile nella bottom bar */
+      .holds-panel .rack-bottom-bar .rack-toolbar-period,
+      .holds-panel #rackDayNav {
+        display: flex !important;
       }
 
       .holds-panel .rack-toolbar-actions .rack-toolbar-btn {
@@ -22969,7 +22992,7 @@
   <link rel="stylesheet" href="/css/rack-perf.css?v=140">
   <link rel="stylesheet" href="/css/rack-geometry.css?v=1">
   <link rel="stylesheet" href="/css/rack-mobile.css?v=5">
-  <link rel="stylesheet" href="/css/riva-fo-chrome.css?v=146">
+  <link rel="stylesheet" href="/css/riva-fo-chrome.css?v=147">
   <link rel="stylesheet" href="/css/riva-hold-orb.css?v=3">
   <link rel="stylesheet" href="/css/forms-ig.css?v=83">
   <link rel="stylesheet" href="/css/riva-skeleton.css?v=12">
@@ -28576,11 +28599,12 @@
         }
         const bottomBar = document.getElementById('rackBottomBar');
         if (bottomBar) {
-          const showDayNav = window.matchMedia('(max-width: 1024px)').matches;
-          bottomBar.hidden = !showDayNav;
-          bottomBar.toggleAttribute('hidden', !showDayNav);
-          bottomBar.setAttribute('aria-hidden', showDayNav ? 'false' : 'true');
+          /* Sempre visibile: serve per andare alle settimane/mesi passati anche su desktop */
+          bottomBar.hidden = false;
+          bottomBar.removeAttribute('hidden');
+          bottomBar.setAttribute('aria-hidden', 'false');
         }
+        syncRackNavLabels();
         loadHolds({ silent: false });
       }
       else if (activeView === 'alloggiati') {
@@ -31926,6 +31950,16 @@
       return `${m[1]}-${m[2]}-01`;
     }
 
+    /** Lunedì della settimana ISO che contiene ymd (UTC). */
+    function startOfWeekYmd(ymd) {
+      const dt = ymdToUtcDate(ymd);
+      if (!dt) return ymd;
+      const dow = dt.getUTCDay(); // 0=dom … 6=sab
+      const offset = dow === 0 ? -6 : 1 - dow;
+      dt.setUTCDate(dt.getUTCDate() + offset);
+      return dt.toISOString().slice(0, 10);
+    }
+
     function daysInMonthYmd(ymd) {
       const m = String(ymd || '').match(/^(\d{4})-(\d{2})/);
       if (!m) return 30;
@@ -31949,11 +31983,11 @@
     function rackWindow() {
       const anchor = ensureRackAnchor();
       if (rackViewMode === 'month') {
-        /* Mese = ~30 giorni a partire dall’ancora (oggi di default), non dal 1° */
-        const count = daysInMonthYmd(startOfMonthYmd(anchor));
-        return { start: anchor, count };
+        const start = startOfMonthYmd(anchor);
+        return { start, count: daysInMonthYmd(start) };
       }
-      return { start: anchor, count: rackWeekDayCount() };
+      /* Settimana = lun→dom (include giorni passati della settimana) */
+      return { start: startOfWeekYmd(anchor), count: 7 };
     }
 
     function fmtRackPeriodLabel(days) {
@@ -32141,7 +32175,11 @@
       ensureRackAnchor();
       const delta = Math.trunc(Number(direction) || 0);
       if (!delta) return;
-      rackAnchorYmd = addDaysYmd(rackAnchorYmd, delta) || rackAnchorYmd;
+      if (rackViewMode === 'month') {
+        rackAnchorYmd = addMonthsYmd(rackAnchorYmd, delta) || rackAnchorYmd;
+      } else {
+        rackAnchorYmd = addDaysYmd(rackAnchorYmd, delta * 7) || rackAnchorYmd;
+      }
       renderHolds(lastHolds, { preserveScroll: true });
     }
 
@@ -32320,6 +32358,9 @@
     function setRackViewMode(mode) {
       const next = mode === 'month' ? 'month' : 'week';
       rackViewMode = next;
+      const today = lastHoldsToday || new Date().toISOString().slice(0, 10);
+      /* Tieni “oggi” dentro la finestra: lunedì settimana / 1° del mese */
+      rackAnchorYmd = today;
       const track = document.querySelector('.rack-view-modes');
       let onBtn = null;
       document.querySelectorAll('.rack-view-btn').forEach((btn) => {
@@ -32328,7 +32369,26 @@
         if (on) onBtn = btn;
       });
       if (track && onBtn) placeIgSegThumb(track, onBtn, { animate: true });
+      syncRackNavLabels();
       renderHolds(lastHolds, { preserveScroll: false });
+    }
+
+    function syncRackNavLabels() {
+      const prevFull = document.querySelector('#rackPrev .rack-nav-btn__full');
+      const nextFull = document.querySelector('#rackNext .rack-nav-btn__full');
+      const prevBtn = document.getElementById('rackPrev');
+      const nextBtn = document.getElementById('rackNext');
+      if (rackViewMode === 'month') {
+        if (prevFull) prevFull.textContent = '← Mese';
+        if (nextFull) nextFull.textContent = 'Mese →';
+        if (prevBtn) prevBtn.setAttribute('aria-label', 'Mese precedente');
+        if (nextBtn) nextBtn.setAttribute('aria-label', 'Mese successivo');
+      } else {
+        if (prevFull) prevFull.textContent = '← Sett.';
+        if (nextFull) nextFull.textContent = 'Sett. →';
+        if (prevBtn) prevBtn.setAttribute('aria-label', 'Settimana precedente');
+        if (nextBtn) nextBtn.setAttribute('aria-label', 'Settimana successiva');
+      }
     }
 
     /** Arrivi oggi → prenotate nel periodo → libere; poi ordine catalogo / numerico. */
@@ -32678,9 +32738,11 @@
       const frame = rackFrame || rackBody.closest('.rack-frame');
       if (frame) {
         frame.style.setProperty('--rack-day-count', String(dayCount));
-        frame.classList.toggle('is-wide', dayCount > 10);
+        frame.classList.toggle('is-week', rackViewMode === 'week');
+        frame.classList.toggle('is-wide', rackViewMode === 'month');
         frame.classList.toggle('is-edit-locked', !rackEditMode);
       }
+      syncRackNavLabels();
       const list = filteredHolds(rows || []).filter((h) => {
         const st = String(h?.status || '');
         return st !== 'expired' && st !== 'cancelled';
@@ -32893,9 +32955,15 @@
           rackScroll.scrollLeft = prevScrollLeft;
         } else {
           rackScroll.scrollTop = 0;
-          rackScroll.scrollLeft = 0;
+          /* Mese/settimana: allinea “oggi” in vista (include giorni passati a sinistra) */
+          const todayIdx = days.indexOf(today);
+          const dayW = rackNavDayWidth();
+          if (todayIdx > 0) {
+            rackScroll.scrollLeft = snapRackScrollLeft(rackScroll, dayW, todayIdx * dayW - dayW);
+          } else {
+            rackScroll.scrollLeft = 0;
+          }
         }
-        /* Mese: snap solo su navigazione esplicita — mai durante poll/preserve (rompe l’inerzia iPad) */
         if (!preserveScroll && frame?.classList.contains('is-wide')) {
           const dayW = rackNavDayWidth();
           rackScroll.scrollLeft = snapRackScrollLeft(rackScroll, dayW, rackScroll.scrollLeft);

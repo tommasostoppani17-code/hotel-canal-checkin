@@ -470,7 +470,7 @@ export function listRoomHolds({ includeClosed = true } = {}) {
               ELSE 4
             END,
             created_at DESC
-          LIMIT 200
+          LIMIT 800
           `,
         )
         .all()
@@ -480,7 +480,7 @@ export function listRoomHolds({ includeClosed = true } = {}) {
           SELECT * FROM room_holds
           WHERE status IN (?, ?, ?, ?)
           ORDER BY created_at DESC
-          LIMIT 200
+          LIMIT 800
           `,
         )
         .all(

@@ -6,14 +6,37 @@
   --riva-orb-wash: #fafafa;
 }
 
-/* —— 1. Rack chrome: solo legenda (periodo Ieri/Domani rimosso → più spazio tabellone) —— */
+/* —— 1. Rack chrome: nav periodo sotto griglia (settimane/mesi passati) —— */
 .holds-panel .rack-bottom-bar {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  border: 0 !important;
+  border-top: 1px solid #efefef !important;
+  z-index: 24 !important;
+}
+
+.holds-panel .rack-sticky-header .rack-toolbar-period {
   display: none !important;
 }
 
-.holds-panel .rack-toolbar-period,
-.holds-panel .rack-sticky-header .rack-toolbar-period {
-  display: none !important;
+.holds-panel .rack-bottom-bar .rack-toolbar-period,
+.holds-panel .rack-bottom-bar #rackDayNav {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  max-width: 520px !important;
+  margin: 0 auto !important;
 }
 
 .holds-panel .rack-sticky-header {
@@ -48,16 +71,6 @@
 .holds-panel .rack-frame {
   flex: 1 1 auto !important;
   min-height: 0 !important;
-}
-
-@media (max-width: 1380px) {
-  .holds-panel .rack-bottom-bar {
-    display: none !important;
-  }
-
-  .holds-panel .rack-toolbar-period {
-    display: none !important;
-  }
 }
 
 /* —— Topbar azioni Prenotazioni (ora in ig-subbar) —— */
