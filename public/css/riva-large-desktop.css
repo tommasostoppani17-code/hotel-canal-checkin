@@ -1,0 +1,107 @@
+/**
+ * Large / office monitors — auto “Ctrl −” feel
+ * Densifica chrome + sidebar così il menu sx sta senza scroll.
+ * Su Chromium usa zoom leggero (come zoom browser); Firefox: solo densità.
+ * Clienti: dettaglio più largo stile Instagram Direct (lista stretta, profilo grande).
+ */
+
+/* —— Sidebar più compatta su desktop alto —— */
+@media (min-width: 1381px) and (min-height: 820px) {
+  body.is-dashboard .dash-sidebar,
+  .dash-sidebar {
+    width: 228px !important;
+    overflow-y: auto !important;
+  }
+
+  .dash-sidebar .dash-brand {
+    padding: 18px 16px 12px !important;
+  }
+
+  .dash-sidebar .dash-brand-name,
+  .dash-sidebar .riva-wordmark__text {
+    font-size: 32px !important;
+  }
+
+  .dash-sidebar .dash-brand-sub {
+    margin-top: 4px !important;
+    font-size: 10px !important;
+  }
+
+  .dash-sidebar .dash-nav-section-label {
+    margin: 10px 16px 4px !important;
+    font-size: 12px !important;
+  }
+
+  .dash-sidebar .dash-nav {
+    padding: 2px 0 !important;
+  }
+
+  .dash-sidebar .dash-nav-item,
+  .dash-sidebar .btn-logout {
+    min-height: 40px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    font-size: 12.5px !important;
+    gap: 10px !important;
+  }
+
+  .dash-sidebar .dash-nav-icon,
+  .dash-sidebar .dash-nav-icon svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .dash-sidebar .dash-nav-secondary {
+    padding: 8px 0 6px !important;
+  }
+
+  .dash-sidebar .dash-nav-spacer {
+    min-height: 8px !important;
+  }
+}
+
+/* Ultra-wide / schermi ufficio: zoom automatico ≈ Ctrl− (Chromium/Edge/Safari) */
+@media (min-width: 1600px) and (min-height: 900px) {
+  @supports (zoom: 1) {
+    body.is-dashboard .dash-view {
+      zoom: 0.92;
+    }
+  }
+
+  /* Fallback senza zoom: densità ancora più stretta */
+  @supports not (zoom: 1) {
+    body.is-dashboard .dash-sidebar,
+    .dash-sidebar {
+      width: 212px !important;
+    }
+
+    .dash-sidebar .dash-nav-item,
+    .dash-sidebar .btn-logout {
+      min-height: 36px !important;
+      padding-top: 6px !important;
+      padding-bottom: 6px !important;
+      font-size: 12px !important;
+    }
+
+    .dash-sidebar .dash-brand-name,
+    .dash-sidebar .riva-wordmark__text {
+      font-size: 28px !important;
+    }
+  }
+}
+
+@media (min-width: 1920px) and (min-height: 980px) {
+  @supports (zoom: 1) {
+    body.is-dashboard .dash-view {
+      zoom: 0.88;
+    }
+  }
+}
+
+/* Mai zoomare la PWA phone spoof / mobile */
+html.is-pwa-phone body.is-dashboard .dash-view,
+html.is-pwa-standalone body.is-dashboard .dash-view {
+  zoom: 1 !important;
+}

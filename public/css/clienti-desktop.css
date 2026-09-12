@@ -211,6 +211,81 @@
   }
 }
 
+/* —— Instagram Direct su monitor grandi: lista stretta, profilo più ampio —— */
+@media screen and (min-width: 1280px) {
+  .workspace.is-clients #checkinsPanel .riva-main-layout,
+  #checkinsPanel .riva-main-layout {
+    grid-template-columns: minmax(300px, 380px) minmax(0, 1fr) !important;
+    gap: 20px !important;
+    padding: 0 24px 8px 0 !important;
+  }
+
+  #checkinsPanel .riva-detail-card {
+    width: min(100%, 540px) !important;
+    max-width: 540px !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.07) !important;
+  }
+
+  #checkinsPanel .riva-detail-body .ig-profile-avatar {
+    width: 96px !important;
+    height: 96px !important;
+  }
+
+  #checkinsPanel .riva-detail-body .ig-profile-name {
+    font-size: 22px !important;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  .workspace.is-clients #checkinsPanel .riva-main-layout,
+  #checkinsPanel .riva-main-layout {
+    /* Compensa zoom 0.92: card grande in CSS px → resta leggibile a schermo */
+    grid-template-columns: minmax(320px, 400px) minmax(0, 1fr) !important;
+    gap: 28px !important;
+    padding: 0 28px 10px 0 !important;
+  }
+
+  #checkinsPanel .riva-detail-card {
+    width: min(94%, 620px) !important;
+    max-width: 620px !important;
+  }
+
+  #checkinsPanel .riva-detail-placeholder {
+    max-width: 420px !important;
+  }
+
+  #checkinsPanel .riva-detail-body .ig-profile-avatar {
+    width: 108px !important;
+    height: 108px !important;
+  }
+
+  #checkinsPanel .riva-detail-body .ig-profile-name {
+    font-size: 24px !important;
+  }
+
+  #checkinsPanel .riva-detail-body .ig-profile-stats {
+    gap: 28px !important;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .workspace.is-clients #checkinsPanel .riva-main-layout,
+  #checkinsPanel .riva-main-layout {
+    grid-template-columns: minmax(340px, 420px) minmax(0, 1fr) !important;
+    gap: 32px !important;
+  }
+
+  #checkinsPanel .riva-detail-card {
+    width: min(92%, 680px) !important;
+    max-width: 680px !important;
+  }
+
+  #checkinsPanel .riva-detail-body .ig-profile-avatar {
+    width: 120px !important;
+    height: 120px !important;
+  }
+}
 
 /* iPhone PWA + Request Desktop Site: non usare lo split desktop */
 html.is-pwa-phone .workspace.is-clients #checkinsPanel.clients-matrix,
