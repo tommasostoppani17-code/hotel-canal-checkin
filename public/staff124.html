@@ -10114,7 +10114,8 @@
       --rack-confirmed: #6288A8;
       --rack-inhouse: #B05656;
       --rack-attention: #C9B07A;
-      --rack-hk-ready: #7A9E8E;
+      --rack-hk-ready: #007AFF;
+      --rack-hk-dirty: #FF3B30;
       --rack-hk-blocked: #A07070;
       flex: 1 1 auto;
       min-height: 0;
@@ -10821,27 +10822,41 @@
       box-shadow: inset 3px 0 0 rgba(74, 64, 53, 0.35);
     }
 
-    /* HK — segno discreto sul bordo sinistro */
+    /* HK — bordo sinistro più leggibile: blu pronta / rosso da rifare */
     .rack-bar.is-hk-pronta {
-      box-shadow: inset 3px 0 0 var(--rack-hk-ready);
+      box-shadow: inset 4px 0 0 var(--rack-hk-ready);
     }
 
     .rack-bar.is-hk-pronta:hover,
     .rack-bar.is-hk-pronta.is-on {
       filter: brightness(0.97);
-      box-shadow: inset 3px 0 0 var(--rack-hk-ready), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+      box-shadow: inset 4px 0 0 var(--rack-hk-ready), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .rack-bar.is-hk-dirty {
+      box-shadow: inset 4px 0 0 var(--rack-hk-dirty);
+    }
+
+    .rack-bar.is-hk-dirty:hover,
+    .rack-bar.is-hk-dirty.is-on {
+      filter: brightness(0.97);
+      box-shadow: inset 4px 0 0 var(--rack-hk-dirty), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
     }
 
     .rack-bar.is-hk-bloccata {
-      box-shadow: inset 3px 0 0 var(--rack-hk-blocked);
+      box-shadow: inset 4px 0 0 var(--rack-hk-blocked);
     }
 
     .rack-room-label.is-hk-pronta {
-      box-shadow: inset 3px 0 0 var(--rack-hk-ready);
+      box-shadow: inset 4px 0 0 var(--rack-hk-ready);
+    }
+
+    .rack-room-label.is-hk-dirty {
+      box-shadow: inset 4px 0 0 var(--rack-hk-dirty);
     }
 
     .rack-room-label.is-hk-bloccata {
-      box-shadow: inset 3px 0 0 var(--rack-hk-blocked);
+      box-shadow: inset 4px 0 0 var(--rack-hk-blocked);
     }
 
     /* Overbooking virtuale — camera da assegnare */
@@ -13114,14 +13129,44 @@
       left: 0;
       right: 0;
       top: 0;
-      height: 3px;
+      height: 4px;
       background: var(--sky-200);
       border-radius: 0;
+    }
+
+    .ops-room--clean {
+      border-color: #007aff;
+      box-shadow: inset 0 0 0 1.5px rgba(0, 122, 255, 0.45);
+    }
+
+    .ops-room--dirty {
+      border-color: #ff3b30;
+      box-shadow: inset 0 0 0 1.5px rgba(255, 59, 48, 0.4);
     }
 
     .ops-room--clean::before { background: #007aff; }
     .ops-room--dirty::before { background: #ff3b30; }
     .ops-room--blocked::before { background: var(--riva-ink); }
+
+    .ops-room--clean:hover {
+      border-color: #007aff;
+      box-shadow: inset 0 0 0 1.5px rgba(0, 122, 255, 0.55);
+    }
+
+    .ops-room--dirty:hover {
+      border-color: #ff3b30;
+      box-shadow: inset 0 0 0 1.5px rgba(255, 59, 48, 0.5);
+    }
+
+    .ops-room.is-selected.ops-room--clean {
+      border-color: #007aff;
+      box-shadow: inset 0 0 0 2px #007aff;
+    }
+
+    .ops-room.is-selected.ops-room--dirty {
+      border-color: #ff3b30;
+      box-shadow: inset 0 0 0 2px #ff3b30;
+    }
 
     .ops-room:hover {
       border-color: rgba(10, 10, 10, 0.18);
@@ -13186,8 +13231,8 @@
       line-height: 1.2;
     }
 
-    .ops-room--clean .ops-room__status { color: #1b7a45; }
-    .ops-room--dirty .ops-room__status { color: var(--danger); }
+    .ops-room--clean .ops-room__status { color: #007aff; }
+    .ops-room--dirty .ops-room__status { color: #ff3b30; }
     .ops-room--blocked .ops-room__status { color: rgba(255, 255, 255, 0.7); }
 
     .ops-room .ops-status { display: none !important; }
@@ -13504,6 +13549,14 @@
         border: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: none;
         background: #fff;
+      }
+      .ops-room--clean {
+        border-color: #007aff !important;
+        box-shadow: inset 0 0 0 1.5px rgba(0, 122, 255, 0.45) !important;
+      }
+      .ops-room--dirty {
+        border-color: #ff3b30 !important;
+        box-shadow: inset 0 0 0 1.5px rgba(255, 59, 48, 0.4) !important;
       }
       .ops-room::before {
         border-radius: 14px 14px 0 0;
@@ -31895,14 +31948,14 @@
       const status = hkStatusForRoomKey(roomKey);
       if (status === 'clean') return 'is-hk-pronta';
       if (status === 'blocked') return 'is-hk-bloccata';
-      return '';
+      return 'is-hk-dirty';
     }
 
     function hkRoomLabelClass(roomKey) {
       const status = hkStatusForRoomKey(roomKey);
       if (status === 'clean') return 'is-hk-pronta';
       if (status === 'blocked') return 'is-hk-bloccata';
-      return '';
+      return 'is-hk-dirty';
     }
 
     function hkTipForRoom(roomKey) {
