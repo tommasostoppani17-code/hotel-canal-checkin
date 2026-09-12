@@ -4,7 +4,7 @@
  * Lista unica solo se Manager/Dev attiva il modulo ops_unified_rooms.
  */
 
-import { getHkBoard, setHkRoomStatus } from './hk-status.js';
+import { getHkBoard, setHkRoomStatus, deriveStayTone } from './hk-status.js';
 import { getBreakfastBoard, setBreakfastEaten } from './breakfast.js';
 import { normalizeRoomNumber } from './hotel-rooms.js';
 import {
@@ -52,6 +52,13 @@ function mapHkStatusToOps(status) {
   return { status: 'dirty', blocked: false };
 }
 
+/**
+ * Foglio camerieri: partenza (checkout oggi → rifare da zero)
+ * vs fermata (ospite resta → pulizia leggera).
+ * Re-export da hk-status (unica fonte).
+ */
+export { deriveStayTone } from './hk-status.js';
+
 function roomStateKey(sectionId, roomId) {
   return `${sectionId}:${roomId}`;
 }
@@ -59,6 +66,8 @@ function roomStateKey(sectionId, roomId) {
 function buildRoomState(card, bfRow, hkToday) {
   const tone = mapHkStatusToOps(card.status);
   const guests = Number(card.guestsCount || bfRow?.pax || 0) || null;
+  const kind = card.kind || 'vacant';
+  const checkoutDate = card.checkoutDate || bfRow?.checkoutDate || '';
   return {
     status: tone.status,
     blocked: tone.blocked,
@@ -69,9 +78,10 @@ function buildRoomState(card, bfRow, hkToday) {
     bookingGuests: guests,
     boardPlan: '',
     boardHint: Boolean(guests),
-    kind: card.kind || 'vacant',
-    checkoutDate: card.checkoutDate || bfRow?.checkoutDate || '',
+    kind,
+    checkoutDate,
     stayDate: card.stayDate || hkToday || '',
+    stayTone: deriveStayTone(kind, checkoutDate, hkToday),
     updatedAt: card.updatedAt || bfRow?.updatedAt || null,
     updatedBy: card.updatedBy || bfRow?.updatedBy || '',
   };

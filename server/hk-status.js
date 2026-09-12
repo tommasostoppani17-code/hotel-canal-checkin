@@ -9,6 +9,22 @@ import { HOLD_STATUSES, listRoomHolds } from './room-holds.js';
 
 export const HK_STATUSES = ['dirty', 'clean', 'inspect'];
 
+/**
+ * Foglio camerieri: partenza (checkout oggi → rifare da zero)
+ * vs fermata (ospite resta → pulizia leggera).
+ */
+export function deriveStayTone(kind, checkoutDate, today) {
+  const day = String(today || '').slice(0, 10);
+  const cout = String(checkoutDate || '').slice(0, 10);
+  const k = String(kind || '').trim().toLowerCase();
+  if (!day) return '';
+  if (k === 'vacant' || !k) return '';
+  if (k === 'checkout_due') return 'partenza';
+  if (cout && cout === day) return 'partenza';
+  if ((k === 'in_house' || k === 'hold') && (!cout || cout > day)) return 'fermata';
+  return '';
+}
+
 function normalizeRoom(raw) {
   return normalizeRoomNumber(raw);
 }
@@ -185,9 +201,12 @@ export function getHkBoard({ q = '', now = new Date() } = {}) {
     return String(a.room).localeCompare(String(b.room), 'it');
   });
 
-  const counts = { dirty: 0, clean: 0, inspect: 0, total: rooms.length };
+  const counts = { dirty: 0, clean: 0, inspect: 0, partenza: 0, fermata: 0, total: rooms.length };
   for (const r of rooms) {
     if (counts[r.status] != null) counts[r.status] += 1;
+    const tone = deriveStayTone(r.kind, r.checkoutDate, day);
+    r.stayTone = tone;
+    if (tone && counts[tone] != null) counts[tone] += 1;
   }
 
   return {

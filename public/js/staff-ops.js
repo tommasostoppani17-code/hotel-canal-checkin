@@ -466,10 +466,23 @@
         st?.blocked ? '1' : '0',
         st?.breakfast || '',
         st?.breakfastGuests ?? '',
+        st?.stayTone || '',
         problem?.isOpen ? (problem.urgent ? '2' : '1') : '0',
         String(st?.hkNote || '').trim() ? (st.hkNoteUrgent ? '2' : '1') : '0',
         String(st?.managerNote || '').trim() ? (st.managerNoteUrgent ? '2' : '1') : '0',
       ].join('|');
+    }
+
+    function stayToneOf(st) {
+      const t = String(st?.stayTone || '').trim().toLowerCase();
+      if (t === 'partenza' || t === 'fermata') return t;
+      return '';
+    }
+
+    function stayToneLabel(tone) {
+      if (tone === 'partenza') return 'Partenza';
+      if (tone === 'fermata') return 'Fermata';
+      return '';
     }
 
     function paintRoomCard(sectionId, roomId) {
@@ -482,21 +495,47 @@
       const blocked = Boolean(st.blocked);
       const clean = st.status === 'clean' && !blocked;
       const tone = blocked ? 'blocked' : clean ? 'clean' : 'dirty';
+      const stay = stayToneOf(st);
       const statusWord =
         tone === 'clean' ? 'Pronta' : tone === 'blocked' ? 'Bloccata' : 'Da rifare';
       const lampTone = blocked ? 'blocked' : clean ? 'ready' : 'dirty';
 
-      el.classList.remove('ops-room--clean', 'ops-room--dirty', 'ops-room--blocked');
+      el.classList.remove(
+        'ops-room--clean',
+        'ops-room--dirty',
+        'ops-room--blocked',
+        'ops-room--partenza',
+        'ops-room--fermata',
+      );
       el.classList.add(`ops-room--${tone}`);
+      if (stay) el.classList.add(`ops-room--${stay}`);
       el.setAttribute('data-ops-sig', roomCardSig(st));
+      if (stay) el.setAttribute('data-stay-tone', stay);
+      else el.removeAttribute('data-stay-tone');
 
       const statusEl = el.querySelector('.ops-room__status');
       if (statusEl && statusEl.textContent !== statusWord) statusEl.textContent = statusWord;
 
+      const stayLbl = stayToneLabel(stay);
+      let stayEl = el.querySelector('.ops-room__stay');
+      const bodyEl = el.querySelector('.ops-room__body');
+      if (stayLbl) {
+        if (!stayEl) {
+          stayEl = document.createElement('span');
+          stayEl.className = 'ops-room__stay';
+          statusEl?.insertAdjacentElement('afterend', stayEl) || bodyEl?.appendChild(stayEl);
+        }
+        stayEl.className = `ops-room__stay ops-room__stay--${stay}`;
+        stayEl.textContent = stayLbl;
+      } else if (stayEl) {
+        stayEl.remove();
+      }
+
+      const ariaStay = stayLbl ? `, ${stayLbl}` : '';
       const ariaHint = blocked ? '' : '. Doppio tap per cambiare stato';
       el.setAttribute(
         'aria-label',
-        `Camera ${roomLabel(sectionId, roomId)}, ${statusWord}${ariaHint}`,
+        `Camera ${roomLabel(sectionId, roomId)}, ${statusWord}${ariaStay}${ariaHint}`,
       );
 
       let lamp = el.querySelector('.ops-semaforo');
@@ -544,7 +583,6 @@
       }
       let chips = el.querySelector('.ops-room__chips');
       const nextChips = markers.join('');
-      const bodyEl = el.querySelector('.ops-room__body');
       if (markers.length) {
         if (!chips) {
           chips = document.createElement('div');
@@ -631,9 +669,9 @@
         btn.setAttribute('aria-selected', on ? 'true' : 'false');
       });
       const sec = root.sections.find((s) => s.id === activeId) || root.sections[0];
-      const stats = sec ? sectionStats(sec) : { cleanN: 0, dirtyN: 0, blockedN: 0 };
+      const stats = sec ? sectionStats(sec) : { cleanN: 0, dirtyN: 0, blockedN: 0, partenzaN: 0, fermataN: 0 };
       const line = slot.querySelector('#opsRoomsStats');
-      if (line) line.innerHTML = statsLineHtml(stats.cleanN, stats.dirtyN, stats.blockedN);
+      if (line) line.innerHTML = statsLineHtml(stats.cleanN, stats.dirtyN, stats.blockedN, stats.partenzaN, stats.fermataN);
     }
 
     function bindRoomsCards(body) {
@@ -1294,17 +1332,26 @@
       let cleanN = 0;
       let dirtyN = 0;
       let blockedN = 0;
+      let partenzaN = 0;
+      let fermataN = 0;
       for (const roomId of s.rooms || []) {
         const st = root.rooms[roomKey(s.id, roomId)] || {};
         if (st.blocked) blockedN += 1;
         else if (st.status === 'clean') cleanN += 1;
         else dirtyN += 1;
+        const stay = stayToneOf(st);
+        if (stay === 'partenza') partenzaN += 1;
+        else if (stay === 'fermata') fermataN += 1;
       }
-      return { cleanN, dirtyN, blockedN, total: (s.rooms || []).length };
+      return { cleanN, dirtyN, blockedN, partenzaN, fermataN, total: (s.rooms || []).length };
     }
 
-    function statsLineHtml(clean, dirty, blocked) {
+    function statsLineHtml(clean, dirty, blocked, partenza = 0, fermata = 0) {
       return `
+        <span><strong>${partenza}</strong> partenze</span>
+        <span class="ops-stats-dot" aria-hidden="true">·</span>
+        <span><strong>${fermata}</strong> fermate</span>
+        <span class="ops-stats-dot" aria-hidden="true">·</span>
         <span><strong>${clean}</strong> pronte</span>
         <span class="ops-stats-dot" aria-hidden="true">·</span>
         <span><strong>${dirty}</strong> da rifare</span>
@@ -1333,11 +1380,11 @@
       const tabs = root.sections
         .map((s) => sectionTabHtml(s, s.id === activeId))
         .join('');
-      const activeStats = sec ? sectionStats(sec) : { cleanN: 0, dirtyN: 0, blockedN: 0 };
+      const activeStats = sec ? sectionStats(sec) : { cleanN: 0, dirtyN: 0, blockedN: 0, partenzaN: 0, fermataN: 0 };
       slot.innerHTML = `
         <div class="ig-subbar-tabs-inner">
           <div class="ops-sec-tabs" role="tablist" aria-label="Hotel">${tabs}</div>
-          <p class="ops-stats-line" id="opsRoomsStats" aria-label="Riepilogo camere">${statsLineHtml(activeStats.cleanN, activeStats.dirtyN, activeStats.blockedN)}</p>
+          <p class="ops-stats-line" id="opsRoomsStats" aria-label="Riepilogo camere">${statsLineHtml(activeStats.cleanN, activeStats.dirtyN, activeStats.blockedN, activeStats.partenzaN, activeStats.fermataN)}</p>
         </div>`;
       slot.hidden = false;
       slot.classList.remove('hidden');
@@ -1402,8 +1449,8 @@
       const sec = root.sections.find((s) => s.id === activeId);
       const statsEl = document.getElementById('opsRoomsStats');
       if (sec && statsEl) {
-        const { cleanN, dirtyN, blockedN } = sectionStats(sec);
-        statsEl.innerHTML = statsLineHtml(cleanN, dirtyN, blockedN);
+        const { cleanN, dirtyN, blockedN, partenzaN, fermataN } = sectionStats(sec);
+        statsEl.innerHTML = statsLineHtml(cleanN, dirtyN, blockedN, partenzaN, fermataN);
       }
       if (onBtn) placeSegThumb(tabs, onBtn, { animate: Boolean(scrollTab) });
     }
@@ -1487,6 +1534,8 @@
       const blocked = Boolean(st.blocked);
       const clean = st.status === 'clean' && !blocked;
       const tone = blocked ? 'blocked' : clean ? 'clean' : 'dirty';
+      const stay = stayToneOf(st);
+      const stayLbl = stayToneLabel(stay);
       const statusWord =
         tone === 'clean' ? 'Pronta' : tone === 'blocked' ? 'Bloccata' : 'Da rifare';
       const bf = breakfastInfo(st);
@@ -1495,6 +1544,7 @@
       const mgr = String(st.managerNote || '').trim();
       const markers = [];
       const extras = [];
+      if (stayLbl) extras.push(stayLbl.toLowerCase());
       if (!roomsOnly) {
         if (problem?.isOpen) {
           markers.push(
@@ -1536,11 +1586,17 @@
       const ariaHint = blocked
         ? ''
         : '. Doppio tap per cambiare stato';
+      const stayClass = stay ? ` ops-room--${stay}` : '';
+      const stayAttr = stay ? ` data-stay-tone="${esc(stay)}"` : '';
+      const stayHtml = stayLbl
+        ? `<span class="ops-room__stay ops-room__stay--${esc(stay)}">${esc(stayLbl)}</span>`
+        : '';
       return `
-        <div class="ops-room ops-room--${tone} hk-card-touch-area" data-ops-room="${esc(sectionId)}:${esc(roomId)}" data-ops-sig="${esc(roomCardSig(st))}" tabindex="0" role="button" aria-label="Camera ${esc(roomLabel(sectionId, roomId))}, ${statusWord}${esc(ariaExtra)}${ariaHint}">
+        <div class="ops-room ops-room--${tone}${stayClass} hk-card-touch-area" data-ops-room="${esc(sectionId)}:${esc(roomId)}" data-ops-sig="${esc(roomCardSig(st))}"${stayAttr} tabindex="0" role="button" aria-label="Camera ${esc(roomLabel(sectionId, roomId))}, ${statusWord}${esc(ariaExtra)}${ariaHint}">
           <div class="ops-room__body">
             <span class="ops-room__num">${esc(roomLabel(sectionId, roomId))}</span>
             <span class="ops-room__status">${statusWord}</span>
+            ${stayHtml}
             ${markers.length ? `<div class="ops-room__chips" aria-hidden="true">${markers.join('')}</div>` : ''}
           </div>
           ${lamp}
@@ -2158,7 +2214,17 @@
       const tone = st.blocked ? 'blocked' : st.status === 'clean' ? 'clean' : 'dirty';
       const statusText =
         tone === 'clean' ? 'Pronta' : tone === 'blocked' ? 'Bloccata' : 'Da rifare';
+      const stayLbl = stayToneLabel(stayToneOf(st));
       const guestBits = [sectionLabel(sec), statusText];
+      if (stayLbl) guestBits.push(stayLbl);
+      if (st.guestName) guestBits.push(String(st.guestName).trim());
+      if (st.checkoutDate) {
+        guestBits.push(
+          stayLbl === 'Partenza'
+            ? `checkout oggi ${String(st.checkoutDate).slice(0, 10)}`
+            : `checkout ${String(st.checkoutDate).slice(0, 10)}`,
+        );
+      }
       if (st.blocked && st.blockReason) guestBits.push(st.blockReason);
       root.selected = { type: 'room', sectionId, roomId };
 

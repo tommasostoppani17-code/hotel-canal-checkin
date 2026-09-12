@@ -351,6 +351,39 @@
       border-radius: 999px;
       border: 1px solid currentColor;
     }
+
+    .stay {
+      display: inline-flex;
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .stay-out {
+      color: #fdba74;
+      background: rgba(249, 115, 22, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.35);
+    }
+
+    .stay-in {
+      color: #7dd3fc;
+      background: rgba(14, 165, 233, 0.16);
+      box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.35);
+    }
+
+    .room[data-stay="partenza"] {
+      box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.45);
+    }
+
+    .room[data-stay="fermata"] {
+      box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.4);
+    }
     .room[data-status="dirty"] .pill { color: var(--dirty); }
     .room[data-status="clean"] .pill { color: var(--clean); }
     .room[data-status="inspect"] .pill { color: var(--inspect); }
@@ -640,8 +673,10 @@
         ).join('');
       }
 
-      function kindLabel(kind) {
-        if (kind === 'checkout_due') return 'Checkout';
+      function kindLabel(kind, stayTone) {
+        if (stayTone === 'partenza') return 'Partenza';
+        if (stayTone === 'fermata') return 'Fermata';
+        if (kind === 'checkout_due') return 'Partenza';
         if (kind === 'vacant') return 'Vuota';
         if (kind === 'hold') return 'Prenotata';
         return 'In camera';
@@ -665,9 +700,20 @@
           btn.className = 'room';
           btn.dataset.room = room.room;
           btn.dataset.status = room.status || 'dirty';
-          const guest = room.guestName ? String(room.guestName).slice(0, 28) : kindLabel(room.kind);
+          const stay = room.stayTone || '';
+          if (stay) btn.dataset.stay = stay;
+          const guest = room.guestName
+            ? String(room.guestName).slice(0, 28)
+            : kindLabel(room.kind, stay);
+          const stayPill =
+            stay === 'partenza'
+              ? '<span class="stay stay-out">Partenza</span>'
+              : stay === 'fermata'
+                ? '<span class="stay stay-in">Fermata</span>'
+                : '';
           btn.innerHTML =
             `<span class="pill">${STATUS_LABEL[room.status] || room.status}</span>` +
+            stayPill +
             `<div class="room-num">${escapeHtml(room.room)}</div>` +
             `<div class="room-meta">${escapeHtml(guest)}${room.guestsCount ? ' · ' + room.guestsCount + ' pax' : ''}</div>`;
           btn.addEventListener('click', () => onRoomTap(btn, room));
