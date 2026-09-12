@@ -53,12 +53,11 @@
   }
 
   .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
-  #checkinsPanel .riva-master-column > .footer-summary {
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    border-top: 1px solid #efefef !important;
-    background: #fff !important;
-    padding: 10px 14px 12px !important;
+  #checkinsPanel .riva-master-column > .footer-summary,
+  .workspace.is-clients #checkinsFooter,
+  .workspace.is-clients #inHouseFooter,
+  .workspace.is-clients .clients-footer-summary {
+    display: none !important;
   }
 
   /* Colonna dettaglio: centro geometrico verticale + orizzontale */

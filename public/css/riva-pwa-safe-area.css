@@ -261,17 +261,15 @@ body.hk-app.is-board::before {
   body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary,
   body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
   body.is-dashboard .workspace.is-clients #checkinsFooter,
-  body.is-dashboard .workspace.is-clients #inHouseFooter {
-    flex: 0 0 auto !important;
+  body.is-dashboard .workspace.is-clients #inHouseFooter,
+  body.is-dashboard .workspace.is-clients .clients-footer-summary {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
     margin: 0 !important;
-    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-    box-shadow: none !important;
-    background: #fff !important;
-    background-color: #fff !important;
-    color: #262626 !important;
-    padding: 10px 16px max(10px, var(--riva-safe-bottom)) !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
+    border: 0 !important;
+    overflow: hidden !important;
   }
 
   body.is-dashboard .workspace.is-clients #checkinsFooter .footer-summary-meta,
@@ -279,9 +277,9 @@ body.hk-app.is-board::before {
     display: none !important;
   }
 
-  /* FAB: sopra il contatore + Home Indicator */
+  /* FAB: senza footer basso, solo safe-area */
   body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
-    bottom: calc(var(--riva-safe-bottom) + 56px) !important;
+    bottom: calc(var(--riva-safe-bottom) + 20px) !important;
     right: max(20px, var(--riva-safe-right)) !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
   }
@@ -359,21 +357,19 @@ html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .f
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHousePanel .footer-summary,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
 html.is-pwa-standalone body.is-dashboard .workspace.is-clients #checkinsFooter,
-html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHouseFooter {
-  flex: 0 0 auto !important;
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients #inHouseFooter,
+html.is-pwa-standalone body.is-dashboard .workspace.is-clients .clients-footer-summary {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
   margin: 0 !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: none !important;
-  background: #fff !important;
-  background-color: #fff !important;
-  color: #262626 !important;
-  padding: 10px 16px max(10px, var(--riva-safe-bottom)) !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
+  border: 0 !important;
+  overflow: hidden !important;
 }
 
 html.is-pwa-standalone body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
-  bottom: calc(var(--riva-safe-bottom) + 56px) !important;
+  bottom: calc(var(--riva-safe-bottom) + 20px) !important;
   right: max(20px, var(--riva-safe-right)) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 }

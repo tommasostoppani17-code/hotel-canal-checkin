@@ -547,20 +547,18 @@ html.is-pwa-phone body.is-dashboard #inHousePanel {
   min-height: 0 !important;
 }
 
-html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-master-column > .footer-summary,
-html.is-pwa-phone body.is-dashboard #inHousePanel > .footer-summary,
 html.is-pwa-phone body.is-dashboard #checkinsFooter,
-html.is-pwa-phone body.is-dashboard #inHouseFooter {
-  flex: 0 0 auto !important;
+html.is-pwa-phone body.is-dashboard #inHouseFooter,
+html.is-pwa-phone body.is-dashboard .clients-footer-summary {
+  display: none !important;
+  height: 0 !important;
+  padding: 0 !important;
   margin: 0 !important;
-  background: #fff !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: none !important;
-  padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
-  color: #0a0a0a !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  z-index: 4;
+  border: 0 !important;
+}
+
+html.is-pwa-phone body.is-dashboard:has(.workspace.is-clients) .clients-fab-checkin:not([hidden]) {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
 }
 
 /* Prenotazioni: sempre pan X+Y anche in PWA phone / Request Desktop Site */

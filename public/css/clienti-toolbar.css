@@ -15,13 +15,13 @@ body.is-session-boot .workspace.is-clients .dash-toolbar {
   box-sizing: border-box !important;
 }
 
-/* Zona tasti: cresce e occupa lo spazio a sinistra della search */
+/* Zona tasti: contenuto reale, non espande (il count chip sta subito dopo) */
 .workspace.is-clients .toolbar-field--period,
 .workspace.is-clients .toolbar-field:first-child,
 .workspace.is-clients:has(#checkinsPanel.panel-skeleton) .toolbar-field--period,
 .workspace.is-clients:has(#checkinsPanel.panel-busy) .toolbar-field--period,
 body.is-session-boot .workspace.is-clients .toolbar-field--period {
-  flex: 1 1 auto !important;
+  flex: 0 1 auto !important;
   min-width: 0 !important;
   width: auto !important;
   max-width: none !important;
@@ -48,7 +48,7 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
   align-items: center !important;
   justify-content: flex-start !important;
   gap: 8px !important;
-  width: 100% !important;
+  width: auto !important;
   max-width: 100% !important;
   min-width: 0 !important;
   margin: 0 !important;
@@ -367,33 +367,88 @@ body.is-session-boot .workspace.is-clients .toolbar-field--search {
     flex-direction: column !important;
     min-height: 0 !important;
   }
+}
 
-  .workspace.is-clients #checkinsPanel .riva-master-column > .footer-summary,
-  .workspace.is-clients #inHousePanel > .footer-summary,
-  .workspace.is-clients #checkinsFooter,
-  .workspace.is-clients #inHouseFooter {
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    margin-top: 0 !important;
-    background: #fff !important;
-    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-    box-shadow: none !important;
-    padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)) !important;
-    color: #262626 !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    z-index: 4;
+/* Contatore ospiti: in toolbar tra filtri e cerca (sempre leggibile) */
+.clients-count-chip {
+  flex: 0 0 auto;
+  display: none;
+  align-items: center;
+  align-self: center;
+  max-width: min(42vw, 220px);
+  margin: 0 4px 0 0;
+  padding: 0 2px;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: #0a0a0a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.workspace.is-clients .clients-count-chip {
+  display: inline-flex !important;
+}
+
+.clients-count-chip strong {
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.workspace.is-clients .m-period-cluster.clients-filter-capsules {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+}
+
+/* Footer basso: nascosto — il conteggio è in toolbar */
+.workspace.is-clients #checkinsFooter,
+.workspace.is-clients #inHouseFooter,
+.workspace.is-clients .clients-footer-summary {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+}
+
+.workspace.is-clients #checkinsPanel .table-scroll,
+.workspace.is-clients #inHousePanel .table-scroll {
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px)) !important;
+}
+
+@media (max-width: 1380px) {
+  .clients-fab-checkin {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
   }
 
-  .workspace.is-clients #checkinsFooter #rowCount,
-  .workspace.is-clients #inHouseFooter #inHouseRowCount {
-    color: #0a0a0a !important;
-    font-weight: 700 !important;
+  .clients-count-chip {
+    font-size: 12.5px;
+    max-width: min(36vw, 160px);
+  }
+}
+
+@media (max-width: 420px) {
+  .clients-count-chip {
+    font-size: 12px;
+    max-width: min(32vw, 120px);
   }
 
-  .workspace.is-clients #checkinsFooter .footer-summary-meta,
-  .workspace.is-clients #inHouseFooter .footer-summary-meta {
-    display: none !important;
+  .workspace.is-clients .toolbar-field--search {
+    flex-basis: 120px !important;
+    max-width: min(160px, 40vw) !important;
+    min-width: 96px !important;
+  }
+}
+
+@media (min-width: 1381px) {
+  .clients-count-chip {
+    font-size: 13px;
+    max-width: 280px;
   }
 }
 
