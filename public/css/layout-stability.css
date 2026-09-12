@@ -480,7 +480,10 @@ html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-shell),
 html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-pager),
 html.is-pwa-touch body.is-dashboard .workspace.is-ops #opsBody,
 html.is-pwa-touch body.is-dashboard #opsBody:has(.ops-rooms-shell),
-html.is-pwa-touch body.is-dashboard #opsBody:has(.ops-rooms-pager) {
+html.is-pwa-touch body.is-dashboard #opsBody:has(.ops-rooms-pager),
+html.is-pwa-phone body.is-dashboard .workspace.is-ops #opsBody,
+html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-shell),
+html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-pager) {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow: hidden !important;
@@ -561,16 +564,23 @@ html.is-pwa-phone body.is-dashboard:has(.workspace.is-clients) .clients-fab-chec
   bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
 }
 
-/* Prenotazioni: sempre pan X+Y anche in PWA phone / Request Desktop Site */
+/* Prenotazioni: sempre pan X+Y (phone + touch + standalone desktop) */
 html.is-pwa-phone body.is-dashboard .holds-panel .rack-scroll,
 html.is-pwa-phone body.is-dashboard #rackScroll.rack-scroll,
-html.is-pwa-phone body.is-dashboard .workspace.is-holds .rack-scroll {
+html.is-pwa-phone body.is-dashboard .workspace.is-holds .rack-scroll,
+html.is-pwa-touch body.is-dashboard .holds-panel .rack-scroll,
+html.is-pwa-touch body.is-dashboard #rackScroll.rack-scroll,
+html.is-pwa-standalone body.is-dashboard .holds-panel .rack-scroll,
+html.is-pwa-standalone body.is-dashboard #rackScroll.rack-scroll,
+body.is-dashboard .workspace.is-holds .holds-panel .rack-scroll,
+body.is-dashboard .workspace.is-holds #rackScroll.rack-scroll {
   overflow: auto !important;
   overflow-x: auto !important;
   overflow-y: auto !important;
   touch-action: pan-x pan-y !important;
-  -webkit-overflow-scrolling: auto !important;
+  -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: none !important;
+  pointer-events: auto !important;
 }
 
 html.is-pwa-phone body.is-dashboard #checkinsPanel .riva-main-layout {
