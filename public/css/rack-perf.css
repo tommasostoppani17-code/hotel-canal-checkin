@@ -66,9 +66,9 @@
   scroll-padding-left: var(--rack-room-w, 108px) !important;
   scroll-padding-right: 0 !important;
   scroll-padding-bottom: 0 !important;
-  scrollbar-gutter: stable;
-  scrollbar-width: auto;
-  scrollbar-color: #a8a8a8 #ececec;
+  scrollbar-gutter: auto;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
   cursor: default;
   -webkit-user-select: none;
   user-select: none;
@@ -92,32 +92,16 @@
   pointer-events: none !important;
 }
 
-/* Scrollbar stile foglio (traccia sempre visibile) */
-.holds-panel .rack-scroll::-webkit-scrollbar {
-  width: 14px;
-  height: 14px;
-  background: #ececec;
-}
-
-.holds-panel .rack-scroll::-webkit-scrollbar-track {
-  background: #ececec;
-  border: 0;
-}
-
-.holds-panel .rack-scroll::-webkit-scrollbar-thumb {
-  background: #b0b0b0;
-  border: 3px solid #ececec;
-  border-radius: 8px;
-  min-height: 40px;
-  min-width: 40px;
-}
-
-.holds-panel .rack-scroll::-webkit-scrollbar-thumb:hover {
-  background: #8e8e8e;
-}
-
+/* Scrollbar: totalmente invisibili (scroll resta attivo) */
+.holds-panel .rack-scroll::-webkit-scrollbar,
+.holds-panel .rack-scroll::-webkit-scrollbar-track,
+.holds-panel .rack-scroll::-webkit-scrollbar-thumb,
 .holds-panel .rack-scroll::-webkit-scrollbar-corner {
-  background: #ececec;
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
+  border: 0 !important;
 }
 
 /* Snap X: ogni giorno (come colonna Excel). Stop always = un giorno per gesto. */

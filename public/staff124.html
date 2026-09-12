@@ -164,6 +164,22 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Scrollbar: zero traccia ovunque (scroll resta attivo) */
+    * {
+      scrollbar-width: none !important;
+      scrollbar-color: transparent transparent !important;
+    }
+    *::-webkit-scrollbar,
+    *::-webkit-scrollbar-track,
+    *::-webkit-scrollbar-thumb,
+    *::-webkit-scrollbar-corner {
+      width: 0 !important;
+      height: 0 !important;
+      display: none !important;
+      background: transparent !important;
+      border: 0 !important;
+    }
+
     html {
       overflow: hidden;
       -webkit-text-size-adjust: 100%;
@@ -3693,7 +3709,8 @@
       overflow-y: auto;
       overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
-      scrollbar-gutter: stable;
+      scrollbar-gutter: auto;
+      scrollbar-width: none;
       background: #fff;
     }
 
@@ -10155,7 +10172,8 @@
       /* auto: sticky freeze panes stabile su iPad (touch compositing lo rompe) */
       -webkit-overflow-scrolling: auto;
       background: var(--rack-grid-bg);
-      scrollbar-width: thin;
+      scrollbar-width: none;
+      scrollbar-color: transparent transparent;
       touch-action: pan-x pan-y;
       padding: 0;
       margin: 0;
@@ -32971,18 +32989,7 @@
           rackScroll.scrollLeft = prevScrollLeft;
         } else {
           rackScroll.scrollTop = 0;
-          /* Mese/settimana: allinea “oggi” in vista (include giorni passati a sinistra) */
-          const todayIdx = days.indexOf(today);
-          const dayW = rackNavDayWidth();
-          if (todayIdx > 0) {
-            rackScroll.scrollLeft = snapRackScrollLeft(rackScroll, dayW, todayIdx * dayW - dayW);
-          } else {
-            rackScroll.scrollLeft = 0;
-          }
-        }
-        if (!preserveScroll && frame?.classList.contains('is-wide')) {
-          const dayW = rackNavDayWidth();
-          rackScroll.scrollLeft = snapRackScrollLeft(rackScroll, dayW, rackScroll.scrollLeft);
+          rackScroll.scrollLeft = 0;
         }
       }
       if (opts.scrollToToday) scrollRackToToday();
