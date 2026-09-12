@@ -527,20 +527,28 @@ app.use((req, res, next) => {
   return next();
 });
 
-/** Dashboard reception: noindex, mai in homepage ospite. */
+/** Dashboard reception ufficiale = Riva OS (ex staff124). */
 app.get(['/staff.html', '/staff', '/staff/'], (_req, res) => {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   res.setHeader('Cache-Control', 'no-store');
   res.type('html');
-  return res.sendFile(path.join(rootDir, 'public', 'staff.html'));
+  return res.sendFile(path.join(rootDir, 'public', 'staff124.html'));
 });
 
-/** Riva OS UI nuova — alias interno ( /staff resta produzione Canal ). */
+/** Alias storico: stessa UI di /staff. */
 app.get(['/staff124', '/staff124/', '/staff124.html'], (_req, res) => {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   res.setHeader('Cache-Control', 'no-store');
   res.type('html');
   return res.sendFile(path.join(rootDir, 'public', 'staff124.html'));
+});
+
+/** Legacy Canal UI (solo fallback interno). */
+app.get(['/staff-legacy', '/staff-legacy/', '/staff-legacy.html'], (_req, res) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html');
+  return res.sendFile(path.join(rootDir, 'public', 'staff.html'));
 });
 
 /** Check-in ospite lab — stesso form di `/` (produzione invariata). */
@@ -3900,7 +3908,7 @@ app.listen(PORT, '0.0.0.0', async () => {
   console.log(`${HOTEL_NAME} check-in attivo su http://localhost:${PORT}`);
   for (const ip of lanIps) {
     console.log(`  iPad / LAN → http://${ip}:${PORT}`);
-    console.log(`    Staff ${`http://${ip}:${PORT}/staff`} · Riva ${`http://${ip}:${PORT}/staff124`} · HK ${`http://${ip}:${PORT}/hk`}`);
+    console.log(`    Staff ${`http://${ip}:${PORT}/staff`} · Legacy ${`http://${ip}:${PORT}/staff-legacy`} · HK ${`http://${ip}:${PORT}/hk`}`);
   }
   console.log(
     `Cron report: ${reportTime} ${CRON_TZ} → ufficiale ${process.env.REPORT_EMAIL_OFFICIAL || 'grandcanalhotels@gmail.com'} | whatsapp ${whatsappConfigured() ? 'on' : 'off'}`,

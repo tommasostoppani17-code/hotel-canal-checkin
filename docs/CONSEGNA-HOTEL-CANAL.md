@@ -9,7 +9,8 @@ Documento per **CANAL S.r.l. / reception**. Aggiornato al deploy con dashboard s
 | Cosa | URL | Chi |
 |------|-----|-----|
 | **Check-in ospiti (QR)** | https://checkin-hotelcanal.it | Ospiti in camera |
-| **Dashboard reception** | https://checkin-hotelcanal.it/staff | Solo personale autorizzato |
+| **Dashboard reception (Riva OS)** | https://checkin-hotelcanal.it/staff | Solo personale autorizzato |
+| **Housekeeping (Riva OS)** | https://checkin-hotelcanal.it/hk | Personale di piano |
 | Privacy ospiti | https://checkin-hotelcanal.it/privacy.html | Informativa |
 
 **Importante:** non mettere `/staff` su cartelloni pubblici. È protetto da password, ma resta uno strumento interno.
@@ -40,7 +41,7 @@ La sessione dura **12 ore**. Poi rifare login.
 | HTTPS | Tutto il traffico cifrato in produzione |
 | Mascheramento | In lista staff: `+39 ••• ••• ••42`, `m•••@domain.com` |
 | Reveal contatti | Solo su click esplicito; azione registrata |
-| Retention | Dati identificativi fino a **checkout + 7 giorni**; ogni notte dopo il report delle 00:00 vengono anonimizzati. Restano stanza/date per le statistiche |
+| Retention | Dati identificativi fino a **checkout + 7 giorni**; ogni notte dopo il report giornaliero (orario configurabile in Impostazioni staff, fuso Roma) vengono anonimizzati. Restano stanza/date per le statistiche |
 | Consenso | Check-in bloccato senza accettazione privacy |
 | Report notturno | CSV a email/WhatsApp Payel (canale operativo) |
 
