@@ -685,8 +685,9 @@
         let lastTapAt = 0;
         let singleTimer = null;
         let press = null;
-        const TAP_MAX = 14;
-        const DBL_MS = 280;
+        let lastHandledAt = 0;
+        const TAP_MAX = 18;
+        const DBL_MS = 320;
 
         const clearSingle = () => {
           if (singleTimer) {
@@ -707,6 +708,29 @@
           clearSingle();
           lastTapAt = 0;
           void toggleRoomStatus(sectionId, roomId);
+        };
+
+        const handleTap = () => {
+          lastHandledAt = Date.now();
+          const st = root.rooms[roomKey(sectionId, roomId)] || {};
+          if (st.blocked) {
+            openDetail();
+            return;
+          }
+
+          const now = Date.now();
+          const gap = now - lastTapAt;
+          if (gap > 0 && gap < DBL_MS) {
+            onDoubleToggle();
+            return;
+          }
+          lastTapAt = now;
+          clearSingle();
+          singleTimer = window.setTimeout(() => {
+            singleTimer = null;
+            lastTapAt = 0;
+            openDetail();
+          }, DBL_MS);
         };
 
         card.addEventListener(
@@ -730,29 +754,18 @@
             if (Math.abs(dx) > TAP_MAX || Math.abs(dy) > TAP_MAX) return;
             e.preventDefault();
             e.stopPropagation();
-
-            const st = root.rooms[roomKey(sectionId, roomId)] || {};
-            if (st.blocked) {
-              openDetail();
-              return;
-            }
-
-            const now = Date.now();
-            const gap = now - lastTapAt;
-            if (gap > 0 && gap < DBL_MS) {
-              onDoubleToggle();
-              return;
-            }
-            lastTapAt = now;
-            clearSingle();
-            singleTimer = window.setTimeout(() => {
-              singleTimer = null;
-              lastTapAt = 0;
-              openDetail();
-            }, DBL_MS);
+            handleTap();
           },
           { passive: false },
         );
+
+        /* Fallback iOS/desktop-touch: se pointerup non arriva, resta il click */
+        card.addEventListener('click', (e) => {
+          if (Date.now() - lastHandledAt < 450) return;
+          e.preventDefault();
+          e.stopPropagation();
+          handleTap();
+        });
 
         card.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {

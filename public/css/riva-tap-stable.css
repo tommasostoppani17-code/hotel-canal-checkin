@@ -107,7 +107,13 @@ textarea:focus:not(:focus-visible),
 .pack-option,
 .pack-preview-item--check {
   will-change: transform, opacity;
-  contain: layout style;
+}
+
+/* contain su card HK spezza i tap su iPad / Request Desktop Site */
+.ops-room {
+  contain: none !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
 }
 
 /* Feedback press Instagram — solo scale, niente reflow dei vicini */

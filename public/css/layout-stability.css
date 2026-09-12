@@ -472,13 +472,15 @@ html.is-pwa-phone body.is-dashboard #checkinsScroll {
 }
 
 /*
- * Ops Camere: lo scroll verticale sta sulla pagina hotel (.ops-rooms-page),
- * lo swipe hotel sullo pager. #opsBody NON deve rubare i touch (rompe
- * tap + scroll con “Richiedi sito desktop”).
+ * Ops Camere: lo scroll verticale sta sulla pagina hotel (.ops-rooms-page).
+ * #opsBody NON deve rubare i touch (rompe tap con layout desktop / Request Desktop Site).
  */
 html.is-pwa-phone body.is-dashboard .workspace.is-ops #opsBody,
 html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-shell),
-html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-pager) {
+html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-pager),
+html.is-pwa-touch body.is-dashboard .workspace.is-ops #opsBody,
+html.is-pwa-touch body.is-dashboard #opsBody:has(.ops-rooms-shell),
+html.is-pwa-touch body.is-dashboard #opsBody:has(.ops-rooms-pager) {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow: hidden !important;
@@ -490,36 +492,47 @@ html.is-pwa-phone body.is-dashboard #opsBody:has(.ops-rooms-pager) {
 
 html.is-pwa-phone body.is-dashboard .ops-rooms-shell,
 html.is-pwa-phone body.is-dashboard .ops-rooms-content,
-html.is-pwa-phone body.is-dashboard .ops-rooms-pager {
+html.is-pwa-phone body.is-dashboard .ops-rooms-pager,
+html.is-pwa-touch body.is-dashboard .ops-rooms-shell,
+html.is-pwa-touch body.is-dashboard .ops-rooms-content,
+html.is-pwa-touch body.is-dashboard .ops-rooms-pager {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   max-height: none !important;
 }
 
-html.is-pwa-phone body.is-dashboard .ops-rooms-pager {
+html.is-pwa-phone body.is-dashboard .ops-rooms-pager,
+html.is-pwa-touch body.is-dashboard .ops-rooms-pager {
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  touch-action: pan-x !important;
+  /* manipulation = tap sulle card; pan-x-only spegneva i click iOS */
+  touch-action: manipulation !important;
 }
 
-html.is-pwa-phone body.is-dashboard .ops-rooms-pager.is-pan-y {
+html.is-pwa-phone body.is-dashboard .ops-rooms-pager.is-pan-y,
+html.is-pwa-touch body.is-dashboard .ops-rooms-pager.is-pan-y {
   overflow-x: hidden !important;
   touch-action: pan-y !important;
 }
 
-html.is-pwa-phone body.is-dashboard .ops-rooms-page {
+html.is-pwa-phone body.is-dashboard .ops-rooms-page,
+html.is-pwa-touch body.is-dashboard .ops-rooms-page {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
   touch-action: pan-y !important;
   overscroll-behavior-y: contain !important;
-  /* Contenuto in alto: niente “buco” bianco forzato sotto le card */
   align-content: start !important;
 }
 
-html.is-pwa-phone body.is-dashboard .ops-room {
+html.is-pwa-phone body.is-dashboard .ops-room,
+html.is-pwa-touch body.is-dashboard .ops-room,
+html.is-pwa-phone body.is-dashboard .ops-sec-tab,
+html.is-pwa-touch body.is-dashboard .ops-sec-tab {
   pointer-events: auto !important;
   touch-action: manipulation !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
 }
 
 html.is-pwa-phone body.is-dashboard #checkinsScroll,

@@ -586,20 +586,26 @@ body.hk-app .ig-subbar-tabs-inner .ops-stats-dot {
   touch-action: manipulation;
 }
 
-/* HK: griglia touch-friendly */
+/* HK: griglia touch-friendly — manipulation altrimenti iOS mangia i tap sulle card */
 .ops-rooms-pager {
-  touch-action: pan-x !important;
+  touch-action: manipulation !important;
 }
 
 .ops-rooms-page {
   touch-action: pan-y !important;
 }
 
+.ops-room,
+.ops-room__body,
+.ops-semaforo:not(.ops-semaforo--blocked) {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+
 .ops-room__body,
 .ops-semaforo:not(.ops-semaforo--blocked) {
   min-width: 44px !important;
   min-height: 44px !important;
-  touch-action: manipulation !important;
 }
 
 .ops-room__body:active,
