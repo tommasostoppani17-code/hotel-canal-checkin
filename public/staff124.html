@@ -36,24 +36,29 @@
         var touch = Boolean(coarse || ios);
         if (touch) html.classList.add('is-pwa-touch');
 
-        /* Request Desktop Site spoofa innerWidth (~980/1024) ma screen resta phone/tablet.
-           Vale anche in Safari (non solo Home icon), altrimenti layout desktop crasha. */
+        /* Request Desktop Site spoofa innerWidth (~980/1024) ma screen resta phone/tablet. */
         var sw = Math.min(window.screen && window.screen.width || 0, window.screen && window.screen.height || 0);
         var iw = window.innerWidth || 0;
-        var spoofDesktop = sw > 0 && iw > sw + 80;
+        var spoofDesktop = sw > 0 && iw > sw + 60;
         var phoneOrTabletScreen = sw > 0 && sw <= 920;
-        var desktopViewport =
-          iw >= 1025 ||
-          (sw > 0 && Math.max(window.screen.width || 0, window.screen.height || 0) >= 1100);
-        if (standalone && desktopViewport) {
-          html.classList.remove('is-pwa-phone');
-        } else if (touch && (spoofDesktop || (standalone && sw <= 520) || (spoofDesktop && phoneOrTabletScreen))) {
+        var realDesktop =
+          !spoofDesktop &&
+          !phoneOrTabletScreen &&
+          (sw > 920 || Math.max(window.screen.width || 0, window.screen.height || 0) >= 1200);
+
+        /* Spoof su telefono/tablet: SEMPRE phone shell + touch (mai rimuovere) */
+        if (spoofDesktop && phoneOrTabletScreen) {
+          html.classList.add('is-pwa-touch');
           html.classList.add('is-pwa-phone');
+        } else if (touch && (spoofDesktop || (standalone && sw <= 520) || (ios && phoneOrTabletScreen && iw >= 768))) {
+          html.classList.add('is-pwa-phone');
+        } else if (standalone && realDesktop) {
+          html.classList.remove('is-pwa-phone');
         }
       } catch (_) { /* ignore */ }
     })();
   </script>
-  <script src="/js/pwa-boot.js?v=187" defer></script>
+  <script src="/js/pwa-boot.js?v=188" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Montserrat 300 = titolo Check-in; display=swap obbligatorio -->

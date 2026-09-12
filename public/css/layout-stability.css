@@ -461,7 +461,14 @@ html.is-pwa-phone body.is-dashboard .table-scroll,
 html.is-pwa-phone body.is-dashboard .settings-scroll,
 html.is-pwa-phone body.is-dashboard .notes-scroll,
 html.is-pwa-phone body.is-dashboard .blacklist-scroll,
-html.is-pwa-phone body.is-dashboard #checkinsScroll {
+html.is-pwa-phone body.is-dashboard #checkinsScroll,
+html.is-pwa-phone body.is-dashboard #inHouseScroll,
+html.is-pwa-touch body.is-dashboard .table-scroll,
+html.is-pwa-touch body.is-dashboard .settings-scroll,
+html.is-pwa-touch body.is-dashboard .notes-scroll,
+html.is-pwa-touch body.is-dashboard .blacklist-scroll,
+html.is-pwa-touch body.is-dashboard #checkinsScroll,
+html.is-pwa-touch body.is-dashboard #inHouseScroll {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow-x: hidden !important;
@@ -469,6 +476,29 @@ html.is-pwa-phone body.is-dashboard #checkinsScroll {
   -webkit-overflow-scrolling: touch !important;
   touch-action: pan-y !important;
   overscroll-behavior-y: contain !important;
+  pointer-events: auto !important;
+}
+
+/* Catena flex: pannelli devono passare l’altezza allo scroller (RDS / touch) */
+html.is-pwa-phone body.is-dashboard .workspace,
+html.is-pwa-phone body.is-dashboard .workspace-body,
+html.is-pwa-phone body.is-dashboard .content-card,
+html.is-pwa-phone body.is-dashboard .table-panel:not([hidden]):not(.hidden),
+html.is-pwa-touch body.is-dashboard .workspace,
+html.is-pwa-touch body.is-dashboard .workspace-body,
+html.is-pwa-touch body.is-dashboard .content-card,
+html.is-pwa-touch body.is-dashboard .table-panel:not([hidden]):not(.hidden) {
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+html.is-pwa-phone body.is-dashboard .dash-content,
+html.is-pwa-touch body.is-dashboard .dash-content {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 /*

@@ -287,7 +287,7 @@
   }
 }
 
-/* iPhone PWA + Request Desktop Site: non usare lo split desktop */
+/* iPhone/iPad + Request Desktop Site: non usare lo split desktop */
 html.is-pwa-phone .workspace.is-clients #checkinsPanel.clients-matrix,
 html.is-pwa-phone #checkinsPanel.clients-matrix {
   overflow: hidden !important;
@@ -313,10 +313,15 @@ html.is-pwa-phone #checkinsPanel .riva-master-column {
   border: 0 !important;
 }
 html.is-pwa-phone .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll,
-html.is-pwa-phone #checkinsPanel .riva-master-column .table-scroll {
+html.is-pwa-phone #checkinsPanel .riva-master-column .table-scroll,
+html.is-pwa-touch .workspace.is-clients #checkinsPanel .riva-master-column .table-scroll,
+html.is-pwa-touch #checkinsPanel .riva-master-column .table-scroll {
   overflow: auto !important;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
   touch-action: pan-y !important;
+  pointer-events: auto !important;
+  min-height: 0 !important;
 }
 html.is-pwa-phone .workspace.is-clients #checkinsPanel .riva-detail-column,
 html.is-pwa-phone #checkinsPanel .riva-detail-column {

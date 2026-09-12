@@ -30,20 +30,24 @@
     var iw = window.innerWidth || 0;
     var spoofDesktop = sw > 0 && iw > sw + 60;
     var phoneOrTabletScreen = sw > 0 && sw <= 920;
-    var desktopViewport =
-      iw >= 1025 ||
-      (sw > 0 && Math.max(window.screen.width || 0, window.screen.height || 0) >= 1100);
-    /* Richiedi sito desktop su iPhone/iPad (Safari o Home): forza layout phone */
-    if (standalone && desktopViewport) {
-      html.classList.remove('is-pwa-phone');
+    var realDesktop =
+      !spoofDesktop &&
+      !phoneOrTabletScreen &&
+      (sw > 920 || Math.max(window.screen.width || 0, window.screen.height || 0) >= 1200);
+
+    /* Spoof su telefono/tablet: SEMPRE phone shell (mai remove su Request Desktop Site) */
+    if (spoofDesktop && phoneOrTabletScreen) {
+      html.classList.add('is-pwa-touch');
+      html.classList.add('is-pwa-phone');
     } else if (
       touch &&
       (spoofDesktop ||
         (standalone && sw <= 520) ||
-        (spoofDesktop && phoneOrTabletScreen) ||
         (ios && phoneOrTabletScreen && iw >= 768))
     ) {
       html.classList.add('is-pwa-phone');
+    } else if (standalone && realDesktop) {
+      html.classList.remove('is-pwa-phone');
     }
 
     var syncPhoneVh = function () {
@@ -109,7 +113,7 @@
 
   const register = () => {
     navigator.serviceWorker
-      .register('/sw.js?v=187', { scope: '/' })
+      .register('/sw.js?v=188', { scope: '/' })
       .then((reg) => {
         try { reg.update(); } catch (_) { /* ignore */ }
         if (reg.waiting) {
